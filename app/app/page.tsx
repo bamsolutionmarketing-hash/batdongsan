@@ -3,9 +3,9 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { signout } from "@/app/login/actions";
 import { listProjectsWithSlug } from "@/lib/data/projects";
-import { ProjectExplorer } from "@/components/map/ProjectExplorer";
+import { AppHome } from "@/components/AppHome";
 
-export default async function AppHome() {
+export default async function AppHomePage() {
   const session = await getSession();
   if (!session) redirect("/login");
   if (!session.profile?.org_id) redirect("/onboarding");
@@ -47,7 +47,7 @@ export default async function AppHome() {
         </div>
       </header>
 
-      <ProjectExplorer projects={projects} slugById={slugById} />
+      <AppHome projects={projects} slugById={slugById} />
     </main>
   );
 }

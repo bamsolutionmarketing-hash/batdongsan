@@ -15,12 +15,20 @@ export default function Home() {
             Chọn một node để xem insight. Đăng nhập để nạp dự án của sàn bạn và tạo nội dung bán hàng.
           </p>
         </div>
-        <Link
-          href="/login"
-          className="whitespace-nowrap rounded-md bg-sky-600 px-3 py-2 text-sm font-medium text-white hover:bg-sky-500"
-        >
-          Đăng nhập
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/contact"
+            className="whitespace-nowrap rounded-md border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 hover:border-slate-500"
+          >
+            Đăng ký cho team
+          </Link>
+          <Link
+            href="/login"
+            className="whitespace-nowrap rounded-md bg-sky-600 px-3 py-2 text-sm font-medium text-white hover:bg-sky-500"
+          >
+            Đăng nhập
+          </Link>
+        </div>
       </header>
 
       <ProjectExplorer projects={seedProjects} />
