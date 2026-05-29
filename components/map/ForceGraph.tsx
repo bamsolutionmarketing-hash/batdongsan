@@ -2,30 +2,45 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { GraphData, LinkReason, Segment } from "@/lib/data/types";
-import { buildAdjacency, neighborhood, pairKey } from "@/lib/map/adjacency";
+import type { GraphData } from "@/lib/data/types";
+import { buildAdjacency, neighborhood } from "@/lib/map/adjacency";
 
 // react-force-graph-2d touches `window`, so it must load client-side only.
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), { ssr: false });
 
-const SEGMENT_COLOR: Record<Segment, string> = {
+// Default palette for the cross-project map (group = segment / relation type).
+// Per-project knowledge graphs pass their own palette + legend via props.
+const DEFAULT_NODE_COLORS: Record<string, string> = {
   luxury: "#f59e0b",
   "high-end": "#38bdf8",
   "mid-range": "#34d399",
   affordable: "#a78bfa",
 };
 
-// Each relationship type gets its own hue so the map is legible at a glance.
-const LINK_COLOR: Record<LinkReason, string> = {
+const DEFAULT_LINK_COLORS: Record<string, string> = {
   related: "#f472b6",
   "same-developer": "#38bdf8",
   "same-district": "#34d399",
   "same-segment": "#94a3b8",
 };
 
+const DEFAULT_LEGEND: LegendItem[] = [
+  { label: "Cùng chủ đầu tư", color: DEFAULT_LINK_COLORS["same-developer"] },
+  { label: "Cùng khu vực", color: DEFAULT_LINK_COLORS["same-district"] },
+  { label: "Cùng phân khúc", color: DEFAULT_LINK_COLORS["same-segment"] },
+  { label: "Liên quan", color: DEFAULT_LINK_COLORS["related"] },
+];
+
+const FALLBACK_NODE = "#64748b";
+const FALLBACK_LINK = "rgba(148,163,184,0.4)";
 const DIM_NODE = "rgba(100,116,139,0.18)";
 const DIM_LINK = "rgba(100,116,139,0.07)";
 const DIM_TEXT = "rgba(148,163,184,0.35)";
+
+interface LegendItem {
+  label: string;
+  color: string;
+}
 
 interface ForceGraphProps {
   data: GraphData;
@@ -34,13 +49,28 @@ interface ForceGraphProps {
   highlightIds?: string[];
   searching?: boolean;
   onSelect?: (id: string) => void;
+  /** group -> node colour. Falls back to the cross-project palette. */
+  nodeColors?: Record<string, string>;
+  /** group -> link colour. */
+  linkColors?: Record<string, string>;
+  /** Legend rows; pass [] to hide. */
+  legend?: LegendItem[];
 }
 
 function linkEnd(end: string | { id: string }): string {
   return typeof end === "string" ? end : end.id;
 }
 
-export function ForceGraph({ data, selectedId, highlightIds, searching, onSelect }: ForceGraphProps) {
+export function ForceGraph({
+  data,
+  selectedId,
+  highlightIds,
+  searching,
+  onSelect,
+  nodeColors = DEFAULT_NODE_COLORS,
+  linkColors = DEFAULT_LINK_COLORS,
+  legend = DEFAULT_LEGEND,
+}: ForceGraphProps) {
   const fgRef = useRef<any>(null);
   const [hoverId, setHoverId] = useState<string | null>(null);
 
@@ -95,7 +125,7 @@ export function ForceGraph({ data, selectedId, highlightIds, searching, onSelect
           const t = linkEnd(l.target);
           const active = !focusId || (focusHood.has(s) && focusHood.has(t));
           const searchOk = !searching || (searchSet.has(s) && searchSet.has(t));
-          return active && searchOk ? LINK_COLOR[l.reason as LinkReason] : DIM_LINK;
+          return active && searchOk ? (linkColors[l.group] ?? FALLBACK_LINK) : DIM_LINK;
         }}
         linkWidth={(l: any) => {
           const focused =
@@ -112,7 +142,7 @@ export function ForceGraph({ data, selectedId, highlightIds, searching, onSelect
           // Node circle.
           ctx.beginPath();
           ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
-          ctx.fillStyle = active ? SEGMENT_COLOR[node.segment as Segment] : DIM_NODE;
+          ctx.fillStyle = active ? (nodeColors[node.group] ?? FALLBACK_NODE) : DIM_NODE;
           ctx.fill();
 
           // Ring around the focused / selected node.
@@ -143,18 +173,12 @@ export function ForceGraph({ data, selectedId, highlightIds, searching, onSelect
         }}
       />
 
-      <Legend />
+      {legend.length > 0 && <Legend items={legend} />}
     </div>
   );
 }
 
-function Legend() {
-  const items: { label: string; color: string }[] = [
-    { label: "Cùng chủ đầu tư", color: LINK_COLOR["same-developer"] },
-    { label: "Cùng khu vực", color: LINK_COLOR["same-district"] },
-    { label: "Cùng phân khúc", color: LINK_COLOR["same-segment"] },
-    { label: "Liên quan", color: LINK_COLOR["related"] },
-  ];
+function Legend({ items }: { items: LegendItem[] }) {
   return (
     <div className="pointer-events-none absolute bottom-3 left-3 flex flex-col gap-1 rounded-md bg-slate-950/70 p-2 text-[10px] text-slate-300 backdrop-blur">
       {items.map((it) => (

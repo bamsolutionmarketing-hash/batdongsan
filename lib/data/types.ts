@@ -21,7 +21,8 @@ export interface Project {
 export interface GraphNode {
   id: string;
   label: string;
-  segment: Segment;
+  /** Generic grouping key for colouring (e.g. segment, or concept kind). */
+  group: string;
   /** Number of links this node has — drives Obsidian-style sizing. */
   degree: number;
   /** Visual weight, derived from degree. */
@@ -33,7 +34,8 @@ export type LinkReason = "same-developer" | "same-district" | "same-segment" | "
 export interface GraphLink {
   source: string;
   target: string;
-  reason: LinkReason;
+  /** Grouping key for link colour (relation type, or concept-edge kind). */
+  group: string;
 }
 
 export interface GraphData {

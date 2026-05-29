@@ -27,7 +27,7 @@ export function toGraphData(projects: Project[]): GraphData {
     for (let j = i + 1; j < projects.length; j++) {
       const reason = pairReason(projects[i], projects[j]);
       if (reason) {
-        links.push({ source: projects[i].id, target: projects[j].id, reason });
+        links.push({ source: projects[i].id, target: projects[j].id, group: reason });
         degree.set(projects[i].id, (degree.get(projects[i].id) ?? 0) + 1);
         degree.set(projects[j].id, (degree.get(projects[j].id) ?? 0) + 1);
       }
@@ -39,7 +39,7 @@ export function toGraphData(projects: Project[]): GraphData {
     return {
       id: p.id,
       label: p.name,
-      segment: p.segment,
+      group: p.segment,
       degree: d,
       val: valueFromDegree(d),
     };

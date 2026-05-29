@@ -58,7 +58,7 @@ describe("toGraphData", () => {
       p({ id: "b", developer: "X" }),
     ]);
     expect(data.links).toHaveLength(1);
-    expect(data.links[0]).toMatchObject({ source: "a", target: "b", reason: "same-developer" });
+    expect(data.links[0]).toMatchObject({ source: "a", target: "b", group: "same-developer" });
   });
 
   it("does not link unrelated projects", () => {

@@ -4,14 +4,14 @@ import type { GraphData } from "../data/types";
 
 const data: GraphData = {
   nodes: [
-    { id: "a", label: "A", segment: "luxury", degree: 0, val: 1 },
-    { id: "b", label: "B", segment: "luxury", degree: 0, val: 1 },
-    { id: "c", label: "C", segment: "mid-range", degree: 0, val: 1 },
-    { id: "d", label: "D", segment: "affordable", degree: 0, val: 1 },
+    { id: "a", label: "A", group: "luxury", degree: 0, val: 1 },
+    { id: "b", label: "B", group: "luxury", degree: 0, val: 1 },
+    { id: "c", label: "C", group: "mid-range", degree: 0, val: 1 },
+    { id: "d", label: "D", group: "affordable", degree: 0, val: 1 },
   ],
   links: [
-    { source: "a", target: "b", reason: "same-developer" },
-    { source: "b", target: "c", reason: "same-district" },
+    { source: "a", target: "b", group: "same-developer" },
+    { source: "b", target: "c", group: "same-district" },
   ],
 };
 
@@ -34,7 +34,7 @@ describe("buildAdjacency", () => {
   it("handles object-shaped link ends (post force-layout mutation)", () => {
     const mutated: GraphData = {
       nodes: data.nodes,
-      links: [{ source: { id: "a" }, target: { id: "b" }, reason: "related" } as never],
+      links: [{ source: { id: "a" }, target: { id: "b" }, group: "related" } as never],
     };
     const adj = buildAdjacency(mutated);
     expect(adj.neighbors.get("a")).toEqual(new Set(["b"]));
