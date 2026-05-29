@@ -14,6 +14,14 @@ Supabase + Vercel (cần bạn cung cấp tài khoản/keys).
    *(Hoặc dùng Supabase CLI: `supabase db push`.)*
 4. **Storage**: tạo bucket `documents` (private) cho M3 upload file.
 
+## 1b. Engine trích xuất (Python, M3)
+- File `api/extract.py` là **Vercel Python Function** (stateless): nhận bytes →
+  trả các trường trích xuất. Vercel tự cài `requirements.txt` (pdfplumber,
+  python-docx) khi deploy.
+- Local dev: `npm run dev` không chạy Python function. Để thử M3 ở local, hoặc
+  deploy lên Vercel, hoặc chạy extractor riêng và đặt `EXTRACTOR_URL`.
+- Test engine: `python3 -m pytest engine/tests -q`.
+
 ## 2. Local dev
 ```bash
 cp .env.example .env.local   # rồi điền 3 giá trị ở trên

@@ -24,12 +24,20 @@ export default async function AppHome() {
         </div>
         <div className="flex items-center gap-2">
           {isAdmin && (
-            <Link
-              href="/app/projects/new"
-              className="rounded-md bg-sky-600 px-3 py-2 text-xs font-medium text-white hover:bg-sky-500"
-            >
-              + Thêm dự án
-            </Link>
+            <>
+              <Link
+                href="/app/ingest"
+                className="rounded-md border border-slate-700 px-3 py-2 text-xs font-medium text-slate-200 hover:border-slate-500"
+              >
+                Nạp tài liệu
+              </Link>
+              <Link
+                href="/app/projects/new"
+                className="rounded-md bg-sky-600 px-3 py-2 text-xs font-medium text-white hover:bg-sky-500"
+              >
+                + Thêm dự án
+              </Link>
+            </>
           )}
           <form action={signout}>
             <button className="rounded-md border border-slate-700 px-3 py-2 text-xs text-slate-300 hover:border-slate-500">
