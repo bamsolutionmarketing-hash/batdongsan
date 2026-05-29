@@ -101,7 +101,7 @@ Chi tiết khả thi 3D: xem [3D_VIEWER_SPEC.md §1](./3D_VIEWER_SPEC.md).
 | **G6** | Scale & hardening | phân trang, rate limit, logging, backup | G5 | ROADMAP §G6 |
 | **G7** 🎯 | Sales assist (talking points + nội dung) | từ facts+tags sinh điểm bán hàng / lợi thế cạnh tranh / pitch / post-video, có nguồn | G4, G9 | CONTENT_ENGINE |
 | **G8** | 3D aerial viewer | xoay/zoom model dự án, hotspots; signed URL | G1/G2 | 3D_VIEWER_SPEC |
-| **G9** 🎯 | Learning hub (trang chi tiết dự án) | nơi sale học 1 dự án: facts+nguồn, tài liệu, tiện ích, pháp lý, 3D | G1/G2 (đủ ở G4) | (mới — sẽ thêm doc) |
+| **G9** 🎯 | Learning hub (trang chi tiết dự án) | trang kiến thức để sale **tự đọc**: facts+nguồn, tài liệu, tiện ích, pháp lý, 3D, + talking points (G7). Không quiz/gamification | G1/G2 (đủ ở G4) | (mới — sẽ thêm doc) |
 | **G10** 🎯 | Hành trình khám phá | click node → đào sâu dự án cùng CĐT/khu/phân khúc; so sánh đối thủ | G1, G9 | (mới — sẽ thêm doc) |
 
 ⭐ = trọng tâm dữ liệu. 🎯 = trực tiếp phục vụ sale enablement. ✅ = đã hoàn thành.
@@ -192,9 +192,11 @@ SUPABASE_SERVICE_ROLE_KEY=     # server-only: engine, worker, signed URL
 - Không RAG/không AI API · nguồn nạp = upload file · admin nạp, sale xem · public 1
   dự án demo + auth · Python chạy **Vercel Python Functions** · 3D render client-side.
 
+- **G9 là trang đọc tĩnh** — kiến thức + talking points để sale tự đọc; KHÔNG
+  quiz/gamification/checklist tương tác (giữ G9 nhẹ).
+
 **Còn mở:** (a) OCR brochure ảnh ở G4 hay G6; (b) worker Python riêng nếu batch
-nặng; (c) nguồn được phép thu thập; (d) mức "gamification/đào tạo" cho sale mới
-(quiz, checklist tư vấn) — cân nhắc khi làm G9.
+nặng; (c) nguồn được phép thu thập.
 
 **Còn mở:** (a) OCR brochure ảnh ở G4 hay G6; (b) lên worker Python riêng ở G5 nếu
 batch quá nặng cho Vercel Functions; (c) nguồn được phép thu thập (pháp lý).
