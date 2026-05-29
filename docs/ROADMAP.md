@@ -1,6 +1,6 @@
 # Roadmap — Batdongsan Knowledge Map
 
-> Tổng quan toàn bộ G0–G8: xem [MASTER_ROADMAP.md](./MASTER_ROADMAP.md).
+> Tổng quan toàn bộ G0–G14: xem [MASTER_ROADMAP.md](./MASTER_ROADMAP.md).
 
 Chia triển khai thành các **giai đoạn (G0–G6)**, mỗi giai đoạn deploy được và có
 Definition of Done rõ ràng. Mục tiêu: **mở rộng tới hàng nghìn dự án**, admin nạp

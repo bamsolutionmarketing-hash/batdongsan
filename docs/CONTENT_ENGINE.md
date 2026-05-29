@@ -1,6 +1,6 @@
 # Sales Assist Engine (G7) — Kiến trúc
 
-> Tổng quan toàn bộ G0–G10: xem [MASTER_ROADMAP.md](./MASTER_ROADMAP.md).
+> Tổng quan toàn bộ G0–G14: xem [MASTER_ROADMAP.md](./MASTER_ROADMAP.md).
 
 **Mục tiêu: trang bị cho sale (đặc biệt người mới) thứ cần để bán một dự án** —
 sinh ra từ knowledge base đã duyệt:

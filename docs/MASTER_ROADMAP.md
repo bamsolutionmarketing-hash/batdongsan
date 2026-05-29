@@ -1,36 +1,54 @@
 # Master Roadmap — Batdongsan Knowledge Map
 
-Tài liệu tổng hợp toàn bộ kế hoạch (G0–G8). Đây là **điểm vào trung tâm**; chi
+Tài liệu tổng hợp toàn bộ kế hoạch (G0–G14). Đây là **điểm vào trung tâm**; chi
 tiết từng mảng nằm ở các doc liên kết bên dưới.
 
 | Doc | Phạm vi |
 |---|---|
 | [ROADMAP.md](./ROADMAP.md) | Nền tảng, deploy, ingestion rule-based (G0–G6) |
-| [CONTENT_ENGINE.md](./CONTENT_ENGINE.md) | Gợi ý nội dung đăng bài / video (G7) |
+| [CONTENT_ENGINE.md](./CONTENT_ENGINE.md) | Lead-gen content + sales assist (G7) |
 | [3D_VIEWER_SPEC.md](./3D_VIEWER_SPEC.md) | Phối cảnh 3D aerial tương tác (G8) |
+| (sẽ thêm) | G9–G14: learning hub, khám phá/so sánh, objection, trình khách, compliance, B2B |
 
 ---
 
 ## 1. Tầm nhìn
 
-**Tool đào tạo & hỗ trợ sale BĐS — biến người chưa biết gì thành người bán được dự án, nhanh và rẻ.**
+**Tool đào tạo & hỗ trợ sale BĐS — biến người chưa biết gì thành người bán được
+dự án, nhanh và rẻ.** Mô hình **B2B2C**: sàn/CĐT trả tiền cho cả đội, sale cá
+nhân là người dùng.
 
-Đối tượng & giá trị:
-- **Sale mới / chưa biết tư vấn** — con đường ngắn nhất để bắt đầu bán một dự án:
-  hiểu dự án, biết **nói gì với khách**, biết **dự án mạnh ở đâu so với đối thủ**.
-- **Chủ đầu tư / sàn** — **rút ngắn thời gian training** nhân viên mới với chi phí
-  cực thấp; chuẩn hoá kiến thức dự án cho cả đội.
+### Người dùng vs Người trả tiền (định vị thương mại)
+| | Sale cá nhân (B2C) | Sàn / CĐT (B2B) |
+|---|---|---|
+| Vai trò | **Người dùng** — tạo lan toả, phễu acquisition | **Người trả tiền chính** — seat, ký năm |
+| Túi tiền | Thu nhập 100% hoa hồng, nhạy giá | Có ngân sách training/marketing |
+| Churn | Cao (nhiều người bỏ nghề) | Thấp, sticky (vẫn ở lại khi sale nghỉ) |
+| Nỗi đau chính | Chưa biết bán, chưa có khách, chưa chốt được | Ramp-time nhân viên mới lâu & tốn; **sợ sale nói sai/sai luật** |
 
-Cách đạt được:
-- **Admin nạp kiến thức** dự án bằng **upload file** → engine **Python rule-based**
-  (từ điển + regex, **KHÔNG dùng AI/LLM**) tự gắn tag/category, **xác định &
-  giải thích được, không hallucinate**. Admin duyệt trước khi publish.
-- **Sale học & tra cứu**: bản đồ quan hệ dự án (force-graph), lọc/tìm, **hành trình
-  khám phá** (đào từ 1 dự án sang dự án cùng CĐT/khu/phân khúc), **learning hub**
-  cho từng dự án, **phối cảnh 3D aerial** để hình dung thực địa.
-- **Trợ lý bán hàng**: từ knowledge base sinh ra **điểm bán hàng, lợi thế cạnh
-  tranh, talking points tư vấn, nội dung đăng bài/video** — theo template
-  rule-based, có nguồn — để sale dùng ngay khi nói chuyện với khách.
+> **Bài học reverse-engineering:** giá trị "học 1 dự án" và "talking points" phần
+> lớn là **một lần** → yếu cho subscription cá nhân. Subscription bền đến từ
+> **B2B (sàn/CĐT)** + các **móc lặp lại** (lead-gen content) + **đường nhìn thấy
+> tới hoa hồng** (objection handling, chế độ trình khách). Lợi thế **provenance /
+> không-hallucinate** chính là điểm bán B2B: CĐT sợ nhất là sale nói sai với khách.
+
+### Cách tạo & giữ giá trị (4 trụ giữ chân + đường tới hoa hồng)
+1. **Lead-gen content (móc lặp lại chính)** — nội dung đăng bài/video mới hàng tuần
+   để sale ra khách. Nhu cầu lặp → lý do trả tiền tiếp.
+2. **Objection handling** — "khách nói X → đáp Y" (rule-based, có nguồn) → giúp **chốt đơn**.
+3. **Customer-facing mode** — dùng app (3D, so sánh, fact sheet) **ngay trong buổi
+   tư vấn** để trông chuyên nghiệp, thắng deal → gắn thẳng với **thu nhập**.
+4. **Compliance guard** — chặn phát ngôn sai luật (cam kết lợi nhuận, sai pháp lý…)
+   → điểm bán B2B nhờ provenance.
+
+### Cách đạt được (nền tảng)
+- **Sàn/CĐT (hoặc admin) nạp kiến thức** dự án bằng **upload file** → engine
+  **Python rule-based** (từ điển + regex, **KHÔNG dùng AI/LLM**) tự gắn tag/category,
+  **xác định & giải thích được, không hallucinate**, duyệt trước khi publish.
+  *(B2B giải luôn cold-start: khách hàng tự mang data dự án của họ lên.)*
+- **Front door = "chọn dự án → mọi thứ để bán ngay"** (không phải force-graph).
+  Map trở thành công cụ khám phá/so sánh (G10), không phải màn hình đầu.
+- **Sale học & tra cứu**: learning hub từng dự án, hành trình khám phá, 3D aerial.
 
 **Nguyên tắc xuyên suốt:** mọi dữ liệu/đầu ra đều **truy được nguồn gốc**
 (provenance), không có thành phần sinh tự do → sale tin được, không bịa với khách.
@@ -86,7 +104,7 @@ Chi tiết khả thi 3D: xem [3D_VIEWER_SPEC.md §1](./3D_VIEWER_SPEC.md).
 
 ---
 
-## 4. Lộ trình giai đoạn (G0–G8)
+## 4. Lộ trình giai đoạn (G0–G14)
 
 | GĐ | Tên | Mục tiêu / DoD | Phụ thuộc | Doc |
 |---|---|---|---|---|
@@ -99,29 +117,40 @@ Chi tiết khả thi 3D: xem [3D_VIEWER_SPEC.md §1](./3D_VIEWER_SPEC.md).
 | **G4** ⭐ | Engine rule-based tag/category | đề xuất field kèm nguồn → admin confirm → publish | G3 | ROADMAP §G4 |
 | **G5** | Xử lý hàng loạt | `ingestion_jobs` + worker; nạp nghìn dự án nền | G4 | ROADMAP §G5 |
 | **G6** | Scale & hardening | phân trang, rate limit, logging, backup | G5 | ROADMAP §G6 |
-| **G7** 🎯 | Sales assist (talking points + nội dung) | từ facts+tags sinh điểm bán hàng / lợi thế cạnh tranh / pitch / post-video, có nguồn | G4, G9 | CONTENT_ENGINE |
-| **G8** | 3D aerial viewer | xoay/zoom model dự án, hotspots; signed URL | G1/G2 | 3D_VIEWER_SPEC |
-| **G9** 🎯 | Learning hub (trang chi tiết dự án) | trang kiến thức để sale **tự đọc**: facts+nguồn, tài liệu, tiện ích, pháp lý, 3D, + talking points (G7). Không quiz/gamification | G1/G2 (đủ ở G4) | (mới — sẽ thêm doc) |
-| **G10** 🎯 | Hành trình khám phá | click node → đào sâu dự án cùng CĐT/khu/phân khúc; so sánh đối thủ | G1, G9 | (mới — sẽ thêm doc) |
+| **G7** 🎯💰 | Lead-gen content (**móc subscription chính**) | nội dung post/video theo lịch + nhiều biến thể; nhu cầu lặp lại hàng tuần. Kèm pitch/talking points | G4, G9 | CONTENT_ENGINE |
+| **G8** 🎯 | 3D aerial viewer | xoay/zoom model dự án, hotspots; dùng cả trong G12 (trình khách) | G1/G2 | 3D_VIEWER_SPEC |
+| **G9** 🎯 | Learning hub (trang chi tiết dự án) | trang kiến thức để sale **tự đọc**: facts+nguồn, tài liệu, tiện ích, pháp lý, 3D, talking points. Không quiz | G1/G2 (đủ ở G4) | (sẽ thêm doc) |
+| **G10** 🎯 | Hành trình khám phá + so sánh | đào sâu dự án cùng CĐT/khu/phân khúc; **so sánh đối thủ side-by-side** | G1, G9 | (sẽ thêm doc) |
+| **G11** 🎯💰 | Objection handling | "khách nói X → gợi ý đáp Y", rule-based có nguồn → giúp chốt đơn | G4 | (sẽ thêm doc) |
+| **G12** 🎯💰 | Customer-facing mode | chế độ trình khách: 3D + so sánh + fact sheet gọn, đẹp để dùng khi tư vấn | G8, G9, G10 | (sẽ thêm doc) |
+| **G13** 💰🛡️ | Compliance guard | chặn/cảnh báo phát ngôn sai luật (cam kết lợi nhuận, sai pháp lý) trên mọi đầu ra | G7 | (sẽ thêm doc) |
+| **G14** 💰 | B2B teams & billing | tổ chức/seat, mời thành viên, white-label CĐT, gói subscription (Stripe), phân tích sử dụng | G2 | (sẽ thêm doc) |
 
-⭐ = trọng tâm dữ liệu. 🎯 = trực tiếp phục vụ sale enablement. ✅ = đã hoàn thành.
+⭐ = trọng tâm dữ liệu. 🎯 = phục vụ sale. 💰 = trực tiếp tạo/giữ doanh thu (móc subscription / B2B). 🛡️ = giảm rủi ro pháp lý. ✅ = đã xong.
 
 ---
 
 ## 5. Thứ tự thực thi đề xuất
 
+Ưu tiên theo **giá trị thương mại** (sớm có thứ thuyết phục trả tiền), không theo
+thứ tự kỹ thuật thuần:
+
 ```
-S1 ✅ ─ S2 ✅ ─ G0 ─ G1 ─ G2 ─ G3 ─ G4 ⭐ ─ G9 🎯 ─ G7 🎯 ─ G10 🎯 ─ G5 ─ G6
-                         │                        │
-                         └── G8 (3D) ─────────────┘  (song song, nhúng vào G9)
+NỀN     : G0 ─ G1 ─ G2 ─ G3 ─ G4 ⭐ (knowledge base có nguồn)
+GIÁ TRỊ : └─ G9 🎯 ─ G7 🎯💰 ─ G11 🎯💰 ─ G10 🎯 ─ G12 🎯💰 (đường tới hoa hồng)
+DOANH THU: └─ G14 💰 (B2B teams/billing) ─ G13 🛡️ (compliance)
+SONG SONG: G8 (3D) sau G1/G2 → nhúng vào G9 & G12
+VẬN HÀNH : G5 ─ G6 (scale/hardening, khi đã có khách thật)
 ```
 
-- **Đường chính** (tuần tự): G0 → G4 dựng knowledge base → **G9 → G7 → G10** là
-  3 mảnh trực tiếp tạo giá trị sale (học dự án → talking points/nội dung → khám
-  phá & so sánh). Đây mới là "đích" của sản phẩm, không dừng ở G4.
-- **G8 (3D)** độc lập sau G1/G2, chạy song song, **nhúng vào learning hub G9**.
-- **G7 (sales assist)** cần facts/tags ở G4 và khung learning hub ở G9.
-- G5/G6 (scale/hardening) làm khi đã có người dùng thật, không chặn giá trị cốt lõi.
+- **G0→G4**: dựng kho tri thức có provenance (điều kiện cần, chưa bán được gì).
+- **G9→G7→G11→G10→G12**: chuỗi tạo giá trị *nhìn thấy được* cho sale — học dự án →
+  nội dung ra khách (móc lặp lại) → chốt đơn → so sánh đối thủ → trình khách thắng deal.
+- **G14 + G13**: biến giá trị thành **doanh thu bền** (B2B seat/ký năm) và **an toàn
+  pháp lý** (điểm bán B2B). Nên làm sớm khi đã có 1–2 khách B2B thử nghiệm.
+- **MVP bán được đề xuất:** G0–G4 + **G9 + G7 + G14** (kho tri thức + trang học +
+  lead-gen lặp lại + thu tiền theo team). Đây là lát cắt nhỏ nhất *thuyết phục
+  được sàn/CĐT trả tiền*. Các trụ còn lại (G11/G10/G12/G13) tăng giữ chân sau đó.
 
 ---
 
@@ -134,9 +163,12 @@ S1 ✅ ─ S2 ✅ ─ G0 ─ G1 ─ G2 ─ G3 ─ G4 ⭐ ─ G9 🎯 ─ G7 🎯
 | `documents` | G3 | file đã upload |
 | `extractions`, `tags`, `project_tags` | G4 | kết quả rule-based + provenance |
 | `ingestion_jobs` | G5 | hàng đợi xử lý lô |
-| `content_templates`, `content_suggestions` | G7 | template talking points/pitch/post-video + đầu ra |
+| `content_templates`, `content_suggestions` | G7 | template lead-gen/pitch/talking points + đầu ra |
 | `project_models`, `model_hotspots` | G8 | model 3D + điểm tương tác |
 | `selling_points`, `comparisons` (dự kiến) | G9/G10 | điểm bán hàng & so sánh đối thủ (suy ra bằng rule) |
+| `objections` (dự kiến) | G11 | cặp "câu từ chối → cách đáp" có nguồn |
+| `compliance_rules`, `content_flags` (dự kiến) | G13 | luật phát ngôn + cờ vi phạm trên đầu ra |
+| `orgs`, `memberships`, `subscriptions` (dự kiến) | G14 | tổ chức/seat/gói + tích hợp billing |
 
 Chi tiết DDL: ROADMAP §3, CONTENT_ENGINE §3, 3D_VIEWER_SPEC §3.
 
@@ -178,25 +210,28 @@ SUPABASE_SERVICE_ROLE_KEY=     # server-only: engine, worker, signed URL
 4. **Provenance bắt buộc** — mọi field/đầu ra truy được về nguồn; thiếu dữ liệu thì
    báo missing, không bịa.
 5. **Public tối thiểu** — chỉ dự án `visibility='public'` lộ ra ngoài; còn lại sau auth.
+6. **Multi-tenant từ đầu** — dữ liệu cô lập theo tổ chức (org) qua RLS; sàn A không
+   thấy dữ liệu riêng của sàn B. (Bắt buộc cho B2B; thiết kế schema có `org_id`
+   ngay từ G2 để khỏi refactor về sau.)
 
 ---
 
 ## 10. Quyết định đã chốt & còn mở
 **Đã chốt:**
-- **Mục tiêu sản phẩm: sale enablement** — đào tạo/hỗ trợ sale BĐS (đặc biệt người
-  mới) và bán cho CĐT/sàn để rút ngắn training. Người dùng chính = **môi giới/sale**.
-- G7 reframe thành **sales assist** (talking points/lợi thế cạnh tranh/pitch/nội
-  dung), **thuộc lõi** — không phải tính năng phụ.
-- Thêm **G9 learning hub** (trang chi tiết dự án) và **G10 hành trình khám phá +
-  so sánh** vào lõi; đây mới là "đích" sản phẩm, không dừng ở knowledge base (G4).
-- Không RAG/không AI API · nguồn nạp = upload file · admin nạp, sale xem · public 1
-  dự án demo + auth · Python chạy **Vercel Python Functions** · 3D render client-side.
-
+- **Mục tiêu: sale enablement, mô hình B2B2C.** Người dùng = sale cá nhân (phễu);
+  **người trả tiền chính = sàn/CĐT** (seat, ký năm). B2B giải cold-start (khách
+  tự mang data dự án lên).
+- **Móc giữ chân & doanh thu (đều thuộc lõi):** G7 lead-gen content (móc lặp lại
+  chính), G11 objection handling, G12 customer-facing mode, G13 compliance guard,
+  G14 B2B teams/billing.
+- **Đổi front door** → "chọn dự án → mọi thứ để bán ngay"; force-graph thành công
+  cụ khám phá/so sánh (G10), không phải màn hình đầu.
 - **G9 là trang đọc tĩnh** — kiến thức + talking points để sale tự đọc; KHÔNG
-  quiz/gamification/checklist tương tác (giữ G9 nhẹ).
+  quiz/gamification (giữ nhẹ).
+- Không RAG/không AI API · nguồn nạp = upload file · public 1 dự án demo + auth ·
+  Python chạy **Vercel Python Functions** · 3D render client-side.
+- **MVP bán được:** G0–G4 + G9 + G7 + G14.
 
 **Còn mở:** (a) OCR brochure ảnh ở G4 hay G6; (b) worker Python riêng nếu batch
-nặng; (c) nguồn được phép thu thập.
-
-**Còn mở:** (a) OCR brochure ảnh ở G4 hay G6; (b) lên worker Python riêng ở G5 nếu
-batch quá nặng cho Vercel Functions; (c) nguồn được phép thu thập (pháp lý).
+nặng; (c) nguồn được phép thu thập (pháp lý); (d) cổng thanh toán (Stripe vs nội
+địa VN) cho G14; (e) mức độ white-label cho CĐT ở G14.
