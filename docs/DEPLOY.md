@@ -13,6 +13,9 @@ Supabase + Vercel (cần bạn cung cấp tài khoản/keys).
    `supabase/migrations/0001_init.sql`, `0002_rls.sql`, rồi `0003_project_maps.sql`
    và Run. *(Hoặc dùng Supabase CLI: `supabase db push`.)*
 4. **Storage**: tạo bucket `documents` (private) cho M3 upload file.
+5. **Seed demo** (tuỳ chọn nhưng nên có): dán `supabase/seed.sql` vào SQL Editor
+   và Run — tạo 1 org demo + 5 dự án (1 dự án `public` để trang chủ demo hoạt
+   động khi chưa đăng nhập) + bản đồ tri thức mẫu cho Gladia.
 
 ## 1b. Engine trích xuất (Python, M3)
 - File `api/extract.py` là **Vercel Python Function** (stateless): nhận bytes →

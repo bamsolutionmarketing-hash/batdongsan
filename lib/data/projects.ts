@@ -47,6 +47,24 @@ export async function listPublicProjects(): Promise<Project[]> {
   return (data as ProjectRow[]).map(rowToProject);
 }
 
+// Public projects + id->slug map, for the landing demo's learning-hub links.
+export async function listPublicProjectsWithSlug(): Promise<{
+  projects: Project[];
+  slugById: Record<string, string>;
+}> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("projects")
+    .select(COLUMNS)
+    .eq("visibility", "public")
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  const rows = (data as ProjectRow[]) ?? [];
+  const slugById: Record<string, string> = {};
+  rows.forEach((r) => (slugById[r.id] = r.slug));
+  return { projects: rows.map(rowToProject), slugById };
+}
+
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
   const supabase = createClient();
   const { data, error } = await supabase

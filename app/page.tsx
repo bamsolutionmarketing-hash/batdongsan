@@ -1,11 +1,24 @@
 import Link from "next/link";
 import { ProjectExplorer } from "@/components/map/ProjectExplorer";
 import { seedProjects } from "@/lib/data/seed";
+import { listPublicProjectsWithSlug } from "@/lib/data/projects";
+import type { Project } from "@/lib/data/types";
 
-// Public landing/demo. Uses seed data so anyone can try it without an account.
-// (Once projects are seeded as visibility='public' in the DB, this can switch
-// to listPublicProjects().)
-export default function Home() {
+// Public landing/demo. Prefers seeded public projects (links into the real
+// learning hub); falls back to in-memory seed when the DB is empty/unconfigured.
+export default async function Home() {
+  let projects: Project[] = seedProjects;
+  let slugById: Record<string, string> | undefined;
+  try {
+    const res = await listPublicProjectsWithSlug();
+    if (res.projects.length > 0) {
+      projects = res.projects;
+      slugById = res.slugById;
+    }
+  } catch {
+    // No DB configured yet — show the in-memory seed demo.
+  }
+
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
       <header className="flex items-start justify-between gap-4">
@@ -31,7 +44,7 @@ export default function Home() {
         </div>
       </header>
 
-      <ProjectExplorer projects={seedProjects} />
+      <ProjectExplorer projects={projects} slugById={slugById} />
     </main>
   );
 }
