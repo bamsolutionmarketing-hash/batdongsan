@@ -22,7 +22,9 @@ export interface GraphNode {
   id: string;
   label: string;
   segment: Segment;
-  /** Visual weight, derived (e.g. from price). */
+  /** Number of links this node has — drives Obsidian-style sizing. */
+  degree: number;
+  /** Visual weight, derived from degree. */
   val: number;
 }
 

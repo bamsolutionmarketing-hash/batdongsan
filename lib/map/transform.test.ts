@@ -68,4 +68,28 @@ describe("toGraphData", () => {
     ]);
     expect(data.links).toHaveLength(0);
   });
+
+  it("sizes nodes by degree (Obsidian-style)", () => {
+    // a relates to b, c, d; the leaves share nothing with each other ->
+    // a is a hub (degree 3), each leaf degree 1.
+    const data = toGraphData([
+      p({ id: "a", relatedIds: ["b", "c", "d"], developer: "DA", district: "D1", segment: "luxury" }),
+      p({ id: "b", developer: "DB", district: "D2", segment: "high-end" }),
+      p({ id: "c", developer: "DC", district: "D3", segment: "mid-range" }),
+      p({ id: "d", developer: "DD", district: "D4", segment: "affordable" }),
+    ]);
+    const byId = Object.fromEntries(data.nodes.map((n) => [n.id, n]));
+    expect(byId.a.degree).toBe(3);
+    expect(byId.b.degree).toBe(1);
+    // the hub is strictly larger than a leaf
+    expect(byId.a.val).toBeGreaterThan(byId.b.val);
+  });
+
+  it("gives isolated nodes a positive minimum size", () => {
+    const data = toGraphData([
+      p({ id: "a", developer: "X", district: "D1", segment: "luxury" }),
+      p({ id: "b", developer: "Y", district: "D9", segment: "affordable" }),
+    ]);
+    expect(data.nodes.every((n) => n.degree === 0 && n.val >= 1)).toBe(true);
+  });
 });
