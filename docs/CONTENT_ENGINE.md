@@ -1,5 +1,7 @@
 # Content Suggestion Engine — Kiến trúc
 
+> Tổng quan toàn bộ G0–G8: xem [MASTER_ROADMAP.md](./MASTER_ROADMAP.md).
+
 Gợi ý **nội dung đăng bài** và **nội dung video** cho từng dự án BĐS, dựa trên
 knowledge base đã nạp (structured data + tag rule-based đã được admin duyệt).
 

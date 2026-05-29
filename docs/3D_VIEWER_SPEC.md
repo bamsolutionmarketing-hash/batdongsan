@@ -1,5 +1,7 @@
 # Spec — 3D Aerial Interactive Viewer
 
+> Tổng quan toàn bộ G0–G8: xem [MASTER_ROADMAP.md](./MASTER_ROADMAP.md).
+
 Phối cảnh **3D tương tác** cho từng dự án: lăn/kéo chuột để **xoay quanh** mô hình
 aerial (nhìn từ trên cao), zoom, pan; điểm nóng (hotspot) hiện thông tin block /
 tiện ích. Tích hợp vào trang chi tiết dự án bên cạnh map force-graph.
