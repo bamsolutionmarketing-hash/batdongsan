@@ -6,8 +6,10 @@ import {
   districtAveragePrice,
 } from "@/lib/data/projects";
 import { buildTalkingPoints } from "@/lib/sales/talking-points";
+import { getProjectMap } from "@/lib/data/project-map";
 import { getSession } from "@/lib/auth";
 import { ContentPanel } from "./ContentPanel";
+import { ProjectKnowledgeMap } from "@/components/map/ProjectKnowledgeMap";
 import type { Segment, ProjectStatus } from "@/lib/data/types";
 
 const SEGMENT_VI: Record<Segment, string> = {
@@ -45,10 +47,12 @@ export default async function LearningHub({ params }: { params: { slug: string }
   if (!project) notFound();
 
   const session = await getSession();
-  const [provenance, districtAvg] = await Promise.all([
+  const [provenance, districtAvg, projectMap] = await Promise.all([
     getProjectProvenance(project.id),
     districtAveragePrice(project.district, project.id),
+    getProjectMap(project.id),
   ]);
+  const isAdmin = session?.profile?.role === "admin";
 
   const talkingPoints = buildTalkingPoints({
     project,
@@ -108,6 +112,24 @@ export default async function LearningHub({ params }: { params: { slug: string }
           </div>
         </section>
       )}
+
+      {/* Per-project knowledge map */}
+      <section>
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
+            Bản đồ tri thức dự án
+          </h2>
+          {isAdmin && (
+            <Link
+              href={`/app/projects/${project.slug}/map`}
+              className="text-xs text-sky-400 hover:text-sky-300"
+            >
+              Chỉnh sửa bản đồ →
+            </Link>
+          )}
+        </div>
+        <ProjectKnowledgeMap data={projectMap.graph} notesById={projectMap.notesById} />
+      </section>
 
       {/* Talking points — the core of the learning hub */}
       <section>

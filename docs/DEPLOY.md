@@ -10,8 +10,8 @@ Supabase + Vercel (cần bạn cung cấp tài khoản/keys).
    - `anon public` → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `service_role` → `SUPABASE_SERVICE_ROLE_KEY` (server-only, giữ kín)
 3. Chạy migrations: mở **SQL Editor**, dán lần lượt nội dung
-   `supabase/migrations/0001_init.sql` rồi `0002_rls.sql` và Run.
-   *(Hoặc dùng Supabase CLI: `supabase db push`.)*
+   `supabase/migrations/0001_init.sql`, `0002_rls.sql`, rồi `0003_project_maps.sql`
+   và Run. *(Hoặc dùng Supabase CLI: `supabase db push`.)*
 4. **Storage**: tạo bucket `documents` (private) cho M3 upload file.
 
 ## 1b. Engine trích xuất (Python, M3)
