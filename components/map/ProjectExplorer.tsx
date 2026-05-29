@@ -10,7 +10,14 @@ import { applyFilters, collectFacets, type FilterCriteria } from "@/lib/filter/f
 import type { Project } from "@/lib/data/types";
 
 // Map + filter + guidance over an arbitrary project list (seed or DB-backed).
-export function ProjectExplorer({ projects }: { projects: Project[] }) {
+// When `slugById` is provided, the selected project links to its learning hub.
+export function ProjectExplorer({
+  projects,
+  slugById,
+}: {
+  projects: Project[];
+  slugById?: Record<string, string>;
+}) {
   const facets = useMemo(() => collectFacets(projects), [projects]);
   const [criteria, setCriteria] = useState<FilterCriteria>({});
   const [selectedId, setSelectedId] = useState<string | null>(projects[0]?.id ?? null);
@@ -54,7 +61,19 @@ export function ProjectExplorer({ projects }: { projects: Project[] }) {
           searching={searching}
           onSelect={setSelectedId}
         />
-        {guidance && selected && <GuidancePanel result={guidance} title={selected.name} />}
+        {guidance && selected && (
+          <div className="flex flex-col gap-3">
+            {slugById?.[selected.id] && (
+              <a
+                href={`/p/${slugById[selected.id]}`}
+                className="rounded-md bg-sky-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-sky-500"
+              >
+                Xem learning hub: {selected.name}
+              </a>
+            )}
+            <GuidancePanel result={guidance} title={selected.name} />
+          </div>
+        )}
       </div>
     </div>
   );

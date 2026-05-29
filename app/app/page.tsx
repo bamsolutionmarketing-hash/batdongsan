@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { signout } from "@/app/login/actions";
-import { listProjects } from "@/lib/data/projects";
+import { listProjectsWithSlug } from "@/lib/data/projects";
 import { ProjectExplorer } from "@/components/map/ProjectExplorer";
 
 export default async function AppHome() {
@@ -11,7 +11,7 @@ export default async function AppHome() {
   if (!session.profile?.org_id) redirect("/onboarding");
 
   const isAdmin = session.profile.role === "admin";
-  const projects = await listProjects();
+  const { projects, slugById } = await listProjectsWithSlug();
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
@@ -47,7 +47,7 @@ export default async function AppHome() {
         </div>
       </header>
 
-      <ProjectExplorer projects={projects} />
+      <ProjectExplorer projects={projects} slugById={slugById} />
     </main>
   );
 }
