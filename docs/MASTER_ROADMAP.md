@@ -5,6 +5,7 @@ tiết từng mảng nằm ở các doc liên kết bên dưới.
 
 | Doc | Phạm vi |
 |---|---|
+| [MVP.md](./MVP.md) | **👉 Lát cắt validate trước khi build full — bắt đầu ở đây** |
 | [ROADMAP.md](./ROADMAP.md) | Nền tảng, deploy, ingestion rule-based (G0–G6) |
 | [CONTENT_ENGINE.md](./CONTENT_ENGINE.md) | Lead-gen content + sales assist (G7) |
 | [3D_VIEWER_SPEC.md](./3D_VIEWER_SPEC.md) | Phối cảnh 3D aerial tương tác (G8) |
