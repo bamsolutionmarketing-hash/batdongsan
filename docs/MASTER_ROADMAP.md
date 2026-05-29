@@ -13,16 +13,27 @@ tiết từng mảng nằm ở các doc liên kết bên dưới.
 
 ## 1. Tầm nhìn
 
-Nền tảng bản đồ tri thức BĐS, **mở rộng tới hàng nghìn dự án**:
-- **Admin nạp kiến thức** bằng **upload file** → engine **Python rule-based**
+**Tool đào tạo & hỗ trợ sale BĐS — biến người chưa biết gì thành người bán được dự án, nhanh và rẻ.**
+
+Đối tượng & giá trị:
+- **Sale mới / chưa biết tư vấn** — con đường ngắn nhất để bắt đầu bán một dự án:
+  hiểu dự án, biết **nói gì với khách**, biết **dự án mạnh ở đâu so với đối thủ**.
+- **Chủ đầu tư / sàn** — **rút ngắn thời gian training** nhân viên mới với chi phí
+  cực thấp; chuẩn hoá kiến thức dự án cho cả đội.
+
+Cách đạt được:
+- **Admin nạp kiến thức** dự án bằng **upload file** → engine **Python rule-based**
   (từ điển + regex, **KHÔNG dùng AI/LLM**) tự gắn tag/category, **xác định &
   giải thích được, không hallucinate**. Admin duyệt trước khi publish.
-- **User xem**: bản đồ quan hệ dự án (force-graph), lọc/tìm, **1 dự án public demo**.
-- **Đầu ra**: gợi ý **nội dung đăng bài/video** (rule-based, template) và **phối
-  cảnh 3D aerial tương tác** (xoay/zoom bằng chuột).
+- **Sale học & tra cứu**: bản đồ quan hệ dự án (force-graph), lọc/tìm, **hành trình
+  khám phá** (đào từ 1 dự án sang dự án cùng CĐT/khu/phân khúc), **learning hub**
+  cho từng dự án, **phối cảnh 3D aerial** để hình dung thực địa.
+- **Trợ lý bán hàng**: từ knowledge base sinh ra **điểm bán hàng, lợi thế cạnh
+  tranh, talking points tư vấn, nội dung đăng bài/video** — theo template
+  rule-based, có nguồn — để sale dùng ngay khi nói chuyện với khách.
 
 **Nguyên tắc xuyên suốt:** mọi dữ liệu/đầu ra đều **truy được nguồn gốc**
-(provenance), không có thành phần sinh tự do → không bịa thông tin.
+(provenance), không có thành phần sinh tự do → sale tin được, không bịa với khách.
 
 ---
 
@@ -88,25 +99,29 @@ Chi tiết khả thi 3D: xem [3D_VIEWER_SPEC.md §1](./3D_VIEWER_SPEC.md).
 | **G4** ⭐ | Engine rule-based tag/category | đề xuất field kèm nguồn → admin confirm → publish | G3 | ROADMAP §G4 |
 | **G5** | Xử lý hàng loạt | `ingestion_jobs` + worker; nạp nghìn dự án nền | G4 | ROADMAP §G5 |
 | **G6** | Scale & hardening | phân trang, rate limit, logging, backup | G5 | ROADMAP §G6 |
-| **G7** | Content engine (post/video) | gợi ý nội dung từ facts+tags, slot-filling, duyệt/export | G4 | CONTENT_ENGINE |
+| **G7** 🎯 | Sales assist (talking points + nội dung) | từ facts+tags sinh điểm bán hàng / lợi thế cạnh tranh / pitch / post-video, có nguồn | G4, G9 | CONTENT_ENGINE |
 | **G8** | 3D aerial viewer | xoay/zoom model dự án, hotspots; signed URL | G1/G2 | 3D_VIEWER_SPEC |
+| **G9** 🎯 | Learning hub (trang chi tiết dự án) | nơi sale học 1 dự án: facts+nguồn, tài liệu, tiện ích, pháp lý, 3D | G1/G2 (đủ ở G4) | (mới — sẽ thêm doc) |
+| **G10** 🎯 | Hành trình khám phá | click node → đào sâu dự án cùng CĐT/khu/phân khúc; so sánh đối thủ | G1, G9 | (mới — sẽ thêm doc) |
 
-⭐ = trọng tâm giá trị. ✅ = đã hoàn thành.
+⭐ = trọng tâm dữ liệu. 🎯 = trực tiếp phục vụ sale enablement. ✅ = đã hoàn thành.
 
 ---
 
 ## 5. Thứ tự thực thi đề xuất
 
 ```
-S1 ✅ ─ S2 ✅ ─ G0 ─ G1 ─ G2 ─ G3 ─ G4 ⭐ ─ G5 ─ G6
-                         │                 │
-                         └── G8 (3D) ──────┤  (song song sau G1/G2)
-                                           └── G7 (content) (sau G4)
+S1 ✅ ─ S2 ✅ ─ G0 ─ G1 ─ G2 ─ G3 ─ G4 ⭐ ─ G9 🎯 ─ G7 🎯 ─ G10 🎯 ─ G5 ─ G6
+                         │                        │
+                         └── G8 (3D) ─────────────┘  (song song, nhúng vào G9)
 ```
 
-- **Đường chính** (bắt buộc tuần tự): G0 → G4 (dựng được knowledge base).
-- **G8 (3D)** độc lập — khởi động ngay sau G1/G2, chạy song song.
-- **G7 (content)** cần facts/tags ở G4 mới có nguyên liệu.
+- **Đường chính** (tuần tự): G0 → G4 dựng knowledge base → **G9 → G7 → G10** là
+  3 mảnh trực tiếp tạo giá trị sale (học dự án → talking points/nội dung → khám
+  phá & so sánh). Đây mới là "đích" của sản phẩm, không dừng ở G4.
+- **G8 (3D)** độc lập sau G1/G2, chạy song song, **nhúng vào learning hub G9**.
+- **G7 (sales assist)** cần facts/tags ở G4 và khung learning hub ở G9.
+- G5/G6 (scale/hardening) làm khi đã có người dùng thật, không chặn giá trị cốt lõi.
 
 ---
 
@@ -119,8 +134,9 @@ S1 ✅ ─ S2 ✅ ─ G0 ─ G1 ─ G2 ─ G3 ─ G4 ⭐ ─ G5 ─ G6
 | `documents` | G3 | file đã upload |
 | `extractions`, `tags`, `project_tags` | G4 | kết quả rule-based + provenance |
 | `ingestion_jobs` | G5 | hàng đợi xử lý lô |
-| `content_templates`, `content_suggestions` | G7 | template + gợi ý nội dung |
+| `content_templates`, `content_suggestions` | G7 | template talking points/pitch/post-video + đầu ra |
 | `project_models`, `model_hotspots` | G8 | model 3D + điểm tương tác |
+| `selling_points`, `comparisons` (dự kiến) | G9/G10 | điểm bán hàng & so sánh đối thủ (suy ra bằng rule) |
 
 Chi tiết DDL: ROADMAP §3, CONTENT_ENGINE §3, 3D_VIEWER_SPEC §3.
 
@@ -130,9 +146,11 @@ Chi tiết DDL: ROADMAP §3, CONTENT_ENGINE §3, 3D_VIEWER_SPEC §3.
 
 ```
 /app            Next.js App Router (UI, route handlers, /admin)
-/components     map (force-graph) · viewer3d · filter · content
+                  · /project/[slug]  learning hub (G9)
+                  · /explore         hành trình khám phá + so sánh (G10)
+/components     map (force-graph) · viewer3d · filter · sales (talking points)
 /lib            transform · filter · guidance (hàm thuần TS) — đã có
-/engine         Python rule-based: ingestion + content (pytest)
+/engine         Python rule-based: ingestion + sales-assist (pytest)
 /supabase       migrations · seed · policies (RLS)
 /scripts        gltf-transform (tối ưu model 3D, chạy offline/CI)
 /docs           MASTER_ROADMAP · ROADMAP · CONTENT_ENGINE · 3D_VIEWER_SPEC
@@ -164,9 +182,19 @@ SUPABASE_SERVICE_ROLE_KEY=     # server-only: engine, worker, signed URL
 ---
 
 ## 10. Quyết định đã chốt & còn mở
-**Đã chốt:** không RAG/không AI API · nguồn nạp = upload file · admin nạp, user
-xem · public 1 dự án demo + auth admin · Python chạy **Vercel Python Functions** ·
-3D render client-side, model ở Storage/CDN, photogrammetry offline.
+**Đã chốt:**
+- **Mục tiêu sản phẩm: sale enablement** — đào tạo/hỗ trợ sale BĐS (đặc biệt người
+  mới) và bán cho CĐT/sàn để rút ngắn training. Người dùng chính = **môi giới/sale**.
+- G7 reframe thành **sales assist** (talking points/lợi thế cạnh tranh/pitch/nội
+  dung), **thuộc lõi** — không phải tính năng phụ.
+- Thêm **G9 learning hub** (trang chi tiết dự án) và **G10 hành trình khám phá +
+  so sánh** vào lõi; đây mới là "đích" sản phẩm, không dừng ở knowledge base (G4).
+- Không RAG/không AI API · nguồn nạp = upload file · admin nạp, sale xem · public 1
+  dự án demo + auth · Python chạy **Vercel Python Functions** · 3D render client-side.
+
+**Còn mở:** (a) OCR brochure ảnh ở G4 hay G6; (b) worker Python riêng nếu batch
+nặng; (c) nguồn được phép thu thập; (d) mức "gamification/đào tạo" cho sale mới
+(quiz, checklist tư vấn) — cân nhắc khi làm G9.
 
 **Còn mở:** (a) OCR brochure ảnh ở G4 hay G6; (b) lên worker Python riêng ở G5 nếu
 batch quá nặng cho Vercel Functions; (c) nguồn được phép thu thập (pháp lý).
