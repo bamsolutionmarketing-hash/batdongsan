@@ -7,6 +7,7 @@ import {
 } from "@/lib/data/projects";
 import { buildTalkingPoints } from "@/lib/sales/talking-points";
 import { getSession } from "@/lib/auth";
+import { ContentPanel } from "./ContentPanel";
 import type { Segment, ProjectStatus } from "@/lib/data/types";
 
 const SEGMENT_VI: Record<Segment, string> = {
@@ -128,6 +129,9 @@ export default async function LearningHub({ params }: { params: { slug: string }
           </ul>
         )}
       </section>
+
+      {/* Lead-gen content — signed-in org members only */}
+      {session && <ContentPanel slug={project.slug} />}
 
       {/* Provenance — where confirmed facts came from */}
       {provenance.length > 0 && (
