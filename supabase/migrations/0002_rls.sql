@@ -35,13 +35,13 @@ alter table leads               enable row level security;
 create policy orgs_read on orgs
   for select using (id = auth_org_id());
 
--- profiles: a user reads profiles in their org; users manage their own row. --
+-- profiles: a user reads profiles in their org or their own row.
+-- Writes are server-side only (onboarding uses the service-role client), so we
+-- intentionally grant NO client insert/update policy. This closes a privilege-
+-- escalation hole: a self-update policy would let a member set role='admin' on
+-- their own row.
 create policy profiles_read on profiles
   for select using (org_id = auth_org_id() or user_id = auth.uid());
-create policy profiles_self_upsert on profiles
-  for insert with check (user_id = auth.uid());
-create policy profiles_self_update on profiles
-  for update using (user_id = auth.uid());
 
 -- projects: org members read org rows; anyone reads public rows. ------------
 create policy projects_read on projects

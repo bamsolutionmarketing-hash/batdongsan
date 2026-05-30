@@ -7,7 +7,8 @@ insert into orgs (id, name) values
   ('00000000-0000-0000-0000-0000000000d0', 'Demo Sàn BĐS')
 on conflict (id) do nothing;
 
--- Projects (one public for the signed-out demo) ------------------------------
+-- Projects — all public so the signed-out landing demo shows real
+-- relationships (same developer / same district / same segment edges).
 insert into projects (id, org_id, slug, name, developer, district, city, segment, status, price_per_sqm_m, attributes, visibility) values
   ('00000000-0000-0000-0000-00000000a001',
    '00000000-0000-0000-0000-0000000000d0',
@@ -19,22 +20,22 @@ insert into projects (id, org_id, slug, name, developer, district, city, segment
    '00000000-0000-0000-0000-0000000000d0',
    'masteri-thao-dien', 'Masteri Thảo Điền', 'Masterise Homes',
    'Quận 2', 'TP.HCM', 'high-end', 'completed', 95,
-   '{"amenities":["hồ bơi","gym","trung tâm thương mại"]}'::jsonb, 'org'),
+   '{"amenities":["hồ bơi","gym","trung tâm thương mại"]}'::jsonb, 'public'),
   ('00000000-0000-0000-0000-00000000a003',
    '00000000-0000-0000-0000-0000000000d0',
    'masteri-an-phu', 'Masteri An Phú', 'Masterise Homes',
    'Quận 2', 'TP.HCM', 'high-end', 'handover', 110,
-   '{"amenities":["hồ bơi","gym"]}'::jsonb, 'org'),
+   '{"amenities":["hồ bơi","gym"]}'::jsonb, 'public'),
   ('00000000-0000-0000-0000-00000000a004',
    '00000000-0000-0000-0000-0000000000d0',
    'the-river-thu-thiem', 'The River Thủ Thiêm', 'Refico',
    'TP. Thủ Đức', 'TP.HCM', 'luxury', 'handover', 150,
-   '{"amenities":["view sông","hồ bơi"]}'::jsonb, 'org'),
+   '{"amenities":["view sông","hồ bơi"]}'::jsonb, 'public'),
   ('00000000-0000-0000-0000-00000000a005',
    '00000000-0000-0000-0000-0000000000d0',
    'vinhomes-grand-park', 'Vinhomes Grand Park', 'Vinhomes',
    'TP. Thủ Đức', 'TP.HCM', 'mid-range', 'selling', 55,
-   '{"amenities":["công viên","gym","trường học"]}'::jsonb, 'org')
+   '{"amenities":["công viên","gym","trường học"]}'::jsonb, 'public')
 on conflict (id) do nothing;
 
 -- Knowledge map for the public demo project (Gladia) -------------------------
