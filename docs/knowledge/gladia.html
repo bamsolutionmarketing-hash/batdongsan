@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gladia Knowledge Map — Bản đồ tri thức tư vấn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --bg-2: #161b22;
+  --bg-3: #1c2128;
+  --panel: #161b22;
+  --border: #30363d;
+  --border-2: #21262d;
+  --text: #e6edf3;
+  --text-2: #8b949e;
+  --text-3: #6e7681;
+  --gold: #d4a544;
+  --gold-2: #e6c068;
+  --blue: #58a6ff;
+  --purple: #a371f7;
+  --green: #3fb950;
+  --red: #f85149;
+  --orange: #f0883e;
+  --pink: #db61a2;
+  --cyan: #39c5cf;
+  --link: #58a6ff;
+  --link-hover: #79c0ff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 48px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  position: relative;
+  z-index: 100;
+}
+.logo {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: .02em;
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 10px var(--gold); }
+.topbar-divider { width: 1px; height: 24px; background: var(--border); }
+
+.search-wrap {
+  flex: 0 1 360px;
+  position: relative;
+}
+.search {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 12px 7px 32px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+.search:focus { outline: none; border-color: var(--gold); }
+.search-icon {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  color: var(--text-3); font-size: 14px;
+}
+
+.topbar-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.topbar-btn:hover { color: var(--text); border-color: var(--text-3); }
+.topbar-btn.active { background: var(--bg-3); color: var(--gold); border-color: var(--gold); }
+
+.topbar-stats {
+  margin-left: auto;
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+.topbar-stat strong { color: var(--text); font-weight: 600; }
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 380px;
+  height: calc(100vh - 48px);
+}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar {
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 12px 8px;
+}
+.sidebar-header {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 8px 8px 4px;
+}
+.category-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-2);
+  user-select: none;
+}
+.category-item:hover { background: var(--bg-3); color: var(--text); }
+.category-item.active { background: var(--bg-3); color: var(--text); }
+.category-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.category-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-3);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.node-list { padding-top: 8px; }
+.node-item {
+  padding: 5px 8px 5px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
+.node-item::before {
+  content: '';
+  position: absolute;
+  left: 12px; top: 50%;
+  transform: translateY(-50%);
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-3);
+}
+.node-item:hover { background: var(--bg-3); color: var(--text); }
+.node-item.active { background: var(--bg-3); color: var(--gold); }
+.node-item.active::before { background: var(--gold); }
+
+/* ── GRAPH ── */
+.graph-wrap {
+  position: relative;
+  background: var(--bg);
+  overflow: hidden;
+  cursor: grab;
+}
+.graph-wrap.dragging { cursor: grabbing; }
+.graph-svg {
+  width: 100%; height: 100%;
+  display: block;
+}
+
+.graph-controls {
+  position: absolute;
+  top: 12px; right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px;
+  z-index: 5;
+}
+.ctrl-btn {
+  width: 28px; height: 28px;
+  background: transparent;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-family: inherit;
+}
+.ctrl-btn:hover { background: var(--bg-3); color: var(--text); }
+
+.graph-legend {
+  position: absolute;
+  bottom: 12px; left: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 11px;
+  z-index: 5;
+  max-width: 200px;
+}
+.legend-title { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+.legend-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; color: var(--text-2); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.graph-instructions {
+  position: absolute;
+  top: 12px; left: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--text-3);
+  z-index: 5;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* SVG node styling */
+.node circle {
+  cursor: pointer;
+  transition: r .15s, stroke-width .15s;
+}
+.node:hover circle {
+  stroke: var(--gold);
+  stroke-width: 2;
+}
+.node.selected circle {
+  stroke: var(--gold);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 8px var(--gold));
+}
+.node.dimmed circle {
+  opacity: 0.2;
+}
+.node text {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 11px;
+  fill: var(--text-2);
+  pointer-events: none;
+  text-anchor: middle;
+  font-weight: 500;
+}
+.node.selected text { fill: var(--gold); font-weight: 600; }
+.node.dimmed text { opacity: 0.2; }
+.node.match text { fill: var(--gold); }
+
+.link {
+  stroke: var(--border);
+  stroke-width: 1;
+  fill: none;
+  pointer-events: none;
+  transition: stroke .15s, stroke-width .15s, opacity .15s;
+}
+.link.highlight {
+  stroke: var(--gold);
+  stroke-width: 2;
+}
+.link.dimmed {
+  opacity: 0.1;
+}
+
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  background: var(--bg-2);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  position: relative;
+}
+.detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-3);
+  padding: 32px;
+  text-align: center;
+}
+.detail-empty-icon { font-size: 32px; margin-bottom: 12px; opacity: .4; }
+.detail-empty-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; color: var(--text-2); }
+.detail-empty-desc { font-size: 12px; line-height: 1.7; max-width: 280px; }
+
+.detail-content {
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.detail-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.detail-cat {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.detail-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  letter-spacing: -.01em;
+}
+.detail-subtitle {
+  font-size: 12px;
+  color: var(--text-3);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.detail-body {
+  padding: 20px 24px;
+  flex: 1;
+  overflow-y: auto;
+}
+.detail-section {
+  margin-bottom: 20px;
+}
+.detail-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.detail-text {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--text);
+}
+.detail-text p { margin-bottom: 10px; }
+.detail-text strong { color: var(--gold-2); font-weight: 600; }
+.detail-text em { color: var(--text-2); font-style: normal; background: var(--bg-3); padding: 1px 6px; border-radius: 3px; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+.detail-text ul { list-style: none; padding: 0; margin: 8px 0; }
+.detail-text li { padding: 4px 0 4px 16px; position: relative; }
+.detail-text li::before { content: '→'; position: absolute; left: 0; color: var(--gold); font-weight: 700; }
+
+.detail-facts {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.fact-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 12.5px;
+  border-bottom: 1px dashed var(--border);
+}
+.fact-row:last-child { border-bottom: none; }
+.fact-label { color: var(--text-3); }
+.fact-value { color: var(--text); font-weight: 500; text-align: right; }
+
+.detail-link-list { display: flex; flex-direction: column; gap: 2px; }
+.detail-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--link);
+  text-decoration: none;
+  transition: background .15s;
+}
+.detail-link:hover { background: var(--bg-3); color: var(--link-hover); }
+.detail-link-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.detail-link-type {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.detail-talkpoint {
+  background: linear-gradient(135deg, rgba(212,165,68,0.08) 0%, rgba(212,165,68,0.02) 100%);
+  border: 1px solid rgba(212,165,68,0.3);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-top: 8px;
+}
+.detail-talkpoint-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.detail-talkpoint-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+.tag-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.detail-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--bg-3);
+  color: var(--text-2);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .02em;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+/* Caveat badge */
+.caveat-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(248,81,73,0.1);
+  border: 1px solid rgba(248,81,73,0.3);
+  color: var(--red);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  margin-bottom: 10px;
+}
+
+.confidence-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(63,185,80,0.1);
+  border: 1px solid rgba(63,185,80,0.3);
+  color: var(--green);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+/* Pulse animation for center node */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 0.3; }
+}
+.pulse-ring {
+  animation: pulse 2.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Mobile responsive */
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 200px 1fr 0; }
+  .detail-panel {
+    position: fixed;
+    right: -380px; top: 48px; bottom: 0;
+    width: 380px;
+    transition: right .25s;
+    z-index: 50;
+  }
+  .detail-panel.open { right: 0; }
+}
+
+@media (max-width: 640px) {
+  .layout { grid-template-columns: 0 1fr 0; }
+  .sidebar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ TOPBAR ═══════ -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    Gladia Knowledge Map
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input class="search" id="search" placeholder="Tìm khái niệm, dự án, hạ tầng..." autocomplete="off">
+  </div>
+  <button class="topbar-btn" id="btn-reset">↻ Reset</button>
+  <button class="topbar-btn" id="btn-center" title="Trở về node Gladia">⊙ Center</button>
+  <div class="topbar-stats">
+    <div class="topbar-stat"><strong id="stat-nodes">0</strong> nodes</div>
+    <div class="topbar-stat"><strong id="stat-links">0</strong> links</div>
+  </div>
+</div>
+
+<!-- ═══════ LAYOUT ═══════ -->
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <!-- Filled by JS -->
+  </aside>
+
+  <!-- GRAPH -->
+  <main class="graph-wrap" id="graph-wrap">
+    <div class="graph-instructions">
+      ↳ kéo node · cuộn để zoom · click để xem
+    </div>
+    <svg class="graph-svg" id="graph">
+      <g id="graph-g">
+        <g id="links-g"></g>
+        <g id="nodes-g"></g>
+      </g>
+    </svg>
+    <div class="graph-controls">
+      <button class="ctrl-btn" id="zoom-in" title="Zoom in">+</button>
+      <button class="ctrl-btn" id="zoom-out" title="Zoom out">−</button>
+      <button class="ctrl-btn" id="zoom-fit" title="Fit to screen">⊡</button>
+    </div>
+    <div class="graph-legend">
+      <div class="legend-title">Loại nodes</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#d4a544"></div>Dự án</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#58a6ff"></div>Chủ đầu tư</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#a371f7"></div>Chứng nhận</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#3fb950"></div>Metro / Đường sắt</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#f0883e"></div>Đường bộ / Cầu</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#39c5cf"></div>Sân bay / Cảng</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#db61a2"></div>Khu vực</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#f85149"></div>So sánh / Lịch sử</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#8b949e"></div>Chính sách / Kinh tế</div>
+    </div>
+  </main>
+
+  <!-- DETAIL PANEL -->
+  <aside class="detail-panel" id="detail-panel">
+    <div class="detail-empty" id="detail-empty">
+      <div class="detail-empty-icon">⌬</div>
+      <div class="detail-empty-title">Chọn một node để xem chi tiết</div>
+      <div class="detail-empty-desc">
+        Click vào một node bất kỳ trong graph hoặc node trong sidebar bên trái để xem thông tin chi tiết, key talking points và các liên kết liên quan.
+      </div>
+    </div>
+    <div class="detail-content" id="detail-content" style="display:none">
+      <!-- Filled by JS -->
+    </div>
+  </aside>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA: NODES & LINKS
+// ═══════════════════════════════════════════════════════════════
+
+const CATEGORIES = {
+  project: { label: 'Dự án', color: '#d4a544', radius: 14 },
+  developer: { label: 'Chủ đầu tư', color: '#58a6ff', radius: 11 },
+  cert: { label: 'Chứng nhận', color: '#a371f7', radius: 10 },
+  metro: { label: 'Metro / Rail', color: '#3fb950', radius: 11 },
+  road: { label: 'Đường / Cầu', color: '#f0883e', radius: 10 },
+  amenity: { label: 'Sân bay / Cảng / Tiện ích', color: '#39c5cf', radius: 11 },
+  location: { label: 'Khu vực', color: '#db61a2', radius: 10 },
+  comparable: { label: 'So sánh BĐS', color: '#f85149', radius: 9 },
+  policy: { label: 'Chính sách', color: '#8b949e', radius: 9 }
+};
+
+const NODES = [
+  // ─── PROJECT ───
+  { id: 'gladia', label: 'Gladia by the Waters', cat: 'project', sub: 'GLADIA HEIGHT',
+    facts: [
+      ['Diện tích', '11.8 ha'],
+      ['Tổng vốn', '~VND 10,200 tỷ (~S$600M)'],
+      ['Liên doanh', 'Keppel 49% × Khang Điền 51%'],
+      ['Vị trí', 'Võ Chí Công, Bình Trưng Đông, TP Thủ Đức'],
+      ['Sản phẩm', '~200 căn thấp tầng + ~600 căn cao tầng'],
+      ['Chứng nhận', 'BCA Green Mark for Districts (đầu tiên VN)'],
+      ['Trần', '~3.05m theo chuẩn Singapore'],
+      ['Mật độ XD', 'chỉ 23.3–38% (thấp hơn nhiều thị trường)']
+    ],
+    desc: '<p><strong>Gladia by the Waters</strong> là dự án hợp tác <em>đầu tiên</em> giữa Keppel (Singapore) và Khang Điền (Việt Nam) — vị trí 11.8 ha ba mặt giáp sông tại Bình Trưng Đông, TP Thủ Đức. Tổng giá trị phát triển ~VND 10,200 tỷ.</p><p>Đây là dự án <strong>đầu tiên tại Việt Nam</strong> đạt chứng nhận <strong>BCA Green Mark for Districts</strong> từ Cục Xây dựng Singapore — vị thế độc nhất trên thị trường BĐS thấp tầng HCM, nơi 99% đối thủ chỉ có chứng nhận LOTUS Việt Nam hoặc không có chứng nhận nào.</p><p>Sản phẩm đầu ra thị trường là <strong>thấp tầng</strong>, theo sau sẽ là phần cao tầng. Sản phẩm đầu tiên = nơi cả hai chủ đầu tư đặt cả uy tín thương hiệu.</p>',
+    talkpoint: '"Gladia không chỉ là một dự án — đây là lần đầu tiên Singapore và Việt Nam cùng cấp chứng nhận khu đô thị cho cùng một địa chỉ. Khi Anh/Chị mua Gladia, Anh/Chị đang mua một tiêu chuẩn quy hoạch toàn cầu."'
+  },
+
+  // ─── DEVELOPERS ───
+  { id: 'keppel-land', label: 'Keppel Land', cat: 'developer',
+    facts: [
+      ['Vào Việt Nam', '1991 (>34 năm)'],
+      ['Dự án tại VN', '20+ dự án'],
+      ['Vốn đăng ký', 'US$3.5 tỷ+'],
+      ['Nhân sự', '600+ (so với 8 năm 1991)'],
+      ['Pipeline', '~18,000 căn nhà']
+    ],
+    desc: '<p><strong>Keppel Land</strong> là cánh tay phát triển BĐS của Keppel Ltd. — vào Việt Nam từ 1991 ngay sau Đổi Mới, là nhà đầu tư BĐS nước ngoài <strong>đầu tiên</strong> tại Việt Nam.</p><p>Track record: Saigon Centre, The Estella, Estella Heights, Empire City, Riviera Point, Palm City, Celesta. Tỷ lệ hấp thụ >99% tại Empire City và Riviera Point.</p><p>Năm 2022 đạt <strong>12 giải tại PropertyGuru Vietnam Property Awards</strong> bao gồm "Best Sustainable Real Estate Developer" và "Best Mixed-use Developer".</p>',
+    talkpoint: '"Keppel đã ở Việt Nam 34 năm — họ đã chứng kiến mọi chu kỳ thị trường. Họ không đến rồi đi như nhiều nhà đầu tư ngoại khác."'
+  },
+  { id: 'keppel-ltd', label: 'Keppel Ltd.', cat: 'developer',
+    facts: [
+      ['Thành lập', '1968 (Keppel Shipyard, Singapore)'],
+      ['Vốn hóa', '~US$17.24 tỷ (4/2026)'],
+      ['Mã CK', 'SGX:BN4'],
+      ['Cổ đông lớn nhất', 'Temasek 21.29%'],
+      ['Hoạt động', '20+ quốc gia']
+    ],
+    desc: '<p><strong>Keppel Ltd.</strong> là tập đoàn đa ngành Singapore, từ tên cũ "Keppel Corporation" đã chuyển sang mô hình asset-light theo Vision 2030.</p><p>4 mảng kinh doanh: <strong>Infrastructure</strong> (năng lượng, môi trường), <strong>Real Estate</strong>, <strong>Connectivity</strong> (data center, viễn thông), <strong>Corporate Activities</strong>.</p><p>Top-10 công ty niêm yết tại Singapore. Cam kết net-zero 2050 đồng hành với cam kết COP26 của Việt Nam.</p>',
+    talkpoint: '"Cổ đông lớn nhất của Keppel là Temasek — công ty đầu tư của Chính phủ Singapore. Khi Anh/Chị mua Gladia, Anh/Chị có sự đảm bảo gián tiếp của Chính phủ Singapore."'
+  },
+  { id: 'temasek', label: 'Temasek Holdings', cat: 'developer',
+    facts: [
+      ['Loại', 'Sovereign wealth fund'],
+      ['Sở hữu', 'Chính phủ Singapore'],
+      ['Cổ phần tại Keppel', '21.29% (3/2025)']
+    ],
+    desc: '<p><strong>Temasek</strong> là quỹ đầu tư quốc gia Singapore — sở hữu cổ phần đáng kể tại các tập đoàn lớn nhất Singapore bao gồm DBS, Singtel, Singapore Airlines, và <strong>Keppel</strong>.</p><p>Sự hiện diện của Temasek tại Keppel mang lại kỷ luật tài chính, tiêu chuẩn quản trị toàn cầu và sự đảm bảo gián tiếp từ chính phủ Singapore.</p>',
+    talkpoint: '"Đây là điều khác biệt cốt lõi: Khi mua dự án của Keppel = mua một sản phẩm có nguồn vốn từ chính phủ Singapore."'
+  },
+  { id: 'khang-dien', label: 'Khang Điền (KDH)', cat: 'developer',
+    facts: [
+      ['Thành lập', '2001, niêm yết HoSE 2010'],
+      ['Index', 'VN30'],
+      ['Vốn hóa', '~VND 28,500 tỷ (5/2026)'],
+      ['Track record', '20,000+ căn đã giao'],
+      ['Tỷ lệ hấp thụ', '~100%'],
+      ['Đòn bẩy', 'Debt/equity < 1.0']
+    ],
+    desc: '<p><strong>Khang Điền</strong> nổi tiếng với danh hiệu <em>"ông hoàng sổ đỏ"</em> — xây trước, bán sau, giao sổ hồng chỉ 3–6 tháng sau bàn giao. Tại Gladia, <strong>67 sổ hồng đã được cấp ngày 7/11/2024 — TRƯỚC khi mở bán chính thức.</strong></p><p>Chuyên về biệt thự, nhà phố Đông và Nam HCM: Verosa Park, The Classia, Venica, Lucasta, Melosa, Jamila, Safira, The Privia. Hơn 50 dự án, 100% hấp thụ.</p><p><strong>Giải thưởng:</strong> "Developer of the Decade" tại PropertyGuru Vietnam Property Awards 2024; Vietnam National Brand 2022 & 2024; Top-10 Reputable Developer.</p>',
+    talkpoint: '"Khang Điền là chủ đầu tư duy nhất Việt Nam giao sổ hồng cho khách trước khi mở bán dự án — đó không phải may mắn, đó là kỷ luật. Chủ tịch KDH (bà Mai Trần Thanh Trang) xuất thân ngành luật."'
+  },
+  { id: 'kvf', label: 'Keppel Vietnam Fund', cat: 'developer',
+    facts: [
+      ['First close', 'US$400M'],
+      ['Loại', 'Real estate private fund'],
+      ['Cổ phần Gladia', '49% cùng Keppel Land']
+    ],
+    desc: '<p><strong>Keppel Vietnam Fund (KVF)</strong> là quỹ BĐS tư nhân do Keppel quản lý, focus vào các cơ hội đầu tư BĐS chất lượng cao tại Việt Nam. First close US$400 triệu.</p><p>KVF cùng Keppel Land sở hữu <strong>49%</strong> trong liên doanh Gladia. Đây là cơ chế asset-light của Keppel theo Vision 2030.</p>',
+    talkpoint: '"Đây là cấu trúc tài chính cao cấp — vốn quỹ đầu tư private equity Singapore đang chảy vào dự án này."'
+  },
+
+  // ─── KEPPEL VN PROJECTS ───
+  { id: 'saigon-centre', label: 'Saigon Centre', cat: 'comparable', sub: 'Q1 — Keppel',
+    facts: [
+      ['Giai đoạn', '1996 (P1) & 2018 (P2)'],
+      ['Loại', 'Mixed-use: Văn phòng + Takashimaya'],
+      ['Tenant nổi bật', 'AIA, DBS, Mitsubishi, ANZ, Lazada, Lãnh sự Singapore'],
+      ['Occupancy', '100% năm']
+    ],
+    desc: '<p>Tòa nhà landmark CBD Sài Gòn của Keppel. <strong>Takashimaya mall</strong> đặt tại đây — một trong những mall cao cấp nhất Sài Gòn.</p><p>Lãnh sự quán Singapore đặt trụ sở tại Saigon Centre — chứng minh độ tin cậy của tòa nhà.</p>',
+    talkpoint: '"Saigon Centre có Takashimaya. Đây là trung tâm thương mại Nhật mà các dự án khu Đông luôn nhắc đến như giấc mơ — và Gladia có Keppel làm chủ đầu tư, chính là chủ của Takashimaya."'
+  },
+  { id: 'estella', label: 'The Estella', cat: 'comparable', sub: 'An Phú — 2012',
+    facts: [
+      ['Bàn giao', '2012'],
+      ['Số căn', '719'],
+      ['Hiện trạng', 'Đã bán hết, đã giao']
+    ],
+    desc: '<p>Dự án Estella đầu tiên — bàn giao 2012, liên doanh Keppel + Tiến Phước. Là tiền đề cho Estella Heights (2018+).</p>',
+    talkpoint: '"Estella 2012 — Keppel đã giao đúng hẹn từ 14 năm trước. Đây là bằng chứng track record dài hạn."'
+  },
+  { id: 'estella-heights', label: 'Estella Heights', cat: 'comparable', sub: 'An Phú — Keppel',
+    facts: [
+      ['Mở bán', '2/2015 @ VND 45 triệu/m²'],
+      ['Bàn giao P1', 'Q4/2018'],
+      ['Bàn giao P2', '6/2019'],
+      ['Hiện tại', 'VND 90–110 triệu/m²'],
+      ['Tăng giá', '~2× sau 11 năm']
+    ],
+    desc: '<p>Mở bán 2015 ở mức <strong>VND 45 triệu/m² (~US$2,000)</strong>. Hiện tại thứ cấp <strong>VND 90–110 triệu/m²</strong> — tăng ~2× trong 11 năm.</p><p>Estella Place mall (cùng dự án) đạt <strong>BCA Green Mark đầu tiên tại Việt Nam — 1/2015</strong>.</p>',
+    talkpoint: '"Anh/Chị mua Estella Heights năm 2015 ở 45 triệu/m², hôm nay bán được 100 triệu/m² — gấp đôi sau 11 năm. Đó là track record của Keppel ngay tại Việt Nam."'
+  },
+  { id: 'empire-city', label: 'Empire City Thủ Thiêm', cat: 'comparable', sub: 'Thủ Thiêm — Keppel JV',
+    facts: [
+      ['Diện tích', '14.6 ha'],
+      ['Số căn', '3,787 căn cao cấp'],
+      ['Landmark', 'Empire 88 — 88 tầng'],
+      ['Mở bán', '2017+'],
+      ['Hiện tại', 'VND 125–200 triệu/m² (Cove cao hơn)']
+    ],
+    desc: '<p>Dự án landmark tại CBD mới Thủ Thiêm. Liên doanh Keppel + Tien Phuoc + Tran Thai + Gaw Capital. Bàn giao Linden/Tilia từ 2020.</p><p>Tỷ lệ hấp thụ >99%. Tòa Empire 88 (88 tầng) là landmark cao thứ nhì Sài Gòn.</p>',
+    talkpoint: '"Empire City đã giao và đang vận hành. Khi Anh/Chị mua Gladia, đây là chất lượng Anh/Chị sẽ nhận được."'
+  },
+  { id: 'riviera-point', label: 'Riviera Point', cat: 'comparable', sub: 'Q7 — Keppel',
+    facts: [
+      ['Hoàn thành', '2014+'],
+      ['Số căn', '~1,900'],
+      ['Hấp thụ', '>93%']
+    ],
+    desc: '<p>Dự án quy mô lớn tại Q7, liên doanh Keppel. Hấp thụ trên 93% tại thị trường khó.</p>',
+    talkpoint: '"Riviera Point ở Q7 — Keppel bán >93% trong thị trường khó. Đó là sức mạnh thương hiệu."'
+  },
+  { id: 'palm-city', label: 'Palm City', cat: 'comparable', sub: 'An Phú — ⚠ Keppel đã thoái vốn 2025',
+    facts: [
+      ['Loại', '30.2 ha waterfront, ~5,000 căn'],
+      ['Bàn giao P1', '2017'],
+      ['Bàn giao P2', '4/2019'],
+      ['⚠ Thoái vốn', '3/2025 — đổi thương hiệu Palm River']
+    ],
+    desc: '<p><strong>Lưu ý:</strong> Keppel đã <strong>thoái vốn Palm City vào 3/2025</strong>, lợi nhuận ròng ~S$55 triệu. Dự án được rebrand thành "Palm River" dưới Huong Viet Holdings.</p><p>Đây là một phần chiến lược asset-light của Keppel — KHÔNG phải lỗi thực thi. Sales nên chuẩn bị trả lời khi khách hỏi.</p>',
+    talkpoint: '"Palm City đã được bàn giao đầy đủ và hoạt động tốt. Keppel thoái vốn không phải vì có vấn đề — mà vì chiến lược asset-light theo Vision 2030 của tập đoàn."'
+  },
+  { id: 'celesta', label: 'Celesta Avenue / Heights', cat: 'comparable', sub: 'Nhà Bè — Keppel/Phú Long',
+    facts: [
+      ['Loại', 'Cao tầng'],
+      ['Hoàn thành', '2019 (Heights/Rise)'],
+      ['Celesta Avenue', 'Provisional BCA Green Mark 4/2024']
+    ],
+    desc: '<p>Liên doanh Keppel + Phú Long. Celesta Avenue đạt BCA Green Mark tạm thời 4/2024 — minh chứng Keppel áp dụng tiêu chuẩn Singapore cho nhiều dự án VN.</p>',
+    talkpoint: '"Celesta Avenue đạt BCA Green Mark — chứng minh đây là chính sách hệ thống của Keppel, không phải chỉ Gladia."'
+  },
+  { id: 'saigon-sports-city', label: 'Saigon Sports City', cat: 'comparable', sub: 'An Phú — ⚠ Trễ tiến độ',
+    facts: [
+      ['Diện tích', '64 ha'],
+      ['Số căn', '3,000+'],
+      ['Vốn', 'US$500M'],
+      ['Khởi công', '2/2019'],
+      ['⚠ Tiến độ', 'Trễ — chỉ có nhà mẫu + cầu kết nối'],
+      ['Thoái vốn 70%', '2024–25']
+    ],
+    desc: '<p><strong>Cảnh báo:</strong> Đây là dự án Keppel <strong>trễ tiến độ rõ rệt</strong>. Sau 5 năm khởi công, mới chỉ xây nhà mẫu + cầu kết nối.</p><p>Keppel <strong>thoái 70% vốn 2024-25</strong> cho HTV Đại Phước (35%) và Vinobly (35%), giữ 30%. Thu hồi VND 7,130 tỷ (S$354M).</p><p><strong>Sales playbook:</strong> Khi khách đề cập, thừa nhận thẳng thắn. Khẳng định Gladia khác: Khang Điền pháp lý sạch, đã có sổ hồng, sản phẩm thấp tầng + cao tầng cụ thể, không phải township phức tạp.</p>',
+    talkpoint: '"Saigon Sports City là bài học Keppel đã học. Đó cũng là lý do Gladia là liên doanh với Khang Điền — chuyên gia pháp lý số 1 Việt Nam."'
+  },
+
+  // ─── KHANG DIEN PROJECTS ───
+  { id: 'verosa-park', label: 'Verosa Park', cat: 'comparable', sub: 'Q9 — Khang Điền',
+    facts: [['Loại', 'Biệt thự nhà phố'], ['Hiện trạng', 'Đã giao, đầy đủ pháp lý']],
+    desc: '<p>Một trong các dự án thấp tầng của Khang Điền tại Q9. Đại diện cho năng lực thấp tầng của KDH.</p>',
+    talkpoint: '"Verosa Park là minh chứng KDH chuyên về thấp tầng — và Gladia là phiên bản cao cấp hơn của Verosa."'
+  },
+  { id: 'the-classia', label: 'The Classia', cat: 'comparable', sub: 'Q9 — Khang Điền',
+    facts: [['Loại', 'Biệt thự'], ['Hiện trạng', 'Bàn giao']],
+    desc: '<p>Dự án biệt thự cao cấp của KDH tại Q9 (cũ). Tiêu biểu cho hệ sinh thái thấp tầng chuẩn KDH.</p>'
+  },
+  { id: 'the-privia', label: 'The Privia', cat: 'comparable', sub: 'Bình Tân — Khang Điền',
+    facts: [['Loại', 'Cao tầng']],
+    desc: '<p>Dự án cao tầng tiêu biểu KDH — cho thấy năng lực phát triển cao tầng song song với thấp tầng.</p>'
+  },
+
+  // ─── CERTIFICATIONS ───
+  { id: 'bca-singapore', label: 'BCA Singapore', cat: 'cert',
+    facts: [
+      ['Tên đầy đủ', 'Building & Construction Authority'],
+      ['Thành lập', '1/4/1999'],
+      ['Cơ quan', 'Bộ Phát triển Quốc gia Singapore'],
+      ['Giải thưởng', 'Aspen Institute Energy Award 2010']
+    ],
+    desc: '<p><strong>BCA</strong> là cơ quan pháp luật của Singapore quản lý ngành xây dựng. Đặt tiêu chuẩn an toàn, chất lượng, bền vững.</p><p>Năm 2010 là cơ quan chính phủ <strong>đầu tiên ngoài Bắc Mỹ</strong> nhận giải Aspen Institute về Năng lượng & Môi trường.</p>',
+    talkpoint: '"BCA là Bộ Xây dựng của Singapore. Khi Gladia được BCA cấp chứng nhận = chính phủ Singapore đã thẩm định và phê duyệt tiêu chuẩn của dự án."'
+  },
+  { id: 'green-mark', label: 'BCA Green Mark', cat: 'cert',
+    facts: [
+      ['Ra mắt', '1/2005'],
+      ['Áp dụng', '120+ dự án 10+ quốc gia'],
+      ['Bắt buộc tại SG', 'Mọi tòa >2,000m² GFA'],
+      ['5 tiêu chí', 'Năng lượng, Nước, Môi trường, Chất lượng nội thất, Đổi mới']
+    ],
+    desc: '<p>Hệ thống chứng nhận xanh quốc gia Singapore, ra mắt 1/2005. <strong>Bắt buộc</strong> tại Singapore cho mọi tòa >2,000m².</p><p>Đã áp dụng tại Trung Quốc, Malaysia, Việt Nam, Brunei, Ấn Độ, Thái Lan, Saudi Arabia, Indonesia, Philippines, Tanzania.</p><p>Cushman & Wakefield (trích BCA): Tòa Green Mark CBD có giá thuê cao hơn tới <strong>12%</strong>, occupancy cao hơn. Tòa Super Low Energy hoàn vốn đầu tư bền vững trong 5–6 năm.</p>',
+    talkpoint: '"BCA Green Mark không phải nhãn hiệu marketing — đó là tiêu chuẩn bắt buộc tại Singapore. Có chứng nhận này = thuê cao hơn 12%."'
+  },
+  { id: 'green-mark-gold', label: 'Green Mark Gold', cat: 'cert',
+    facts: [
+      ['Điểm số', '75–84 / 100'],
+      ['Tiết kiệm năng lượng', '20–30%'],
+      ['Chi phí xây thêm', '+8–15%'],
+      ['Mức độ', 'Chuẩn cho tòa Grade A Singapore']
+    ],
+    desc: '<p><strong>Green Mark Gold</strong> là một trong 4 hạng (Certified, Gold, GoldPlus, Platinum). Gold là <strong>chuẩn cho mọi tòa văn phòng Grade A tại Singapore</strong>.</p><p>Tại Việt Nam, The Hallmark là tòa văn phòng đầu tiên đạt BCA Green Mark Gold.</p>'
+  },
+  { id: 'green-mark-districts', label: 'Green Mark for Districts', cat: 'cert',
+    facts: [
+      ['Loại', 'Chứng nhận cấp khu đô thị'],
+      ['Phạm vi', 'Quy hoạch toàn khu, không chỉ tòa nhà'],
+      ['Tại Việt Nam', '⭐ Gladia là dự án ĐẦU TIÊN']
+    ],
+    desc: '<p><strong>Đây là hạng chứng nhận đặc biệt cho cả khu đô thị</strong> — không phải chỉ một tòa nhà. Đánh giá: quy hoạch giao thông, sử dụng năng lượng cấp khu, quản lý nước, vật liệu, môi trường.</p><p><strong>Gladia by the Waters là dự án ĐẦU TIÊN tại Việt Nam đạt chứng nhận này.</strong></p>',
+    talkpoint: '"Đây là vũ khí định vị thương hiệu mạnh nhất. Gladia là dự án ĐẦU TIÊN tại VN đạt Green Mark for Districts. Không có đối thủ nào có chứng nhận cấp khu đô thị từ Singapore."'
+  },
+  { id: 'lotus-vn', label: 'LOTUS (VGBC)', cat: 'cert',
+    facts: [
+      ['Ra mắt', '2010 — Vietnam Green Building Council'],
+      ['Số dự án đạt', '63 dự án tại VN (4/2024)']
+    ],
+    desc: '<p>Hệ thống chứng nhận xanh của Việt Nam. Phù hợp khí hậu, vật liệu và quy định VN.</p><p>Là chuẩn phổ biến trong nước, nhưng <strong>không có sự công nhận quốc tế như BCA Green Mark</strong>.</p>',
+    talkpoint: '"Đối thủ chỉ có LOTUS — chứng nhận trong nước. Gladia có cả LOTUS + BCA Green Mark for Districts từ Singapore."'
+  },
+  { id: 'leed', label: 'LEED (USGBC)', cat: 'cert',
+    facts: [['Ra mắt', '1998 — USGBC'], ['4 hạng', 'Certified → Platinum']],
+    desc: '<p>Hệ thống chứng nhận xanh của Mỹ — phổ biến toàn cầu. Tương đương BCA Green Mark về uy tín quốc tế.</p>'
+  },
+
+  // ─── METRO ───
+  { id: 'metro-1', label: 'Metro Line 1', cat: 'metro', sub: 'Bến Thành – Suối Tiên',
+    facts: [
+      ['Khai trương', '22/12/2024'],
+      ['Chiều dài', '19.7 km, 14 trạm'],
+      ['Tàu', '17 đoàn tàu Hitachi'],
+      ['Tốc độ', '110 km/h trên cao, 80 km/h ngầm'],
+      ['Tác động giá', '+15–20% YoY các vùng quanh trạm']
+    ],
+    desc: '<p><strong>Khai trương 22/12/2024</strong> — tài trợ JICA. 14 trạm: 3 ngầm (Bến Thành, Nhà hát, Ba Son) + 11 trên cao.</p><p><strong>Tác động giá BĐS:</strong> Savills Q3/2025 — "khu Đông tăng 15-20% YoY." CBRE — "tại các trạm dọc tuyến giá tăng 50-200%." Thảo Điền hiện ở mức US$3,933-7,000+/m².</p><p>Đề xuất mở rộng 41.4 km tới Đồng Nai + Long Thành — VND 60,261 tỷ đã được phê duyệt.</p>',
+    talkpoint: '"Metro 1 đã làm điều này cho Thảo Điền. Metro 6 sẽ làm điều tương tự cho Phú Hữu."'
+  },
+  { id: 'metro-2', label: 'Metro Line 2', cat: 'metro', sub: 'Bến Thành – Tham Lương',
+    facts: [['Khởi công', '15/1/2026']],
+    desc: '<p>Metro 2 đã chính thức khởi công 15/1/2026. Kết nối quận 1, 3, 10, 12, Tân Bình — phần kết nối với Metro 6 tại trạm Bà Quẹo.</p>',
+    talkpoint: '"Metro 6 sẽ giao Metro 2 tại Bà Quẹo. Khách Gladia có thể đi tàu thẳng đến Bến Thành không phải đổi tuyến nhiều."'
+  },
+  { id: 'metro-6', label: 'Metro Line 6 — GLADIA LINE', cat: 'metro', sub: 'Tân Sơn Nhất – Phú Hữu',
+    facts: [
+      ['Tổng', '53.8 km, 38 trạm'],
+      ['Phase 1', 'Tân Sơn Nhất → Phú Hữu'],
+      ['Khởi công', '2026'],
+      ['Hoàn thành', '2030'],
+      ['Trạm cuối', 'Phú Hữu (cạnh Gladia)']
+    ],
+    desc: '<p><strong>Tuyến metro chiến lược cho Gladia.</strong> Phase 1 ưu tiên 2026-2030: <strong>Tân Sơn Nhất → Phạm Văn Đồng → Phú Hữu</strong>.</p><p>Giao cắt với Metro 2 (Bà Quẹo) và đường sắt Thủ Thiêm-Long Thành tại trạm <strong>Phú Hữu</strong> — nghĩa là một hành trình: Lên Metro 6 ở Phú Hữu, đổi sang express rail ở Phú Hữu/Thủ Thiêm, đến Long Thành.</p><p>Một dịch vụ <strong>express 30 phút Tân Sơn Nhất → Long Thành</strong> đang nghiên cứu, đi qua Metro 6 + đường sắt TT-LT.</p>',
+    talkpoint: '"Khi Long Thành mở cửa, Tân Sơn Nhất quá tải, chính phủ KHÔNG có lựa chọn nào khác ngoài Metro 6. US$16 tỷ đầu tư cho sân bay sẽ bỏ ngỏ nếu không có metro."'
+  },
+  { id: 'thu-thiem-long-thanh', label: 'Thủ Thiêm – Long Thành Rail', cat: 'metro',
+    facts: [
+      ['Chiều dài', '42 km, 20 trạm'],
+      ['Vốn', 'VND 84,753 tỷ (US$3.2B)'],
+      ['Tốc độ', '120 km/h'],
+      ['Nhà đầu tư', 'PPP — Thaco'],
+      ['Khởi công', 'Cuối 2026'],
+      ['Vận hành', '2030']
+    ],
+    desc: '<p>Đường sắt express kết nối Thủ Thiêm với Long Thành Airport. 42 km, 20 trạm, tốc độ thiết kế 120 km/h.</p><p>Giao cắt Metro 6 tại Phú Hữu/Thủ Thiêm — tạo thành mạng kết nối Tân Sơn Nhất – Phú Hữu – Long Thành.</p>'
+  },
+
+  // ─── RING ROADS ───
+  { id: 'ring-road-2', label: 'Vành đai 2', cat: 'road', sub: 'Vành đai nội đô tương lai',
+    facts: [
+      ['Tổng', '~64 km'],
+      ['Đã vận hành', '50 km (gồm Võ Chí Công)'],
+      ['Còn lại', '14 km — 4 đoạn'],
+      ['Đoạn Phú Hữu', '3.6 km, VND 9,800+ tỷ'],
+      ['Hoàn thành', '~2027–2029']
+    ],
+    desc: '<p>Vành đai 2 sẽ trở thành <strong>vành đai nội đô</strong> khi hoàn thiện ~2027-2029. <strong>Gladia nằm trong Vành đai 2</strong>.</p><p>Đoạn Phạm Văn Đồng – Gò Dưa đã tái khởi công, mục tiêu hoàn thành 30/4/2027.</p>',
+    talkpoint: '"Khi Vành đai 2 hoàn thành ~2027-2029, BĐS trong vành đai sẽ được định giá là NỘI ĐÔ, không còn là VEN ĐÔ. Gladia chính là trong vành đai đó."'
+  },
+  { id: 'ring-road-3', label: 'Vành đai 3', cat: 'road', sub: 'Vành đai kinh tế — Bùng nổ 6/2026',
+    facts: [
+      ['Tổng', '76.34 km'],
+      ['Vốn', 'VND 75,378 tỷ (~US$3B)'],
+      ['Đoạn cao tốc', '8 làn, 100 km/h'],
+      ['Đoạn cao TP.HCM', '15 km — kỹ thuật 12/2025'],
+      ['Mở cửa', '30/4/2026'],
+      ['HOÀN THÀNH', '30/6/2026'],
+      ['Đi qua', 'TP.HCM, Đồng Nai, Tây Ninh']
+    ],
+    desc: '<p>Cao tốc 8 làn, tốc độ thiết kế 100 km/h. Phần đi qua TP Thủ Đức 15 km — đã thông kỹ thuật 12/2025, mở cửa <strong>trước 30/4/2026</strong>.</p><p><strong>Toàn tuyến hoàn thành 30/6/2026.</strong></p><p>Kết nối 5 cao tốc tỏa: HCMC–Trung Lương, HCMC–Long Thành–Dầu Giây, Bến Lức–Long Thành, HCMC–Mộc Bài, HCMC–Chơn Thành.</p><p>Vinhomes Grand Park đã ghi nhận tăng tốc thị trường trực tiếp từ Vành đai 3.</p>',
+    talkpoint: '"Vành đai 3 hoàn thành tháng 6 năm nay (2026). Đây là vành đai kinh tế — sẽ làm cho Phú Hữu trở thành cửa ngõ logistic phía Nam."'
+  },
+  { id: 'ring-road-4', label: 'Vành đai 4', cat: 'road', sub: 'Vành đai công nghiệp',
+    facts: [
+      ['Tổng', '~159 km'],
+      ['Vốn Phase 1', '~VND 120,000 tỷ'],
+      ['Khởi công', 'Q2/2026'],
+      ['Hoàn thành dự kiến', '~2031'],
+      ['Mô hình', 'PPP'],
+      ['Tốc độ', '4 làn → mở rộng, 100 km/h']
+    ],
+    desc: '<p><strong>Vành đai công nghiệp</strong> kết nối Cái Mép-Thị Vải, Long Thành Airport, Biên Hòa, Bình Dương — chuyển hướng vận tải hàng hóa ra khỏi nội đô.</p>',
+    talkpoint: '"Vành đai 4 chỉ dành cho công nghiệp — nghĩa là Vành đai 2 (Gladia) chỉ dành cho dân cư và thương mại cao cấp. Phân vùng rõ ràng."'
+  },
+
+  // ─── ROADS / INTERCHANGES ───
+  { id: 'vo-chi-cong', label: 'Võ Chí Công', cat: 'road', sub: 'Mặt tiền Gladia',
+    facts: [
+      ['Hiện tại', 'Một phần Vành đai 2'],
+      ['Đường liên cảng', '5.9 km, 60m rộng, 12 làn'],
+      ['Vốn', '~VND 9,000 tỷ'],
+      ['Trình duyệt', '24/12/2025']
+    ],
+    desc: '<p><strong>Mặt tiền trực tiếp của Gladia</strong>. Hiện là một phần Vành đai 2.</p><p><strong>Đường liên cảng Cát Lái – Phú Hữu</strong> đã trình duyệt 24/12/2025: 5.9 km, mặt cắt 60m, 12 làn, tốc độ thiết kế 60 km/h, vốn ~VND 9,000 tỷ. Có cầu vượt cao 4 làn từ cảng Phú Hữu đến SP-ITC, 6 làn đến nút HLD; cầu Ba Cua mới 10 làn.</p><p><strong>Hiệu ứng:</strong> Container/xe tải sẽ đi qua "làn xanh" trên cao — bỏ khỏi Nguyễn Thị Định / Nguyễn Duy Trinh / Võ Chí Công mặt đất. Nâng cao chất lượng sống cho cư dân Gladia.</p>',
+    talkpoint: '"60 mét. Lớn hơn gấp đôi đường mặt tiền dự án đối thủ. Đây không phải số trừu tượng — đây là thực tế giao thông tương lai."'
+  },
+  { id: 'my-thuy', label: 'Nút giao Mỹ Thủy 4 tầng', cat: 'road', sub: 'Cách Gladia ~2 km',
+    facts: [
+      ['Vốn', 'VND 3,622 tỷ'],
+      ['Loại', '4 tầng — đầu tiên VN'],
+      ['Kết nối', 'Nguyễn Thị Định + Đồng Văn Cống + Võ Chí Công'],
+      ['Hoàn thành', 'Q3/2026 (trễ từ 4/2026)']
+    ],
+    desc: '<p><strong>Nút giao 4 tầng đầu tiên Việt Nam</strong>: hầm chui + mặt đất + cầu vượt + ramps. Cửa ngõ vào Cát Lái Port (cảng container lớn nhất VN).</p><p>Tách container khỏi giao thông đô thị — cùng tác dụng nâng cao chất lượng sống cho Gladia.</p>',
+    talkpoint: '"Mỹ Thủy 4 tầng — đầu tiên Việt Nam. Q3 năm nay xong. Đây là dự án xử lý kẹt xe ngay cửa ngõ Gladia."'
+  },
+  { id: 'cat-lai-bridge', label: 'Cầu Cát Lái', cat: 'road', sub: 'HCMC ↔ Đồng Nai',
+    facts: [
+      ['Khởi công', '15/1/2026'],
+      ['Vốn (cùng Phú Mỹ 2)', 'VND 40,000+ tỷ'],
+      ['Riêng Cát Lái', '~VND 20,614 tỷ (~US$830M)'],
+      ['Chiều dài', '11.6 km, cầu dây văng'],
+      ['Hoàn thành', '2028–2029']
+    ],
+    desc: '<p>Cầu dây văng thay thế phà Cát Lái quá tải. <strong>Đã khởi công 15/1/2026</strong>.</p><p>Bắt đầu từ Nguyễn Thị Định, cách Mỹ Thủy 400m; kết thúc tại cao tốc Bến Lức – Long Thành ở xã Đại Phước, Đồng Nai. Xây 4 năm → 2028-2029.</p><p><strong>3 tác động:</strong> (1) Kết nối thẳng Long Thành Airport qua cao tốc BL-LT, (2) Container đi qua cầu + đường liên cảng, (3) Phú Hữu thành cửa ngõ HCMC ↔ Đồng Nai.</p>',
+    talkpoint: '"Cầu Cát Lái đã khởi công năm nay. 2028-2029 hoàn thành. Khi đó Gladia là cửa ngõ HCMC sang Đồng Nai — không phải vùng ven."'
+  },
+  { id: 'an-phu-interchange', label: 'Nút giao An Phú', cat: 'road',
+    facts: [
+      ['Vốn', 'VND 3,400+ tỷ'],
+      ['Loại', '3 tầng'],
+      ['Hoàn thành', 'Q2/2026'],
+      ['Đường hầm HC1-02', 'Đã mở']
+    ],
+    desc: '<p>Nút giao 3 tầng kết nối Mai Chí Thọ với cao tốc HCMC – Long Thành – Dầu Giây. Q2/2026 hoàn thành.</p>'
+  },
+  { id: 'inter-port-road', label: 'Đường liên cảng Cát Lái – Phú Hữu', cat: 'road',
+    facts: [
+      ['Chiều dài', '5.9 km'],
+      ['Rộng', '60m, 12 làn'],
+      ['Vốn', '~VND 9,000 tỷ']
+    ],
+    desc: '<p>Đường chuyên cho vận tải cảng — chuyển hướng container/xe tải khỏi đường dân sinh. Trình duyệt 24/12/2025.</p>'
+  },
+
+  // ─── AMENITIES ───
+  { id: 'long-thanh', label: 'Sân bay Long Thành', cat: 'amenity', sub: 'Quốc tế — 2026',
+    facts: [
+      ['Tổng vốn', '~US$16 tỷ (program)'],
+      ['Cách Gladia', '~40 km / 20 phút cao tốc'],
+      ['Diện tích', '5,000 ha'],
+      ['Phase 1', '25 triệu pax/năm'],
+      ['Phase 1 hoàn thành', '72% (3/2026)'],
+      ['Khai trương TM', 'Q4/2026'],
+      ['Phase 3 (2050)', '100 triệu pax — lớn nhất ĐNÁ']
+    ],
+    desc: '<p>Tổng vốn <strong>~US$16 tỷ</strong> (LƯU Ý: con số đúng — không phải $36 tỷ như đôi khi nghe nói).</p><p>3/2026 phase 1 đã hoàn thành <strong>72%</strong>. Runway 1 đã xong 4/2025 (sớm 3 tháng). Chuyến bay kỹ thuật đầu 12/2025. <strong>Khai trương thương mại Q4/2026.</strong></p><p><strong>80% chuyến quốc tế HCM sẽ chuyển sang Long Thành.</strong> 14,000 việc làm cần lấp đến cuối 2026 — ACV đã bắt đầu tuyển từ 4/2026.</p><p>Phase 3 đến 2050: 100 triệu hành khách/năm — <strong>sân bay lớn nhất Đông Nam Á</strong>, ngang Bangkok Suvarnabhumi và Singapore Changi.</p>',
+    talkpoint: '"Long Thành chính thức mở cửa Q4 năm nay. Trong 6 tháng tới, 14,000 chuyên gia + lao động cao cấp sẽ tới Đồng Nai — họ thuê nhà ở đâu? Gladia."'
+  },
+  { id: 'tan-son-nhat', label: 'Tân Sơn Nhất Airport', cat: 'amenity',
+    facts: [['Hiện tại', 'Quá tải nghiêm trọng'], ['Sau Long Thành', '20% chuyến quốc tế giữ lại']],
+    desc: '<p>Sân bay hiện hữu — quá tải. Sau khi Long Thành mở cửa, 80% quốc tế chuyển sang Long Thành, 20% còn lại + nội địa giữ tại Tân Sơn Nhất.</p><p>Metro 6 kết nối Tân Sơn Nhất → Phú Hữu = Gladia có quyền truy cập rapid transit đến cả hai sân bay.</p>'
+  },
+  { id: 'shtp', label: 'Saigon Hi-Tech Park (SHTP)', cat: 'amenity', sub: 'Cách Gladia 5–8 km',
+    facts: [
+      ['Diện tích', '913 ha (P1: 300, P2: 613)'],
+      ['Số nhân sự', '~25,000+ chuyên gia'],
+      ['Vốn tích lũy', 'US$7.1 tỷ+'],
+      ['Xuất khẩu tích lũy', 'US$45 tỷ+'],
+      ['% xuất khẩu HCM hi-tech', '94%']
+    ],
+    desc: '<p><strong>Tenant lớn:</strong> <strong>Intel</strong> (nhà máy chip lớn nhất thế giới, $1B+); <strong>Samsung Electronics HCMC Complex (SEHC)</strong> $2B; <strong>Nidec</strong> Nhật $500M kế hoạch 20,000 công nhân; <strong>Sanofi</strong> Pháp; <strong>Sonion</strong> Đan Mạch 2,000 công nhân; Datalogic, Microchip, FPT, Nanogen.</p><p><strong>Mức lương:</strong> Kỹ sư cao cấp + quản lý cấp trung Intel/Samsung/Nidec: <strong>US$1,500-4,000+/tháng</strong> — tệp thuê uy tín ngay cạnh Gladia.</p><p>Tầm nhìn 2030: trung tâm khoa học công nghệ quốc tế. 2045: hi-tech park <strong>net-zero đầu tiên Việt Nam</strong>.</p>',
+    talkpoint: '"25,000 chuyên gia SHTP — đó là 25,000 hợp đồng thuê tiềm năng ngay cạnh Gladia. Họ muốn ở đâu? An toàn, xanh, mật độ thấp. Đó chính là Gladia."'
+  },
+  { id: 'cai-mep', label: 'Cảng Cái Mép – Thị Vải', cat: 'amenity',
+    facts: [
+      ['Đặc điểm', 'Cảng nước sâu DUY NHẤT VN'],
+      ['Tuyến đến Mỹ/EU', 'Trực tiếp (chỉ sau Singapore/Malaysia ĐNÁ)'],
+      ['Throughput 2024', '6.5 triệu TEU (+33% YoY)'],
+      ['Tăng trưởng 9T/2025', '+18% YoY']
+    ],
+    desc: '<p>Cảng nước sâu duy nhất VN có dịch vụ trực tiếp tới Mỹ/EU. 22 bến hoạt động, 117.8 triệu tấn/năm.</p><p>2024: 6.5 triệu TEU (+33% YoY). 9 tháng/2025: +18% YoY (VPA).</p><p>Cai Mep Ha Logistics Center: <strong>1,763 ha quy hoạch</strong> bao gồm free-trade zone.</p>',
+    talkpoint: '"Gladia nằm trên trục logistics HCMC port → Cái Mép. Khi xuất khẩu tăng = nhu cầu chuyên gia tại HCM tăng = nhu cầu nhà ở cao cấp tăng."'
+  },
+  { id: 'cat-lai-port', label: 'Cảng Cát Lái', cat: 'amenity',
+    facts: [['Đặc điểm', 'Cảng container lớn nhất VN'], ['Kết nối Gladia', 'Qua Mỹ Thủy + đường liên cảng']],
+    desc: '<p>Cảng container lớn nhất Việt Nam. Khách logistics doanh nhân — segment target chính của Gladia.</p>'
+  },
+  { id: 'aih-hospital', label: 'Bệnh viện Quốc tế', cat: 'amenity', sub: '⚠ Cần xác minh',
+    facts: [['Trạng thái', '⚠ Chưa xác minh được'], ['BV gần nhất xác nhận', 'AIH, Vinmec Central Park, FV']],
+    desc: '<p><strong>Lưu ý:</strong> Tham chiếu "Bệnh viện Quốc tế Phú Hữu 2028" <strong>chưa thể xác minh trong nguồn công khai</strong>. Có thể là tiện ích trong masterplan Palm City cũ, hoặc dự án chưa công bố, hoặc định vị marketing.</p><p><strong>BV gần được xác nhận:</strong> American International Hospital (Q2), Vinmec Central Park (Q2), FV Hospital, Hạnh Phúc International (tại Estella Place).</p><p><strong>Sales:</strong> Xác minh với phòng KD Khang Điền trước khi dùng trong tài liệu khách hàng.</p>',
+    talkpoint: '"Tham chiếu BV Quốc tế Phú Hữu cần xác minh. Hiện tại trong khu vực: AIH Q2, Vinmec Q2, FV — đều là tiêu chuẩn quốc tế."'
+  },
+
+  // ─── LOCATIONS ───
+  { id: 'thu-duc-city', label: 'TP Thủ Đức', cat: 'location',
+    facts: [
+      ['Thành lập', '12/2020'],
+      ['Diện tích', '211.56 km²'],
+      ['Dân số 2030', '1.8M → 2.6M (2040) → 3M'],
+      ['Masterplan duyệt', '21/1/2025'],
+      ['Gọi vốn', '535 dự án ~US$31.6 tỷ']
+    ],
+    desc: '<p>Thành phố ĐẦU TIÊN trong thành phố tại Việt Nam — gộp Q2 + Q9 + Thủ Đức cũ.</p><p><strong>9 phân vùng phát triển / 11 khu chiến lược.</strong> Trong đó: Bình Trưng Tây (Gladia) = cầu nối giữa Thủ Thiêm CBD và khu logistic cảng.</p><p>Mục tiêu giao thông công cộng đáp ứng 50-60% nhu cầu đi lại đến 2040.</p>',
+    talkpoint: '"TP Thủ Đức = TP đầu tiên trong TP của VN. Định vị là innovation hub. Gladia ở trung tâm masterplan này."'
+  },
+  { id: 'phu-huu', label: 'Phú Hữu Ward', cat: 'location',
+    facts: [
+      ['Khu vực', 'Q9 cũ (nay TP Thủ Đức)'],
+      ['Giá hiện tại', 'VND 28-150 triệu/m² tùy mặt tiền']
+    ],
+    desc: '<p>Phường Phú Hữu — khu vực hiện tại đang ở giai đoạn đầu chu kỳ tăng giá. Bao gồm cảng Phú Hữu, một phần trục Võ Chí Công.</p><p><strong>Giá tham khảo 2025:</strong> nội bộ Gò Cát/Bưng Ông Thoàn: VND 28-50 triệu/m²; mặt tiền Nguyễn Duy Trinh: VND 50-150 triệu/m²; mặt tiền Liên Phường (cạnh Vinhomes GP): tới ~VND 95 triệu/m².</p>',
+    talkpoint: '"Phú Hữu đang ở chân chu kỳ tăng giá — Diamond Island, Estella đều bắt đầu từ chân tương tự năm 2014-2015."'
+  },
+  { id: 'binh-trung-dong', label: 'Bình Trưng Đông', cat: 'location',
+    facts: [['Khu vực', 'Q2 cũ, nay TP Thủ Đức'], ['Vị trí Gladia', 'Mặt tiền Võ Chí Công']],
+    desc: '<p><strong>Địa chỉ thực tế của Gladia.</strong> Nằm trong khu quy hoạch <strong>Cát Lái – Bình Trưng Đông 66.08 ha</strong>.</p><p><strong>Khoảng cách:</strong> 3 phút Thủ Thiêm, 10 phút Phú Mỹ Hưng, 20 phút Bến Thành, 20 phút Long Thành cao tốc.</p>'
+  },
+  { id: 'thu-thiem', label: 'Thủ Thiêm', cat: 'location',
+    facts: [['Vai trò', 'CBD tài chính mới của HCM']],
+    desc: '<p>Trung tâm tài chính mới của HCM — Empire City (Keppel) là dự án landmark tại đây. Cách Gladia 3 phút qua cầu Thời Đại.</p>'
+  },
+  { id: 'thao-dien', label: 'Thảo Điền', cat: 'location',
+    facts: [['Giá hiện tại', 'US$3,933-7,000+/m²'], ['Sau Metro 1', '+50 đến +200%']],
+    desc: '<p>Khu expat truyền thống. Sau Metro 1, giá tăng 50-200% các vùng dọc tuyến. <strong>Là bài học cho Phú Hữu sau Metro 6.</strong></p>',
+    talkpoint: '"Thảo Điền hôm nay là Phú Hữu năm 2030. Cùng pattern: trạm metro, expat community, chuẩn quốc tế."'
+  },
+  { id: 'an-phu', label: 'An Phú', cat: 'location',
+    facts: [['Vai trò', 'Khu cao cấp Q2 cũ'], ['Dự án landmark', 'Estella Heights (Keppel), Palm City']],
+    desc: '<p>Khu cao cấp gần CBD — nơi Estella Heights và Palm City đặt nền móng cho thương hiệu Keppel tại VN.</p>'
+  },
+
+  // ─── COMPARABLES ───
+  { id: 'diamond-island', label: 'Đảo Kim Cương', cat: 'comparable', sub: 'Q2 — Kusto Home',
+    facts: [
+      ['Mở bán', '~2014-2016 (P2)'],
+      ['Giá launch', 'US$1,800-2,200/m² (VND 40-50tr/m²)'],
+      ['Hiện tại', 'VND 90-120 triệu/m²'],
+      ['Tăng', '~2.0-2.5× trong 10 năm']
+    ],
+    desc: '<p>Bài học vàng: Mở bán giai đoạn 2 ở mức VND 40-50 triệu/m². Hôm nay VND 90-120 triệu/m². <strong>Tăng 2.0-2.5× trong 10 năm.</strong></p>',
+    talkpoint: '"Anh/Chị nhớ Đảo Kim Cương năm 2015? Ai cũng nói xa, đường khó. Mua 40-50tr/m², giờ 100-120tr/m². Phú Hữu hôm nay = Đảo Kim Cương năm 2015."'
+  },
+  { id: 'vista-verde', label: 'Vista Verde', cat: 'comparable', sub: 'Q2 — CapitaLand',
+    facts: [
+      ['Mở bán', '7/2014'],
+      ['Giá launch', 'US$1,500-2,000/m²'],
+      ['Hiện tại', 'VND 54-87 triệu/m²'],
+      ['Tăng', '~2×+ trong 10 năm']
+    ],
+    desc: '<p>Một case study tăng giá quan trọng. Mở bán 2014, hiện tại trung bình ~VND 66 triệu/m² (8/2022).</p>'
+  },
+  { id: 'masteri-thao-dien', label: 'Masteri Thảo Điền', cat: 'comparable',
+    facts: [
+      ['Mở bán', '2014 @ VND 35tr/m²'],
+      ['Hiện tại', 'VND 60-100+ tr/m²'],
+      ['Tăng', '~2-3×']
+    ],
+    desc: '<p>Mở bán 2014 ở mức 35tr/m². Sau khi Metro 1 hoàn thành — giá lên 60-100+ triệu/m². <strong>Tăng 2-3 lần trong 10-11 năm.</strong></p>'
+  },
+  { id: 'vinhomes-gp', label: 'Vinhomes Grand Park', cat: 'comparable', sub: 'Q9 — Floor Reference',
+    facts: [
+      ['Mở bán', '2019 (Sapphire) @ VND 30-35tr/m²'],
+      ['Origami', 'VND 34tr/m²'],
+      ['Căn hộ hiện tại', 'VND 50-80tr/m²'],
+      ['Villa', 'US$740K (150m²) — US$1.5M (302m²)'],
+      ['Tăng', '~1.5-2× trong 5-6 năm']
+    ],
+    desc: '<p><strong>Tham chiếu giá sàn dưới Gladia.</strong> Gladia định giá CAO HƠN Vinhomes GP nhưng THẤP HƠN An Phú/Thảo Điền hiện tại — kịch bản upside là hội tụ với An Phú trong 5-7 năm.</p>'
+  },
+  { id: 'thanh-my-loi', label: 'Thạnh Mỹ Lợi', cat: 'comparable', sub: 'Q2 — Câu chuyện vàng',
+    facts: [
+      ['Đất biệt thự 2015', '~VND 50-80tr/m²'],
+      ['Hiện tại (nội bộ)', 'VND 100-180tr/m²'],
+      ['Hiện tại (mặt sông)', 'tới VND 400tr/m²'],
+      ['Tăng', '3-5× trong 10 năm']
+    ],
+    desc: '<p><strong>Bài học mạnh nhất.</strong> Năm 2015 ai cũng nói Thạnh Mỹ Lợi xa, kẹt xe. Mặt sông Trần Quý Kiên / Trương Văn Bang nay đạt VND 400 triệu/m². <strong>Tăng 3-5 lần trong 10 năm.</strong></p>',
+    talkpoint: '"Thạnh Mỹ Lợi là bài học mạnh nhất. Cùng câu chuyện kẹt xe, cùng câu chuyện hạ tầng. Ai mua năm 2015, hôm nay thắng lớn."'
+  },
+
+  // ─── POLICY ───
+  { id: 'thu-duc-master-plan', label: 'Masterplan TP Thủ Đức 2040', cat: 'policy',
+    facts: [
+      ['Duyệt', '21/1/2025 — Quyết định 202/QĐ-TTg'],
+      ['Tầm nhìn', '2040, định hướng 2050'],
+      ['Gọi vốn', '535 dự án ~US$31.6 tỷ'],
+      ['Khu Bình Trưng Tây', 'Gồm Gladia']
+    ],
+    desc: '<p>Quy hoạch chính thức được Thủ tướng phê duyệt 21/1/2025. 9 phân vùng. <strong>Bình Trưng Tây (gồm Gladia) là cầu nối giữa CBD Thủ Thiêm và khu logistic cảng.</strong></p>'
+  },
+  { id: 'land-price-list', label: 'Bảng giá đất mới 1/1/2026', cat: 'policy',
+    facts: [['Hiệu lực', '1/1/2026'], ['Tăng', 'Lên đến 8× bảng giá cũ']],
+    desc: '<p>Bảng giá đất HCM mới có hiệu lực 1/1/2026, tăng lên đến <strong>8 lần</strong> so với bảng cũ. Tác động: tham chiếu thị trường mới, tăng tốc reset giá. Tích cực cho định giá lại; tăng ma sát cho giao dịch 2026.</p>'
+  },
+  { id: 'net-zero', label: 'Net-Zero 2050', cat: 'policy',
+    facts: [['Cam kết', 'VN tại COP26'], ['Keppel', 'Cam kết đồng hành']],
+    desc: '<p>Việt Nam đã cam kết net-zero vào 2050 tại COP26. Keppel đã cam kết đồng hành — SHTP đặt mục tiêu net-zero hi-tech park đầu tiên VN vào 2045.</p>',
+    talkpoint: '"Khi VN net-zero 2050, BĐS không có chứng nhận xanh sẽ mất giá trị. Gladia với BCA Green Mark = chống mất giá tương lai."'
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════
+// LINKS
+// ═══════════════════════════════════════════════════════════════
+const LINKS = [
+  // Gladia → Developers
+  ['gladia', 'keppel-land', 'chủ đầu tư'],
+  ['gladia', 'khang-dien', 'chủ đầu tư'],
+  ['gladia', 'kvf', 'cổ đông'],
+  ['gladia', 'green-mark-districts', 'đạt'],
+
+  // Gladia → Location
+  ['gladia', 'binh-trung-dong', 'tại'],
+  ['gladia', 'phu-huu', 'gần'],
+  ['gladia', 'thu-duc-city', 'thuộc'],
+  ['gladia', 'vo-chi-cong', 'mặt tiền'],
+
+  // Gladia → Infrastructure
+  ['gladia', 'metro-6', 'cạnh trạm'],
+  ['gladia', 'my-thuy', '~2km'],
+  ['gladia', 'ring-road-2', 'trong'],
+  ['gladia', 'shtp', '5-8km'],
+
+  // Developer hierarchy
+  ['keppel-land', 'keppel-ltd', 'thuộc'],
+  ['keppel-ltd', 'temasek', 'cổ đông 21.29%'],
+  ['kvf', 'keppel-ltd', 'quản lý bởi'],
+
+  // Keppel projects
+  ['keppel-land', 'saigon-centre', 'dự án'],
+  ['keppel-land', 'estella', 'dự án'],
+  ['keppel-land', 'estella-heights', 'dự án'],
+  ['keppel-land', 'empire-city', 'dự án'],
+  ['keppel-land', 'riviera-point', 'dự án'],
+  ['keppel-land', 'palm-city', 'dự án (đã thoái)'],
+  ['keppel-land', 'celesta', 'dự án'],
+  ['keppel-land', 'saigon-sports-city', 'dự án (đã thoái 70%)'],
+
+  // Khang Dien projects
+  ['khang-dien', 'verosa-park', 'dự án'],
+  ['khang-dien', 'the-classia', 'dự án'],
+  ['khang-dien', 'the-privia', 'dự án'],
+
+  // Certifications
+  ['green-mark-districts', 'green-mark', 'biến thể'],
+  ['green-mark-gold', 'green-mark', 'hạng'],
+  ['green-mark', 'bca-singapore', 'cấp bởi'],
+  ['estella-heights', 'green-mark', 'đạt (mall)'],
+  ['celesta', 'green-mark', 'đạt 4/2024'],
+
+  // Metro network
+  ['metro-6', 'tan-son-nhat', 'điểm đầu'],
+  ['metro-6', 'phu-huu', 'điểm cuối'],
+  ['metro-6', 'metro-2', 'giao Bà Quẹo'],
+  ['metro-6', 'thu-thiem-long-thanh', 'kết nối'],
+  ['thu-thiem-long-thanh', 'long-thanh', 'điểm cuối'],
+  ['thu-thiem-long-thanh', 'thu-thiem', 'điểm đầu'],
+  ['metro-1', 'thao-dien', 'đi qua'],
+
+  // Ring roads
+  ['ring-road-2', 'vo-chi-cong', 'gồm'],
+  ['ring-road-3', 'thu-duc-city', 'đi qua'],
+  ['ring-road-3', 'long-thanh', 'kết nối'],
+  ['ring-road-4', 'cai-mep', 'kết nối'],
+  ['ring-road-4', 'long-thanh', 'kết nối'],
+
+  // Roads
+  ['cat-lai-bridge', 'long-thanh', 'qua cao tốc'],
+  ['cat-lai-bridge', 'my-thuy', 'gần'],
+  ['inter-port-road', 'cat-lai-port', 'kết nối'],
+  ['inter-port-road', 'phu-huu', 'qua'],
+  ['my-thuy', 'cat-lai-port', 'cửa ngõ'],
+  ['an-phu-interchange', 'long-thanh', 'qua cao tốc'],
+
+  // Amenities
+  ['long-thanh', 'cai-mep', 'kết nối'],
+  ['shtp', 'thu-duc-city', 'thuộc'],
+  ['cat-lai-port', 'cai-mep', 'tuyến logistic'],
+
+  // Location hierarchy
+  ['binh-trung-dong', 'thu-duc-city', 'thuộc'],
+  ['phu-huu', 'thu-duc-city', 'thuộc'],
+  ['thu-thiem', 'thu-duc-city', 'thuộc'],
+  ['thao-dien', 'thu-duc-city', 'thuộc'],
+  ['an-phu', 'thu-duc-city', 'thuộc'],
+
+  // Comparables (đặt tại Thu Duc/Q2)
+  ['diamond-island', 'thu-duc-city', 'tại'],
+  ['vista-verde', 'thu-duc-city', 'tại'],
+  ['masteri-thao-dien', 'thao-dien', 'tại'],
+  ['estella-heights', 'an-phu', 'tại'],
+  ['empire-city', 'thu-thiem', 'tại'],
+  ['palm-city', 'an-phu', 'tại'],
+  ['vinhomes-gp', 'thu-duc-city', 'tại'],
+  ['thanh-my-loi', 'thu-duc-city', 'tại'],
+  ['masteri-thao-dien', 'metro-1', 'gần trạm'],
+
+  // Policy
+  ['thu-duc-city', 'thu-duc-master-plan', 'theo'],
+  ['gladia', 'land-price-list', 'tác động'],
+  ['keppel-ltd', 'net-zero', 'cam kết'],
+
+  // Same-developer cross-links for context
+  ['estella-heights', 'estella', 'mở rộng'],
+  ['estella-heights', 'empire-city', 'cùng Keppel'],
+];
+
+// ═══════════════════════════════════════════════════════════════
+// GRAPH RENDERING
+// ═══════════════════════════════════════════════════════════════
+
+const SVG = document.getElementById('graph');
+const GROUP = document.getElementById('graph-g');
+const LINKS_G = document.getElementById('links-g');
+const NODES_G = document.getElementById('nodes-g');
+
+let WIDTH = 0, HEIGHT = 0;
+let transform = { x: 0, y: 0, k: 1 };
+let selectedNode = null;
+let hoveredNode = null;
+let activeCategories = new Set(Object.keys(CATEGORIES));
+let searchQuery = '';
+
+// Build node map
+const nodeMap = {};
+NODES.forEach(n => {
+  n.x = Math.random() * 800 - 400;
+  n.y = Math.random() * 600 - 300;
+  n.vx = 0; n.vy = 0;
+  n.pinned = false;
+  nodeMap[n.id] = n;
+});
+
+// Center node positioning
+nodeMap.gladia.x = 0;
+nodeMap.gladia.y = 0;
+nodeMap.gladia.pinned = true;
+
+// Build link list with refs
+const linkData = LINKS.map(([s, t, label]) => ({
+  source: nodeMap[s],
+  target: nodeMap[t],
+  label: label || ''
+})).filter(l => l.source && l.target);
+
+// Build adjacency
+const adj = {};
+NODES.forEach(n => { adj[n.id] = { in: [], out: [] }; });
+linkData.forEach(l => {
+  adj[l.source.id].out.push({ node: l.target, label: l.label });
+  adj[l.target.id].in.push({ node: l.source, label: l.label });
+});
+
+// Stats
+document.getElementById('stat-nodes').textContent = NODES.length;
+document.getElementById('stat-links').textContent = linkData.length;
+
+// ─── FORCE SIMULATION ───
+function simulate() {
+  const REPEL = 4500;
+  const SPRING = 0.012;
+  const LINK_DIST = 110;
+  const CENTER = 0.003;
+  const DAMP = 0.78;
+
+  for (let i = 0; i < NODES.length; i++) {
+    for (let j = i + 1; j < NODES.length; j++) {
+      const a = NODES[i], b = NODES[j];
+      let dx = b.x - a.x, dy = b.y - a.y;
+      let d2 = dx*dx + dy*dy;
+      if (d2 < 1) d2 = 1;
+      const d = Math.sqrt(d2);
+      const force = REPEL / d2;
+      const fx = force * dx / d;
+      const fy = force * dy / d;
+      if (!a.pinned) { a.vx -= fx; a.vy -= fy; }
+      if (!b.pinned) { b.vx += fx; b.vy += fy; }
+    }
+  }
+
+  linkData.forEach(l => {
+    const dx = l.target.x - l.source.x;
+    const dy = l.target.y - l.source.y;
+    const d = Math.sqrt(dx*dx + dy*dy) || 1;
+    const force = (d - LINK_DIST) * SPRING;
+    const fx = force * dx / d;
+    const fy = force * dy / d;
+    if (!l.source.pinned) { l.source.vx += fx; l.source.vy += fy; }
+    if (!l.target.pinned) { l.target.vx -= fx; l.target.vy -= fy; }
+  });
+
+  NODES.forEach(n => {
+    if (!n.pinned) {
+      n.vx += -n.x * CENTER;
+      n.vy += -n.y * CENTER;
+      n.vx *= DAMP;
+      n.vy *= DAMP;
+      n.x += n.vx;
+      n.y += n.vy;
+    }
+  });
+}
+
+// ─── RENDER ───
+function renderLinks() {
+  LINKS_G.innerHTML = '';
+  linkData.forEach((l, i) => {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', l.source.x);
+    line.setAttribute('y1', l.source.y);
+    line.setAttribute('x2', l.target.x);
+    line.setAttribute('y2', l.target.y);
+    line.classList.add('link');
+    line.dataset.source = l.source.id;
+    line.dataset.target = l.target.id;
+    l._el = line;
+    LINKS_G.appendChild(line);
+  });
+}
+
+function renderNodes() {
+  NODES_G.innerHTML = '';
+  NODES.forEach(n => {
+    const cat = CATEGORIES[n.cat];
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.classList.add('node');
+    g.dataset.id = n.id;
+    g.setAttribute('transform', `translate(${n.x}, ${n.y})`);
+
+    if (n.id === 'gladia') {
+      const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      ring.setAttribute('r', cat.radius + 8);
+      ring.setAttribute('fill', 'none');
+      ring.setAttribute('stroke', cat.color);
+      ring.setAttribute('stroke-width', 1);
+      ring.setAttribute('opacity', 0.4);
+      ring.classList.add('pulse-ring');
+      g.appendChild(ring);
+    }
+
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('r', cat.radius);
+    c.setAttribute('fill', cat.color);
+    c.setAttribute('stroke', '#0d1117');
+    c.setAttribute('stroke-width', 1.5);
+    g.appendChild(c);
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('y', cat.radius + 14);
+    text.textContent = n.label;
+    g.appendChild(text);
+
+    g.addEventListener('mousedown', (e) => startNodeDrag(e, n, g));
+    g.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectNode(n.id);
+    });
+    n._el = g;
+    NODES_G.appendChild(g);
+  });
+}
+
+function updatePositions() {
+  linkData.forEach(l => {
+    if (l._el) {
+      l._el.setAttribute('x1', l.source.x);
+      l._el.setAttribute('y1', l.source.y);
+      l._el.setAttribute('x2', l.target.x);
+      l._el.setAttribute('y2', l.target.y);
+    }
+  });
+  NODES.forEach(n => {
+    if (n._el) n._el.setAttribute('transform', `translate(${n.x}, ${n.y})`);
+  });
+  applyTransform();
+}
+
+function applyTransform() {
+  GROUP.setAttribute('transform', `translate(${transform.x + WIDTH/2}, ${transform.y + HEIGHT/2}) scale(${transform.k})`);
+}
+
+// ─── INTERACTIONS ───
+function startNodeDrag(e, n, el) {
+  e.preventDefault();
+  e.stopPropagation();
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const origX = n.x;
+  const origY = n.y;
+  n.pinned = true;
+  let didDrag = false;
+
+  function move(ev) {
+    const dx = (ev.clientX - startX) / transform.k;
+    const dy = (ev.clientY - startY) / transform.k;
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) didDrag = true;
+    n.x = origX + dx;
+    n.y = origY + dy;
+    n.vx = 0; n.vy = 0;
+  }
+  function up() {
+    document.removeEventListener('mousemove', move);
+    document.removeEventListener('mouseup', up);
+    if (n.id !== 'gladia' && !didDrag) {
+      n.pinned = false;
+    }
+  }
+  document.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', up);
+}
+
+// Pan & zoom
+let panState = null;
+SVG.addEventListener('mousedown', (e) => {
+  if (e.target.closest('.node')) return;
+  panState = { startX: e.clientX - transform.x, startY: e.clientY - transform.y };
+  document.getElementById('graph-wrap').classList.add('dragging');
+});
+document.addEventListener('mousemove', (e) => {
+  if (panState) {
+    transform.x = e.clientX - panState.startX;
+    transform.y = e.clientY - panState.startY;
+    applyTransform();
+  }
+});
+document.addEventListener('mouseup', () => {
+  panState = null;
+  document.getElementById('graph-wrap').classList.remove('dragging');
+});
+
+SVG.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = -e.deltaY * 0.001;
+  const newK = Math.max(0.3, Math.min(2.5, transform.k + delta));
+  transform.k = newK;
+  applyTransform();
+}, { passive: false });
+
+document.getElementById('zoom-in').onclick = () => { transform.k = Math.min(2.5, transform.k * 1.2); applyTransform(); };
+document.getElementById('zoom-out').onclick = () => { transform.k = Math.max(0.3, transform.k / 1.2); applyTransform(); };
+document.getElementById('zoom-fit').onclick = () => { transform = { x: 0, y: 0, k: 1 }; applyTransform(); };
+
+document.getElementById('btn-center').onclick = () => {
+  selectNode('gladia');
+  transform = { x: 0, y: 0, k: 1 };
+  applyTransform();
+};
+
+document.getElementById('btn-reset').onclick = () => {
+  NODES.forEach(n => {
+    if (n.id !== 'gladia') {
+      n.x = Math.random() * 800 - 400;
+      n.y = Math.random() * 600 - 300;
+      n.vx = 0; n.vy = 0;
+      n.pinned = false;
+    }
+  });
+  transform = { x: 0, y: 0, k: 1 };
+  applyTransform();
+};
+
+// ─── SELECT & DETAIL ───
+function selectNode(id) {
+  selectedNode = id;
+  document.querySelectorAll('.node').forEach(el => el.classList.remove('selected', 'dimmed'));
+  document.querySelectorAll('.link').forEach(el => el.classList.remove('highlight', 'dimmed'));
+  
+  const connected = new Set([id]);
+  linkData.forEach(l => {
+    if (l.source.id === id) connected.add(l.target.id);
+    if (l.target.id === id) connected.add(l.source.id);
+  });
+  
+  NODES.forEach(n => {
+    if (n._el) {
+      if (n.id === id) n._el.classList.add('selected');
+      else if (!connected.has(n.id)) n._el.classList.add('dimmed');
+    }
+  });
+  
+  linkData.forEach(l => {
+    if (l._el) {
+      if (l.source.id === id || l.target.id === id) l._el.classList.add('highlight');
+      else l._el.classList.add('dimmed');
+    }
+  });
+  
+  document.querySelectorAll('.node-item').forEach(el => el.classList.toggle('active', el.dataset.id === id));
+  renderDetail(id);
+}
+
+function renderDetail(id) {
+  const n = nodeMap[id];
+  if (!n) return;
+  const cat = CATEGORIES[n.cat];
+  const empty = document.getElementById('detail-empty');
+  const content = document.getElementById('detail-content');
+  empty.style.display = 'none';
+  content.style.display = 'flex';
+
+  const caveatBadge = (n.sub && (n.sub.includes('⚠') || n.sub.includes('thoái'))) 
+    ? `<div class="caveat-badge">⚠ ${n.sub}</div>` 
+    : '';
+
+  let html = `
+    <div class="detail-header">
+      <div class="detail-cat" style="background:${cat.color}22;color:${cat.color}">${cat.label}</div>
+      <div class="detail-title">${n.label}</div>
+      ${n.sub && !caveatBadge ? `<div class="detail-subtitle">${n.sub}</div>` : ''}
+      ${caveatBadge}
+    </div>
+    <div class="detail-body">
+  `;
+
+  if (n.facts && n.facts.length) {
+    html += `<div class="detail-section">
+      <div class="detail-section-title">Thông số cốt lõi</div>
+      <div class="detail-facts">${n.facts.map(([k, v]) => 
+        `<div class="fact-row"><div class="fact-label">${k}</div><div class="fact-value">${v}</div></div>`
+      ).join('')}</div>
+    </div>`;
+  }
+
+  if (n.desc) {
+    html += `<div class="detail-section">
+      <div class="detail-section-title">Mô tả</div>
+      <div class="detail-text">${n.desc}</div>
+    </div>`;
+  }
+
+  if (n.talkpoint) {
+    html += `<div class="detail-section">
+      <div class="detail-talkpoint">
+        <div class="detail-talkpoint-label">★ Key talking point cho sale</div>
+        <div class="detail-talkpoint-text">${n.talkpoint}</div>
+      </div>
+    </div>`;
+  }
+
+  const out = adj[id].out;
+  const incoming = adj[id].in;
+  
+  if (out.length) {
+    html += `<div class="detail-section">
+      <div class="detail-section-title">Liên kết tới (${out.length})</div>
+      <div class="detail-link-list">${out.map(({ node, label }) => 
+        `<a class="detail-link" onclick="selectNode('${node.id}')"><span class="detail-link-dot" style="background:${CATEGORIES[node.cat].color}"></span>${node.label}<span class="detail-link-type">${label}</span></a>`
+      ).join('')}</div>
+    </div>`;
+  }
+
+  if (incoming.length) {
+    html += `<div class="detail-section">
+      <div class="detail-section-title">Backlinks — Được nhắc bởi (${incoming.length})</div>
+      <div class="detail-link-list">${incoming.map(({ node, label }) => 
+        `<a class="detail-link" onclick="selectNode('${node.id}')"><span class="detail-link-dot" style="background:${CATEGORIES[node.cat].color}"></span>${node.label}<span class="detail-link-type">${label}</span></a>`
+      ).join('')}</div>
+    </div>`;
+  }
+
+  html += `</div>`;
+  content.innerHTML = html;
+
+  if (window.innerWidth <= 1024) {
+    document.getElementById('detail-panel').classList.add('open');
+  }
+}
+
+// ─── SIDEBAR ───
+function buildSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  let html = `<div class="sidebar-header">Danh mục</div>`;
+  
+  // Categories
+  Object.entries(CATEGORIES).forEach(([key, c]) => {
+    const count = NODES.filter(n => n.cat === key).length;
+    html += `<div class="category-item active" data-cat="${key}">
+      <div class="category-dot" style="background:${c.color}"></div>
+      <span>${c.label}</span>
+      <span class="category-count">${count}</span>
+    </div>`;
+  });
+  
+  html += `<div class="sidebar-header" style="margin-top:16px">Tất cả nodes</div>`;
+  html += `<div class="node-list">`;
+  
+  // Group nodes by category
+  Object.entries(CATEGORIES).forEach(([key, c]) => {
+    const ns = NODES.filter(n => n.cat === key);
+    ns.forEach(n => {
+      html += `<div class="node-item" data-id="${n.id}" data-cat="${key}" title="${n.label}">${n.label}</div>`;
+    });
+  });
+  
+  html += `</div>`;
+  sidebar.innerHTML = html;
+  
+  // Wire events
+  sidebar.querySelectorAll('.node-item').forEach(el => {
+    el.addEventListener('click', () => selectNode(el.dataset.id));
+  });
+  sidebar.querySelectorAll('.category-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const cat = el.dataset.cat;
+      if (activeCategories.has(cat)) {
+        activeCategories.delete(cat);
+        el.classList.remove('active');
+      } else {
+        activeCategories.add(cat);
+        el.classList.add('active');
+      }
+      applyFilters();
+    });
+  });
+}
+
+function applyFilters() {
+  NODES.forEach(n => {
+    if (!n._el) return;
+    const inCategory = activeCategories.has(n.cat);
+    const matchSearch = !searchQuery || n.label.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                       (n.sub && n.sub.toLowerCase().includes(searchQuery.toLowerCase()));
+    if (inCategory && matchSearch) {
+      n._el.style.display = '';
+      n._el.classList.toggle('match', !!searchQuery && matchSearch);
+    } else {
+      n._el.style.display = 'none';
+    }
+  });
+  linkData.forEach(l => {
+    if (!l._el) return;
+    const sVisible = activeCategories.has(l.source.cat);
+    const tVisible = activeCategories.has(l.target.cat);
+    l._el.style.display = (sVisible && tVisible) ? '' : 'none';
+  });
+  document.querySelectorAll('.node-item').forEach(el => {
+    const id = el.dataset.id;
+    const n = nodeMap[id];
+    const inCategory = activeCategories.has(n.cat);
+    const matchSearch = !searchQuery || n.label.toLowerCase().includes(searchQuery.toLowerCase());
+    el.style.display = (inCategory && matchSearch) ? '' : 'none';
+  });
+}
+
+document.getElementById('search').addEventListener('input', (e) => {
+  searchQuery = e.target.value.trim();
+  applyFilters();
+});
+
+// ─── ANIMATION LOOP ───
+function resize() {
+  const wrap = document.getElementById('graph-wrap');
+  WIDTH = wrap.clientWidth;
+  HEIGHT = wrap.clientHeight;
+  SVG.setAttribute('viewBox', `0 0 ${WIDTH} ${HEIGHT}`);
+  applyTransform();
+}
+window.addEventListener('resize', resize);
+
+let frame = 0;
+function tick() {
+  if (frame < 400) {
+    simulate();
+    frame++;
+  }
+  updatePositions();
+  requestAnimationFrame(tick);
+}
+
+// ─── INIT ───
+buildSidebar();
+renderLinks();
+renderNodes();
+resize();
+tick();
+
+// Auto-select Gladia after a brief settle
+setTimeout(() => selectNode('gladia'), 600);
+</script>
+
+</body>
+</html>

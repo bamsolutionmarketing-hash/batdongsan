@@ -52,7 +52,11 @@ export function ProjectKnowledgeMap({
             {NODE_KIND_LABEL[selected.kind] ?? selected.kind}
           </p>
           <h3 className="text-sm font-semibold text-slate-100">{selected.label}</h3>
-          {selected.note && <p className="mt-1 text-sm text-slate-300">{selected.note}</p>}
+          {selected.note && (
+            <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-slate-300">
+              {selected.note}
+            </p>
+          )}
         </div>
       )}
     </div>

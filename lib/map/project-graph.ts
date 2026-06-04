@@ -23,6 +23,15 @@ export const NODE_KIND_COLORS: Record<string, string> = {
   legal: "#f472b6",
   zone: "#a78bfa",
   related: "#fb7185",
+  // Rich knowledge-map kinds (project dossier): developers, certifications,
+  // transit, road infrastructure, comparable projects, policy.
+  project: "#d4a544",
+  developer: "#58a6ff",
+  cert: "#a371f7",
+  metro: "#3fb950",
+  road: "#f0883e",
+  comparable: "#f85149",
+  policy: "#8b949e",
 };
 
 export const NODE_KIND_LABEL: Record<string, string> = {
@@ -33,6 +42,13 @@ export const NODE_KIND_LABEL: Record<string, string> = {
   legal: "Pháp lý",
   zone: "Phân khu",
   related: "Dự án liên quan",
+  project: "Dự án",
+  developer: "Chủ đầu tư",
+  cert: "Chứng nhận",
+  metro: "Metro / Đường sắt",
+  road: "Đường bộ / Cầu",
+  comparable: "So sánh BĐS",
+  policy: "Chính sách",
 };
 
 export const EDGE_KIND_COLORS: Record<string, string> = {
