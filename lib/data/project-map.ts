@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { buildProjectGraph, type MapNodeRow, type MapEdgeRow } from "@/lib/map/project-graph";
 import type { GraphData } from "./types";
 
@@ -19,6 +19,9 @@ export interface ProjectMap {
 
 // Load a project's knowledge graph (RLS scopes to org + public projects).
 export async function getProjectMap(projectId: string): Promise<ProjectMap> {
+  if (!isSupabaseConfigured()) {
+    return { graph: { nodes: [], links: [] }, notesById: {}, nodes: [], edges: [] };
+  }
   const supabase = createClient();
   const [{ data: nodes }, { data: edges }] = await Promise.all([
     supabase.from("map_nodes").select("id, label, kind, note").eq("project_id", projectId),

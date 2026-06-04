@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { rowToProject, type ProjectRow } from "./mapper";
 import type { Project } from "./types";
 
@@ -8,6 +8,7 @@ const COLUMNS =
 // Projects visible to the caller. RLS scopes this to their org + public rows;
 // passing no session (anon) yields only public projects.
 export async function listProjects(): Promise<Project[]> {
+  if (!isSupabaseConfigured()) return [];
   const supabase = createClient();
   const { data, error } = await supabase
     .from("projects")
@@ -23,6 +24,7 @@ export async function listProjectsWithSlug(): Promise<{
   projects: Project[];
   slugById: Record<string, string>;
 }> {
+  if (!isSupabaseConfigured()) return { projects: [], slugById: {} };
   const supabase = createClient();
   const { data, error } = await supabase
     .from("projects")
@@ -37,6 +39,7 @@ export async function listProjectsWithSlug(): Promise<{
 
 // Public projects only — used for the signed-out demo (no auth needed).
 export async function listPublicProjects(): Promise<Project[]> {
+  if (!isSupabaseConfigured()) return [];
   const supabase = createClient();
   const { data, error } = await supabase
     .from("projects")
@@ -52,6 +55,7 @@ export async function listPublicProjectsWithSlug(): Promise<{
   projects: Project[];
   slugById: Record<string, string>;
 }> {
+  if (!isSupabaseConfigured()) return { projects: [], slugById: {} };
   const supabase = createClient();
   const { data, error } = await supabase
     .from("projects")
@@ -66,6 +70,7 @@ export async function listPublicProjectsWithSlug(): Promise<{
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
+  if (!isSupabaseConfigured()) return null;
   const supabase = createClient();
   const { data, error } = await supabase
     .from("projects")
@@ -82,7 +87,7 @@ export async function districtAveragePrice(
   district: string,
   exceptId: string,
 ): Promise<number | undefined> {
-  if (!district) return undefined;
+  if (!district || !isSupabaseConfigured()) return undefined;
   const supabase = createClient();
   const { data, error } = await supabase
     .from("projects")
@@ -105,6 +110,7 @@ export interface ProjectDetail extends Project {
 
 // Full project for the learning hub (includes attributes the map doesn't need).
 export async function getProjectDetailBySlug(slug: string): Promise<ProjectDetail | null> {
+  if (!isSupabaseConfigured()) return null;
   const supabase = createClient();
   const { data, error } = await supabase
     .from("projects")
@@ -132,6 +138,7 @@ export interface ProvenanceItem {
 // Confirmed extractions for a project — the audit trail shown on the learning
 // hub so a salesperson sees where each fact came from.
 export async function getProjectProvenance(projectId: string): Promise<ProvenanceItem[]> {
+  if (!isSupabaseConfigured()) return [];
   const supabase = createClient();
   const { data, error } = await supabase
     .from("extractions")
