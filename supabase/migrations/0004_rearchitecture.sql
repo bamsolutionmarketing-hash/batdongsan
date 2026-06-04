@@ -106,6 +106,8 @@ end $$;
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users for each row execute function handle_new_user();
+-- trigger-only: not meant to be callable via PostgREST RPC
+revoke execute on function handle_new_user() from anon, authenticated;
 
 -- caller's admin status (used in RLS)
 create or replace function is_admin()
