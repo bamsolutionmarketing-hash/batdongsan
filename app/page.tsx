@@ -1,31 +1,19 @@
 import Link from "next/link";
-import { ProjectExplorer } from "@/components/map/ProjectExplorer";
-import { seedProjects } from "@/lib/data/seed";
-import { listPublicProjectsWithSlug } from "@/lib/data/projects";
-import type { Project } from "@/lib/data/types";
+import { listPublishedProjects } from "@/lib/repo/projects";
 
-// Public landing/demo. Prefers seeded public projects (links into the real
-// learning hub); falls back to in-memory seed when the DB is empty/unconfigured.
+// Public landing — lists published projects (RLS shows demo projects to anon).
+// Each card links into the project's knowledge map.
 export default async function Home() {
-  let projects: Project[] = seedProjects;
-  let slugById: Record<string, string> | undefined;
-  try {
-    const res = await listPublicProjectsWithSlug();
-    if (res.projects.length > 0) {
-      projects = res.projects;
-      slugById = res.slugById;
-    }
-  } catch {
-    // No DB configured yet — show the in-memory seed demo.
-  }
+  const res = await listPublishedProjects();
+  const projects = res.ok ? res.data : [];
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
       <header className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Bản đồ dự án BĐS — bản demo</h1>
+          <h1 className="text-2xl font-bold">Bản đồ tri thức dự án BĐS</h1>
           <p className="text-sm text-slate-400">
-            Chọn một node để xem insight. Đăng nhập để nạp dự án của sàn bạn và tạo nội dung bán hàng.
+            Mở một dự án → khám phá bản đồ tri thức. Đăng nhập để tạo nội dung bán hàng.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -44,7 +32,39 @@ export default async function Home() {
         </div>
       </header>
 
-      <ProjectExplorer projects={projects} slugById={slugById} />
+      {projects.length === 0 ? (
+        <p className="rounded-lg border border-slate-800 bg-slate-900 p-6 text-center text-sm text-slate-400">
+          Chưa có dự án công khai.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {projects.map((p) => (
+            <Link
+              key={p.id}
+              href={`/p/${p.slug}`}
+              className="rounded-lg border border-slate-800 bg-slate-900 p-5 transition hover:border-slate-600"
+            >
+              <h2 className="text-lg font-semibold text-slate-100">{p.name}</h2>
+              {p.phase && <p className="mt-0.5 text-xs text-amber-400/80">{p.phase}</p>}
+              {p.locationText && (
+                <p className="mt-1 text-sm text-slate-400">{p.locationText}</p>
+              )}
+              {(p.priceMin || p.priceMax) && (
+                <p className="mt-2 text-sm text-slate-300">{priceLabel(p.priceMin, p.priceMax)}</p>
+              )}
+            </Link>
+          ))}
+        </div>
+      )}
     </main>
   );
+}
+
+// VND/m² (bigint) → "x–y tr/m²".
+function priceLabel(min: number | null, max: number | null): string {
+  const m = (v: number) => Math.round(v / 1_000_000);
+  if (min && max) return `${m(min)}–${m(max)} tr/m²`;
+  if (min) return `từ ${m(min)} tr/m²`;
+  if (max) return `đến ${m(max)} tr/m²`;
+  return "";
 }
