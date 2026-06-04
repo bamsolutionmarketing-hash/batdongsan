@@ -35,7 +35,13 @@ insert into projects (id, org_id, slug, name, developer, district, city, segment
    '00000000-0000-0000-0000-0000000000d0',
    'vinhomes-grand-park', 'Vinhomes Grand Park', 'Vinhomes',
    'TP. Thủ Đức', 'TP.HCM', 'mid-range', 'selling', 55,
-   '{"amenities":["công viên","gym","trường học"]}'::jsonb, 'public')
+   '{"amenities":["công viên","gym","trường học"]}'::jsonb, 'public'),
+  ('00000000-0000-0000-0000-00000000a006',
+   '00000000-0000-0000-0000-0000000000d0',
+   'masteri-cosmo-central', 'Masteri Cosmo Central', 'Masterise Homes',
+   'TP. Thủ Đức', 'TP.HCM', 'high-end', 'selling', 100,
+   '{"amenities":["hồ bơi vô cực","business lounge","co-working","gym","yoga","teen club"],"highlights":["Lõi The Global City do Foster + Partners quy hoạch","6 tháp 19–29 tầng, bàn giao Q3/2028","Phân khu Nexus Zone — work-life synergy"]}'::jsonb,
+   'public')
 on conflict (id) do nothing;
 
 -- The Gladia knowledge map lives in seed_gladia_map.sql (generated from the

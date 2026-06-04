@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Masteri Cosmo Central — Knowledge Map (Nexus Zone)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c1719;
+  --bg-2: #122024;
+  --bg-3: #18292e;
+  --panel: #122024;
+  --border: #24373c;
+  --border-2: #1b2d31;
+  --text: #e8f0f1;
+  --text-2: #8ba0a4;
+  --text-3: #62787d;
+  --gold: #e0832f;
+  --gold-2: #f0a45c;
+  --teal: #39c5a8;
+  --blue: #4a9fd8;
+  --purple: #a978f0;
+  --green: #45c463;
+  --red: #f06a5d;
+  --orange: #f0883e;
+  --pink: #e072b0;
+  --cyan: #43c9cf;
+  --softgold: #e6c068;
+  --link: #5ab4e6;
+  --link-hover: #86cef0;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 48px;
+  background: linear-gradient(90deg, #122024 0%, #16282d 100%);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 14px;
+  position: relative;
+  z-index: 100;
+}
+.logo {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--gold-2);
+  letter-spacing: .03em;
+  display: flex; align-items: center; gap: 8px;
+  white-space: nowrap;
+}
+.logo-mark {
+  width: 20px; height: 20px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-2) 100%);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 13px; color: #0c1719;
+  font-family: 'JetBrains Mono', monospace;
+}
+.logo-sub { color: var(--text-3); font-weight: 400; font-size: 11px; letter-spacing: .12em; }
+.topbar-divider { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+
+.search-wrap { flex: 0 1 320px; position: relative; }
+.search {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 12px 7px 32px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+.search:focus { outline: none; border-color: var(--gold); }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 14px; }
+
+.topbar-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap;
+}
+.topbar-btn:hover { color: var(--text); border-color: var(--text-3); }
+.btn-360 {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-2) 100%);
+  color: #0c1719;
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(224,131,47,0.3);
+}
+.btn-360:hover { color: #0c1719; filter: brightness(1.08); }
+
+.topbar-stats { margin-left: auto; display: flex; gap: 14px; font-size: 12px; color: var(--text-2); }
+.topbar-stat strong { color: var(--text); font-weight: 600; }
+
+/* ── LAYOUT ── */
+.layout { display: grid; grid-template-columns: 240px 1fr 388px; height: calc(100vh - 48px); }
+
+/* ── SIDEBAR ── */
+.sidebar { background: var(--bg-2); border-right: 1px solid var(--border); overflow-y: auto; padding: 12px 8px; }
+.sidebar-header {
+  font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-3); padding: 8px 8px 4px;
+}
+.category-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px; border-radius: 4px; cursor: pointer;
+  font-size: 13px; color: var(--text-2); user-select: none;
+}
+.category-item:hover { background: var(--bg-3); color: var(--text); }
+.category-item.active { background: var(--bg-3); color: var(--text); }
+.category-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.category-count { margin-left: auto; font-size: 11px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; }
+
+.node-list { padding-top: 8px; }
+.node-item {
+  padding: 5px 8px 5px 24px; border-radius: 4px; cursor: pointer;
+  font-size: 12.5px; color: var(--text-2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative;
+}
+.node-item::before {
+  content: ''; position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  width: 6px; height: 6px; border-radius: 50%; background: var(--text-3);
+}
+.node-item:hover { background: var(--bg-3); color: var(--text); }
+.node-item.active { background: var(--bg-3); color: var(--gold-2); }
+.node-item.active::before { background: var(--gold); }
+
+/* ── GRAPH ── */
+.graph-wrap { position: relative; background: radial-gradient(circle at 50% 45%, #102023 0%, #0c1719 70%); overflow: hidden; cursor: grab; }
+.graph-wrap.dragging { cursor: grabbing; }
+.graph-svg { width: 100%; height: 100%; display: block; }
+
+.graph-controls {
+  position: absolute; top: 12px; right: 12px;
+  display: flex; flex-direction: column; gap: 4px;
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; padding: 4px; z-index: 5;
+}
+.ctrl-btn {
+  width: 28px; height: 28px; background: transparent; border: none; color: var(--text-2);
+  cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-family: inherit;
+}
+.ctrl-btn:hover { background: var(--bg-3); color: var(--text); }
+
+.graph-legend {
+  position: absolute; bottom: 12px; left: 12px;
+  background: rgba(18,32,36,0.92); border: 1px solid var(--border); border-radius: 6px;
+  padding: 10px 12px; font-size: 11px; z-index: 5; max-width: 210px; backdrop-filter: blur(4px);
+}
+.legend-title { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+.legend-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; color: var(--text-2); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.graph-instructions {
+  position: absolute; top: 12px; left: 12px;
+  background: rgba(18,32,36,0.92); border: 1px solid var(--border); border-radius: 6px;
+  padding: 8px 12px; font-size: 11px; color: var(--text-3); z-index: 5;
+  font-family: 'JetBrains Mono', monospace; backdrop-filter: blur(4px);
+}
+
+.node circle { cursor: pointer; transition: r .15s, stroke-width .15s; }
+.node:hover circle { stroke: var(--gold); stroke-width: 2; }
+.node.selected circle { stroke: var(--gold); stroke-width: 3; filter: drop-shadow(0 0 8px var(--gold)); }
+.node.dimmed circle { opacity: 0.18; }
+.node text {
+  font-family: 'Be Vietnam Pro', sans-serif; font-size: 11px; fill: var(--text-2);
+  pointer-events: none; text-anchor: middle; font-weight: 500;
+}
+.node.selected text { fill: var(--gold-2); font-weight: 600; }
+.node.dimmed text { opacity: 0.18; }
+.node.match text { fill: var(--gold-2); }
+.node-360 circle { stroke: var(--gold-2); stroke-dasharray: 3 2; }
+
+.link { stroke: var(--border); stroke-width: 1; fill: none; pointer-events: none; transition: stroke .15s, stroke-width .15s, opacity .15s; }
+.link.highlight { stroke: var(--gold); stroke-width: 2; }
+.link.dimmed { opacity: 0.08; }
+
+/* ── DETAIL PANEL ── */
+.detail-panel { background: var(--bg-2); border-left: 1px solid var(--border); overflow-y: auto; position: relative; }
+.detail-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; color: var(--text-3); padding: 32px; text-align: center;
+}
+.detail-empty-icon { font-size: 32px; margin-bottom: 12px; opacity: .4; }
+.detail-empty-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; color: var(--text-2); }
+.detail-empty-desc { font-size: 12px; line-height: 1.7; max-width: 290px; }
+
+.detail-content { padding: 0; height: 100%; display: flex; flex-direction: column; }
+.detail-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.detail-cat {
+  display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px; margin-bottom: 8px;
+}
+.detail-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; letter-spacing: -.01em; }
+.detail-subtitle { font-size: 12px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; }
+
+.detail-body { padding: 20px 24px; flex: 1; overflow-y: auto; }
+.detail-section { margin-bottom: 20px; }
+.detail-section-title {
+  font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.detail-text { font-size: 13px; line-height: 1.75; color: var(--text); }
+.detail-text p { margin-bottom: 10px; }
+.detail-text strong { color: var(--gold-2); font-weight: 600; }
+.detail-text em { color: var(--text-2); font-style: normal; background: var(--bg-3); padding: 1px 6px; border-radius: 3px; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+.detail-text ul { list-style: none; padding: 0; margin: 8px 0; }
+.detail-text li { padding: 4px 0 4px 16px; position: relative; }
+.detail-text li::before { content: '→'; position: absolute; left: 0; color: var(--gold); font-weight: 700; }
+
+.detail-facts { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+.fact-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 12.5px; border-bottom: 1px dashed var(--border); gap: 12px; }
+.fact-row:last-child { border-bottom: none; }
+.fact-label { color: var(--text-3); flex-shrink: 0; }
+.fact-value { color: var(--text); font-weight: 500; text-align: right; }
+
+.detail-link-list { display: flex; flex-direction: column; gap: 2px; }
+.detail-link {
+  display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 4px; cursor: pointer;
+  font-size: 12.5px; color: var(--link); text-decoration: none; transition: background .15s;
+}
+.detail-link:hover { background: var(--bg-3); color: var(--link-hover); }
+.detail-link-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.detail-link-type { font-size: 10px; color: var(--text-3); margin-left: auto; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: .05em; }
+
+.detail-talkpoint {
+  background: linear-gradient(135deg, rgba(224,131,47,0.10) 0%, rgba(224,131,47,0.02) 100%);
+  border: 1px solid rgba(224,131,47,0.32); border-radius: 6px; padding: 12px 14px; margin-top: 8px;
+}
+.detail-talkpoint-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-2); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.detail-talkpoint-text { font-size: 13px; color: var(--text); line-height: 1.7; font-style: italic; }
+
+.btn-open360 {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-2) 100%);
+  color: #0c1719; font-weight: 700; font-size: 13px;
+  padding: 10px 16px; border-radius: 8px; text-decoration: none; margin-top: 4px;
+  box-shadow: 0 3px 14px rgba(224,131,47,0.3); transition: filter .15s;
+}
+.btn-open360:hover { filter: brightness(1.08); }
+
+.caveat-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(240,106,93,0.1); border: 1px solid rgba(240,106,93,0.3); color: var(--red);
+  font-size: 11px; padding: 4px 10px; border-radius: 99px; margin-bottom: 10px;
+}
+.conf-badge {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 10px;
+  padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; font-weight: 600;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.conf-verified { background: rgba(69,196,99,0.12); border: 1px solid rgba(69,196,99,0.3); color: var(--green); }
+.conf-sales { background: rgba(230,192,104,0.12); border: 1px solid rgba(230,192,104,0.3); color: var(--softgold); }
+.conf-unverified { background: rgba(240,106,93,0.12); border: 1px solid rgba(240,106,93,0.3); color: var(--red); }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+@keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.55; } 50% { transform: scale(1.18); opacity: 0.25; } }
+.pulse-ring { animation: pulse 2.6s ease-in-out infinite; transform-origin: center; }
+
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 200px 1fr 0; }
+  .detail-panel { position: fixed; right: -388px; top: 48px; bottom: 0; width: 388px; transition: right .25s; z-index: 50; }
+  .detail-panel.open { right: 0; }
+}
+@media (max-width: 640px) {
+  .layout { grid-template-columns: 0 1fr 0; }
+  .sidebar { display: none; }
+  .logo-sub { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ TOPBAR ═══════ -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">M</div>
+    Masteri Cosmo Central
+    <span class="logo-sub">NEXUS ZONE</span>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input class="search" id="search" placeholder="Tìm dự án, hạ tầng, đối tác..." autocomplete="off">
+  </div>
+  <button class="topbar-btn btn-360" id="btn-360-top">◉ Xem 360°</button>
+  <button class="topbar-btn" id="btn-reset">↻ Reset</button>
+  <button class="topbar-btn" id="btn-center" title="Về node trung tâm">⊙ Center</button>
+  <div class="topbar-stats">
+    <div class="topbar-stat"><strong id="stat-nodes">0</strong> nodes</div>
+    <div class="topbar-stat"><strong id="stat-links">0</strong> links</div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="graph-wrap" id="graph-wrap">
+    <div class="graph-instructions">↳ kéo node · cuộn để zoom · click để xem</div>
+    <svg class="graph-svg" id="graph">
+      <g id="graph-g">
+        <g id="links-g"></g>
+        <g id="nodes-g"></g>
+      </g>
+    </svg>
+    <div class="graph-controls">
+      <button class="ctrl-btn" id="zoom-in" title="Zoom in">+</button>
+      <button class="ctrl-btn" id="zoom-out" title="Zoom out">−</button>
+      <button class="ctrl-btn" id="zoom-fit" title="Fit">⊡</button>
+    </div>
+    <div class="graph-legend">
+      <div class="legend-title">Nhóm nodes</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#e0832f"></div>Dự án Cosmo Central</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#2d9cae"></div>Masterise Group</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#4a9fd8"></div>Masterise Homes</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#a978f0"></div>Đối tác quốc tế</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#39c5a8"></div>The Global City</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#e072b0"></div>Phân khu & Cụm</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#e6c068"></div>Sự kiện cộng đồng</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#f0883e"></div>Hạ tầng khu Đông</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#45c463"></div>Tài chính & Thị trường</div>
+    </div>
+  </main>
+
+  <aside class="detail-panel" id="detail-panel">
+    <div class="detail-empty" id="detail-empty">
+      <div class="detail-empty-icon">⌬</div>
+      <div class="detail-empty-title">Chọn một node để xem chi tiết</div>
+      <div class="detail-empty-desc">Click node trong graph hoặc sidebar để xem thông số, key talking point và các liên kết. Nhấn nút <strong style="color:var(--gold-2)">◉ Xem 360°</strong> để mở phối cảnh tổng thể dự án ở tab mới.</div>
+    </div>
+    <div class="detail-content" id="detail-content" style="display:none"></div>
+  </aside>
+</div>
+
+<script>
+const VIEW360_URL = "https://masterisehomes.com/the-global-city/project-view-360/tong-the/";
+
+const CATEGORIES = {
+  project:    { label: 'Dự án Cosmo Central', color: '#e0832f', radius: 15 },
+  group:      { label: 'Masterise Group', color: '#2d9cae', radius: 11 },
+  brand:      { label: 'Masterise Homes', color: '#4a9fd8', radius: 10 },
+  partner:    { label: 'Đối tác quốc tế', color: '#a978f0', radius: 9 },
+  masterplan: { label: 'The Global City', color: '#39c5a8', radius: 12 },
+  cluster:    { label: 'Phân khu & Cụm', color: '#e072b0', radius: 9 },
+  event:      { label: 'Sự kiện cộng đồng', color: '#e6c068', radius: 8 },
+  infra:      { label: 'Hạ tầng khu Đông', color: '#f0883e', radius: 10 },
+  finance:    { label: 'Tài chính & Thị trường', color: '#45c463', radius: 9 }
+};
+
+const NODES = [
+  // ─── CENTER: PROJECT ───
+  { id: 'cosmo-central', label: 'Masteri Cosmo Central', cat: 'project', sub: 'NEXUS ZONE · CT3–CT4',
+    facts: [
+      ['Chủ đầu tư', 'Masterise Homes®'],
+      ['Vị trí', 'Lõi The Global City, Đỗ Xuân Hợp, P. Bình Trưng'],
+      ['Quy mô', '6 tháp 19–29 tầng + 3 khối đế + 2 hầm'],
+      ['Loại hình', 'Căn hộ + Office + TMDV'],
+      ['Sản phẩm', '1PN → 4PN, Penthouse, Duplex'],
+      ['Sở hữu', 'Lâu dài (khách quốc tịch VN)'],
+      ['Ra mắt', '15/01/2026'],
+      ['Bàn giao dự kiến', 'Q3/2028']
+    ],
+    desc: '<p><strong>Masteri Cosmo Central</strong> là phân khu cao tầng mới nhất trong lõi <em>The Global City</em> — nằm tại CT3 + CT4 ngay trục Đỗ Xuân Hợp, được định vị là "trái tim" của khu đô thị. Gồm <strong>6 tháp 19–29 tầng</strong>, 3 tầng khối đế thương mại và 2 tầng hầm kết nối.</p><p>Sản phẩm chính cho phân khúc <strong>căn hộ cao cấp</strong>: 1PN/1PN+/2PN/2PN+/3PN/4PN, Penthouse, Duplex. Mặt bằng B1 (tầng 5–15) ~19 căn/sàn; B2 (tầng 12B–17) ~12 căn/sàn, view kênh đào nhạc nước và SOHO.</p><p>Đây là dự án Masterise đầu tiên mở bán ngay vào "thời điểm vàng" hạ tầng khu Đông hội tụ 2026–2027, với lịch bàn giao Q3/2028 rơi đúng vào giai đoạn định giá lại của toàn khu vực.</p>',
+    talkpoint: '"Cosmo Central không bán một căn hộ — nó bán vị trí trái tim của khu đô thị duy nhất tại TP.HCM do Foster + Partners quy hoạch, ngay thời điểm hạ tầng khu Đông về đích đồng loạt."'
+  },
+  { id: 'nexus-zone', label: 'Phân khu Nexus Zone', cat: 'project', sub: 'Giao điểm của mọi kết nối',
+    facts: [
+      ['Định vị', 'Giao điểm của mọi kết nối'],
+      ['Slogan', 'Sống trọn vẹn từng nhịp cộng hưởng'],
+      ['Vị trí cụm', 'CT3–CT4 (Work-life Synergy)']
+    ],
+    desc: '<p><strong>Nexus Zone</strong> là tên phân khu mở bán của Masteri Cosmo Central — định vị <em>"Giao điểm của mọi kết nối"</em>, hướng đến giới chuyên gia, doanh nhân, công dân toàn cầu đề cao cân bằng công việc – cuộc sống.</p><p>Liền kề khu Office và trục thương mại, 2 bên là kênh đào nhạc nước. Đây là "thấu kính cộng hưởng" của phong cách sống thế hệ mới: con người – không gian – trải nghiệm.</p>',
+    talkpoint: '"Nexus = điểm hội tụ. Khách của Nexus Zone là người muốn sống ngay giao điểm: vừa cạnh chỗ làm, vừa cạnh kênh nhạc nước, vừa cạnh trung tâm thương mại."'
+  },
+  { id: 'terra-tropical', label: 'Thiết kế Terra Tropical', cat: 'project', sub: 'Ngôn ngữ kiến trúc',
+    facts: [
+      ['Phong cách', 'Nhiệt đới hiện đại, xếp lớp chuyển động'],
+      ['Đặc trưng', 'Ban công rộng, kính toàn cảnh kịch trần'],
+      ['Triết lý', 'Kết nối liền mạch trong – ngoài']
+    ],
+    desc: '<p><strong>Terra Tropical</strong> là ngôn ngữ thiết kế riêng của Cosmo Central — nhịp điệu đô thị gặp tinh thần nhiệt đới hiện đại. Kiến trúc xếp lớp nhiều tầng chuyển động, ban công rộng mở, hệ cửa kính toàn cảnh phóng tầm ra đại cảnh đô thị.</p><p>Cộng hưởng giữa chuẩn sống Masteri Collection và hệ tiện ích quốc tế The Global City tạo nên không gian đa sắc.</p>',
+    talkpoint: '"Terra Tropical không phải kiểu hộp kính lạnh lẽo — nó là kiến trúc thở được, đón gió đón sáng, đúng tinh thần sống nhiệt đới nhưng chuẩn quốc tế."'
+  },
+  { id: 'amenities', label: '29+ Tiện ích đặc quyền', cat: 'project', sub: '23 ngoài trời + 6 trong nhà',
+    facts: [
+      ['Tổng', '23 tiện ích ngoài trời + 6 trong nhà'],
+      ['Hồ bơi', 'Vô cực + Jacuzzi + hồ trẻ em + nước nóng'],
+      ['Làm việc', 'Business lounge, Co-working, thư viện'],
+      ['Sức khoẻ', 'Gym, Yoga, sàn tắm nắng'],
+      ['Gia đình', 'Kid playground, Teen club, BBQ']
+    ],
+    desc: '<p>Hệ tiện ích <strong>23 ngoài trời + 6 trong nhà</strong> (một số tài liệu cộng gộp tiện ích The Global City thành "50+"). Nổi bật: hồ bơi vô cực + jacuzzi + hồ nước nóng, sảnh cư dân 5 sao mỗi tháp, Business Lounge, Co-working Space, thư viện, phòng Gym, phòng Yoga, Kid Playground, Teen Club, chòi BBQ, bến kayak trên kênh.</p>',
+    talkpoint: '"Cư dân có cả không gian làm việc (Business Lounge, Co-working) lẫn nghỉ ngơi (hồ vô cực, yoga, teen club) trong cùng một khối đế — đúng tinh thần work-life synergy của CT3–CT4."'
+  },
+  { id: 'sales-policy', label: 'Chính sách khảo sát', cat: 'project', sub: 'Dự kiến — theo từng đợt CĐT',
+    facts: [
+      ['Đặt trước', '100 triệu/căn'],
+      ['Early Bird KH thường', '-1% (đến hết 31/05/2026)'],
+      ['Cư dân Masterise', '-2%'],
+      ['Hỗ trợ phí QL', '24 tháng'],
+      ['Vay HTLS', '70%, lãi suất 0% đến 31/10/2028'],
+      ['Chiết khấu TT sớm', 'lên đến -11%']
+    ],
+    desc: '<p>Chính sách khảo sát dự kiến (áp dụng theo từng thời điểm ban hành của CĐT). Đặt trước <strong>100 triệu</strong>; Early Bird -1% (KH thường) / -2% (cư dân Masterise) đến hết 31/05/2026; hỗ trợ phí quản lý 24 tháng kể từ thông báo bàn giao.</p><p>Các luồng thanh toán: theo tiến độ (HT -7%), thanh toán sớm (-9% đến -11%), vay vốn HTLS 70% lãi 0% đến 31/10/2028 (tối đa 6 tháng sau đủ điều kiện bàn giao).</p>',
+    talkpoint: '"Booking chỉ 100 triệu, early bird đến 31/5, cư dân Masterise thêm 2%, vay 0% lãi tới cuối 2028 — đòn bẩy này giúp khách giữ dòng tiền trong suốt giai đoạn hạ tầng về đích."'
+  },
+  { id: 'view-360', label: '◉ Xem phối cảnh 360°', cat: 'project', sub: 'Mở tab mới', is360: true,
+    facts: [['Loại', 'Tương tác 360° tổng thể'], ['Nguồn', 'masterisehomes.com']],
+    desc: '<p>Trải nghiệm phối cảnh tổng thể <strong>The Global City</strong> dạng 360° tương tác — xoay toàn cảnh dự án, kênh đào nhạc nước, các phân khu và vị trí Masteri Cosmo Central.</p><p>Nhấn nút bên dưới để mở trong <strong>tab mới</strong>.</p>',
+    talkpoint: '"Cho khách xoay 360° ngay trên màn hình — họ thấy được vị trí trái tim của Cosmo Central giữa toàn cảnh kênh nhạc nước và SOHO trước khi tới nhà mẫu."'
+  },
+
+  // ─── MASTERISE GROUP ───
+  { id: 'masterise-group', label: 'Masterise Group', cat: 'group',
+    facts: [
+      ['Thành lập', '2007 (tiền thân Thảo Điền Investment)'],
+      ['Đổi tên', '2019 → Masterise Group'],
+      ['Vốn điều lệ', 'VND 6,727 tỷ → 35,200 tỷ (8/2025)'],
+      ['Chủ tịch', 'Hồ Anh Minh (sinh 1995, từ 13/1/2025)'],
+      ['Mảng', 'BĐS · Vận hành · Hospitality · Hạ tầng']
+    ],
+    desc: '<p><strong>Masterise Group</strong> (tiền thân CTCP Đầu tư Thảo Điền, 2007; đổi tên 2019) là tập đoàn tư nhân đa ngành. Vốn điều lệ được nâng từ VND 6,727 tỷ lên <strong>hơn 35,200 tỷ</strong> (8/2025) để phục vụ bước chuyển sang hạ tầng quốc gia.</p><p>Hệ sinh thái: Masterise Homes (phát triển BĐS hàng hiệu), Masterise Property Management (vận hành), Masterise Hospitality & Entertainment (TTTM, sự kiện), Masterise Agents (phân phối), và các pháp nhân hạ tầng mới (hàng không, cầu).</p>',
+    talkpoint: '"Vốn điều lệ Masterise tăng gấp hơn 5 lần lên 35.200 tỷ chỉ trong một năm — đó là tín hiệu của một tập đoàn đang chuyển mình từ nhà phát triển BĐS thành nhà kiến tạo hạ tầng quốc gia."'
+  },
+  { id: 'ho-hung-anh', label: 'Hệ sinh thái Techcombank', cat: 'group', sub: 'Bên liên quan',
+    facts: [
+      ['Liên quan', 'Gia đình Chủ tịch Techcombank Hồ Hùng Anh'],
+      ['Sở hữu', 'Vợ + con trai Hồ Anh Minh > 10% mỗi người'],
+      ['Phó CT', 'Hồ Anh Ngọc']
+    ],
+    desc: '<p>Theo Tuổi Trẻ (14/3/2025), Masterise Group là <em>bên có liên quan đến Techcombank</em>, do gia đình Chủ tịch Techcombank <strong>Hồ Hùng Anh</strong> chi phối: vợ (bà Nguyễn Thị Thanh Thủy) và con trai Hồ Anh Minh (sinh 1995) mỗi người sở hữu trên 10%; em trai Hồ Anh Ngọc là Phó Chủ tịch.</p><p>Mối liên hệ này mang lại nền tảng tài chính và quản trị vững — yếu tố quan trọng cho cam kết bàn giao đúng hẹn.</p>',
+    talkpoint: '"Đứng sau Masterise là hệ sinh thái Techcombank — một trong những ngân hàng tư nhân lớn nhất Việt Nam. Năng lực tài chính này là bảo chứng cho tiến độ dự án."'
+  },
+  { id: 'masterise-pm', label: 'Masterise Property Mgmt', cat: 'group', sub: 'Vận hành chuẩn quốc tế',
+    facts: [['Vai trò', 'Vận hành & quản lý BĐS'], ['Áp dụng', 'The Global City + Cosmo Central']],
+    desc: '<p><strong>Masterise Property Management</strong> vận hành và quản lý The Global City cũng như Masteri Cosmo Central theo tiêu chuẩn quốc tế — yếu tố giữ giá trị tài sản và chất lượng sống dài hạn.</p>',
+    talkpoint: '"Cùng một đơn vị vận hành đẳng cấp đang quản lý Grand Marina sẽ vận hành Cosmo Central — chuẩn dịch vụ không đổi."'
+  },
+  { id: 'masterise-he', label: 'Masterise Hospitality & Ent.', cat: 'group', sub: 'TTTM · Sự kiện',
+    facts: [['Vai trò', 'TTTM, F&B, sự kiện tại The Global City']],
+    desc: '<p>Mảng <strong>Hospitality & Entertainment</strong> vận hành trung tâm thương mại, F&B và chuỗi sự kiện quy mô lớn tại The Global City — biến khu đô thị thành điểm đến sống động (concert, lễ hội, thể thao).</p>',
+    talkpoint: '"Chính đội ngũ này tạo ra ATVCG, SOOBIN, Global Wishmas — biến The Global City thành nơi cả Sài Gòn đổ về, kéo theo giá trị cho cư dân."'
+  },
+  { id: 'cau-phu-my-2', label: 'Cầu Phú Mỹ 2', cat: 'group', sub: 'Masterise đầu tư · TP.HCM–Đồng Nai',
+    facts: [
+      ['Tổng đầu tư', '~VND 23,186 tỷ'],
+      ['Quy mô', '8 làn, 6.3 km, dây văng 2 tầng đầu tiên TP.HCM'],
+      ['Tĩnh không', '55m (cao nhất nhóm)'],
+      ['Khởi công', '15/01/2026'],
+      ['Kết nối', 'Nguyễn Hữu Thọ → Đường liên cảng Đồng Nai']
+    ],
+    desc: '<p><strong>Cầu Phú Mỹ 2</strong> (~VND 23,186 tỷ, PPP) — cầu dây văng <em>2 tầng đầu tiên tại TP.HCM</em>, 8 làn, 6.3 km, tĩnh không 55m. Khởi công 15/01/2026. Tạo trục nhanh Phú Mỹ Hưng → sân bay Long Thành.</p><p>Đây là minh chứng cho năng lực hạ tầng của Masterise — không chỉ xây nhà mà xây cả huyết mạch giao thông quốc gia.</p>',
+    talkpoint: '"Masterise tự bỏ vốn xây cây cầu 23.000 tỷ kết nối TP.HCM – Đồng Nai. Một chủ đầu tư có thể làm hạ tầng quốc gia thì chuyện bàn giao đúng hẹn một dự án căn hộ là điều đương nhiên."'
+  },
+  { id: 'cau-can-gio', label: 'Cầu Cần Giờ', cat: 'group', sub: 'Masterise nghiên cứu đầu tư',
+    facts: [
+      ['Tổng đầu tư', '~VND 13,200 tỷ'],
+      ['Quy mô', '6 làn, dây văng vượt sông Soài Rạp'],
+      ['Khởi công', '15/01/2026 (chính thức 3/6/2026)'],
+      ['Hoàn thành', '30/6/2029'],
+      ['Thay thế', 'Phà Bình Khánh']
+    ],
+    desc: '<p><strong>Cầu Cần Giờ</strong> (~VND 13,200 tỷ, PPP) — phá thế độc đạo phà Bình Khánh, rút Nhà Bè – Cần Giờ từ 2 giờ xuống 40–50 phút. Khởi công 15/01/2026, hoàn thành 30/6/2029. Kiến trúc dây văng lấy cảm hứng cây đước.</p>',
+    talkpoint: '"Phú Mỹ 2, Cần Giờ, Gia Bình — ba dự án hạ tầng cùng một nhà đầu tư. Đó là tầm vóc của tập đoàn đứng sau Cosmo Central."'
+  },
+  { id: 'gia-binh-airport', label: 'Sân bay QT Gia Bình', cat: 'group', sub: 'Masterise đầu tư · Bắc Ninh',
+    facts: [
+      ['Tổng đầu tư', '~VND 196,378 tỷ'],
+      ['Quy mô', '~1,960 ha, ICAO 4F, 2 đường băng 3,500m'],
+      ['Công suất 2030', '30 triệu khách + 1.6 triệu tấn'],
+      ['Công suất 2050', '50 triệu khách + 2.5 triệu tấn'],
+      ['Phê duyệt', 'Quốc hội — NQ 256/2025/QH15 (11/12/2025)'],
+      ['Pháp nhân', 'CTCP Hạ tầng HK Masterise (80%)']
+    ],
+    desc: '<p><strong>Cảng hàng không quốc tế Gia Bình</strong> (Bắc Ninh) — tổng đầu tư <strong>~VND 196,378 tỷ</strong>, được Quốc hội thông qua chủ trương cho Masterise đầu tư ngày 11/12/2025 (NQ 256/2025/QH15). Công suất 30 triệu khách (2030) → 50 triệu (2050), chuẩn ICAO 4F, mục tiêu 5 sao Skytrax top-10 thế giới.</p>',
+    talkpoint: '"Quốc hội giao Masterise đầu tư siêu sân bay 196.000 tỷ. Đây là cấp độ tín nhiệm cao nhất một doanh nghiệp tư nhân có thể đạt được tại Việt Nam."'
+  },
+
+  // ─── MASTERISE HOMES ───
+  { id: 'masterise-homes', label: 'Masterise Homes', cat: 'brand', sub: '11 năm · 27+ dự án',
+    facts: [
+      ['Khởi đầu', '2014 — Masteri Thảo Điền'],
+      ['Quy mô', '27+ dự án đẳng cấp quốc tế'],
+      ['Phạm vi', 'HCM · Hà Nội · Hải Phòng · Đà Nẵng'],
+      ['3 phân khúc', 'Branded Residences · LUMIÈRE · Masteri Collection']
+    ],
+    desc: '<p><strong>Masterise Homes®</strong> — nhà phát triển BĐS hàng hiệu tiên phong đưa chuẩn sống quốc tế về Việt Nam, hợp tác Marriott, Ritz-Carlton, JW Marriott, Elie Saab, Foster + Partners, WATG.</p><p>Hành trình 11 năm từ Masteri Thảo Điền (2014) đến Masteri Cosmo Central (2026), dẫn dắt thị trường với 3 phân khúc: Branded Residences, LUMIÈRE Series, Masteri Collection.</p>',
+    talkpoint: '"11 năm, 27+ dự án, từ Masteri Thảo Điền đến Grand Marina. Cosmo Central kế thừa toàn bộ kinh nghiệm đó."'
+  },
+  { id: 'masteri-collection', label: 'Masteri Collection', cat: 'brand', sub: '15 dự án · ~27,200 căn',
+    facts: [
+      ['Số dự án', '15'],
+      ['Số căn', '~27,200'],
+      ['Triết lý', 'Đô thị vị nhân sinh'],
+      ['Cosmo Central', 'thuộc dòng này']
+    ],
+    desc: '<p><strong>Masteri Collection</strong> là dòng sản phẩm cao cấp cốt lõi của Masterise Homes (15 dự án, ~27,200 căn) — mang triết lý <em>"Đô thị vị nhân sinh"</em>, lấy con người làm trung tâm.</p><p><strong>Masteri Cosmo Central thuộc dòng này</strong>, thiết kế cho công dân toàn cầu hướng đến tiêu chuẩn sống quốc tế: kết nối toàn diện công việc – giáo dục – y tế – giải trí.</p>',
+    talkpoint: '"Masteri Collection = chuẩn sống quốc tế cho công dân toàn cầu. Cosmo Central là phiên bản mới nhất, đặt ngay trái tim The Global City."'
+  },
+  { id: 'lumiere-series', label: 'LUMIÈRE Series', cat: 'brand', sub: '8 dự án · ~14,500 căn',
+    facts: [['Số dự án', '8'], ['Số căn', '~14,500'], ['Tại TGC', 'LUMIÈRE Midtown']],
+    desc: '<p><strong>LUMIÈRE Series</strong> (8 dự án, ~14,500 căn) — dòng căn hộ cao cấp biểu tượng sống tinh anh. Tại The Global City có LUMIÈRE Midtown.</p>',
+    talkpoint: '"LUMIÈRE và Masteri Collection cùng tồn tại trong The Global City — cư dân Cosmo Central sống cạnh cả một hệ thương hiệu Masterise."'
+  },
+  { id: 'branded-residences', label: 'Branded Residences', cat: 'brand', sub: '3 dự án · ~14,500 căn',
+    facts: [['Số dự án', '3'], ['Gồm', 'Grand Marina · The Grand Hanoi · The Rivus']],
+    desc: '<p>Phân khúc <strong>BĐS hàng hiệu quốc tế</strong> (3 dự án) đặt Masterise vào nhóm hiếm hoi toàn cầu: Grand Marina Saigon (Marriott & JW Marriott lớn nhất thế giới), The Grand Hanoi (Ritz-Carlton thứ 5 châu Á – TBD), The Rivus (121 dinh thự Elie Saab duy nhất VN).</p>',
+    talkpoint: '"Một chủ đầu tư làm được căn hộ hàng hiệu Marriott, Ritz-Carlton, Elie Saab thì chuẩn hoàn thiện ở Cosmo Central nằm trong cùng một hệ DNA."'
+  },
+  { id: 'masteri-thao-dien', label: 'Masteri Thảo Điền', cat: 'brand', sub: 'Chứng cứ tăng giá · 2014',
+    facts: [
+      ['Mở bán', '2014 @ ~35 triệu/m²'],
+      ['Hiện tại', '~100–131 triệu/m² (2025–26)'],
+      ['Tăng', '~3–4× trong một thập kỷ'],
+      ['Động lực', 'Metro số 1 vận hành']
+    ],
+    desc: '<p><strong>Masteri Thảo Điền</strong> — dự án đưa tên tuổi Masterise lên bản đồ. Mở bán 2014 ở mức <strong>~35 triệu/m²</strong>, thứ cấp 2025–26 đạt <strong>~100–131 triệu/m²</strong> (Nhà Tốt) — tăng ~3–4 lần một thập kỷ, cộng hưởng Metro số 1.</p>',
+    talkpoint: '"Masteri Thảo Điền 35 triệu năm 2014, nay hơn 100 triệu/m². Đó là track record tăng giá thực của thương hiệu Masteri ngay tại TP.HCM."'
+  },
+  { id: 'grand-marina', label: 'Grand Marina Saigon', cat: 'brand', sub: 'Marriott & JW Marriott · Q1',
+    facts: [
+      ['Vị trí', 'Ba Son, Quận 1 — 10 ha'],
+      ['Thương hiệu', 'Marriott & JW Marriott lớn nhất thế giới'],
+      ['Mốc', 'Marriott Lake tower khai trương 14/11/2023']
+    ],
+    desc: '<p><strong>Grand Marina Saigon</strong> — khu căn hộ hàng hiệu Marriott & JW Marriott <em>lớn nhất thế giới</em>, 10 ha tại Ba Son Q1. JW Marriott Residences Sea tower (2/2025) là khu hàng hiệu JW Marriott đô thị đầu tiên châu Á – TBD.</p>',
+    talkpoint: '"Grand Marina là đỉnh tháp thương hiệu Masterise. Cosmo Central thừa hưởng cùng tiêu chuẩn thi công và vận hành."'
+  },
+  { id: 'the-grand-hanoi', label: 'The Grand Hanoi', cat: 'brand', sub: 'Ritz-Carlton Residences',
+    facts: [['Vị trí', '22–24 Hàng Bài, Hà Nội'], ['Thương hiệu', 'Ritz-Carlton thứ 5 châu Á – TBD']],
+    desc: '<p><strong>The Grand Hanoi</strong> — The Ritz-Carlton Residences thứ 5 tại châu Á – Thái Bình Dương, vị trí kim cương Hàng Bài, khai trương 5/2024.</p>'
+  },
+  { id: 'the-rivus', label: 'The Rivus by Elie Saab', cat: 'brand', sub: '121 dinh thự Elie Saab',
+    facts: [
+      ['Quy mô', '121 dinh thự — duy nhất VN'],
+      ['Thương hiệu', 'Elie Saab (Haute Couture)'],
+      ['Giải', 'Best Residential Design in Asia 2025 (AADA)']
+    ],
+    desc: '<p><strong>The Rivus</strong> — 121 dinh thự hàng hiệu Elie Saab độc nhất Việt Nam (chỉ ~500 căn toàn cầu), trong Vinhomes Grand Park. Đạt giải "Best Residential Design in Asia 2025".</p>'
+  },
+
+  // ─── PARTNERS ───
+  { id: 'foster-partners', label: 'Foster + Partners', cat: 'partner', sub: 'Quy hoạch tổng thể TGC',
+    facts: [
+      ['Vai trò', 'Cố vấn kiến trúc & quy hoạch tổng thể TGC'],
+      ['Ký kết', '22/02/2022, London'],
+      ['Công trình', 'Apple HQ · Sân bay Hong Kong · Bloomberg HQ'],
+      ['Sáng lập', 'Norman Foster (Pritzker Prize)']
+    ],
+    desc: '<p><strong>Foster + Partners</strong> — studio kiến trúc huyền thoại đứng sau Apple Park, sân bay quốc tế Hong Kong, Bloomberg HQ London, tòa Gherkin, sân Wembley, Lusail Stadium. Norman Foster đoạt giải Pritzker.</p><p>F+P được bổ nhiệm làm <strong>cố vấn kiến trúc & quy hoạch tổng thể The Global City</strong> (22/02/2022) — township đầu tiên của F+P tại Việt Nam, đồng thời định hướng kiến trúc Cosmo Central.</p>',
+    talkpoint: '"The Global City là khu đô thị DUY NHẤT tại TP.HCM do Foster + Partners — studio thiết kế Apple Park và sân bay Hong Kong — quy hoạch. Không có đối thủ nào có pedigree này."'
+  },
+  { id: 'watg', label: 'WATG', cat: 'partner', sub: 'Cảnh quan TGC',
+    facts: [['Vai trò', 'Quy hoạch cảnh quan TGC'], ['Vị thế', 'Top 3 hãng thiết kế hospitality thế giới']],
+    desc: '<p><strong>WATG</strong> — một trong những hãng thiết kế hospitality lớn nhất thế giới (top 3 BD+C Giants 400 2025), phụ trách cảnh quan The Global City: bố trí không gian, ánh sáng, gió, 450.000 m² cây xanh & mặt nước.</p>',
+    talkpoint: '"450.000 m² cây xanh và mặt nước được quy hoạch bởi WATG — triết lý đối thoại với thiên nhiên ngay giữa lõi đô thị."'
+  },
+  { id: 'marriott', label: 'Marriott International', cat: 'partner',
+    facts: [['Hợp tác', 'Grand Marina (Marriott, JW Marriott)']],
+    desc: '<p>Tập đoàn khách sạn hàng đầu thế giới — đối tác thương hiệu của Masterise tại Grand Marina Saigon (Marriott & JW Marriott Residences).</p>'
+  },
+  { id: 'ritz-carlton', label: 'The Ritz-Carlton', cat: 'partner',
+    facts: [['Hợp tác', 'The Grand Hanoi']],
+    desc: '<p>Thương hiệu khách sạn siêu sang — The Ritz-Carlton Residences tại The Grand Hanoi (thứ 5 châu Á – TBD).</p>'
+  },
+  { id: 'elie-saab', label: 'Elie Saab', cat: 'partner',
+    facts: [['Hợp tác', 'The Rivus — 121 dinh thự']],
+    desc: '<p>Nhà mốt Haute Couture Lebanon — lần đầu thiết kế dinh thự hàng hiệu tại Việt Nam qua The Rivus.</p>'
+  },
+
+  // ─── THE GLOBAL CITY ───
+  { id: 'the-global-city', label: 'The Global City', cat: 'masterplan', sub: '117.4 ha · Foster + Partners',
+    facts: [
+      ['Quy mô', '117.4 ha'],
+      ['Chủ đầu tư', 'Masterise Homes'],
+      ['Quy hoạch', 'Foster + Partners (22/02/2022)'],
+      ['Cảnh quan', 'WATG — 450,000 m² xanh & mặt nước'],
+      ['Vị trí', 'Đỗ Xuân Hợp, P. Bình Trưng, TP.HCM'],
+      ['Định vị', 'Biểu tượng trung tâm chuẩn sống toàn cầu']
+    ],
+    desc: '<p><strong>The Global City</strong> — khu đô thị phức hợp 117.4 ha do Masterise Homes phát triển, là khu đô thị <em>duy nhất tại TP.HCM</em> được Foster + Partners quy hoạch tổng thể. Mô hình all-in-one quốc tế: TTTM 123,000 m², 6 trường quốc tế, 1 bệnh viện quốc tế, kênh đào nhạc nước lớn nhất Đông Nam Á (2km), SOHO, City Park, Speedway.</p><p>Định vị "Biểu tượng trung tâm chuẩn sống toàn cầu" — New Downtown phía Đông, giữa Thủ Thiêm IFC và sân bay Long Thành.</p>',
+    talkpoint: '"The Global City không phải dự án — là một thành phố thu nhỏ chuẩn quốc tế 117 ha. Cosmo Central nằm ngay trái tim của thành phố đó."'
+  },
+  { id: 'canal-of-love', label: 'Kênh đào nhạc nước', cat: 'masterplan', sub: 'Lớn nhất Đông Nam Á · 2km',
+    facts: [['Chiều dài', '~2 km'], ['Vị thế', 'Kênh nhạc nước al-fresco lớn nhất ĐNÁ']],
+    desc: '<p><strong>Kênh đào nhạc nước</strong> dài hơn 2km — lớn nhất Đông Nam Á, chạy xuyên The Global City. Cosmo Central có view trực tiếp ra kênh, với bến kayak nội khu.</p>',
+    talkpoint: '"Căn hộ view kênh nhạc nước lớn nhất Đông Nam Á — đây là loại view không thể sao chép ở bất kỳ dự án nào khác TP.HCM."'
+  },
+  { id: 'tttm-mall', label: 'TTTM 123,000 m²', cat: 'masterplan', sub: 'Grade-A shopping mall',
+    facts: [['Quy mô', '~123,000 m² (một số tài liệu 125,000)'], ['Hạng', 'Grade-A, thuộc nhóm lớn nhất VN']],
+    desc: '<p>Trung tâm thương mại Grade-A ~123,000 m² — thuộc nhóm lớn nhất Việt Nam, đi bộ 5 phút từ Cosmo Central.</p>'
+  },
+  { id: 'soho-district', label: 'Khu SOHO', cat: 'masterplan', sub: 'Phố thương mại sôi động',
+    facts: [['Loại', 'Shophouse thấp tầng'], ['Vị trí', 'Liền kề Cosmo Central']],
+    desc: '<p>Khu phố thương mại <strong>SOHO</strong> — shophouse thấp tầng sôi động, đi bộ 1 phút từ Cosmo Central, tạo nhịp sống thương mại ngay dưới chân tháp.</p>'
+  },
+  { id: 'tgc-school-hospital', label: '6 trường QT + BV QT', cat: 'masterplan', sub: 'All-in-one',
+    facts: [['Giáo dục', '6 trường tiêu chuẩn quốc tế'], ['Y tế', '1 bệnh viện tiêu chuẩn quốc tế']],
+    desc: '<p>The Global City quy hoạch <strong>6 trường học quốc tế + 1 bệnh viện quốc tế</strong> nội khu — đáp ứng nhu cầu giáo dục, y tế trong bán kính đi bộ, đúng tiêu chí top khách hàng ưu tiên (giáo dục 33%, y tế 32%).</p>',
+    talkpoint: '"Trường quốc tế và bệnh viện quốc tế ngay trong khu đô thị — con đi học, ông bà khám bệnh đều trong bán kính đi bộ. Đó là all-in-one thật sự."'
+  },
+
+  // ─── SUB-ZONES & CLUSTER ───
+  { id: 'masteri-park-place', label: 'Masteri Park Place', cat: 'cluster', sub: 'CT5 · The Global City',
+    facts: [['Vị trí', 'CT5, ôm 2 mặt nước'], ['Định vị', 'Giao điểm năng lượng']],
+    desc: '<p>Phân khu cao tầng tại CT5 The Global City — "giao điểm năng lượng" ôm trọn 2 mặt nước. Cùng hệ sinh thái với Cosmo Central.</p>'
+  },
+  { id: 'masteri-grand-view', label: 'Masteri Grand View', cat: 'cluster', sub: 'Mặt tiền kim cương',
+    facts: [['Định vị', 'Flexi-luxury, modernista'], ['Giá tham khảo', '~120–130 triệu/m² (môi giới)']],
+    desc: '<p>Phân khu cao tầng đầu tiên tại vị trí "kim cương" mặt tiền The Global City. Giá môi giới tham khảo ~120–130 triệu/m².</p>'
+  },
+  { id: 'lumiere-midtown', label: 'LUMIÈRE Midtown', cat: 'cluster', sub: 'The Art of Living',
+    facts: [['Dòng', 'LUMIÈRE Series tại TGC'], ['Giá tham khảo', '~150–160 triệu/m² (môi giới)']],
+    desc: '<p>Biểu tượng dòng LUMIÈRE tại The Global City — kiến trúc New York hiện đại. Giá môi giới tham khảo ~150–160 triệu/m².</p>'
+  },
+  { id: 'sola', label: 'SOLA Villas', cat: 'cluster', sub: 'Dinh thự biểu tượng',
+    facts: [['Loại', 'Biệt thự/dinh thự'], ['Giá đất tham khảo', '~380–570 triệu/m² (môi giới)']],
+    desc: '<p>Dòng dinh thự biểu tượng tại The Global City. Giá đất môi giới tham khảo ~380–570 triệu/m² — cho thấy mặt bằng giá thấp tầng trong khu đã rất cao.</p>'
+  },
+  { id: 'rach-chiec', label: 'KLH TDTT Rạch Chiếc', cat: 'cluster', sub: 'Sun Group · 186.78 ha',
+    facts: [
+      ['Quy mô', '186.78 ha'],
+      ['Vốn', '~VND 145,629 tỷ (~6 tỷ USD)'],
+      ['Sân vận động', '65,000–75,000 chỗ'],
+      ['Khởi công', '15/01/2026'],
+      ['Tầm nhìn', '2030 — biểu tượng quốc gia']
+    ],
+    desc: '<p><strong>Khu liên hợp TDTT Quốc gia Rạch Chiếc</strong> (Sun Group) — 186.78 ha, ~VND 145,629 tỷ, sân vận động 65,000–75,000 chỗ, nhà thi đấu 18,000 chỗ, trung tâm thể thao dưới nước, bệnh viện thể thao. Khởi công 15/01/2026.</p><p>Cùng Saigon Sports City (64 ha) và The Global City (117.4 ha) tạo thành cụm đô thị – thể thao ~368 ha duy nhất TP.HCM, kết nối trực tiếp qua đường Liên Phường.</p>',
+    talkpoint: '"Cosmo Central nằm trong cụm đô thị – thể thao 368 ha duy nhất TP.HCM: The Global City + Saigon Sports City + Rạch Chiếc. Cư dân có cả sân vận động quốc gia trong tầm tay."'
+  },
+  { id: 'saigon-sports-city', label: 'Saigon Sports City', cat: 'cluster', sub: '64 ha · cụm thể thao',
+    facts: [['Quy mô', '64 ha'], ['Ghi chú', 'Keppel đã bán 70% (2025), giữ 30%']],
+    desc: '<p><strong>Saigon Sports City</strong> 64 ha — mắt xích giữa Rạch Chiếc và The Global City trong cụm đô thị – thể thao 368 ha. Keppel đã chuyển nhượng 70% vốn (2025), giữ 30% làm căn hộ sau này.</p>'
+  },
+
+  // ─── EVENTS ───
+  { id: 'atvcg', label: 'Concert ATVCG', cat: 'event', sub: 'Anh Trai Vượt Ngàn Chông Gai',
+    facts: [['Thời gian', 'Chặng cuối 6–7/9/2025'], ['Quy mô', '20.000 → hơn 50.000 người/đêm']],
+    desc: '<p>Chuỗi concert <strong>"Anh Trai Vượt Ngàn Chông Gai"</strong> — chặng cuối 6–7/9/2025 tại The Global City, thu hút từ 20.000 lên hơn 50.000 người/đêm (Nhân Dân, VnExpress).</p>',
+    talkpoint: '"50.000 người đổ về The Global City trong một đêm concert. Đó là sức hút khu đô thị mà tiền không mua được — và cư dân Cosmo Central sống ngay tại đó."'
+  },
+  { id: 'soobin-concert', label: 'SOOBIN Concert', cat: 'event', sub: '29/11/2025 · sold-out',
+    facts: [['Thời gian', '29/11/2025'], ['Tên', 'All-Rounder The Final']],
+    desc: '<p>Live Concert <strong>SOOBIN "All-Rounder The Final"</strong> — 29/11/2025 tại The Global City, cháy vé (Báo Xây Dựng).</p>'
+  },
+  { id: 'quoc-thien', label: 'Quốc Thiên SKYNote', cat: 'event', sub: '22/11/2025 · ~10,000 người',
+    facts: [['Thời gian', '22/11/2025'], ['Tên', 'SKYNote 2025: The Reflection']],
+    desc: '<p>Concert <strong>Quốc Thiên "SKYNote 2025"</strong> — 22/11/2025 tại The Global City, gần 10.000 khán giả (TTXVN/Thể thao Văn hóa).</p>'
+  },
+  { id: 'ppa-tour', label: 'PPA Tour Asia', cat: 'event', sub: 'MB Vietnam Open 2025',
+    facts: [['Môn', 'Pickleball quốc tế'], ['Địa điểm', 'TGC Sports Complex / Arena']],
+    desc: '<p><strong>PPA Tour Asia — MB Vietnam Open 2025</strong> diễn ra tại The Global City Sports Complex — giải pickleball chuyên nghiệp quốc tế, định vị khu đô thị trên bản đồ thể thao khu vực.</p>'
+  },
+  { id: 'pink-run', label: 'Pink Run / Nón Hồng', cat: 'event', sub: '25/10/2025 · 5,000+ runner',
+    facts: [['Thời gian', '25/10/2025'], ['Quy mô', '>5,000 runner']],
+    desc: '<p><strong>Vietnam Women Run / Ngày hội Nón Hồng</strong> — 25/10/2025 tại The Global City, hơn 5.000 vận động viên (Người Lao Động).</p>'
+  },
+  { id: 'global-wishmas', label: 'Global Wishmas 2025', cat: 'event', sub: '12/2025 · lễ hội Giáng sinh',
+    facts: [['Thời gian', '20, 21, 24/12/2025'], ['Loại', 'Chợ Giáng sinh châu Âu + diễu hành']],
+    desc: '<p><strong>Global Wishmas 2025</strong> — chợ Giáng sinh phong cách châu Âu, diễu hành Wishmas, dàn nhạc giao hưởng, thuộc chuỗi Global Festive (13/12/2025 – 10/1/2026).</p>'
+  },
+  { id: 'daddy-cool', label: 'Daddy Cool Diner', cat: 'event', sub: 'Quán retro thường trực · City Park',
+    facts: [['Loại', 'Diner retro Mỹ thập niên 90'], ['Mở cửa', 'Tết 2026 · ~1,000+ khách/ngày']],
+    desc: '<p><strong>Daddy Cool</strong> — diner phong cách Mỹ retro thập niên 90 thường trực tại City Park (mở Tết 2026), thu hút ~1.000+ khách/ngày. Điểm đến hằng ngày chứ không chỉ sự kiện.</p>'
+  },
+
+  // ─── INFRASTRUCTURE ───
+  { id: 'lien-phuong', label: 'Đường Liên Phường', cat: 'infra', sub: 'Thông xe 8/11/2025',
+    facts: [
+      ['Chiều dài', '~6.7 km'],
+      ['Đoạn TGC', '1.6 km, lộ giới 60m, 6 làn'],
+      ['Kết nối', 'Cát Lái – Mai Chí Thọ → Vành đai 3'],
+      ['Mốc', 'Thông toàn tuyến kỹ thuật 8/11/2025']
+    ],
+    desc: '<p><strong>Đường Liên Phường</strong> (~6.7 km) nối Cát Lái – Mai Chí Thọ xuyên qua trái tim The Global City đến Vành đai 3. Đoạn kết nối TGC – Mai Chí Thọ dài 1.6 km, lộ giới 60m, 6 làn. Thông toàn tuyến kỹ thuật 8/11/2025 (cầu vượt rạch Mương Kinh).</p><p>Rút Thảo Điền → TGC còn ~5 phút; Thủ Thiêm/Q1 → TGC ~10–15 phút; kết nối thẳng cụm thể thao Rạch Chiếc.</p>',
+    talkpoint: '"Đường Liên Phường — chính Masterise tham gia làm — đã thông xe tháng 11/2025, đưa Thảo Điền về The Global City chỉ còn 5 phút. Hạ tầng không còn là lời hứa, nó đã chạy."'
+  },
+  { id: 'nut-giao-an-phu', label: 'Nút giao An Phú', cat: 'infra', sub: 'Hoàn thành Q2/2026',
+    facts: [
+      ['Quy mô', 'Nút giao 3 tầng — VND 3,408 tỷ'],
+      ['HC1-01', 'Thông xe 30/6/2025'],
+      ['Cầu N2', 'Thông xe 31/12/2025'],
+      ['HC1-02', 'Thông xe 2/2/2026'],
+      ['Hoàn thành', 'Q2/2026']
+    ],
+    desc: '<p><strong>Nút giao An Phú</strong> — nút giao 3 tầng VND 3,408 tỷ, cửa ngõ biểu tượng mới phía Đông. HC1-01 (30/6/2025), cầu N2 (31/12/2025), HC1-02 (2/2/2026) đã thông; hoàn thành toàn bộ Q2/2026. Tổ hợp N2 + HC1-02 giảm ~80% ùn tắc tại nút.</p>',
+    talkpoint: '"Khi nút giao An Phú hoàn thành Q2/2026, Cosmo Central kết nối thẳng cao tốc Long Thành và trung tâm Q1 — đúng lúc dự án vào giai đoạn tăng tốc thi công."'
+  },
+  { id: 'vanh-dai-2', label: 'Vành đai 2', cat: 'infra', sub: 'Lá chắn trục trung tâm · 2027',
+    facts: [
+      ['Đoạn 1+2+3', 'Cầu Phú Hữu → Gò Dưa, ~9km'],
+      ['Khởi công', '19/12/2025'],
+      ['Hoàn thành', '2027']
+    ],
+    desc: '<p><strong>Vành đai 2</strong> — đoạn 1+2+3 (cầu Phú Hữu → Võ Nguyên Giáp → Phạm Văn Đồng → Gò Dưa, ~9km) khởi công 19/12/2025, hoàn thành 2027. "Lá chắn trục trung tâm" — chuyển hướng xe lớn khỏi trục Đỗ Xuân Hợp / Mai Chí Thọ.</p>',
+    talkpoint: '"Vành đai 2 khép kín 2027 đẩy xe tải ra khỏi trục trung tâm — chất lượng sống quanh Cosmo Central được nâng lên rõ rệt."'
+  },
+  { id: 'vanh-dai-3', label: 'Vành đai 3', cat: 'infra', sub: 'Đòn bẩy kinh tế · 6/2026',
+    facts: [
+      ['Tổng', '76.34 km, ~VND 75,378 tỷ'],
+      ['Đoạn Đông 14.7km', 'Thông kỹ thuật 19/12/2025'],
+      ['Toàn tuyến', 'Vận hành 30/6/2026'],
+      ['Kết nối', 'HCM · Đồng Nai · Tây Ninh · BR-VT']
+    ],
+    desc: '<p><strong>Vành đai 3</strong> — 76.34 km, ~VND 75,378 tỷ. Đoạn Đông 14.7km cầu cạn qua Thủ Đức thông kỹ thuật 19/12/2025; toàn tuyến vận hành 30/6/2026. Đòn bẩy kinh tế liên vùng, kết nối cao tốc Long Thành.</p>',
+    talkpoint: '"Vành đai 3 vận hành 6/2026 — chỉ vài tháng trước khi Cosmo Central tăng tốc. Cả vùng Đông được tái định giá theo trục kinh tế mới này."'
+  },
+  { id: 'cao-toc-long-thanh', label: 'Mở rộng cao tốc Long Thành', cat: 'infra', sub: '8–10 làn · 12/2026',
+    facts: [
+      ['Quy mô', 'Mở rộng 8–10 làn xe'],
+      ['Khởi công', '19/8/2025'],
+      ['Hoàn thành', 'Dec 2026 (đồng bộ sân bay Long Thành)']
+    ],
+    desc: '<p><strong>Mở rộng cao tốc TP.HCM – Long Thành – Dầu Giây</strong> lên 8–10 làn (VEC), khởi công 19/8/2025, cơ bản hoàn thành Dec 2026 — đồng bộ với sân bay Long Thành. Cầu Long Thành đơn nguyên mới hợp long 12/2026.</p>',
+    talkpoint: '"Cao tốc mở rộng xong cuối 2026 — Cosmo Central tới sân bay Long Thành chỉ còn ~30 phút. Đó là khoảng cách của một đô thị sân bay đẳng cấp."'
+  },
+  { id: 'metro-2-tham-luong', label: 'Metro 2 — Tham Lương', cat: 'infra', sub: 'Khởi công 15/01/2026',
+    facts: [['Tuyến', 'Bến Thành – Tham Lương'], ['Quy mô', '11.3 km, 11 ga, VND 55,179 tỷ'], ['Vận hành', 'Q4/2030']],
+    desc: '<p><strong>Metro số 2 (Bến Thành – Tham Lương)</strong> — 11.3 km, 11 ga, khởi công 15/01/2026, vận hành Q4/2030. Trục xương sống kết nối trung tâm.</p>'
+  },
+  { id: 'metro-2-thu-thiem', label: 'Metro 2 — Thủ Thiêm', cat: 'infra', sub: 'Khởi công 29/4/2026',
+    facts: [
+      ['Tuyến', 'Bến Thành – Thủ Thiêm'],
+      ['Quy mô', '6 km, 6 ga ngầm dưới sông Sài Gòn'],
+      ['Vận hành', 'Q3/2030']
+    ],
+    desc: '<p><strong>Metro số 2 nhánh Bến Thành – Thủ Thiêm</strong> — 6 km, 6 ga ngầm (hầm metro đầu tiên xuyên đáy sông Sài Gòn), khởi công 29/4/2026, vận hành Q3/2030. Kết nối thẳng trục Long Thành.</p>',
+    talkpoint: '"Trục Tham Lương – Bến Thành – Thủ Thiêm – Long Thành trở thành xương sống metro. Cosmo Central tiếp cận qua Ga Thủ Thiêm chỉ 10 phút đi đường Liên Phường."'
+  },
+  { id: 'thu-thiem-long-thanh-rail', label: 'ĐSĐT Thủ Thiêm – Long Thành', cat: 'infra', sub: 'Khởi công trước 30/6/2026',
+    facts: [['Chiều dài', '48 km, ~VND 84,000 tỷ'], ['Kết nối', 'Ga Thủ Thiêm → sân bay Long Thành 30 phút'], ['Vận hành', '2030']],
+    desc: '<p><strong>Đường sắt đô thị Thủ Thiêm – Long Thành</strong> (48 km, ~VND 84,000 tỷ) — khởi công trước 30/6/2026, vận hành 2030. Kết nối The Global City (qua Ga Thủ Thiêm) đến sân bay Long Thành trong 30 phút.</p>'
+  },
+  { id: 'long-thanh-airport', label: 'Sân bay Long Thành', cat: 'infra', sub: 'Khai thác giữa 2026',
+    facts: [
+      ['Giai đoạn 1', '25 triệu khách/năm, ~US$16 tỷ'],
+      ['Bay thử Boeing 787', '15/12/2025'],
+      ['Chuyến TM đầu', '19/12/2025'],
+      ['Khai thác TM', 'Giữa 2026']
+    ],
+    desc: '<p><strong>Sân bay quốc tế Long Thành</strong> — giai đoạn 1 đón 25 triệu khách/năm, ~US$16 tỷ. Bay thử Boeing 787 ngày 15/12/2025, 3 chuyến thương mại đầu 19/12/2025, khai thác thương mại giữa 2026.</p>',
+    talkpoint: '"Sân bay Long Thành khai thác giữa 2026 kéo theo hàng vạn chuyên gia về phía Đông. The Global City là điểm dừng chân chuẩn quốc tế gần nhất giữa Thủ Thiêm và Long Thành."'
+  },
+
+  // ─── FINANCE / MARKET ───
+  { id: 'ifc-thu-thiem', label: 'Trung tâm Tài chính QT', cat: 'finance', sub: 'Công bố 21/12/2025',
+    facts: [
+      ['Công bố', '21/12/2025 (NĐ 323/2025/NĐ-CP)'],
+      ['Quy mô HCM', '~898 ha'],
+      ['Mô hình', 'Một trung tâm – hai địa điểm'],
+      ['Lộ trình', '2026 hạ tầng → 2030 ASEAN → 2035 toàn cầu']
+    ],
+    desc: '<p><strong>Trung tâm Tài chính Quốc tế (IFC)</strong> — Thủ tướng công bố thành lập 21/12/2025. Cấu phần TP.HCM ~898 ha trải dài Phường Sài Gòn, Phường Bến Thành và Thủ Thiêm. Lộ trình: 2026 hạ tầng & thu hút đầu tư → 2027–2030 tầm vóc ASEAN (trụ sở dời về Thủ Thiêm) → 2035 tầm vóc toàn cầu.</p><p>IFC sẽ kéo dòng vốn và chuyên gia nước ngoài về Thủ Thiêm — nhu cầu nhà ở cao cấp lân cận tăng mạnh. Cosmo Central cách Thủ Thiêm ~10 phút.</p>',
+    talkpoint: '"Trung tâm Tài chính Quốc tế đặt tại Thủ Thiêm — New Downtown của TP.HCM. Cosmo Central cách đó 10 phút, là điểm an cư cho chính các chuyên gia tài chính sẽ về đây."'
+  },
+  { id: 'thu-thiem-cbd', label: 'Thủ Thiêm CBD', cat: 'finance', sub: 'New Downtown',
+    facts: [['Vai trò', 'CBD tài chính mới'], ['Giá biệt thự Sala', '900 triệu – 1.5 tỷ/m² (môi giới)']],
+    desc: '<p><strong>Thủ Thiêm</strong> — trung tâm tài chính mới của TP.HCM, nơi đặt lõi IFC. Giá biệt thự Sala đã đạt 900 triệu – 1.5 tỷ/m² (môi giới), tạo mặt bằng giá tham chiếu cho toàn khu Đông.</p>',
+    talkpoint: '"Thủ Thiêm đã chạm ngưỡng tỷ đồng/m². Cosmo Central — cách 10 phút, giá căn hộ — đang ở vùng định giá hấp dẫn hơn nhiều so với mặt bằng CBD mới."'
+  },
+  { id: 'market-2026', label: 'Thị trường căn hộ 2026', cat: 'finance', sub: 'Savills / CBRE',
+    facts: [
+      ['Hấp thụ 2025', '82% — cao nhất 5 năm'],
+      ['Giá sơ cấp HCM', '~92–102 triệu/m²'],
+      ['Cao cấp >110tr/m²', '56% nguồn cung mới'],
+      ['Pipeline khu Đông', '~50% giai đoạn 2026–28'],
+      ['Dự báo giá', '+10–20%/năm']
+    ],
+    desc: '<p>Theo Savills/CBRE: 2025 TP.HCM hấp thụ ~11.500 căn, tỷ lệ 82% (cao nhất 5 năm); giá sơ cấp ~92–102 triệu/m²; phân khúc >110 triệu/m² chiếm 56% nguồn cung mới; sản phẩm dưới 50 triệu/m² còn 12%. Pipeline 2026–28 ~58.000 căn, khu Đông chiếm ~50%. Dự báo giá sơ cấp +10–20%/năm.</p>',
+    talkpoint: '"Phân khúc bình dân đang biến mất khỏi trung tâm — quỹ đất cực hiếm. Mua căn hộ cao cấp khu Đông hôm nay là đón đầu mặt bằng giá mới tăng 10–20%/năm."'
+  },
+  { id: 'macro-vn', label: 'Vĩ mô Việt Nam 2025–26', cat: 'finance', sub: 'GSO',
+    facts: [
+      ['GDP Q1/2025', '+6.93% (cao nhất từ 2020)'],
+      ['FDI giải ngân 2025', 'US$27.62 tỷ (+9%, cao nhất 5 năm)'],
+      ['GRDP HCM 2025', '+7.53%'],
+      ['Dòng tiền', 'BĐS là kênh trú ẩn dài hạn']
+    ],
+    desc: '<p>Theo Tổng cục Thống kê (GSO): GDP Q1/2025 +6.93% (cao nhất từ 2020); FDI giải ngân cả năm 2025 đạt US$27.62 tỷ (+9% YoY, cao nhất 5 năm); GRDP TP.HCM 2025 +7.53%. Lãi suất hạ nhiệt cuối 2025 đẩy dòng tiền về BĐS — kênh đầu tư phát triển bền vững, dài hạn.</p>',
+    talkpoint: '"Chứng khoán và vàng biến động, lãi suất hạ — dòng tiền tìm về BĐS chuẩn quốc tế. Đó là lý do căn hộ cao cấp khu Đông đang hút vốn mạnh nhất."'
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════
+// LINKS
+// ═══════════════════════════════════════════════════════════════
+const LINKS = [
+  // Cosmo Central core
+  ['cosmo-central', 'nexus-zone', 'phân khu'],
+  ['cosmo-central', 'terra-tropical', 'thiết kế'],
+  ['cosmo-central', 'amenities', 'tiện ích'],
+  ['cosmo-central', 'sales-policy', 'chính sách'],
+  ['cosmo-central', 'view-360', 'xem 360°'],
+  ['cosmo-central', 'masterise-homes', 'chủ đầu tư'],
+  ['cosmo-central', 'masteri-collection', 'dòng SP'],
+  ['cosmo-central', 'the-global-city', 'tọa lạc tại'],
+  ['cosmo-central', 'foster-partners', 'kiến trúc'],
+
+  // Group hierarchy
+  ['masterise-homes', 'masterise-group', 'thuộc'],
+  ['masterise-group', 'ho-hung-anh', 'sở hữu'],
+  ['masterise-group', 'masterise-pm', 'mảng'],
+  ['masterise-group', 'masterise-he', 'mảng'],
+  ['masterise-group', 'cau-phu-my-2', 'đầu tư'],
+  ['masterise-group', 'cau-can-gio', 'đầu tư'],
+  ['masterise-group', 'gia-binh-airport', 'đầu tư'],
+  ['the-global-city', 'masterise-he', 'vận hành sự kiện'],
+  ['cosmo-central', 'masterise-pm', 'vận hành'],
+
+  // Brand tiers
+  ['masterise-homes', 'masteri-collection', 'phân khúc'],
+  ['masterise-homes', 'lumiere-series', 'phân khúc'],
+  ['masterise-homes', 'branded-residences', 'phân khúc'],
+  ['masterise-homes', 'masteri-thao-dien', 'dự án đầu tiên'],
+  ['branded-residences', 'grand-marina', 'gồm'],
+  ['branded-residences', 'the-grand-hanoi', 'gồm'],
+  ['branded-residences', 'the-rivus', 'gồm'],
+  ['masteri-collection', 'masteri-thao-dien', 'tiền thân'],
+
+  // Partners
+  ['masterise-homes', 'foster-partners', 'hợp tác'],
+  ['masterise-homes', 'watg', 'hợp tác'],
+  ['grand-marina', 'marriott', 'thương hiệu'],
+  ['the-grand-hanoi', 'ritz-carlton', 'thương hiệu'],
+  ['the-rivus', 'elie-saab', 'thương hiệu'],
+  ['the-global-city', 'foster-partners', 'quy hoạch'],
+  ['the-global-city', 'watg', 'cảnh quan'],
+
+  // The Global City
+  ['the-global-city', 'canal-of-love', 'gồm'],
+  ['the-global-city', 'tttm-mall', 'gồm'],
+  ['the-global-city', 'soho-district', 'gồm'],
+  ['the-global-city', 'tgc-school-hospital', 'gồm'],
+  ['cosmo-central', 'canal-of-love', 'view'],
+  ['cosmo-central', 'soho-district', 'liền kề'],
+
+  // Sub-zones
+  ['the-global-city', 'masteri-park-place', 'phân khu'],
+  ['the-global-city', 'masteri-grand-view', 'phân khu'],
+  ['the-global-city', 'lumiere-midtown', 'phân khu'],
+  ['the-global-city', 'sola', 'phân khu'],
+  ['lumiere-midtown', 'lumiere-series', 'thuộc dòng'],
+  ['masteri-park-place', 'masteri-collection', 'thuộc dòng'],
+  ['masteri-grand-view', 'masteri-collection', 'thuộc dòng'],
+
+  // Cluster
+  ['the-global-city', 'saigon-sports-city', 'cụm thể thao'],
+  ['saigon-sports-city', 'rach-chiec', 'cụm thể thao'],
+  ['rach-chiec', 'lien-phuong', 'kết nối'],
+
+  // Events
+  ['the-global-city', 'atvcg', 'sự kiện'],
+  ['the-global-city', 'soobin-concert', 'sự kiện'],
+  ['the-global-city', 'quoc-thien', 'sự kiện'],
+  ['the-global-city', 'ppa-tour', 'sự kiện'],
+  ['the-global-city', 'pink-run', 'sự kiện'],
+  ['the-global-city', 'global-wishmas', 'sự kiện'],
+  ['the-global-city', 'daddy-cool', 'điểm đến'],
+
+  // Infrastructure
+  ['the-global-city', 'lien-phuong', 'mặt tiền'],
+  ['cosmo-central', 'lien-phuong', 'kết nối'],
+  ['lien-phuong', 'nut-giao-an-phu', 'qua'],
+  ['lien-phuong', 'vanh-dai-3', 'nối'],
+  ['nut-giao-an-phu', 'cao-toc-long-thanh', 'nối'],
+  ['cao-toc-long-thanh', 'long-thanh-airport', 'tới'],
+  ['vanh-dai-3', 'long-thanh-airport', 'kết nối'],
+  ['vanh-dai-2', 'nut-giao-an-phu', 'liên kết'],
+  ['metro-2-tham-luong', 'metro-2-thu-thiem', 'cùng tuyến'],
+  ['metro-2-thu-thiem', 'thu-thiem-long-thanh-rail', 'nối'],
+  ['thu-thiem-long-thanh-rail', 'long-thanh-airport', 'tới'],
+  ['metro-2-thu-thiem', 'thu-thiem-cbd', 'ga'],
+  ['cosmo-central', 'nut-giao-an-phu', 'hưởng lợi'],
+
+  // Finance / Market
+  ['thu-thiem-cbd', 'ifc-thu-thiem', 'đặt lõi'],
+  ['cosmo-central', 'ifc-thu-thiem', '10 phút'],
+  ['ifc-thu-thiem', 'metro-2-thu-thiem', 'kết nối'],
+  ['the-global-city', 'thu-thiem-cbd', 'lân cận'],
+  ['cosmo-central', 'market-2026', 'bối cảnh'],
+  ['market-2026', 'macro-vn', 'vĩ mô'],
+  ['ifc-thu-thiem', 'macro-vn', 'động lực FDI'],
+  ['gia-binh-airport', 'macro-vn', 'hạ tầng QG'],
+];
+
+// ═══════════════════════════════════════════════════════════════
+// GRAPH ENGINE
+// ═══════════════════════════════════════════════════════════════
+const SVG = document.getElementById('graph');
+const GROUP = document.getElementById('graph-g');
+const LINKS_G = document.getElementById('links-g');
+const NODES_G = document.getElementById('nodes-g');
+
+let WIDTH = 0, HEIGHT = 0;
+let transform = { x: 0, y: 0, k: 1 };
+let selectedNode = null;
+let activeCategories = new Set(Object.keys(CATEGORIES));
+let searchQuery = '';
+
+const nodeMap = {};
+NODES.forEach(n => {
+  n.x = Math.random() * 800 - 400;
+  n.y = Math.random() * 600 - 300;
+  n.vx = 0; n.vy = 0; n.pinned = false;
+  nodeMap[n.id] = n;
+});
+nodeMap['cosmo-central'].x = 0;
+nodeMap['cosmo-central'].y = 0;
+nodeMap['cosmo-central'].pinned = true;
+
+const linkData = LINKS.map(([s, t, label]) => ({ source: nodeMap[s], target: nodeMap[t], label: label || '' }))
+  .filter(l => l.source && l.target);
+
+const adj = {};
+NODES.forEach(n => { adj[n.id] = { in: [], out: [] }; });
+linkData.forEach(l => {
+  adj[l.source.id].out.push({ node: l.target, label: l.label });
+  adj[l.target.id].in.push({ node: l.source, label: l.label });
+});
+
+document.getElementById('stat-nodes').textContent = NODES.length;
+document.getElementById('stat-links').textContent = linkData.length;
+
+function simulate() {
+  const REPEL = 4800, SPRING = 0.012, LINK_DIST = 112, CENTER = 0.0028, DAMP = 0.78;
+  for (let i = 0; i < NODES.length; i++) {
+    for (let j = i + 1; j < NODES.length; j++) {
+      const a = NODES[i], b = NODES[j];
+      let dx = b.x - a.x, dy = b.y - a.y;
+      let d2 = dx*dx + dy*dy; if (d2 < 1) d2 = 1;
+      const d = Math.sqrt(d2);
+      const f = REPEL / d2, fx = f * dx / d, fy = f * dy / d;
+      if (!a.pinned) { a.vx -= fx; a.vy -= fy; }
+      if (!b.pinned) { b.vx += fx; b.vy += fy; }
+    }
+  }
+  linkData.forEach(l => {
+    const dx = l.target.x - l.source.x, dy = l.target.y - l.source.y;
+    const d = Math.sqrt(dx*dx + dy*dy) || 1;
+    const f = (d - LINK_DIST) * SPRING, fx = f * dx / d, fy = f * dy / d;
+    if (!l.source.pinned) { l.source.vx += fx; l.source.vy += fy; }
+    if (!l.target.pinned) { l.target.vx -= fx; l.target.vy -= fy; }
+  });
+  NODES.forEach(n => {
+    if (!n.pinned) {
+      n.vx += -n.x * CENTER; n.vy += -n.y * CENTER;
+      n.vx *= DAMP; n.vy *= DAMP;
+      n.x += n.vx; n.y += n.vy;
+    }
+  });
+}
+
+function renderLinks() {
+  LINKS_G.innerHTML = '';
+  linkData.forEach(l => {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.classList.add('link');
+    l._el = line;
+    LINKS_G.appendChild(line);
+  });
+}
+
+function renderNodes() {
+  NODES_G.innerHTML = '';
+  NODES.forEach(n => {
+    const cat = CATEGORIES[n.cat];
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.classList.add('node');
+    if (n.is360) g.classList.add('node-360');
+    g.dataset.id = n.id;
+    g.setAttribute('transform', `translate(${n.x}, ${n.y})`);
+
+    if (n.id === 'cosmo-central') {
+      const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      ring.setAttribute('r', cat.radius + 9);
+      ring.setAttribute('fill', 'none');
+      ring.setAttribute('stroke', cat.color);
+      ring.setAttribute('stroke-width', 1);
+      ring.setAttribute('opacity', 0.4);
+      ring.classList.add('pulse-ring');
+      g.appendChild(ring);
+    }
+
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('r', cat.radius);
+    c.setAttribute('fill', cat.color);
+    c.setAttribute('stroke', '#0c1719');
+    c.setAttribute('stroke-width', 1.5);
+    g.appendChild(c);
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('y', cat.radius + 14);
+    text.textContent = n.label;
+    g.appendChild(text);
+
+    g.addEventListener('mousedown', (e) => startNodeDrag(e, n));
+    g.addEventListener('click', (e) => { e.stopPropagation(); selectNode(n.id); });
+    n._el = g;
+    NODES_G.appendChild(g);
+  });
+}
+
+function updatePositions() {
+  linkData.forEach(l => {
+    if (l._el) {
+      l._el.setAttribute('x1', l.source.x); l._el.setAttribute('y1', l.source.y);
+      l._el.setAttribute('x2', l.target.x); l._el.setAttribute('y2', l.target.y);
+    }
+  });
+  NODES.forEach(n => { if (n._el) n._el.setAttribute('transform', `translate(${n.x}, ${n.y})`); });
+  applyTransform();
+}
+
+function applyTransform() {
+  GROUP.setAttribute('transform', `translate(${transform.x + WIDTH/2}, ${transform.y + HEIGHT/2}) scale(${transform.k})`);
+}
+
+function startNodeDrag(e, n) {
+  e.preventDefault(); e.stopPropagation();
+  const sx = e.clientX, sy = e.clientY, ox = n.x, oy = n.y;
+  n.pinned = true; let moved = false;
+  function move(ev) {
+    const dx = (ev.clientX - sx) / transform.k, dy = (ev.clientY - sy) / transform.k;
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) moved = true;
+    n.x = ox + dx; n.y = oy + dy; n.vx = 0; n.vy = 0;
+  }
+  function up() {
+    document.removeEventListener('mousemove', move);
+    document.removeEventListener('mouseup', up);
+    if (n.id !== 'cosmo-central' && !moved) n.pinned = false;
+  }
+  document.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', up);
+}
+
+let panState = null;
+SVG.addEventListener('mousedown', (e) => {
+  if (e.target.closest('.node')) return;
+  panState = { sx: e.clientX - transform.x, sy: e.clientY - transform.y };
+  document.getElementById('graph-wrap').classList.add('dragging');
+});
+document.addEventListener('mousemove', (e) => {
+  if (panState) { transform.x = e.clientX - panState.sx; transform.y = e.clientY - panState.sy; applyTransform(); }
+});
+document.addEventListener('mouseup', () => { panState = null; document.getElementById('graph-wrap').classList.remove('dragging'); });
+SVG.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  transform.k = Math.max(0.3, Math.min(2.5, transform.k - e.deltaY * 0.001));
+  applyTransform();
+}, { passive: false });
+
+document.getElementById('zoom-in').onclick = () => { transform.k = Math.min(2.5, transform.k * 1.2); applyTransform(); };
+document.getElementById('zoom-out').onclick = () => { transform.k = Math.max(0.3, transform.k / 1.2); applyTransform(); };
+document.getElementById('zoom-fit').onclick = () => { transform = { x: 0, y: 0, k: 1 }; applyTransform(); };
+document.getElementById('btn-center').onclick = () => { selectNode('cosmo-central'); transform = { x: 0, y: 0, k: 1 }; applyTransform(); };
+document.getElementById('btn-reset').onclick = () => {
+  NODES.forEach(n => { if (n.id !== 'cosmo-central') { n.x = Math.random()*800-400; n.y = Math.random()*600-300; n.vx=0; n.vy=0; n.pinned=false; } });
+  transform = { x: 0, y: 0, k: 1 }; applyTransform();
+};
+document.getElementById('btn-360-top').onclick = () => window.open(VIEW360_URL, '_blank', 'noopener');
+
+function selectNode(id) {
+  selectedNode = id;
+  document.querySelectorAll('.node').forEach(el => el.classList.remove('selected', 'dimmed'));
+  document.querySelectorAll('.link').forEach(el => el.classList.remove('highlight', 'dimmed'));
+  const connected = new Set([id]);
+  linkData.forEach(l => {
+    if (l.source.id === id) connected.add(l.target.id);
+    if (l.target.id === id) connected.add(l.source.id);
+  });
+  NODES.forEach(n => {
+    if (n._el) {
+      if (n.id === id) n._el.classList.add('selected');
+      else if (!connected.has(n.id)) n._el.classList.add('dimmed');
+    }
+  });
+  linkData.forEach(l => {
+    if (l._el) {
+      if (l.source.id === id || l.target.id === id) l._el.classList.add('highlight');
+      else l._el.classList.add('dimmed');
+    }
+  });
+  document.querySelectorAll('.node-item').forEach(el => el.classList.toggle('active', el.dataset.id === id));
+  renderDetail(id);
+}
+
+function renderDetail(id) {
+  const n = nodeMap[id]; if (!n) return;
+  const cat = CATEGORIES[n.cat];
+  document.getElementById('detail-empty').style.display = 'none';
+  const content = document.getElementById('detail-content');
+  content.style.display = 'flex';
+
+  let html = `
+    <div class="detail-header">
+      <div class="detail-cat" style="background:${cat.color}22;color:${cat.color}">${cat.label}</div>
+      <div class="detail-title">${n.label}</div>
+      ${n.sub ? `<div class="detail-subtitle">${n.sub}</div>` : ''}
+    </div>
+    <div class="detail-body">`;
+
+  if (n.is360) {
+    html += `<div class="detail-section"><a class="btn-open360" href="${VIEW360_URL}" target="_blank" rel="noopener">◉ Mở phối cảnh 360° (tab mới)</a></div>`;
+  }
+
+  if (n.facts && n.facts.length) {
+    html += `<div class="detail-section"><div class="detail-section-title">Thông số cốt lõi</div>
+      <div class="detail-facts">${n.facts.map(([k, v]) => `<div class="fact-row"><div class="fact-label">${k}</div><div class="fact-value">${v}</div></div>`).join('')}</div></div>`;
+  }
+  if (n.desc) {
+    html += `<div class="detail-section"><div class="detail-section-title">Mô tả</div><div class="detail-text">${n.desc}</div></div>`;
+  }
+  if (n.talkpoint) {
+    html += `<div class="detail-section"><div class="detail-talkpoint">
+      <div class="detail-talkpoint-label">★ Key talking point cho sale</div>
+      <div class="detail-talkpoint-text">${n.talkpoint}</div></div></div>`;
+  }
+  const out = adj[id].out, inc = adj[id].in;
+  if (out.length) {
+    html += `<div class="detail-section"><div class="detail-section-title">Liên kết tới (${out.length})</div><div class="detail-link-list">${out.map(({node,label}) => `<a class="detail-link" onclick="selectNode('${node.id}')"><span class="detail-link-dot" style="background:${CATEGORIES[node.cat].color}"></span>${node.label}<span class="detail-link-type">${label}</span></a>`).join('')}</div></div>`;
+  }
+  if (inc.length) {
+    html += `<div class="detail-section"><div class="detail-section-title">Backlinks — Được nhắc bởi (${inc.length})</div><div class="detail-link-list">${inc.map(({node,label}) => `<a class="detail-link" onclick="selectNode('${node.id}')"><span class="detail-link-dot" style="background:${CATEGORIES[node.cat].color}"></span>${node.label}<span class="detail-link-type">${label}</span></a>`).join('')}</div></div>`;
+  }
+  html += `</div>`;
+  content.innerHTML = html;
+  if (window.innerWidth <= 1024) document.getElementById('detail-panel').classList.add('open');
+}
+
+function buildSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  let html = `<div class="sidebar-header">Nhóm nodes</div>`;
+  Object.entries(CATEGORIES).forEach(([key, c]) => {
+    const count = NODES.filter(n => n.cat === key).length;
+    html += `<div class="category-item active" data-cat="${key}"><div class="category-dot" style="background:${c.color}"></div><span>${c.label}</span><span class="category-count">${count}</span></div>`;
+  });
+  html += `<div class="sidebar-header" style="margin-top:16px">Tất cả nodes</div><div class="node-list">`;
+  Object.keys(CATEGORIES).forEach(key => {
+    NODES.filter(n => n.cat === key).forEach(n => {
+      html += `<div class="node-item" data-id="${n.id}" data-cat="${key}" title="${n.label}">${n.label}</div>`;
+    });
+  });
+  html += `</div>`;
+  sidebar.innerHTML = html;
+  sidebar.querySelectorAll('.node-item').forEach(el => el.addEventListener('click', () => selectNode(el.dataset.id)));
+  sidebar.querySelectorAll('.category-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const cat = el.dataset.cat;
+      if (activeCategories.has(cat)) { activeCategories.delete(cat); el.classList.remove('active'); }
+      else { activeCategories.add(cat); el.classList.add('active'); }
+      applyFilters();
+    });
+  });
+}
+
+function applyFilters() {
+  NODES.forEach(n => {
+    if (!n._el) return;
+    const inCat = activeCategories.has(n.cat);
+    const match = !searchQuery || n.label.toLowerCase().includes(searchQuery.toLowerCase()) || (n.sub && n.sub.toLowerCase().includes(searchQuery.toLowerCase()));
+    if (inCat && match) { n._el.style.display = ''; n._el.classList.toggle('match', !!searchQuery && match); }
+    else { n._el.style.display = 'none'; }
+  });
+  linkData.forEach(l => {
+    if (!l._el) return;
+    l._el.style.display = (activeCategories.has(l.source.cat) && activeCategories.has(l.target.cat)) ? '' : 'none';
+  });
+  document.querySelectorAll('.node-item').forEach(el => {
+    const n = nodeMap[el.dataset.id];
+    const match = !searchQuery || n.label.toLowerCase().includes(searchQuery.toLowerCase());
+    el.style.display = (activeCategories.has(n.cat) && match) ? '' : 'none';
+  });
+}
+
+document.getElementById('search').addEventListener('input', (e) => { searchQuery = e.target.value.trim(); applyFilters(); });
+
+function resize() {
+  const wrap = document.getElementById('graph-wrap');
+  WIDTH = wrap.clientWidth; HEIGHT = wrap.clientHeight;
+  SVG.setAttribute('viewBox', `0 0 ${WIDTH} ${HEIGHT}`);
+  applyTransform();
+}
+window.addEventListener('resize', resize);
+
+let frame = 0;
+function tick() {
+  if (frame < 420) { simulate(); frame++; }
+  updatePositions();
+  requestAnimationFrame(tick);
+}
+
+buildSidebar();
+renderLinks();
+renderNodes();
+resize();
+tick();
+setTimeout(() => selectNode('cosmo-central'), 600);
+</script>
+</body>
+</html>

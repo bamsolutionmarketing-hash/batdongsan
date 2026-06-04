@@ -32,6 +32,16 @@ export const NODE_KIND_COLORS: Record<string, string> = {
   road: "#f0883e",
   comparable: "#f85149",
   policy: "#8b949e",
+  // Masterise/township dossier kinds: group, brand, partners, masterplan,
+  // sub-zones/clusters, community events, infrastructure, finance/market.
+  group: "#2d9cae",
+  brand: "#4a9fd8",
+  partner: "#a978f0",
+  masterplan: "#39c5a8",
+  cluster: "#e072b0",
+  event: "#e6c068",
+  infra: "#f0883e",
+  finance: "#45c463",
 };
 
 export const NODE_KIND_LABEL: Record<string, string> = {
@@ -49,6 +59,14 @@ export const NODE_KIND_LABEL: Record<string, string> = {
   road: "Đường bộ / Cầu",
   comparable: "So sánh BĐS",
   policy: "Chính sách",
+  group: "Tập đoàn",
+  brand: "Thương hiệu",
+  partner: "Đối tác",
+  masterplan: "Khu đô thị",
+  cluster: "Phân khu",
+  event: "Sự kiện",
+  infra: "Hạ tầng",
+  finance: "Tài chính",
 };
 
 export const EDGE_KIND_COLORS: Record<string, string> = {
