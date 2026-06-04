@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 
 export interface Profile {
-  user_id: string;
-  org_id: string | null;
-  role: "admin" | "member";
+  id: string;
+  role: "agent" | "admin";
+  fullName: string | null;
 }
 
 export interface SessionContext {
@@ -12,9 +12,9 @@ export interface SessionContext {
   profile: Profile | null;
 }
 
-// Current authenticated user + their profile (org/role), or null if signed out.
+// Current authenticated user + their profile (role), or null if signed out.
 // Returns null (rather than throwing) when Supabase is unconfigured/unreachable,
-// so public pages still render instead of showing a server-side exception.
+// so public pages still render instead of a server-side exception.
 export async function getSession(): Promise<SessionContext | null> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return null;
@@ -31,14 +31,15 @@ export async function getSession(): Promise<SessionContext | null> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("user_id, org_id, role")
-    .eq("user_id", user.id)
+    .select("id, role, full_name")
+    .eq("id", user.id)
     .maybeSingle();
 
+  const row = profile as { id: string; role: "agent" | "admin"; full_name: string | null } | null;
   return {
     userId: user.id,
     email: user.email ?? null,
-    profile: (profile as Profile) ?? null,
+    profile: row ? { id: row.id, role: row.role, fullName: row.full_name } : null,
   };
 }
 
@@ -46,4 +47,8 @@ export async function requireSession(): Promise<SessionContext> {
   const session = await getSession();
   if (!session) throw new Error("Not authenticated");
   return session;
+}
+
+export function isAdmin(session: SessionContext | null): boolean {
+  return session?.profile?.role === "admin";
 }

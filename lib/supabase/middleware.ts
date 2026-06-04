@@ -42,8 +42,10 @@ export async function updateSession(request: NextRequest) {
   const isPublic =
     path === "/" ||
     path.startsWith("/login") ||
+    path.startsWith("/signup") ||
     path.startsWith("/auth") ||
     path.startsWith("/contact") ||
+    path.startsWith("/pricing") ||
     path.startsWith("/p/"); // public project demo pages
 
   if (!user && !isPublic) {

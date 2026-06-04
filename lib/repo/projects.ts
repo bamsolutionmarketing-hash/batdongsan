@@ -50,6 +50,20 @@ export async function listPublishedProjects(): Promise<Result<Project[]>> {
   return ok((data as ProjectRow[]).map(toProject));
 }
 
+// All projects the caller may see (admin → every project via RLS). Used by the
+// admin list; ordered newest first.
+export async function listAllProjects(): Promise<Result<Project[]>> {
+  if (!isSupabaseConfigured()) return ok([]);
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("projects")
+    .select(COLUMNS)
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (error) return err("INTERNAL", error.message);
+  return ok((data as ProjectRow[]).map(toProject));
+}
+
 export async function getProjectBySlug(slug: string): Promise<Result<Project | null>> {
   if (!isSupabaseConfigured()) return ok(null);
   const supabase = createClient();
