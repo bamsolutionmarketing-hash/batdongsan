@@ -129,3 +129,11 @@ export async function downloadStory(fd: FormData) {
   }
   redirect(imgs[0].url);
 }
+
+// Form wrapper for one-tap "Tạo bài ngay" from the dashboard suggestion.
+export async function createPostAction(fd: FormData) {
+  const projectId = String(fd.get("project_id") ?? "");
+  const slug = String(fd.get("slug") ?? "");
+  const nodeIds = String(fd.get("node_ids") ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+  await createPost(projectId, slug, nodeIds);
+}

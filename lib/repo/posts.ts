@@ -40,3 +40,23 @@ export async function getPostById(id: string): Promise<Result<GeneratedPost | nu
   if (error) return err("INTERNAL", error.message);
   return ok(data ? toPost(data as PostRow) : null);
 }
+
+// Recent posts of a user (for streak + variety + "share yesterday").
+export async function listRecentPosts(
+  userId: string,
+  limit = 14,
+): Promise<Result<{ createdAt: string; nodeIds: string[] }[]>> {
+  if (!isSupabaseConfigured()) return ok([]);
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("generated_posts")
+    .select("created_at, node_ids")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) return err("INTERNAL", error.message);
+  return ok((data as { created_at: string; node_ids: string[] }[]).map((r) => ({
+    createdAt: r.created_at,
+    nodeIds: r.node_ids ?? [],
+  })));
+}

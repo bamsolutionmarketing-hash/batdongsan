@@ -109,3 +109,28 @@ export async function linksByProject(projectId: string): Promise<Result<Knowledg
   if (error) return err("INTERNAL", error.message);
   return ok((data as LinkRow[]).map(toLink));
 }
+
+// Candidate nodes for "Hôm Nay" suggestions: enabled nodes of published
+// projects, with project slug. (RLS already scopes to visible projects.)
+export async function candidateNodes(): Promise<
+  Result<{ id: string; label: string; category: string; projectId: string; projectSlug: string }[]>
+> {
+  if (!isSupabaseConfigured()) return ok([]);
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("knowledge_nodes")
+    .select("id, label, category, project_id, projects!inner(slug, is_published)")
+    .eq("is_enabled", true)
+    .eq("projects.is_published", true)
+    .limit(2000);
+  if (error) return err("INTERNAL", error.message);
+  return ok(
+    (data as any[]).map((r) => ({
+      id: r.id,
+      label: r.label,
+      category: r.category,
+      projectId: r.project_id,
+      projectSlug: r.projects.slug,
+    })),
+  );
+}
