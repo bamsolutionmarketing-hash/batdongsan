@@ -4,6 +4,8 @@ import { getNodeById } from "@/lib/repo/nodes";
 import { blocksByNode } from "@/lib/repo/blocks";
 import { blockUsable } from "@/lib/engine/compliance";
 import { createBlock, deleteBlock } from "@/app/(admin)/admin/_block_actions";
+import { uploadAsset, deleteAsset } from "@/app/(admin)/admin/_asset_actions";
+import { assetsByNode } from "@/lib/repo/assets";
 import { Notice } from "@/app/(admin)/admin/_Notice";
 import { Button } from "@/components/ui/button";
 import type { BlockRole } from "@/types/domain";
@@ -24,6 +26,8 @@ export default async function BlocksPage({
   const blocksRes = await blocksByNode(node.id);
   const blocks = blocksRes.ok ? blocksRes.data : [];
   const blocksErr = blocksRes.ok ? null : blocksRes.error;
+  const assetsRes = await assetsByNode(node.id);
+  const assets = assetsRes.ok ? assetsRes.data : [];
 
   const countByRole = (r: BlockRole) => blocks.filter((b) => b.role === r).length;
   const factKeyHint = node.facts.map((f) => f.key).join(", ");
@@ -116,6 +120,45 @@ export default async function BlocksPage({
           <Button type="submit" className="self-start">Thêm block</Button>
         </form>
       </details>
+
+      {/* Assets */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Ảnh ({assets.length})</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {assets.map((a) => (
+            <div key={a.id} className="overflow-hidden rounded-md border border-slate-800 bg-slate-900">
+              {a.signedUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={a.signedUrl} alt="" className="aspect-video w-full object-cover" />
+              ) : (
+                <div className="aspect-video w-full bg-slate-800" />
+              )}
+              <div className="flex items-center justify-between px-2 py-1 text-xs">
+                <span className="text-slate-500">{a.safeZone}</span>
+                <form action={deleteAsset}>
+                  <input type="hidden" name="id" value={a.id} />
+                  <input type="hidden" name="storage_path" value={a.storagePath} />
+                  <input type="hidden" name="node_id" value={node.id} />
+                  <input type="hidden" name="project_id" value={params.id} />
+                  <button className="text-red-400 hover:text-red-300">Xóa</button>
+                </form>
+              </div>
+            </div>
+          ))}
+        </div>
+        <form action={uploadAsset} className="flex flex-wrap items-center gap-2 rounded-md border border-slate-800 bg-slate-950 p-3">
+          <input type="hidden" name="node_id" value={node.id} />
+          <input type="hidden" name="project_id" value={params.id} />
+          <input type="file" name="file" accept="image/png,image/jpeg,image/webp" required className="text-sm text-slate-300" />
+          <select name="safe_zone" className={input + " w-auto"} defaultValue="bottom_right">
+            <option value="bottom_right">bottom_right</option>
+            <option value="bottom_left">bottom_left</option>
+            <option value="top_right">top_right</option>
+            <option value="top_left">top_left</option>
+          </select>
+          <Button type="submit">Tải ảnh lên</Button>
+        </form>
+      </section>
     </main>
   );
 }
