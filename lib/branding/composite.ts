@@ -8,14 +8,29 @@ export interface CompositeOpts {
   phone: string;
   safeZone: string; // bottom_right | bottom_left | top_right | top_left
   story?: boolean; // 9:16 crop for stories
-  watermark?: string | null; // free-tier "via <app>"
+  hook?: string | null; // story headline overlay (1-line hook)
+  watermark?: string | null; // free-tier mark → big, centred, 33% opacity
 }
 
 const PAD = 28;
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+// Greedy word-wrap to ~max chars/line, capped at maxLines.
+function wrap(s: string, max: number, maxLines: number): string[] {
+  const words = s.split(/\s+/);
+  const lines: string[] = [];
+  let cur = "";
+  for (const w of words) {
+    if ((cur + " " + w).trim().length > max && cur) { lines.push(cur); cur = w; }
+    else cur = (cur + " " + w).trim();
+  }
+  if (cur) lines.push(cur);
+  return lines.slice(0, maxLines);
+}
+
 // Composite agent branding (logo + "Name — Phone") onto a master image.
+// Story mode adds a hook headline overlay; free tier adds a centred watermark.
 // Returns a JPEG buffer. Pure-ish (no IO beyond Sharp).
 export async function compositeImage(opts: CompositeOpts): Promise<Buffer> {
   let base = sharp(opts.master).rotate();
@@ -38,16 +53,32 @@ export async function compositeImage(opts: CompositeOpts): Promise<Buffer> {
   const y = bottom ? H - PAD - boxH : PAD;
   const anchorX = right ? x + boxW - 20 : x + 20;
 
+  // Story hook overlay (top band, large, up to 3 lines) for readability.
+  let hookSvg = "";
+  if (opts.story && opts.hook) {
+    const hs = Math.round(W * 0.058);
+    const lines = wrap(opts.hook, 18, 3);
+    const top = Math.round(H * 0.08);
+    const bandH = lines.length * hs * 1.2 + 40;
+    hookSvg =
+      `<rect x="0" y="${top - 24}" width="${W}" height="${bandH}" fill="rgba(8,12,20,0.42)"/>` +
+      lines.map((ln, i) =>
+        `<text x="${PAD}" y="${top + i * hs * 1.2 + hs * 0.5}" font-family="sans-serif" font-size="${hs}" font-weight="800" fill="#ffffff" dominant-baseline="central">${esc(ln)}</text>`,
+      ).join("");
+  }
+
+  // Free-tier watermark: big, centred, rotated, ~33% opacity.
+  const wm = opts.watermark
+    ? `<text x="${W / 2}" y="${H / 2}" font-family="sans-serif" font-size="${Math.round(W * 0.085)}" font-weight="700" fill="rgba(255,255,255,0.33)" text-anchor="middle" dominant-baseline="central" transform="rotate(-30 ${W / 2} ${H / 2})">${esc(opts.watermark)}</text>`
+    : "";
+
   const svg = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+    ${hookSvg}
+    ${wm}
     <rect x="${x}" y="${y}" width="${boxW}" height="${boxH}" rx="10" fill="rgba(8,12,20,0.62)"/>
     <text x="${anchorX}" y="${y + boxH / 2}" font-family="sans-serif" font-size="${fontSize}"
       font-weight="600" fill="#ffffff" text-anchor="${right ? "end" : "start"}"
       dominant-baseline="central">${text}</text>
-    ${
-      opts.watermark
-        ? `<text x="${W / 2}" y="${H - 10}" font-family="sans-serif" font-size="${Math.round(W * 0.02)}" fill="rgba(255,255,255,0.5)" text-anchor="middle">${esc(opts.watermark)}</text>`
-        : ""
-    }
   </svg>`;
 
   const layers: sharp.OverlayOptions[] = [{ input: Buffer.from(svg), top: 0, left: 0 }];
