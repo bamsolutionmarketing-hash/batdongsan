@@ -104,3 +104,28 @@ export async function createPost(projectId: string, slug: string, nodeIds: strin
 
   redirect(`/projects/${slug}/post/${data.id}`);
 }
+
+// Generate (or reuse) a 9:16 story image for one node of a post and open it.
+export async function downloadStory(fd: FormData) {
+  const session = await getSession();
+  if (!session) redirect("/login");
+  const postId = String(fd.get("post_id") ?? "");
+  const slug = String(fd.get("slug") ?? "");
+  const nodeId = String(fd.get("node_id") ?? "");
+
+  const { getPostById } = await import("@/lib/repo/posts");
+  const { getActiveTier } = await import("@/lib/gate/tier");
+  const { getBrandedImages } = await import("@/lib/branding/pipeline");
+
+  const postRes = await getPostById(postId);
+  if (!postRes.ok || !postRes.data || !postRes.data.nodeIds.includes(nodeId)) {
+    redirect(`/projects/${slug}/post/${postId}?error=${encodeURIComponent("Không hợp lệ")}`);
+  }
+  const tierRes = await getActiveTier(session.userId);
+  const watermark = (tierRes.ok ? tierRes.data : "free") === "free" ? "via app" : null;
+  const imgs = await getBrandedImages(session.userId, [nodeId], { story: true, watermark });
+  if (imgs.length === 0) {
+    redirect(`/projects/${slug}/post/${postId}?error=${encodeURIComponent("Chưa có ảnh/thương hiệu")}`);
+  }
+  redirect(imgs[0].url);
+}
