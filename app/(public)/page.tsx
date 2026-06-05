@@ -9,6 +9,7 @@ import { PhoneMock } from "@/components/landing/PhoneMock";
 import { Counter } from "@/components/landing/Counter";
 import { Footer } from "@/components/landing/Footer";
 import { FlipCard } from "@/components/landing/FlipCard";
+import { ScrollStory } from "@/components/landing/ScrollStory";
 import { CursorGlow, Spotlight, Magnetic } from "@/components/landing/Interactive";
 
 const GOLD_BTN = "rounded-full bg-gradient-to-r from-amber-200 to-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-amber-900/20 transition hover:from-amber-100 hover:to-amber-300";
@@ -20,12 +21,6 @@ const FEATURES = [
   { icon: "🤖", title: "Prompt AI", desc: "Một cú dán sang ChatGPT/Gemini là ra bài chuẩn.", back: "6 khối ràng buộc để AI chỉ dùng dữ liệu cho sẵn — không thêm thắt." },
   { icon: "🖼️", title: "Ảnh đóng logo", desc: "Tự tạo ảnh feed + story 9:16 có logo, watermark.", back: "Có placeholder sang trọng kể cả khi bạn chưa có ảnh thật." },
   { icon: "🗓️", title: "Lịch & deadline", desc: "Theo dõi đã đăng theo ngày, nhắc hạn chiến dịch.", back: "Đánh dấu ngày đã đăng + đếm ngược hạn để không lỡ sóng." },
-];
-
-const STEPS = [
-  { n: "01", title: "Chọn điểm", desc: "Chạm 1–4 điểm trên bản đồ tri thức của dự án." },
-  { n: "02", title: "Soạn & đổi mẫu", desc: "Đổi hook / thân / CTA, chọn giọng & định dạng đến khi ưng." },
-  { n: "03", title: "Tải bài + ảnh", desc: "Copy caption, tải ảnh đóng logo — đăng ngay." },
 ];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
@@ -41,31 +36,27 @@ export default async function Home() {
       <CursorGlow />
       <MarketingHeader />
 
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
-        <div className="lp-aurora pointer-events-none absolute inset-0" />
-        <div className="lp-grid pointer-events-none absolute inset-0" />
+      {/* ── Hero (light) ─────────────────────────────────────────────────── */}
+      <section className="lp-hero-light relative overflow-hidden">
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 sm:px-6 sm:py-28 lg:grid-cols-2">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-amber-700/40 bg-amber-950/20 px-3 py-1 text-xs text-amber-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" /> Không bịa số liệu · không sai pháp lý
+            <span className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-100/70 px-3 py-1 text-xs font-medium text-amber-800">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" /> Không bịa số liệu · không sai pháp lý
             </span>
-            <h1 className="font-display mt-6 text-5xl font-semibold leading-[1.05] tracking-tight text-amber-50 sm:text-7xl">
-              Bán hàng mỗi ngày,<br /><span className="text-gold italic">đẳng cấp mỗi bài.</span>
+            <h1 className="mt-6 text-5xl font-extrabold leading-[1.04] tracking-tight text-slate-900 sm:text-7xl">
+              Bán hàng mỗi ngày,<br /><span className="text-gold-light">đẳng cấp mỗi bài.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-400">
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
               Trợ lý nội dung bất động sản: gợi ý bài mỗi sáng, soạn caption đúng dữ liệu đã xác thực, kèm ảnh đóng logo. Dán sang AI là xong.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <Magnetic><Link href="/signup" className={GOLD_BTN}>Dùng thử miễn phí →</Link></Magnetic>
-              <Magnetic><a href="#demo" className="rounded-full border border-slate-700 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-amber-600/60 hover:text-amber-100">Xem demo</a></Magnetic>
+              <Magnetic><a href="#demo" className="rounded-full border border-slate-300 px-6 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-900 hover:text-slate-900">Xem demo</a></Magnetic>
             </div>
           </div>
           <HeroScene />
         </div>
       </section>
-
-      <div className="lp-divider mx-auto max-w-6xl" />
 
       {/* ── Pain → solution ──────────────────────────────────────────────── */}
       <section className="mx-auto max-w-5xl px-5 py-20 sm:px-6 sm:py-24">
@@ -161,26 +152,14 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── How it works ─────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-5 py-20 sm:px-6 sm:py-28">
+      {/* ── How it works (sticky scrollytelling, mobbin-style) ───────────── */}
+      <div className="mx-auto max-w-6xl px-5 pt-20 text-center sm:px-6 sm:pt-28">
         <Reveal>
-          <div className="text-center">
-            <Eyebrow>Quy trình</Eyebrow>
-            <h2 className="font-display mt-3 text-3xl font-semibold text-amber-50 sm:text-5xl">Ba bước, dưới một phút</h2>
-          </div>
+          <Eyebrow>Quy trình</Eyebrow>
+          <h2 className="font-display mt-3 text-3xl font-semibold text-amber-50 sm:text-5xl">Ba bước, cuộn để xem</h2>
         </Reveal>
-        <div className="mt-12 grid gap-5 sm:grid-cols-3">
-          {STEPS.map((s, i) => (
-            <Reveal key={s.n} delay={i * 110}>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-7">
-                <span className="font-display text-4xl text-gold">{s.n}</span>
-                <h3 className="mt-3 font-display text-xl text-slate-100">{s.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-slate-400">{s.desc}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+      </div>
+      <ScrollStory />
 
       {/* ── Mobile + stats ───────────────────────────────────────────────── */}
       <section className="border-y border-slate-800 bg-slate-900/30">
