@@ -30,7 +30,7 @@ export default async function AppProjectPage({
     linksRes.ok ? linksRes.data : [],
   );
   return (
-    <main className="mx-auto flex max-w-4xl flex-col gap-4 p-6">
+    <main className="mx-auto flex max-w-4xl flex-col gap-4 p-4 sm:p-6">
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{project.name}</h1>
         <Link href="/projects" className="text-sm text-slate-400 hover:text-slate-200">← Dự án</Link>

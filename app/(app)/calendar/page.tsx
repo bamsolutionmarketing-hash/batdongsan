@@ -61,7 +61,7 @@ export default async function CalendarPage({
     .sort((a, b) => a.left - b.left);
 
   return (
-    <main className="mx-auto flex max-w-xl flex-col gap-4 p-6">
+    <main className="mx-auto flex max-w-xl flex-col gap-4 p-4 sm:p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Lịch đăng — {m + 1}/{y}</h1>
         <div className="flex items-center gap-2 text-sm">

@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   const { post, alternates, tasks, streak } = await getToday(session.userId);
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-5 p-6">
+    <main className="mx-auto flex max-w-2xl flex-col gap-5 p-4 sm:p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Hôm Nay</h1>
         {streak > 0 && (

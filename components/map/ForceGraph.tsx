@@ -115,7 +115,7 @@ export function ForceGraph({
   );
 
   return (
-    <div className="relative h-[560px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-900">
+    <div className="relative h-[60vh] min-h-[380px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-900 sm:h-[560px]">
       <ForceGraph2D
         ref={fgRef}
         graphData={graph}

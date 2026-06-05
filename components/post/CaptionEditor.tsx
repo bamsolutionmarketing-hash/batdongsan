@@ -89,7 +89,7 @@ export function CaptionEditor({
 
   const pill = (active: boolean) =>
     `rounded-full px-3 py-1 text-xs ${active ? "bg-sky-600 text-white" : "border border-slate-700 text-slate-300 hover:border-slate-500"}`;
-  const ctl = "rounded border border-slate-700 px-1.5 text-slate-300 hover:border-slate-500 disabled:opacity-30";
+  const ctl = "inline-flex min-h-[32px] min-w-[32px] items-center justify-center rounded border border-slate-700 px-2 text-base text-slate-300 hover:border-slate-500 disabled:opacity-30";
 
   return (
     <div className="flex flex-col gap-4">

@@ -1,9 +1,16 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Batdongsan Map",
-  description: "Bản đồ dự án BĐS dạng force-graph + guidance engine",
+  title: "Trợ lý BĐS",
+  description: "Trợ lý nội dung bán hàng bất động sản — bản đồ dự án + máy gợi ý bài.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#020617",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

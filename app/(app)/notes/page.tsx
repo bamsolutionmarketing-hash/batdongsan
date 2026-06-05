@@ -14,7 +14,7 @@ export default async function NotesPage({ searchParams }: { searchParams: { erro
   const notes = res.ok ? res.data : [];
 
   return (
-    <main className="mx-auto flex max-w-xl flex-col gap-5 p-6">
+    <main className="mx-auto flex max-w-xl flex-col gap-5 p-4 sm:p-6">
       <h1 className="text-2xl font-bold">Ghi chú & nhắc hẹn</h1>
       <Notice error={searchParams.error} ok={searchParams.ok} />
 

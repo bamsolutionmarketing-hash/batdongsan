@@ -18,7 +18,7 @@ export default async function SettingsPage({
   const next = searchParams.next?.startsWith("/") ? searchParams.next : "";
 
   return (
-    <main className="mx-auto flex max-w-xl flex-col gap-5 p-6">
+    <main className="mx-auto flex max-w-xl flex-col gap-5 p-4 sm:p-6">
       <h1 className="text-2xl font-bold">Thương hiệu cá nhân</h1>
       <p className="text-sm text-slate-400">
         Tên + SĐT này tự điền vào bài ([TEN_SALE]/[SDT]) và đóng lên ảnh khi tạo bài.
