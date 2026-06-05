@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPostById } from "@/lib/repo/posts";
-import { nodesByIds } from "@/lib/repo/nodes";
+import { nodesByIds, linksByProject } from "@/lib/repo/nodes";
 import { getProjectById } from "@/lib/repo/projects";
 import { getBranding } from "@/lib/repo/branding";
 import { getActiveTier } from "@/lib/gate/tier";
@@ -20,14 +20,32 @@ export default async function PostResultPage({
   const post = res.data;
 
   const session = await getSession();
-  const [nodesRes, projectRes, brandingRes] = await Promise.all([
+  const [nodesRes, projectRes, brandingRes, linksRes] = await Promise.all([
     nodesByIds(post.nodeIds),
     getProjectById(post.projectId),
     session ? getBranding(session.userId) : Promise.resolve({ ok: true as const, data: null }),
+    linksByProject(post.projectId),
   ]);
   const nodes = nodesRes.ok ? nodesRes.data : [];
   const project = projectRes.ok ? projectRes.data : null;
   const branding = brandingRes.ok ? brandingRes.data : null;
+
+  // Relationships between the selected nodes only — gives the AI cross-context.
+  const labelById = Object.fromEntries(nodes.map((n) => [n.id, n.label]));
+  const selected = new Set(post.nodeIds);
+  const links = (linksRes.ok ? linksRes.data : [])
+    .filter((l) => selected.has(l.sourceNode) && selected.has(l.targetNode))
+    .map((l) => ({ from: labelById[l.sourceNode], label: l.label, to: labelById[l.targetNode] }));
+
+  // Human-readable price range from the project's min/max (triệu/m² or tỷ — left
+  // as-is; admins author the raw integers).
+  const priceText =
+    project?.priceMin != null || project?.priceMax != null
+      ? [project?.priceMin, project?.priceMax]
+          .filter((v) => v != null)
+          .map((v) => Number(v).toLocaleString("vi-VN"))
+          .join(" – ")
+      : null;
 
   // Branded feed images (free tier gets a watermark).
   let images: { url: string; nodeId: string }[] = [];
@@ -49,8 +67,20 @@ export default async function PostResultPage({
       <CaptionCard
         caption={post.caption}
         composer={{
-          project: { name: project?.name, locationText: project?.locationText },
-          nodes: nodes.map((n) => ({ label: n.label, facts: n.facts })),
+          project: {
+            name: project?.name,
+            locationText: project?.locationText,
+            phase: project?.phase,
+            priceText,
+          },
+          nodes: nodes.map((n) => ({
+            label: n.label,
+            facts: n.facts,
+            talkpoint: n.talkpoint,
+            subLabel: n.subLabel,
+            category: n.category,
+          })),
+          links,
           branding: {
             displayName: branding?.displayName,
             phone: branding?.phone,

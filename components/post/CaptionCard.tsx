@@ -17,8 +17,20 @@ const TONES: { v: ComposeTone; label: string }[] = [
 ];
 
 export interface ComposerData {
-  project: { name?: string | null; locationText?: string | null };
-  nodes: { label: string; facts: Fact[] }[];
+  project: {
+    name?: string | null;
+    locationText?: string | null;
+    phase?: string | null;
+    priceText?: string | null;
+  };
+  nodes: {
+    label: string;
+    facts: Fact[];
+    talkpoint?: string | null;
+    subLabel?: string | null;
+    category?: string | null;
+  }[];
+  links?: { from: string; label?: string | null; to: string }[];
   branding: { displayName?: string | null; phone?: string | null; zalo?: string | null };
 }
 
