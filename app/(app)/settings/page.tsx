@@ -7,10 +7,15 @@ import { Button } from "@/components/ui/button";
 const input = "w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100";
 const label = "text-[11px] uppercase tracking-wide text-slate-500";
 
-export default async function SettingsPage({ searchParams }: { searchParams: { error?: string; ok?: string } }) {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: { error?: string; ok?: string; next?: string };
+}) {
   const session = await getSession();
   const res = session ? await getBranding(session.userId) : null;
   const b = res && res.ok ? res.data : null;
+  const next = searchParams.next?.startsWith("/") ? searchParams.next : "";
 
   return (
     <main className="mx-auto flex max-w-xl flex-col gap-5 p-6">
@@ -18,8 +23,14 @@ export default async function SettingsPage({ searchParams }: { searchParams: { e
       <p className="text-sm text-slate-400">
         Tên + SĐT này tự điền vào bài ([TEN_SALE]/[SDT]) và đóng lên ảnh khi tạo bài.
       </p>
+      {next && (
+        <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-300">
+          Hoàn tất Tên + SĐT rồi bấm Lưu để quay lại tạo bài.
+        </p>
+      )}
       <Notice error={searchParams.error} ok={searchParams.ok} />
       <form action={saveBranding} className="flex flex-col gap-3">
+        {next && <input type="hidden" name="next" value={next} />}
         <div><p className={label}>Tên hiển thị *</p><input name="display_name" defaultValue={b?.displayName ?? ""} required className={input} /></div>
         <div><p className={label}>SĐT *</p><input name="phone" defaultValue={b?.phone ?? ""} required className={input} /></div>
         <div><p className={label}>Zalo</p><input name="zalo" defaultValue={b?.zalo ?? ""} className={input} /></div>

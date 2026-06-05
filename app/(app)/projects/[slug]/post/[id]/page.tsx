@@ -9,11 +9,14 @@ import { getBrandedImages } from "@/lib/branding/pipeline";
 import { getSession } from "@/lib/auth";
 import { CaptionCard } from "@/components/post/CaptionCard";
 import { BrandedImageGrid } from "@/components/post/BrandedImageGrid";
+import { Button } from "@/components/ui/button";
+import { reRollPost } from "@/app/(app)/projects/_actions";
 
 export default async function PostResultPage({
-  params,
+  params, searchParams,
 }: {
   params: { slug: string; id: string };
+  searchParams: { rolled?: string; error?: string };
 }) {
   const res = await getPostById(params.id);
   if (!res.ok || !res.data) notFound();
@@ -64,6 +67,13 @@ export default async function PostResultPage({
         </Link>
       </header>
 
+      {searchParams.error && (
+        <p className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">{searchParams.error}</p>
+      )}
+      {searchParams.rolled && (
+        <p className="rounded-md border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300">Đã đổi sang mẫu khác.</p>
+      )}
+
       <CaptionCard
         caption={post.caption}
         composer={{
@@ -88,6 +98,12 @@ export default async function PostResultPage({
           },
         }}
       />
+
+      <form action={reRollPost} className="self-start">
+        <input type="hidden" name="post_id" value={post.id} />
+        <input type="hidden" name="slug" value={params.slug} />
+        <Button type="submit" variant="outline">🎲 Đổi mẫu khác</Button>
+      </form>
 
       <section>
         <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">Ảnh đóng logo</h2>

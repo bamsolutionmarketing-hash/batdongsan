@@ -6,6 +6,7 @@ export interface GeneratedPost {
   projectId: string;
   nodeIds: string[];
   caption: string;
+  variantSeed: string;
   promptVersion: string | null;
   createdAt: string;
 }
@@ -15,6 +16,7 @@ interface PostRow {
   project_id: string;
   node_ids: string[];
   caption: string;
+  variant_seed: string;
   prompt_version: string | null;
   created_at: string;
 }
@@ -24,6 +26,7 @@ const toPost = (r: PostRow): GeneratedPost => ({
   projectId: r.project_id,
   nodeIds: r.node_ids,
   caption: r.caption,
+  variantSeed: r.variant_seed,
   promptVersion: r.prompt_version,
   createdAt: r.created_at,
 });
@@ -34,7 +37,7 @@ export async function getPostById(id: string): Promise<Result<GeneratedPost | nu
   const supabase = createClient();
   const { data, error } = await supabase
     .from("generated_posts")
-    .select("id, project_id, node_ids, caption, prompt_version, created_at")
+    .select("id, project_id, node_ids, caption, variant_seed, prompt_version, created_at")
     .eq("id", id)
     .maybeSingle();
   if (error) return err("INTERNAL", error.message);

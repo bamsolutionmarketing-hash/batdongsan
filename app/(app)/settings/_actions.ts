@@ -64,5 +64,10 @@ export async function saveBranding(fd: FormData) {
   });
   if (error) fail(error.message);
   revalidatePath("/settings");
+
+  // If the user was gated here mid-flow, send them back to continue posting.
+  // Only honor safe internal paths ("/...", never "//" or absolute URLs).
+  const next = str(fd, "next");
+  if (next.startsWith("/") && !next.startsWith("//")) redirect(next);
   redirect("/settings?ok=1");
 }
