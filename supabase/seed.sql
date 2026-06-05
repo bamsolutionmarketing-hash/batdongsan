@@ -5,7 +5,8 @@
 -- Developers -----------------------------------------------------------------
 insert into developers (id, name, slug, parent_company, credibility) values
   ('00000000-0000-0000-0000-0000000000e1', 'Masterise Homes', 'masterise-homes', 'Masterise Group', 9),
-  ('00000000-0000-0000-0000-0000000000e2', 'Keppel Land × Khang Điền', 'keppel-khang-dien', 'Keppel Ltd. / KDH', 9)
+  ('00000000-0000-0000-0000-0000000000e2', 'Keppel Land × Khang Điền', 'keppel-khang-dien', 'Keppel Ltd. / KDH', 9),
+  ('00000000-0000-0000-0000-0000000000e3', 'Vinhomes (VHM)', 'vinhomes', 'Vingroup', 10)
 on conflict (id) do nothing;
 
 -- Projects — both public + demo so signed-out landing + free tier work ---------
@@ -22,5 +23,11 @@ values
    '00000000-0000-0000-0000-0000000000e1',
    'Masteri Cosmo Central', 'masteri-cosmo-central',
    'Nexus Zone (CT3–CT4)', 'Lõi The Global City, P. Bình Trưng, TP.HCM', 'selling', '2028-09-30',
-   92000000, 102000000, 'broker_estimate', true, true)
+   92000000, 102000000, 'broker_estimate', true, true),
+  -- Real project (not demo): khởi công 29/4/2026, chưa mở bán — giá rumor nên để null.
+  ('00000000-0000-0000-0000-00000000b001',
+   '00000000-0000-0000-0000-0000000000e3',
+   'Vinhomes Saigon Park', 'vinhomes-saigon-park',
+   'Giai đoạn 1 — khởi công 29/4/2026', 'Xã Xuân Thới Sơn (Hóc Môn), giáp Quận 12, TP.HCM', 'upcoming', null,
+   null, null, 'broker_estimate', false, true)
 on conflict (id) do nothing;
