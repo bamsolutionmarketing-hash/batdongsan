@@ -226,3 +226,87 @@ insert into node_content_blocks (node_id, role, variant_no, text, tone, min_conf
   ('ed4b6564-c77d-596f-9e07-512d3dba7416','body',3,'Đạt Best Residential Design in Asia 2025 (AADA) — bảo chứng thiết kế.','neutral','verified','{"Giải"}',true),
   ('ed4b6564-c77d-596f-9e07-512d3dba7416','proof',1,'121 dinh thự Elie Saab, giải Best Residential Design in Asia 2025 — đẳng cấp Masterise.','neutral','verified','{"Quy mô","Thương hiệu","Giải"}',true)
 on conflict (node_id, role, variant_no) do nothing;
+
+-- ── Batch 5: KHU ĐÔNG SÀI GÒN infrastructure thesis ──────────────────────────
+insert into node_content_blocks (node_id, role, variant_no, text, tone, min_confidence, fact_keys, is_enabled) values
+  -- ring-road-4 (455f0bec) — Vành đai 4
+  ('455f0bec-e3e1-5ba9-acd2-36166d3be6fc','hook',1,'Vành đai 4 khởi công Q2/2026 — vành đai liên vùng 159 km mở chu kỳ tăng trưởng mới cho khu Đông.','fomo','verified','{"Khởi công","Tổng"}',true),
+  ('455f0bec-e3e1-5ba9-acd2-36166d3be6fc','hook',2,'Sau Vành đai 3 là Vành đai 4: khu Đông Sài Gòn đang được khâu vào mạng lưới liên vùng.','neutral','verified','{}',true),
+  ('455f0bec-e3e1-5ba9-acd2-36166d3be6fc','hook',3,'Hạ tầng đi trước, đô thị theo sau. Vành đai 4 đang đặt nền cho thập kỷ tới của khu Đông.','story','verified','{}',true),
+  ('455f0bec-e3e1-5ba9-acd2-36166d3be6fc','body',1,'Toàn tuyến ~159 km, vốn giai đoạn 1 ~VND 120,000 tỷ theo mô hình PPP.','neutral','verified','{"Tổng","Vốn Phase 1","Mô hình"}',true),
+  ('455f0bec-e3e1-5ba9-acd2-36166d3be6fc','body',2,'Khởi công Q2/2026, dự kiến hoàn thành ~2031 — trục liên vùng dài hạn.','neutral','verified','{"Khởi công","Hoàn thành dự kiến"}',true),
+  ('455f0bec-e3e1-5ba9-acd2-36166d3be6fc','body',3,'Quy mô 4 làn (mở rộng tiếp), tốc độ 100 km/h — nối các tỉnh vùng kinh tế trọng điểm phía Nam.','neutral','verified','{"Tốc độ"}',true),
+  ('455f0bec-e3e1-5ba9-acd2-36166d3be6fc','proof',1,'~159 km, ~VND 120,000 tỷ, khởi công Q2/2026 — vành đai liên vùng định hình lại khu Đông.','neutral','verified','{"Tổng","Vốn Phase 1","Khởi công"}',true),
+  -- metro-1 (f3cacc81) — Metro Line 1
+  ('f3cacc81-305e-5128-a32f-dcbfb757beae','hook',1,'Metro số 1 đã lăn bánh từ 22/12/2024 — khu Đông chính thức có đường sắt đô thị.','story','verified','{"Khai trương"}',true),
+  ('f3cacc81-305e-5128-a32f-dcbfb757beae','hook',2,'Dữ liệu thị trường ghi nhận khu quanh trạm Metro 1 tăng 15–20%/năm — sức hút của metro là có thật.','fomo','verified','{"Tác động giá"}',true),
+  ('f3cacc81-305e-5128-a32f-dcbfb757beae','hook',3,'Tuyến 19.7 km, 14 trạm, tàu Hitachi — xương sống giao thông công cộng khu Đông.','neutral','verified','{"Chiều dài","Tàu"}',true),
+  ('f3cacc81-305e-5128-a32f-dcbfb757beae','body',1,'Khai trương 22/12/2024, dài 19.7 km với 14 trạm, vận hành 17 đoàn tàu Hitachi.','neutral','verified','{"Khai trương","Chiều dài","Tàu"}',true),
+  ('f3cacc81-305e-5128-a32f-dcbfb757beae','body',2,'Tốc độ 110 km/h trên cao và 80 km/h đoạn ngầm — kết nối nhanh về trung tâm.','neutral','verified','{"Tốc độ"}',true),
+  ('f3cacc81-305e-5128-a32f-dcbfb757beae','body',3,'Thị trường ghi nhận các vùng quanh trạm tăng 15–20% theo năm — hiệu ứng metro đã hiện hữu.','neutral','verified','{"Tác động giá"}',true),
+  ('f3cacc81-305e-5128-a32f-dcbfb757beae','proof',1,'Vận hành từ 12/2024, 19.7 km, 14 trạm — đường sắt đô thị khu Đông không còn trên giấy.','neutral','verified','{"Khai trương","Chiều dài"}',true),
+  -- ring-road-2 (1f8d30da) — Vành đai 2
+  ('1f8d30da-fd93-57fa-966e-e64499aa44d9','hook',1,'Vành đai 2 đã vận hành 50/64 km — vòng khép đang dần hoàn thiện quanh khu Đông.','neutral','verified','{"Đã vận hành","Tổng"}',true),
+  ('1f8d30da-fd93-57fa-966e-e64499aa44d9','hook',2,'Chỉ còn 14 km cuối để khép Vành đai 2 — đoạn Phú Hữu đang là mắt xích nóng.','fomo','verified','{"Còn lại","Đoạn Phú Hữu"}',true),
+  ('1f8d30da-fd93-57fa-966e-e64499aa44d9','hook',3,'Một vòng vành đai khép lại là một vùng đô thị bứt tốc. Vành đai 2 đang tới đoạn đó.','story','verified','{}',true),
+  ('1f8d30da-fd93-57fa-966e-e64499aa44d9','body',1,'Tổng tuyến ~64 km, đã đưa vào vận hành 50 km (gồm trục Võ Chí Công).','neutral','verified','{"Tổng","Đã vận hành"}',true),
+  ('1f8d30da-fd93-57fa-966e-e64499aa44d9','body',2,'Còn 14 km chia 4 đoạn; riêng đoạn Phú Hữu 3.6 km, vốn hơn VND 9,800 tỷ.','neutral','verified','{"Còn lại","Đoạn Phú Hữu"}',true),
+  ('1f8d30da-fd93-57fa-966e-e64499aa44d9','body',3,'Các đoạn còn lại dự kiến hoàn thành ~2027–2029 — khép vòng kết nối khu Đông.','neutral','verified','{"Hoàn thành"}',true),
+  ('1f8d30da-fd93-57fa-966e-e64499aa44d9','proof',1,'64 km, đã chạy 50 km, đoạn Phú Hữu hơn VND 9,800 tỷ — vành đai đang khép quanh khu Đông.','neutral','verified','{"Tổng","Đã vận hành","Đoạn Phú Hữu"}',true),
+  -- thu-thiem-long-thanh (c07de8cc) — rail
+  ('c07de8cc-f47d-52ee-b73f-6bd275616909','hook',1,'Đường sắt Thủ Thiêm – Long Thành (US$3.2B) sắp khởi công — nối thẳng khu Đông tới sân bay mới.','fomo','verified','{"Vốn"}',true),
+  ('c07de8cc-f47d-52ee-b73f-6bd275616909','hook',2,'Tuyến 42 km, 20 trạm, 120 km/h nối Thủ Thiêm tới Long Thành — trục kết nối sân bay của khu Đông.','neutral','verified','{"Chiều dài","Tốc độ"}',true),
+  ('c07de8cc-f47d-52ee-b73f-6bd275616909','hook',3,'Khi sân bay Long Thành mở, câu hỏi là đi tới đó bằng gì. Câu trả lời đang được Thaco xây.','story','verified','{}',true),
+  ('c07de8cc-f47d-52ee-b73f-6bd275616909','body',1,'Quy mô 42 km với 20 trạm, tốc độ 120 km/h — kết nối CBD Thủ Thiêm và sân bay Long Thành.','neutral','verified','{"Chiều dài","Tốc độ"}',true),
+  ('c07de8cc-f47d-52ee-b73f-6bd275616909','body',2,'Tổng vốn VND 84,753 tỷ (US$3.2B) theo mô hình PPP, nhà đầu tư Thaco.','neutral','verified','{"Vốn","Nhà đầu tư"}',true),
+  ('c07de8cc-f47d-52ee-b73f-6bd275616909','body',3,'Khởi công cuối 2026, vận hành 2030 — đồng pha với sân bay Long Thành.','neutral','verified','{"Khởi công","Vận hành"}',true),
+  ('c07de8cc-f47d-52ee-b73f-6bd275616909','proof',1,'42 km, US$3.2B, 120 km/h, vận hành 2030 — trục đường sắt sân bay cho khu Đông.','neutral','verified','{"Chiều dài","Vốn","Tốc độ","Vận hành"}',true),
+  -- shtp (4bc28cdc) — Saigon Hi-Tech Park
+  ('4bc28cdc-b3c3-5304-a440-aff7f66a0364','hook',1,'Saigon Hi-Tech Park: 913 ha, 25,000+ chuyên gia ngay trong lòng khu Đông.','neutral','verified','{"Diện tích","Số nhân sự"}',true),
+  ('4bc28cdc-b3c3-5304-a440-aff7f66a0364','hook',2,'Nguồn cầu nhà ở thật: 25,000+ chuyên gia công nghệ làm việc ngay cạnh khu Đông.','fomo','verified','{"Số nhân sự"}',true),
+  ('4bc28cdc-b3c3-5304-a440-aff7f66a0364','hook',3,'Một khu công nghệ cao đóng góp 94% xuất khẩu hi-tech của TP.HCM — động cơ kinh tế của khu Đông.','story','verified','{"% xuất khẩu HCM hi-tech"}',true),
+  ('4bc28cdc-b3c3-5304-a440-aff7f66a0364','body',1,'Diện tích 913 ha (giai đoạn 1: 300, giai đoạn 2: 613), thu hút 25,000+ chuyên gia.','neutral','verified','{"Diện tích","Số nhân sự"}',true),
+  ('4bc28cdc-b3c3-5304-a440-aff7f66a0364','body',2,'Vốn tích lũy US$7.1 tỷ+, xuất khẩu tích lũy US$45 tỷ+ — quy mô công nghiệp công nghệ cao.','neutral','verified','{"Vốn tích lũy","Xuất khẩu tích lũy"}',true),
+  ('4bc28cdc-b3c3-5304-a440-aff7f66a0364','body',3,'Chiếm 94% xuất khẩu hi-tech của TP.HCM — trung tâm việc làm chất lượng cao phía Đông.','neutral','verified','{"% xuất khẩu HCM hi-tech"}',true),
+  ('4bc28cdc-b3c3-5304-a440-aff7f66a0364','proof',1,'913 ha, 25,000+ chuyên gia, US$45 tỷ+ xuất khẩu — lực cầu ở thực cho khu Đông.','neutral','verified','{"Diện tích","Số nhân sự","Xuất khẩu tích lũy"}',true),
+  -- my-thuy (b27cb50a) — Nút giao Mỹ Thủy
+  ('b27cb50a-723f-5628-9adb-7ad3d2b03059','hook',1,'Nút giao Mỹ Thủy 4 tầng — nút giao 4 tầng đầu tiên Việt Nam, gỡ điểm nghẽn cảng Cát Lái.','neutral','verified','{"Loại"}',true),
+  ('b27cb50a-723f-5628-9adb-7ad3d2b03059','hook',2,'Điểm kẹt xe khét tiếng khu Đông sắp được hoá giải: Mỹ Thủy 4 tầng hoàn thành Q3/2026.','fomo','verified','{"Hoàn thành"}',true),
+  ('b27cb50a-723f-5628-9adb-7ad3d2b03059','hook',3,'Hạ tầng không chỉ là đường — là thời gian. Mỹ Thủy 4 tầng trả lại giờ kẹt xe cho cư dân khu Đông.','story','verified','{}',true),
+  ('b27cb50a-723f-5628-9adb-7ad3d2b03059','body',1,'Nút giao 4 tầng đầu tiên tại Việt Nam, tổng vốn VND 3,622 tỷ.','neutral','verified','{"Loại","Vốn"}',true),
+  ('b27cb50a-723f-5628-9adb-7ad3d2b03059','body',2,'Kết nối Nguyễn Thị Định, Đồng Văn Cống và Võ Chí Công — gỡ nút thắt cảng Cát Lái.','neutral','verified','{"Kết nối"}',true),
+  ('b27cb50a-723f-5628-9adb-7ad3d2b03059','body',3,'Dự kiến hoàn thành Q3/2026 — thông luồng giao thông trục Đông.','neutral','verified','{"Hoàn thành"}',true),
+  ('b27cb50a-723f-5628-9adb-7ad3d2b03059','proof',1,'Nút 4 tầng đầu tiên VN, VND 3,622 tỷ, về đích Q3/2026 — gỡ điểm nghẽn khu Đông.','neutral','verified','{"Loại","Vốn","Hoàn thành"}',true),
+  -- nut-giao-an-phu (67454760) — Cosmo
+  ('67454760-4a0f-5734-a133-2802d720d039','hook',1,'Nút giao An Phú 3 tầng đang về đích Q2/2026 — cửa ngõ khu Đông sắp thông thoáng.','fomo','verified','{"Hoàn thành","Quy mô"}',true),
+  ('67454760-4a0f-5734-a133-2802d720d039','hook',2,'Từng hạng mục An Phú đã thông xe lần lượt 2025–2026 — hạ tầng chạy đúng tiến độ.','neutral','verified','{"HC1-01","HC1-02"}',true),
+  ('67454760-4a0f-5734-a133-2802d720d039','hook',3,'Cửa ngõ cao tốc của khu Đông đang được tháo nút — An Phú là mảnh ghép cuối.','story','verified','{}',true),
+  ('67454760-4a0f-5734-a133-2802d720d039','body',1,'Nút giao 3 tầng, tổng vốn VND 3,408 tỷ — đầu mối cao tốc TP.HCM – Long Thành.','neutral','verified','{"Quy mô"}',true),
+  ('67454760-4a0f-5734-a133-2802d720d039','body',2,'HC1-01 thông xe 30/6/2025, cầu N2 thông xe 31/12/2025, HC1-02 thông xe 2/2/2026.','neutral','verified','{"HC1-01","Cầu N2","HC1-02"}',true),
+  ('67454760-4a0f-5734-a133-2802d720d039','body',3,'Toàn nút dự kiến hoàn thành Q2/2026 — giải toả cửa ngõ phía Đông.','neutral','verified','{"Hoàn thành"}',true),
+  ('67454760-4a0f-5734-a133-2802d720d039','proof',1,'Nút 3 tầng VND 3,408 tỷ, các nhánh thông xe 2025–2026, về đích Q2/2026 — hạ tầng cửa ngõ đã chạy.','neutral','verified','{"Quy mô","HC1-02","Hoàn thành"}',true),
+  -- cau-can-gio (e41c9ed7) — Cosmo
+  ('e41c9ed7-ed76-59cc-9a09-96b77b269183','hook',1,'Cầu Cần Giờ khởi công 2026 — phá thế ốc đảo, mở trục biển cho phía Nam TP.HCM.','fomo','verified','{"Khởi công"}',true),
+  ('e41c9ed7-ed76-59cc-9a09-96b77b269183','hook',2,'Một cây cầu thay một chuyến phà: Cần Giờ sắp nối liền mạch với trung tâm.','story','verified','{"Thay thế"}',true),
+  ('e41c9ed7-ed76-59cc-9a09-96b77b269183','hook',3,'Cầu dây văng 6 làn vượt sông Soài Rạp, thay thế phà Bình Khánh.','neutral','verified','{"Quy mô","Thay thế"}',true),
+  ('e41c9ed7-ed76-59cc-9a09-96b77b269183','body',1,'Tổng đầu tư ~VND 13,200 tỷ, quy mô 6 làn dây văng vượt sông Soài Rạp.','neutral','verified','{"Tổng đầu tư","Quy mô"}',true),
+  ('e41c9ed7-ed76-59cc-9a09-96b77b269183','body',2,'Khởi công 15/01/2026 (chính thức 3/6/2026), dự kiến hoàn thành 30/6/2029.','neutral','verified','{"Khởi công","Hoàn thành"}',true),
+  ('e41c9ed7-ed76-59cc-9a09-96b77b269183','body',3,'Thay thế phà Bình Khánh — kết nối Cần Giờ liền mạch với khu Nam và khu Đông.','neutral','verified','{"Thay thế"}',true),
+  ('e41c9ed7-ed76-59cc-9a09-96b77b269183','proof',1,'~VND 13,200 tỷ, 6 làn dây văng, hoàn thành 2029 — hạ tầng kết nối liên vùng phía Nam.','neutral','verified','{"Tổng đầu tư","Quy mô","Hoàn thành"}',true),
+  -- cau-phu-my-2 (71536758) — Cosmo
+  ('71536758-a0c3-5c7c-b748-ca4af52b3b74','hook',1,'Cầu Phú Mỹ 2 (~VND 23,186 tỷ) khởi công 2026 — cầu dây văng 2 tầng đầu tiên TP.HCM.','fomo','verified','{"Tổng đầu tư","Quy mô"}',true),
+  ('71536758-a0c3-5c7c-b748-ca4af52b3b74','hook',2,'8 làn, 6.3 km, tĩnh không 55m — cầu nối khu Đông với hệ cảng Đồng Nai.','neutral','verified','{"Quy mô","Tĩnh không"}',true),
+  ('71536758-a0c3-5c7c-b748-ca4af52b3b74','hook',3,'Khi cảng cần đường, thành phố xây cầu. Phú Mỹ 2 đang mở mạch logistic khu Đông.','story','verified','{}',true),
+  ('71536758-a0c3-5c7c-b748-ca4af52b3b74','body',1,'Tổng đầu tư ~VND 23,186 tỷ; quy mô 8 làn, 6.3 km, dây văng 2 tầng đầu tiên TP.HCM.','neutral','verified','{"Tổng đầu tư","Quy mô"}',true),
+  ('71536758-a0c3-5c7c-b748-ca4af52b3b74','body',2,'Tĩnh không 55m — cao nhất nhóm cầu, đảm bảo luồng tàu lớn.','neutral','verified','{"Tĩnh không"}',true),
+  ('71536758-a0c3-5c7c-b748-ca4af52b3b74','body',3,'Kết nối Nguyễn Hữu Thọ tới đường liên cảng Đồng Nai; khởi công 15/01/2026.','neutral','verified','{"Kết nối","Khởi công"}',true),
+  ('71536758-a0c3-5c7c-b748-ca4af52b3b74','proof',1,'~VND 23,186 tỷ, 8 làn, dây văng 2 tầng đầu tiên TP.HCM — trục kết nối cảng của khu Đông.','neutral','verified','{"Tổng đầu tư","Quy mô"}',true),
+  -- ifc-thu-thiem (f0e122ef) — Cosmo
+  ('f0e122ef-2006-5380-a617-cd45a8157665','hook',1,'Trung tâm Tài chính Quốc tế đặt tại Thủ Thiêm — khu Đông bước vào bản đồ tài chính toàn cầu.','fomo','verified','{"Quy mô HCM"}',true),
+  ('f0e122ef-2006-5380-a617-cd45a8157665','hook',2,'Nghị định 323/2025 công bố 21/12/2025: TTTC quốc tế ~898 ha tại TP.HCM.','neutral','verified','{"Công bố","Quy mô HCM"}',true),
+  ('f0e122ef-2006-5380-a617-cd45a8157665','hook',3,'Mỗi đô thị lớn cần một trái tim tài chính. Của TP.HCM đang hình thành ở Thủ Thiêm — sát khu Đông.','story','verified','{}',true),
+  ('f0e122ef-2006-5380-a617-cd45a8157665','body',1,'Công bố 21/12/2025 theo NĐ 323/2025/NĐ-CP, quy mô tại TP.HCM ~898 ha.','neutral','verified','{"Công bố","Quy mô HCM"}',true),
+  ('f0e122ef-2006-5380-a617-cd45a8157665','body',2,'Mô hình một trung tâm – hai địa điểm: TP.HCM và Đà Nẵng.','neutral','verified','{"Mô hình"}',true),
+  ('f0e122ef-2006-5380-a617-cd45a8157665','body',3,'Lộ trình: 2026 hạ tầng → 2030 tầm ASEAN → 2035 tầm toàn cầu.','neutral','verified','{"Lộ trình"}',true),
+  ('f0e122ef-2006-5380-a617-cd45a8157665','proof',1,'NĐ 323/2025, ~898 ha Thủ Thiêm, lộ trình 2026–2035 — động lực tài chính kề khu Đông.','neutral','verified','{"Công bố","Quy mô HCM","Lộ trình"}',true)
+on conflict (node_id, role, variant_no) do nothing;
