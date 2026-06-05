@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { listPublishedProjects } from "@/lib/repo/projects";
 import { MarketingHeader } from "@/components/landing/MarketingHeader";
-import { HeroPreview } from "@/components/landing/HeroPreview";
+import { HeroInteractive } from "@/components/landing/HeroInteractive";
 import { Reveal } from "@/components/landing/Reveal";
 import { CaptionDemo } from "@/components/landing/CaptionDemo";
 import { GraphTeaser } from "@/components/landing/GraphTeaser";
@@ -50,7 +50,7 @@ export default async function Home() {
           </div>
         </div>
         <div className="animate-fade-up [animation-delay:120ms]">
-          <HeroPreview />
+          <HeroInteractive />
         </div>
       </section>
 
