@@ -10,7 +10,7 @@ export default function LoginPage({
 }: {
   searchParams: { redirect?: string };
 }) {
-  const redirectTo = searchParams.redirect ?? "/app";
+  const redirectTo = searchParams.redirect ?? "/dashboard";
   const [pending, startTransition] = useTransition();
   const [loginError, setLoginError] = useState<string>();
   const [signupError, setSignupError] = useState<string>();
