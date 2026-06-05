@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session) redirect("/login");
-  const { post, tasks, streak } = await getToday(session.userId);
+  const { post, alternates, tasks, streak } = await getToday(session.userId);
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-5 p-6">
@@ -24,7 +24,14 @@ export default async function DashboardPage() {
 
       {post ? (
         <Card className="border-sky-900/50">
-          <p className="text-[11px] uppercase tracking-wide text-sky-400">Gợi ý bài hôm nay</p>
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] uppercase tracking-wide text-sky-400">Gợi ý bài hôm nay</p>
+            {post.daysLeft != null && post.daysLeft >= 0 && (
+              <span className={`rounded-full px-2.5 py-0.5 text-xs ${post.daysLeft <= 2 ? "bg-red-950/40 text-red-300 border border-red-800/60" : "bg-slate-800 text-slate-300"}`}>
+                ⏳ còn {post.daysLeft} ngày
+              </span>
+            )}
+          </div>
           <CardTitle className="mt-1">{post.title}</CardTitle>
           <CardDesc>{post.reason}</CardDesc>
           <div className="mt-3 flex flex-wrap gap-1.5">
@@ -45,6 +52,26 @@ export default async function DashboardPage() {
           <CardDesc>Chưa đủ dữ liệu node. Chọn một dự án để tạo bài thủ công.</CardDesc>
           <Link href="/projects" className="mt-3 inline-block text-sm text-sky-400">Xem dự án →</Link>
         </Card>
+      )}
+
+      {alternates.length > 0 && (
+        <section>
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">Gợi ý khác</h2>
+          <div className="flex flex-col gap-2">
+            {alternates.map((a) => (
+              <div key={a.angle} className="flex flex-wrap items-center gap-2 rounded-md border border-slate-800 bg-slate-900 px-3 py-2">
+                <span className="text-sm font-medium text-slate-100">{a.title}</span>
+                <span className="text-xs text-slate-500">{a.nodeLabels.join(" · ")}</span>
+                <form action={createPostAction} className="ml-auto">
+                  <input type="hidden" name="project_id" value={a.projectId} />
+                  <input type="hidden" name="slug" value={a.projectSlug} />
+                  <input type="hidden" name="node_ids" value={a.nodeIds.join(",")} />
+                  <Button type="submit" variant="outline" className="px-2.5 py-1 text-xs">Tạo →</Button>
+                </form>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       <section>

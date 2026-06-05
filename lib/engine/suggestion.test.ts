@@ -31,7 +31,7 @@ describe("chooseSuggestion", () => {
     expect(s.post?.nodeIds).toEqual(["f1"]);
   });
 
-  it("active trigger overrides angle + preselects its nodes", () => {
+  it("active trigger overrides angle + preselects its nodes + counts days left", () => {
     const s = chooseSuggestion({
       ...base,
       triggers: [{ triggerDate: "2026-06-03", activeDaysBefore: 7, suggestedAngle: "location", nodeIds: ["l1", "l2"], label: "Early bird sắp hết" }],
@@ -39,6 +39,17 @@ describe("chooseSuggestion", () => {
     expect(s.post?.angle).toBe("location");
     expect(s.post?.nodeIds).toEqual(["l1", "l2"]);
     expect(s.post?.reason).toContain("Early bird");
+    expect(s.post?.daysLeft).toBe(2); // 06-01 → 06-03
+    expect(s.post?.reason).toContain("còn 2 ngày");
+  });
+
+  it("offers alternates from other angles with distinct nodes", () => {
+    const s = chooseSuggestion(base); // Mon → finance primary (f1)
+    expect(s.post?.angle).toBe("finance");
+    expect(s.alternates.length).toBeGreaterThan(0);
+    // alternates use other angles and don't reuse the primary's node
+    expect(s.alternates.every((a) => a.angle !== "finance")).toBe(true);
+    expect(s.alternates.flatMap((a) => a.nodeIds)).not.toContain("f1");
   });
 
   it("variety: prefers nodes not used recently", () => {
