@@ -1,4 +1,4 @@
-import type { ContentBlock, Fact } from "@/types/domain";
+import type { BlockTone, ContentBlock, Fact } from "@/types/domain";
 import { blockUsable } from "./compliance";
 import { substitute, type VarContext } from "./variables";
 import { pickIndex } from "./variants";
@@ -88,4 +88,75 @@ export function assembleCaption(input: AssembleInput): AssembleResult {
   }
 
   return { caption: pieces.join("\n\n").trim(), usedBlockIds, missingVars: [...missing] };
+}
+
+// ── Editable composition ─────────────────────────────────────────────────────
+// Same slot logic as assembleCaption, but instead of picking one block per slot
+// it returns ALL usable+substituted options so the UI can let the agent cycle
+// variants per slot. `selectedIndex` is the deterministic default (seed-chosen).
+export interface EditableOption {
+  blockId: string;
+  text: string; // already variable-substituted
+  tone: BlockTone;
+}
+export interface EditableSlot {
+  key: string; // stable unique id for the slot occurrence
+  role: string;
+  nodeLabel: string | null; // source node (null for the global CTA pool)
+  options: EditableOption[];
+  selectedIndex: number;
+}
+
+export function buildEditableCaption(input: AssembleInput): { slots: EditableSlot[] } {
+  const { structure, nodes, ctaBlocks, ctx, seed } = input;
+  const slots: EditableSlot[] = [];
+  let bodyCursor = 0;
+  const proofNode = [...nodes].sort((a, b) => b.facts.length - a.facts.length)[0];
+
+  structure.forEach((role, idx) => {
+    let pool: ContentBlock[] = [];
+    let facts: Fact[] = [];
+    let nodeLabel: string | null = null;
+
+    if (role === "cta") {
+      pool = ctaBlocks;
+    } else if (role === "hook") {
+      const n = nodes[0];
+      if (n) { pool = n.blocks; facts = n.facts; nodeLabel = n.label; }
+    } else if (role === "proof") {
+      if (proofNode) { pool = proofNode.blocks; facts = proofNode.facts; nodeLabel = proofNode.label; }
+    } else {
+      const n = nodes[bodyCursor % nodes.length];
+      bodyCursor++;
+      if (n) { pool = n.blocks; facts = n.facts; nodeLabel = n.label; }
+    }
+
+    const options: EditableOption[] = [];
+    for (const b of pool) {
+      if (!b.isEnabled) continue;
+      if (role !== "cta") {
+        if (b.role !== role) continue;
+        const c = blockUsable(
+          { role: b.role, tone: b.tone, minConfidence: b.minConfidence, factKeys: b.factKeys },
+          facts,
+        );
+        if (!c.usable) continue;
+      }
+      const sub = substitute(b.text, ctx);
+      if (sub.missing.length) continue; // can't fully fill → not offered
+      options.push({ blockId: b.id, text: sub.text, tone: b.tone });
+    }
+    if (options.length === 0) return;
+
+    const slotSeed = `${seed}:${role}:${idx}:${nodeLabel ?? "cta"}`;
+    slots.push({
+      key: `${role}-${idx}`,
+      role,
+      nodeLabel,
+      options,
+      selectedIndex: pickIndex(slotSeed, options.length),
+    });
+  });
+
+  return { slots };
 }

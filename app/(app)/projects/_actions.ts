@@ -181,6 +181,22 @@ export async function reRollPost(fd: FormData) {
   redirect(`${dest}?rolled=1`);
 }
 
+// Persist an agent-edited caption (from the slot editor). Owner-only via RLS.
+export async function saveCaption(fd: FormData) {
+  const session = await getSession();
+  if (!session) redirect("/login");
+  const postId = String(fd.get("post_id") ?? "");
+  const slug = String(fd.get("slug") ?? "");
+  const caption = String(fd.get("caption") ?? "").trim();
+  const dest = `/projects/${slug}/post/${postId}`;
+  if (!caption) redirect(`${dest}?error=${encodeURIComponent("Bài trống")}`);
+
+  const supabase = createClient();
+  const { error } = await supabase.from("generated_posts").update({ caption }).eq("id", postId);
+  if (error) redirect(`${dest}?error=${encodeURIComponent(error.message)}`);
+  redirect(`${dest}?saved=1`);
+}
+
 // Generate (or reuse) a 9:16 story image for one node of a post and open it.
 export async function downloadStory(fd: FormData) {
   const session = await getSession();
