@@ -1,12 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display } from "next/font/google";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 
-// Elegant display serif for luxury headings (latin + Vietnamese).
-const display = Playfair_Display({
+// Elegant high-contrast serif for luxury headings.
+const display = Cormorant_Garamond({
   subsets: ["latin", "vietnamese"],
-  weight: ["500", "600", "700", "800"],
+  weight: ["500", "600", "700"],
   variable: "--font-display",
+  display: "swap",
+});
+// Clean modern sans for body/UI.
+const sans = Inter({
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-sans",
   display: "swap",
 });
 
@@ -24,7 +30,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={display.variable}>
+    <html lang="vi" className={`${display.variable} ${sans.variable}`}>
       <body>{children}</body>
     </html>
   );
