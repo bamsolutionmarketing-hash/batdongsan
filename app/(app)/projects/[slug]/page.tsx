@@ -3,9 +3,15 @@ import { notFound } from "next/navigation";
 import { getProjectBySlug } from "@/lib/repo/projects";
 import { nodesByProject, linksByProject } from "@/lib/repo/nodes";
 import { buildGraph } from "@/lib/map/buildGraph";
-import { ProjectKnowledgeMap } from "@/components/map/ProjectKnowledgeMap";
+import { MapSelection } from "@/components/map/MapSelection";
+import { Notice } from "@/app/(admin)/admin/_Notice";
 
-export default async function AppProjectPage({ params }: { params: { slug: string } }) {
+export default async function AppProjectPage({
+  params, searchParams,
+}: {
+  params: { slug: string };
+  searchParams: { error?: string };
+}) {
   const res = await getProjectBySlug(params.slug);
   if (!res.ok || !res.data) notFound();
   const project = res.data;
@@ -23,10 +29,8 @@ export default async function AppProjectPage({ params }: { params: { slug: strin
         <h1 className="text-2xl font-bold">{project.name}</h1>
         <Link href="/projects" className="text-sm text-slate-400 hover:text-slate-200">← Dự án</Link>
       </header>
-      <p className="text-sm text-slate-500">
-        Chế độ chọn điểm để tạo bài sẽ thêm ở S3. Hiện tại: xem bản đồ tri thức.
-      </p>
-      <ProjectKnowledgeMap data={graph} notesById={notesById} />
+      <Notice error={searchParams.error} />
+      <MapSelection projectId={project.id} slug={project.slug} data={graph} notesById={notesById} />
     </main>
   );
 }

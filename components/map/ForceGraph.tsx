@@ -49,6 +49,10 @@ interface ForceGraphProps {
   highlightIds?: string[];
   searching?: boolean;
   onSelect?: (id: string) => void;
+  /** Selection mode: click toggles membership in `selectedIds` (max maxSelect). */
+  mode?: "view" | "select";
+  selectedIds?: string[];
+  onToggle?: (id: string) => void;
   /** group -> node colour. Falls back to the cross-project palette. */
   nodeColors?: Record<string, string>;
   /** group -> link colour. */
@@ -67,12 +71,16 @@ export function ForceGraph({
   highlightIds,
   searching,
   onSelect,
+  mode = "view",
+  selectedIds,
+  onToggle,
   nodeColors = DEFAULT_NODE_COLORS,
   linkColors = DEFAULT_LINK_COLORS,
   legend = DEFAULT_LEGEND,
 }: ForceGraphProps) {
   const fgRef = useRef<any>(null);
   const [hoverId, setHoverId] = useState<string | null>(null);
+  const pickedSet = useMemo(() => new Set(selectedIds ?? []), [selectedIds]);
 
   // Clone so the lib can mutate node positions without touching our state.
   const graph = useMemo(
@@ -118,7 +126,7 @@ export function ForceGraph({
         onEngineStop={handleEngineStop}
         nodeLabel={() => ""}
         onNodeHover={(n: any) => setHoverId(n ? n.id : null)}
-        onNodeClick={(n: any) => onSelect?.(n.id)}
+        onNodeClick={(n: any) => (mode === "select" ? onToggle?.(n.id) : onSelect?.(n.id))}
         onBackgroundClick={() => onSelect?.("")}
         linkColor={(l: any) => {
           const s = linkEnd(l.source);
@@ -138,6 +146,7 @@ export function ForceGraph({
           const radius = Math.max(2, node.val) * (active ? 1 : 0.85);
           const isFocus = node.id === focusId;
           const isSelected = node.id === selectedId;
+          const isPicked = pickedSet.has(node.id);
 
           // Node circle.
           ctx.beginPath();
@@ -145,8 +154,22 @@ export function ForceGraph({
           ctx.fillStyle = active ? (nodeColors[node.group] ?? FALLBACK_NODE) : DIM_NODE;
           ctx.fill();
 
-          // Ring around the focused / selected node.
-          if (isFocus || isSelected) {
+          // Gold ring + check badge for picked nodes (selection mode).
+          if (isPicked) {
+            ctx.lineWidth = 2.5 / scale;
+            ctx.strokeStyle = "#fbbf24";
+            ctx.stroke();
+            const badge = Math.max(2, 6 / scale);
+            ctx.beginPath();
+            ctx.arc(node.x + radius, node.y - radius, badge, 0, 2 * Math.PI);
+            ctx.fillStyle = "#fbbf24";
+            ctx.fill();
+            ctx.fillStyle = "#0f172a";
+            ctx.font = `bold ${badge * 1.3}px sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("✓", node.x + radius, node.y - radius);
+          } else if (isFocus || isSelected) {
             ctx.lineWidth = 1.5 / scale;
             ctx.strokeStyle = isSelected ? "#ffffff" : "rgba(255,255,255,0.7)";
             ctx.stroke();

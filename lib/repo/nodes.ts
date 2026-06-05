@@ -71,6 +71,21 @@ export async function nodesByProjectAll(projectId: string): Promise<Result<Knowl
   return ok((data as NodeRow[]).map(toNode));
 }
 
+// Enabled nodes by id list (preserves caller order). For createPost / caption.
+export async function nodesByIds(ids: string[]): Promise<Result<KnowledgeNode[]>> {
+  if (ids.length === 0) return ok([]);
+  if (!isSupabaseConfigured()) return ok([]);
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("knowledge_nodes")
+    .select("id, project_id, node_key, label, category, sub_label, facts, talkpoint, description, sort_order")
+    .in("id", ids)
+    .eq("is_enabled", true);
+  if (error) return err("INTERNAL", error.message);
+  const byId = new Map((data as NodeRow[]).map((r) => [r.id, toNode(r)]));
+  return ok(ids.map((id) => byId.get(id)).filter((n): n is KnowledgeNode => Boolean(n)));
+}
+
 export async function getNodeById(id: string): Promise<Result<KnowledgeNode | null>> {
   if (!isSupabaseConfigured()) return ok(null);
   const supabase = createClient();
