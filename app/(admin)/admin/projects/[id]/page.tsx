@@ -3,11 +3,12 @@ import { notFound } from "next/navigation";
 import { getProjectById } from "@/lib/repo/projects";
 import { nodesByProjectAll, linksByProject } from "@/lib/repo/nodes";
 import { listDevelopers } from "@/lib/repo/developers";
+import { triggersByProject } from "@/lib/repo/triggers";
 import { ProjectFields } from "@/app/(admin)/admin/projects/_ProjectFields";
 import { Notice } from "@/app/(admin)/admin/_Notice";
 import { NODE_CATEGORIES } from "@/app/(admin)/admin/_constants";
 import {
-  updateProject, createNode, deleteNode, createLink, deleteLink,
+  updateProject, createNode, deleteNode, createLink, deleteLink, createTrigger, deleteTrigger,
 } from "@/app/(admin)/admin/_actions";
 import { Button } from "@/components/ui/button";
 
@@ -23,14 +24,16 @@ export default async function EditProjectPage({
   if (!res.ok || !res.data) notFound();
   const project = res.data;
 
-  const [devRes, nodesRes, linksRes] = await Promise.all([
+  const [devRes, nodesRes, linksRes, trigRes] = await Promise.all([
     listDevelopers(),
     nodesByProjectAll(project.id),
     linksByProject(project.id),
+    triggersByProject(project.id),
   ]);
   const developers = devRes.ok ? devRes.data : [];
   const nodes = nodesRes.ok ? nodesRes.data : [];
   const links = linksRes.ok ? linksRes.data : [];
+  const triggers = trigRes.ok ? trigRes.data : [];
   const labelById = Object.fromEntries(nodes.map((n) => [n.id, n.label]));
 
   return (
@@ -119,6 +122,52 @@ export default async function EditProjectPage({
             <Button type="submit">Thêm link</Button>
           </form>
         )}
+      </section>
+
+      {/* Time triggers (drive "Hôm Nay" suggestions) */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Time triggers ({triggers.length})</h2>
+        <p className="text-xs text-slate-500">Đẩy gợi ý bài vào màn Hôm Nay khi tới gần ngày.</p>
+        <div className="flex flex-col gap-2">
+          {triggers.map((t) => (
+            <div key={t.id} className="flex items-center gap-2 rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-sm">
+              <span className="text-slate-100">{t.label}</span>
+              <span className="text-xs text-slate-500">
+                {t.triggerDate} · trước {t.activeDaysBefore} ngày{t.suggestedAngle ? ` · ${t.suggestedAngle}` : ""} · {t.nodeIds.length} node
+              </span>
+              <form action={deleteTrigger} className="ml-auto">
+                <input type="hidden" name="id" value={t.id} />
+                <input type="hidden" name="project_id" value={project.id} />
+                <button className="text-xs text-red-400 hover:text-red-300">Xóa</button>
+              </form>
+            </div>
+          ))}
+        </div>
+        <details className="rounded-md border border-slate-800 bg-slate-950 p-3">
+          <summary className="cursor-pointer text-sm text-sky-400">+ Thêm trigger</summary>
+          <form action={createTrigger} className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <input type="hidden" name="project_id" value={project.id} />
+            <input name="label" placeholder="Nhãn (vd: Early bird kết thúc 31/5)" className={`${input} sm:col-span-2`} required />
+            <input name="trigger_date" type="date" className={input} required />
+            <input name="active_days_before" type="number" defaultValue={7} placeholder="Gợi ý trước N ngày" className={input} />
+            <select name="type" className={input} defaultValue="deadline">
+              <option value="deadline">deadline</option>
+              <option value="milestone">milestone</option>
+              <option value="event">event</option>
+            </select>
+            <select name="suggested_angle" className={input} defaultValue="">
+              <option value="">(angle tự động)</option>
+              {NODE_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <div className="sm:col-span-2">
+              <p className="mb-1 text-[11px] uppercase tracking-wide text-slate-500">Nodes chọn sẵn (Ctrl/Cmd để chọn nhiều)</p>
+              <select name="node_ids" multiple size={4} className={`${input} h-auto`}>
+                {nodes.map((n) => <option key={n.id} value={n.id}>{n.label}</option>)}
+              </select>
+            </div>
+            <Button type="submit" className="self-start">Thêm trigger</Button>
+          </form>
+        </details>
       </section>
     </main>
   );

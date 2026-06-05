@@ -25,3 +25,24 @@ export async function listTriggers(): Promise<Result<Trigger[]>> {
     label: r.label,
   })));
 }
+
+export interface ProjectTrigger {
+  id: string; type: string; triggerDate: string; label: string;
+  suggestedAngle: string | null; nodeIds: string[]; activeDaysBefore: number;
+}
+
+// Triggers of a project (admin editor; RLS admin sees all).
+export async function triggersByProject(projectId: string): Promise<Result<ProjectTrigger[]>> {
+  if (!isSupabaseConfigured()) return ok([]);
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("time_triggers")
+    .select("id, type, trigger_date, label, suggested_angle, node_ids, active_days_before")
+    .eq("project_id", projectId)
+    .order("trigger_date", { ascending: true });
+  if (error) return err("INTERNAL", error.message);
+  return ok((data as any[]).map((r) => ({
+    id: r.id, type: r.type, triggerDate: r.trigger_date, label: r.label,
+    suggestedAngle: r.suggested_angle, nodeIds: r.node_ids ?? [], activeDaysBefore: r.active_days_before,
+  })));
+}

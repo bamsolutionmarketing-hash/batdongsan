@@ -175,3 +175,36 @@ export async function deleteLink(fd: FormData) {
   revalidatePath(`/admin/projects/${projectId}`);
   redirect(`/admin/projects/${projectId}?ok=1`);
 }
+
+// ── time triggers ────────────────────────────────────────────────────────────
+export async function createTrigger(fd: FormData) {
+  const projectId = str(fd, "project_id");
+  const path = `/admin/projects/${projectId}`;
+  const triggerDate = str(fd, "trigger_date");
+  const label = str(fd, "label");
+  if (!triggerDate || !label) fail(path, "Cần ngày + nhãn");
+  const nodeIds = fd.getAll("node_ids").map((v) => String(v)).filter(Boolean);
+  const supabase = createClient();
+  const { error } = await supabase.from("time_triggers").insert({
+    project_id: projectId,
+    type: str(fd, "type") || "deadline",
+    trigger_date: triggerDate,
+    label,
+    suggested_angle: orNull(str(fd, "suggested_angle")),
+    node_ids: nodeIds,
+    active_days_before: Number(str(fd, "active_days_before") || "7"),
+  });
+  if (error) fail(path, error.message);
+  revalidatePath(path);
+  redirect(`${path}?ok=1`);
+}
+
+export async function deleteTrigger(fd: FormData) {
+  const projectId = str(fd, "project_id");
+  const path = `/admin/projects/${projectId}`;
+  const supabase = createClient();
+  const { error } = await supabase.from("time_triggers").delete().eq("id", str(fd, "id"));
+  if (error) fail(path, error.message);
+  revalidatePath(path);
+  redirect(`${path}?ok=1`);
+}

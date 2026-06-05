@@ -14,6 +14,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <nav className="flex items-center gap-4 border-b border-slate-800 bg-slate-950 px-6 py-3 text-sm">
         <Link href="/dashboard" className="font-semibold text-slate-100">Hôm Nay</Link>
         <Link href="/projects" className="text-slate-400 hover:text-slate-200">Dự án</Link>
+        <Link href="/calendar" className="text-slate-400 hover:text-slate-200">Lịch</Link>
         <Link href="/notes" className="text-slate-400 hover:text-slate-200">Ghi chú</Link>
         <Link href="/settings" className="text-slate-400 hover:text-slate-200">Thương hiệu</Link>
         {admin && (
