@@ -1,5 +1,14 @@
 import type { Metadata, Viewport } from "next";
+import { Playfair_Display } from "next/font/google";
 import "./globals.css";
+
+// Elegant display serif for luxury headings (latin + Vietnamese).
+const display = Playfair_Display({
+  subsets: ["latin", "vietnamese"],
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-display",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Trợ lý BĐS",
@@ -15,7 +24,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi">
+    <html lang="vi" className={display.variable}>
       <body>{children}</body>
     </html>
   );
