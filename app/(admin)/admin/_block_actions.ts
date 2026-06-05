@@ -52,6 +52,46 @@ export async function createBlock(fd: FormData) {
   redirect(`${path}?ok=1`);
 }
 
+export async function updateBlock(fd: FormData) {
+  const path = backTo(fd);
+  const id = str(fd, "id");
+  if (!id) fail(path, "Thiếu id");
+  const factKeys = str(fd, "fact_keys")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const parsed = blockSchema.safeParse({
+    node_id: str(fd, "node_id"),
+    role: str(fd, "role"),
+    variant_no: Number(str(fd, "variant_no") || "1"),
+    text: str(fd, "text"),
+    tone: str(fd, "tone"),
+    min_confidence: str(fd, "min_confidence"),
+    fact_keys: factKeys,
+    is_enabled: fd.get("is_enabled") != null,
+  });
+  if (!parsed.success) fail(path, parsed.error.issues[0].message);
+
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("node_content_blocks").update(parsed.data).eq("id", id);
+  if (error) fail(path, error.message);
+  revalidatePath(path);
+  redirect(`${path}?ok=1`);
+}
+
+// Quick enable/disable without opening the edit form.
+export async function toggleBlock(fd: FormData) {
+  const path = backTo(fd);
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("node_content_blocks")
+    .update({ is_enabled: str(fd, "enabled") === "1" })
+    .eq("id", str(fd, "id"));
+  if (error) fail(path, error.message);
+  revalidatePath(path);
+  redirect(`${path}?ok=1`);
+}
+
 export async function deleteBlock(fd: FormData) {
   const path = backTo(fd);
   const supabase = createAdminClient();

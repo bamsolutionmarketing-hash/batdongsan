@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getNodeById } from "@/lib/repo/nodes";
 import { blocksByNode } from "@/lib/repo/blocks";
 import { blockUsable } from "@/lib/engine/compliance";
-import { createBlock, deleteBlock } from "@/app/(admin)/admin/_block_actions";
+import { createBlock, updateBlock, toggleBlock, deleteBlock } from "@/app/(admin)/admin/_block_actions";
 import { uploadAsset, deleteAsset } from "@/app/(admin)/admin/_asset_actions";
 import { assetsByNode } from "@/lib/repo/assets";
 import { Notice } from "@/app/(admin)/admin/_Notice";
@@ -31,6 +31,8 @@ export default async function BlocksPage({
 
   const countByRole = (r: BlockRole) => blocks.filter((b) => b.role === r).length;
   const factKeyHint = node.facts.map((f) => f.key).join(", ");
+  // Suggest the next free variant number so new blocks don't collide.
+  const nextVariant = blocks.reduce((mx, b) => Math.max(mx, b.variantNo), 0) + 1;
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
@@ -75,18 +77,57 @@ export default async function BlocksPage({
                   <span className="text-red-400" title={comp.reason ?? ""}>● blocked</span>
                 )}
                 {!b.isEnabled && <span className="text-slate-500">(tắt)</span>}
-                <form action={deleteBlock} className="ml-auto">
-                  <input type="hidden" name="id" value={b.id} />
-                  <input type="hidden" name="node_id" value={node.id} />
-                  <input type="hidden" name="project_id" value={params.id} />
-                  <button className="text-xs text-red-400 hover:text-red-300">Xóa</button>
-                </form>
+                <div className="ml-auto flex items-center gap-3">
+                  <form action={toggleBlock}>
+                    <input type="hidden" name="id" value={b.id} />
+                    <input type="hidden" name="enabled" value={b.isEnabled ? "0" : "1"} />
+                    <input type="hidden" name="node_id" value={node.id} />
+                    <input type="hidden" name="project_id" value={params.id} />
+                    <button className="text-xs text-slate-400 hover:text-slate-200">{b.isEnabled ? "Tắt" : "Bật"}</button>
+                  </form>
+                  <form action={deleteBlock}>
+                    <input type="hidden" name="id" value={b.id} />
+                    <input type="hidden" name="node_id" value={node.id} />
+                    <input type="hidden" name="project_id" value={params.id} />
+                    <button className="text-xs text-red-400 hover:text-red-300">Xóa</button>
+                  </form>
+                </div>
               </div>
               <p className="mt-2 whitespace-pre-line text-sm text-slate-200">{b.text}</p>
               {b.factKeys.length > 0 && (
                 <p className="mt-1 text-xs text-slate-500">facts: {b.factKeys.join(", ")}</p>
               )}
               {!comp.usable && <p className="mt-1 text-xs text-red-400">⚠ {comp.reason}</p>}
+
+              {/* inline edit */}
+              <details className="mt-2">
+                <summary className="cursor-pointer text-xs text-sky-400">Sửa</summary>
+                <form action={updateBlock} className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <input type="hidden" name="id" value={b.id} />
+                  <input type="hidden" name="node_id" value={node.id} />
+                  <input type="hidden" name="project_id" value={params.id} />
+                  <select name="role" className={input} defaultValue={b.role}>
+                    {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                  <input name="variant_no" type="number" min={1} defaultValue={b.variantNo} className={input} />
+                  <select name="tone" className={input} defaultValue={b.tone}>
+                    <option value="neutral">neutral</option>
+                    <option value="fomo">fomo</option>
+                    <option value="story">story</option>
+                  </select>
+                  <select name="min_confidence" className={input} defaultValue={b.minConfidence}>
+                    <option value="verified">verified</option>
+                    <option value="sales_claim">sales_claim</option>
+                    <option value="unverified">unverified</option>
+                  </select>
+                  <textarea name="text" rows={3} defaultValue={b.text} className={`${input} sm:col-span-2`} required />
+                  <input name="fact_keys" defaultValue={b.factKeys.join(", ")} placeholder={`fact keys (phẩy): ${factKeyHint}`} className={`${input} sm:col-span-2`} />
+                  <label className="flex items-center gap-2 text-sm text-slate-300">
+                    <input type="checkbox" name="is_enabled" defaultChecked={b.isEnabled} className="h-4 w-4" /> Bật
+                  </label>
+                  <Button type="submit" className="self-start">Lưu</Button>
+                </form>
+              </details>
             </div>
           );
         })}
@@ -101,7 +142,7 @@ export default async function BlocksPage({
           <select name="role" className={input} defaultValue="hook">
             {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
           </select>
-          <input name="variant_no" type="number" min={1} defaultValue={1} className={input} />
+          <input name="variant_no" type="number" min={1} defaultValue={nextVariant} className={input} />
           <select name="tone" className={input} defaultValue="neutral">
             <option value="neutral">neutral</option>
             <option value="fomo">fomo</option>
