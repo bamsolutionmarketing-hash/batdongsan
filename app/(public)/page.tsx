@@ -42,16 +42,21 @@ export default async function Home() {
             <Link
               key={p.id}
               href={`/p/${p.slug}`}
-              className="rounded-lg border border-slate-800 bg-slate-900 p-5 transition hover:border-slate-600"
+              className="group rounded-lg border border-slate-800 bg-slate-900 p-5 shadow-sm shadow-slate-950/40 transition hover:-translate-y-0.5 hover:border-slate-600 hover:shadow-lg hover:shadow-slate-950/60"
             >
-              <h2 className="text-lg font-semibold text-slate-100">{p.name}</h2>
-              {p.phase && <p className="mt-0.5 text-xs text-amber-400/80">{p.phase}</p>}
+              <div className="flex items-start justify-between gap-2">
+                <h2 className="text-lg font-semibold text-slate-100 group-hover:text-white">{p.name}</h2>
+                {p.phase && (
+                  <span className="shrink-0 rounded-full border border-amber-700/50 bg-amber-950/30 px-2 py-0.5 text-[11px] text-amber-300">{p.phase}</span>
+                )}
+              </div>
               {p.locationText && (
                 <p className="mt-1 text-sm text-slate-400">{p.locationText}</p>
               )}
               {(p.priceMin || p.priceMax) && (
-                <p className="mt-2 text-sm text-slate-300">{priceLabel(p.priceMin, p.priceMax)}</p>
+                <p className="mt-3 text-sm font-medium text-sky-300">{priceLabel(p.priceMin, p.priceMax)}</p>
               )}
+              <span className="mt-3 inline-flex items-center gap-1 text-xs text-slate-500 transition group-hover:text-sky-400">Mở bản đồ →</span>
             </Link>
           ))}
         </div>

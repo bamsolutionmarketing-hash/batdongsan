@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { signout } from "@/app/(auth)/login/actions";
 import { BottomNav } from "@/components/app/BottomNav";
+import { NavLinks } from "@/components/app/NavLinks";
 
 // Auth guard for the agent app. Redirects to /login when signed out.
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -12,18 +13,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen">
-      {/* Desktop / tablet top nav */}
-      <nav className="hidden items-center gap-4 border-b border-slate-800 bg-slate-950 px-6 py-3 text-sm sm:flex">
-        <Link href="/dashboard" className="font-semibold text-slate-100">Hôm Nay</Link>
-        <Link href="/projects" className="text-slate-400 hover:text-slate-200">Dự án</Link>
-        <Link href="/calendar" className="text-slate-400 hover:text-slate-200">Lịch</Link>
-        <Link href="/notes" className="text-slate-400 hover:text-slate-200">Ghi chú</Link>
-        <Link href="/settings" className="text-slate-400 hover:text-slate-200">Thương hiệu</Link>
-        {admin && (
-          <Link href="/admin/projects" className="text-amber-400/90 hover:text-amber-300">Admin</Link>
-        )}
+      {/* Desktop / tablet top nav — sticky, active-aware */}
+      <nav className="sticky top-0 z-30 hidden items-center gap-4 border-b border-slate-800 bg-slate-950/80 px-6 py-3 backdrop-blur sm:flex">
+        <Link href="/dashboard" className="mr-1 font-semibold text-slate-100">Trợ lý BĐS</Link>
+        <NavLinks admin={admin} />
         <form action={signout} className="ml-auto">
-          <button className="text-slate-500 hover:text-slate-300">Đăng xuất</button>
+          <button className="rounded-md px-3 py-1.5 text-sm text-slate-500 transition hover:bg-slate-800/60 hover:text-slate-300">Đăng xuất</button>
         </form>
       </nav>
 

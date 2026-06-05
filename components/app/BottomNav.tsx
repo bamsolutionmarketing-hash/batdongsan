@@ -2,22 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const TABS = [
-  { href: "/dashboard", label: "Hôm Nay", icon: "🏠" },
-  { href: "/projects", label: "Dự án", icon: "🏢" },
-  { href: "/calendar", label: "Lịch", icon: "🗓️" },
-  { href: "/notes", label: "Ghi chú", icon: "📝" },
-  { href: "/settings", label: "Hồ sơ", icon: "👤" },
-];
+import { NAV_TABS } from "./nav-items";
 
 // Mobile-only bottom tab bar — the primary nav on phones. Desktop uses the top
 // bar (this is hidden on sm+).
 export function BottomNav() {
   const path = usePathname() ?? "";
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-slate-800 bg-slate-950/95 backdrop-blur sm:hidden">
-      {TABS.map((t) => {
+    <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-slate-800 bg-slate-950/95 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:hidden">
+      {NAV_TABS.map((t) => {
         const active = path === t.href || path.startsWith(t.href + "/");
         return (
           <Link
