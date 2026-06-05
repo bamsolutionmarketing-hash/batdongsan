@@ -62,7 +62,9 @@ export default async function PostResultPage({
 
   // Editable per-slot composition (variant picker). Empty for temp-caption posts
   // (no authored blocks) → fall back to the static caption card.
-  const editable = session ? await getEditableComposition(post, session.userId) : { slots: [] };
+  const editable = session
+    ? await getEditableComposition(post, session.userId)
+    : { slots: [], addable: [] };
 
   const composer = {
     project: { name: project?.name, locationText: project?.locationText, phase: project?.phase, priceText },
@@ -95,7 +97,7 @@ export default async function PostResultPage({
       {editable.slots.length > 0 ? (
         <>
           <p className="text-xs text-slate-500">Bấm ‹ › ở mỗi đoạn để đổi mẫu; bài bên dưới cập nhật ngay.</p>
-          <CaptionEditor slots={editable.slots} composer={composer} postId={post.id} slug={params.slug} />
+          <CaptionEditor slots={editable.slots} addable={editable.addable} composer={composer} postId={post.id} slug={params.slug} />
         </>
       ) : (
         <>

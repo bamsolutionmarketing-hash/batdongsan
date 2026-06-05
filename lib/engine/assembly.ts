@@ -131,21 +131,7 @@ export function buildEditableCaption(input: AssembleInput): { slots: EditableSlo
       if (n) { pool = n.blocks; facts = n.facts; nodeLabel = n.label; }
     }
 
-    const options: EditableOption[] = [];
-    for (const b of pool) {
-      if (!b.isEnabled) continue;
-      if (role !== "cta") {
-        if (b.role !== role) continue;
-        const c = blockUsable(
-          { role: b.role, tone: b.tone, minConfidence: b.minConfidence, factKeys: b.factKeys },
-          facts,
-        );
-        if (!c.usable) continue;
-      }
-      const sub = substitute(b.text, ctx);
-      if (sub.missing.length) continue; // can't fully fill → not offered
-      options.push({ blockId: b.id, text: sub.text, tone: b.tone });
-    }
+    const options = usableOptions(pool, facts, role, ctx);
     if (options.length === 0) return;
 
     const slotSeed = `${seed}:${role}:${idx}:${nodeLabel ?? "cta"}`;
@@ -159,4 +145,49 @@ export function buildEditableCaption(input: AssembleInput): { slots: EditableSlo
   });
 
   return { slots };
+}
+
+// Compliance-filter + variable-substitute a pool of blocks for one role.
+function usableOptions(
+  pool: ContentBlock[], facts: Fact[], role: string, ctx: VarContext,
+): EditableOption[] {
+  const out: EditableOption[] = [];
+  for (const b of pool) {
+    if (!b.isEnabled) continue;
+    if (role !== "cta") {
+      if (b.role !== role) continue;
+      const c = blockUsable(
+        { role: b.role, tone: b.tone, minConfidence: b.minConfidence, factKeys: b.factKeys },
+        facts,
+      );
+      if (!c.usable) continue;
+    }
+    const sub = substitute(b.text, ctx);
+    if (sub.missing.length) continue; // can't fully fill → not offered
+    out.push({ blockId: b.id, text: sub.text, tone: b.tone });
+  }
+  return out;
+}
+
+// Every usable (node × role) option group + the CTA pool — the menu of
+// paragraphs an agent can ADD to a caption beyond the template structure.
+export function buildAddableGroups(
+  input: Omit<AssembleInput, "structure" | "seed">,
+): EditableSlot[] {
+  const { nodes, ctaBlocks, ctx } = input;
+  const groups: EditableSlot[] = [];
+  const roles = ["hook", "body", "proof"] as const;
+  for (const n of nodes) {
+    for (const role of roles) {
+      const options = usableOptions(n.blocks, n.facts, role, ctx);
+      if (options.length) {
+        groups.push({ key: `${n.id}:${role}`, role, nodeLabel: n.label, options, selectedIndex: 0 });
+      }
+    }
+  }
+  const ctaOptions = usableOptions(ctaBlocks, [], "cta", ctx);
+  if (ctaOptions.length) {
+    groups.push({ key: "cta:pool", role: "cta", nodeLabel: null, options: ctaOptions, selectedIndex: 0 });
+  }
+  return groups;
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { assembleCaption, buildEditableCaption, type NodeWithBlocks } from "./assembly";
+import { assembleCaption, buildEditableCaption, buildAddableGroups, type NodeWithBlocks } from "./assembly";
 import type { ContentBlock } from "@/types/domain";
 
 const blk = (o: Partial<ContentBlock> & { id: string; role: ContentBlock["role"] }): ContentBlock => ({
@@ -68,5 +68,15 @@ describe("buildEditableCaption", () => {
   it("drops a slot entirely when no option is usable", () => {
     const { slots } = buildEditableCaption({ structure: ["proof"], nodes: multi, ctaBlocks: [], ctx, seed: "s" });
     expect(slots).toHaveLength(0);
+  });
+});
+
+describe("buildAddableGroups", () => {
+  it("lists one group per (node × role) that has options, plus the CTA pool", () => {
+    const groups = buildAddableGroups({ nodes, ctaBlocks: cta, ctx });
+    // node A: hook + body; node B: body; + cta pool = 4 groups
+    expect(groups.map((g) => g.key).sort()).toEqual(["a:body", "a:hook", "b:body", "cta:pool"]);
+    const ctaGroup = groups.find((g) => g.role === "cta")!;
+    expect(ctaGroup.options[0].text).toBe("CTA 0900");
   });
 });
