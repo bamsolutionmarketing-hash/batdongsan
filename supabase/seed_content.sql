@@ -159,3 +159,70 @@ insert into node_content_blocks (node_id, role, variant_no, text, tone, min_conf
   ('4a6791a9-3101-5527-b17d-d5f781a1e46f','body',3,'Khu Đông chiếm ~50% pipeline 2026–28 — tâm điểm nguồn cung mới.','neutral','verified','{"Pipeline khu Đông"}',true),
   ('4a6791a9-3101-5527-b17d-d5f781a1e46f','proof',1,'Hấp thụ 82%, giá sơ cấp 92–102 triệu/m², khu Đông ~50% pipeline — số liệu Savills/CBRE.','neutral','verified','{"Hấp thụ 2025","Giá sơ cấp HCM","Pipeline khu Đông"}',true)
 on conflict (node_id, role, variant_no) do nothing;
+
+-- ── Batch 4: next-tier value nodes (comparables / infra / brand / promo) ──────
+insert into node_content_blocks (node_id, role, variant_no, text, tone, min_confidence, fact_keys, is_enabled) values
+  ('d17a00dc-281c-59dc-961a-f2f39d6a77d4','hook',1,'Cầu Cát Lái đã khởi công 15/1/2026 — [TEN_DU_AN] sắp thành cửa ngõ HCMC sang Đồng Nai.','fomo','verified','{"Khởi công"}',true),
+  ('d17a00dc-281c-59dc-961a-f2f39d6a77d4','hook',2,'Một cây cầu đủ biến "vùng ven" thành "cửa ngõ". Cát Lái đang làm điều đó cho khu Đông.','story','verified','{}',true),
+  ('d17a00dc-281c-59dc-961a-f2f39d6a77d4','hook',3,'Cầu dây văng 11.6 km nối HCMC – Đồng Nai, hoàn thành 2028–2029.','neutral','verified','{"Chiều dài","Hoàn thành"}',true),
+  ('d17a00dc-281c-59dc-961a-f2f39d6a77d4','body',1,'Khởi công 15/1/2026, dự kiến hoàn thành 2028–2029 — tiến độ đã chạy.','neutral','verified','{"Khởi công","Hoàn thành"}',true),
+  ('d17a00dc-281c-59dc-961a-f2f39d6a77d4','body',2,'Riêng cầu Cát Lái ~VND 20,614 tỷ (~US$830M); cả cụm với Phú Mỹ 2 hơn VND 40,000 tỷ.','neutral','verified','{"Riêng Cát Lái","Vốn (cùng Phú Mỹ 2)"}',true),
+  ('d17a00dc-281c-59dc-961a-f2f39d6a77d4','body',3,'Cầu dây văng dài 11.6 km — thay thế phà Cát Lái, thông mạch HCMC – Đồng Nai.','neutral','verified','{"Chiều dài"}',true),
+  ('d17a00dc-281c-59dc-961a-f2f39d6a77d4','proof',1,'Khởi công 1/2026, ~US$830M, 11.6 km, về đích 2028–2029 — hạ tầng kết nối hiện hữu.','neutral','verified','{"Khởi công","Riêng Cát Lái","Chiều dài","Hoàn thành"}',true),
+  -- empire-city (14264bdc)
+  ('14264bdc-dd9c-5617-b109-26a84eb3d321','hook',1,'Empire City Thủ Thiêm đã bàn giao và vận hành — chuẩn chất lượng cùng hệ Keppel của [TEN_DU_AN].','story','verified','{}',true),
+  ('14264bdc-dd9c-5617-b109-26a84eb3d321','hook',2,'Landmark Empire 88 cao 88 tầng — biểu tượng Thủ Thiêm do liên doanh Keppel phát triển.','neutral','verified','{"Landmark"}',true),
+  ('14264bdc-dd9c-5617-b109-26a84eb3d321','hook',3,'Căn hộ Empire City nay 125–200 triệu/m². Cùng nhà phát triển, cùng khu Đông.','fomo','verified','{"Hiện tại"}',true),
+  ('14264bdc-dd9c-5617-b109-26a84eb3d321','body',1,'Quy mô 14.6 ha với 3,787 căn cao cấp, điểm nhấn Empire 88 — 88 tầng.','neutral','verified','{"Diện tích","Số căn","Landmark"}',true),
+  ('14264bdc-dd9c-5617-b109-26a84eb3d321','body',2,'Mở bán từ 2017, nay mặt bằng giá 125–200 triệu/m² (Cove cao hơn).','neutral','verified','{"Mở bán","Hiện tại"}',true),
+  ('14264bdc-dd9c-5617-b109-26a84eb3d321','body',3,'Một dự án Keppel đã giao và vận hành — minh chứng năng lực phát triển thực tế.','neutral','verified','{}',true),
+  ('14264bdc-dd9c-5617-b109-26a84eb3d321','proof',1,'14.6 ha, 3,787 căn, Empire 88, giá hiện 125–200 triệu/m² — chuẩn Keppel đã hiện hữu.','neutral','verified','{"Diện tích","Số căn","Landmark","Hiện tại"}',true),
+  -- estella-heights (6b9eec87) — Keppel comparable, historical
+  ('6b9eec87-339c-5a2b-9618-0d69aa015d1f','hook',1,'Estella Heights mở bán 2015 ở 45 triệu/m², nay 90–110 triệu/m² — track record Keppel tại Việt Nam.','story','verified','{"Mở bán","Hiện tại"}',true),
+  ('6b9eec87-339c-5a2b-9618-0d69aa015d1f','hook',2,'Gấp đôi sau 11 năm: đó là những gì Estella Heights đã làm cho người mua sớm.','fomo','verified','{"Tăng giá"}',true),
+  ('6b9eec87-339c-5a2b-9618-0d69aa015d1f','hook',3,'Cùng nhà phát triển Keppel, cùng khu Đông — Estella Heights là tham chiếu lịch sử đáng giá.','neutral','verified','{}',true),
+  ('6b9eec87-339c-5a2b-9618-0d69aa015d1f','body',1,'Mở bán 2/2015 @ 45 triệu/m², bàn giao 2018–2019, nay đạt 90–110 triệu/m².','neutral','verified','{"Mở bán","Bàn giao P1","Hiện tại"}',true),
+  ('6b9eec87-339c-5a2b-9618-0d69aa015d1f','body',2,'Mức tăng ~2 lần sau 11 năm — dữ liệu lịch sử của một dự án Keppel đã bàn giao.','neutral','verified','{"Tăng giá"}',true),
+  ('6b9eec87-339c-5a2b-9618-0d69aa015d1f','body',3,'Bàn giao giai đoạn 1 Q4/2018, giai đoạn 2 tháng 6/2019 — đúng tiến độ cam kết.','neutral','verified','{"Bàn giao P1","Bàn giao P2"}',true),
+  ('6b9eec87-339c-5a2b-9618-0d69aa015d1f','proof',1,'Từ 45 lên 90–110 triệu/m² sau 11 năm — track record Keppel bằng số liệu thực.','neutral','verified','{"Mở bán","Hiện tại","Tăng giá"}',true),
+  -- thu-duc-city (31827077)
+  ('31827077-73ea-50c1-b530-0722f2c48e5f','hook',1,'TP Thủ Đức — thành phố đầu tiên trong thành phố của Việt Nam, nơi [TEN_DU_AN] toạ lạc.','neutral','verified','{"Thành lập"}',true),
+  ('31827077-73ea-50c1-b530-0722f2c48e5f','hook',2,'535 dự án gọi vốn ~US$31.6 tỷ đổ về một thành phố — và đó là Thủ Đức.','fomo','verified','{"Gọi vốn"}',true),
+  ('31827077-73ea-50c1-b530-0722f2c48e5f','hook',3,'Một innovation hub đang hình thành ở cửa ngõ phía Đông — Thủ Đức đang lớn rất nhanh.','story','verified','{}',true),
+  ('31827077-73ea-50c1-b530-0722f2c48e5f','body',1,'Thành lập 12/2020, diện tích 211.56 km² — đô thị sáng tạo phía Đông TP.HCM.','neutral','verified','{"Thành lập","Diện tích"}',true),
+  ('31827077-73ea-50c1-b530-0722f2c48e5f','body',2,'Dân số dự kiến 1.8 triệu (2030) → 2.6 triệu (2040) → 3 triệu — lực cầu nhà ở lớn.','neutral','verified','{"Dân số 2030"}',true),
+  ('31827077-73ea-50c1-b530-0722f2c48e5f','body',3,'Masterplan duyệt 21/1/2025; thu hút 535 dự án ~US$31.6 tỷ vốn.','neutral','verified','{"Masterplan duyệt","Gọi vốn"}',true),
+  ('31827077-73ea-50c1-b530-0722f2c48e5f','proof',1,'211.56 km², masterplan duyệt 1/2025, 535 dự án ~US$31.6 tỷ — quy hoạch tầm vóc đã có.','neutral','verified','{"Diện tích","Masterplan duyệt","Gọi vốn"}',true),
+  -- grand-marina (ad546e1b) — Cosmo brand
+  ('ad546e1b-2f82-59ca-984b-75d5515e124f','hook',1,'Grand Marina Saigon — đỉnh tháp thương hiệu Masterise. [TEN_DU_AN] thừa hưởng cùng tiêu chuẩn.','story','verified','{}',true),
+  ('ad546e1b-2f82-59ca-984b-75d5515e124f','hook',2,'Cụm Marriott & JW Marriott lớn nhất thế giới đặt tại Ba Son, Quận 1.','neutral','verified','{"Thương hiệu","Vị trí"}',true),
+  ('ad546e1b-2f82-59ca-984b-75d5515e124f','hook',3,'Không nhiều dự án mang chuẩn vận hành Marriott cấp thế giới. Masterise thì có.','fomo','verified','{"Thương hiệu"}',true),
+  ('ad546e1b-2f82-59ca-984b-75d5515e124f','body',1,'Toạ lạc Ba Son, Quận 1 trên quỹ đất 10 ha — vị trí lõi trung tâm.','neutral','verified','{"Vị trí"}',true),
+  ('ad546e1b-2f82-59ca-984b-75d5515e124f','body',2,'Hợp tác Marriott & JW Marriott — cụm branded residences lớn nhất thế giới.','neutral','verified','{"Thương hiệu"}',true),
+  ('ad546e1b-2f82-59ca-984b-75d5515e124f','body',3,'Tháp Marriott Lake khai trương 14/11/2023 — cột mốc vận hành thực tế.','neutral','verified','{"Mốc"}',true),
+  ('ad546e1b-2f82-59ca-984b-75d5515e124f','proof',1,'Ba Son 10 ha, Marriott & JW Marriott, vận hành từ 11/2023 — chuẩn Masterise đã chứng minh.','neutral','verified','{"Vị trí","Thương hiệu","Mốc"}',true),
+  -- nexus-zone (e6f4d1de) — Cosmo subzone (positioning)
+  ('e6f4d1de-9eff-5fd4-8006-5ce6c392b885','hook',1,'Nexus Zone — giao điểm của mọi kết nối, nơi [TEN_DU_AN] toạ lạc.','neutral','verified','{"Định vị"}',true),
+  ('e6f4d1de-9eff-5fd4-8006-5ce6c392b885','hook',2,'Nexus nghĩa là điểm hội tụ: vừa cạnh chỗ làm, vừa cạnh kênh nhạc nước, vừa cạnh trung tâm thương mại.','story','verified','{}',true),
+  ('e6f4d1de-9eff-5fd4-8006-5ce6c392b885','hook',3,'Sống trọn vẹn từng nhịp cộng hưởng — tinh thần của phân khu Nexus Zone.','neutral','verified','{"Slogan"}',true),
+  ('e6f4d1de-9eff-5fd4-8006-5ce6c392b885','body',1,'Định vị phân khu: giao điểm của mọi kết nối trong The Global City.','neutral','verified','{"Định vị"}',true),
+  ('e6f4d1de-9eff-5fd4-8006-5ce6c392b885','body',2,'Cụm CT3–CT4 theo tinh thần Work-life Synergy — sống và làm việc trong một nhịp.','neutral','verified','{"Vị trí cụm"}',true),
+  ('e6f4d1de-9eff-5fd4-8006-5ce6c392b885','body',3,'Thông điệp Sống trọn vẹn từng nhịp cộng hưởng — định hướng trải nghiệm cư dân.','neutral','verified','{"Slogan"}',true),
+  ('e6f4d1de-9eff-5fd4-8006-5ce6c392b885','proof',1,'Phân khu Nexus Zone, cụm CT3–CT4 Work-life Synergy — vị trí giao điểm trong TGC.','neutral','verified','{"Định vị","Vị trí cụm"}',true),
+  -- sales-policy (0a05e557) — promo terms (sales_claim, dự kiến)
+  ('0a05e557-daa5-5014-9ffb-8d14ae3ee4a5','hook',1,'Early Bird đến hết 31/05/2026 — ưu đãi đặt chỗ sớm cho [TEN_DU_AN] (theo chính sách từng đợt).','fomo','sales_claim','{"Early Bird KH thường"}',true),
+  ('0a05e557-daa5-5014-9ffb-8d14ae3ee4a5','hook',2,'Đặt trước chỉ 100 triệu/căn, vay hỗ trợ lãi suất 0% — đòn bẩy giữ dòng tiền (dự kiến).','neutral','sales_claim','{"Đặt trước","Vay HTLS"}',true),
+  ('0a05e557-daa5-5014-9ffb-8d14ae3ee4a5','hook',3,'Mua sớm để giữ dòng tiền qua giai đoạn hạ tầng về đích — chính sách đang hỗ trợ điều đó.','story','sales_claim','{}',true),
+  ('0a05e557-daa5-5014-9ffb-8d14ae3ee4a5','body',1,'Đặt trước 100 triệu/căn; Early Bird -1% đến hết 31/05/2026; cư dân Masterise thêm -2%.','neutral','sales_claim','{"Đặt trước","Early Bird KH thường","Cư dân Masterise"}',true),
+  ('0a05e557-daa5-5014-9ffb-8d14ae3ee4a5','body',2,'Vay hỗ trợ 70%, lãi suất 0% đến 31/10/2028; hỗ trợ phí quản lý 24 tháng.','neutral','sales_claim','{"Vay HTLS","Hỗ trợ phí QL"}',true),
+  ('0a05e557-daa5-5014-9ffb-8d14ae3ee4a5','body',3,'Chiết khấu thanh toán sớm lên đến -11% — tuỳ phương án và từng đợt mở bán.','neutral','sales_claim','{"Chiết khấu TT sớm"}',true),
+  ('0a05e557-daa5-5014-9ffb-8d14ae3ee4a5','proof',1,'Booking 100 triệu, vay 0% lãi đến 10/2028, CK sớm tới -11% — chính sách dự kiến theo đợt CĐT.','neutral','sales_claim','{"Đặt trước","Vay HTLS","Chiết khấu TT sớm"}',true),
+  -- the-rivus (ed4b6564) — Cosmo brand
+  ('ed4b6564-c77d-596f-9e07-512d3dba7416','hook',1,'Chỉ 121 dinh thự Elie Saab — duy nhất tại Việt Nam, một dòng sản phẩm Masterise.','fomo','verified','{"Quy mô","Thương hiệu"}',true),
+  ('ed4b6564-c77d-596f-9e07-512d3dba7416','hook',2,'Khi một nhà mốt Haute Couture như Elie Saab làm nhà, kết quả là The Rivus.','story','verified','{"Thương hiệu"}',true),
+  ('ed4b6564-c77d-596f-9e07-512d3dba7416','hook',3,'The Rivus by Elie Saab — Best Residential Design in Asia 2025.','neutral','verified','{"Giải"}',true),
+  ('ed4b6564-c77d-596f-9e07-512d3dba7416','body',1,'Quy mô 121 dinh thự — bộ sưu tập giới hạn, duy nhất tại Việt Nam.','neutral','verified','{"Quy mô"}',true),
+  ('ed4b6564-c77d-596f-9e07-512d3dba7416','body',2,'Thương hiệu Elie Saab (Haute Couture) — lần đầu hiện diện trong bất động sản Việt.','neutral','verified','{"Thương hiệu"}',true),
+  ('ed4b6564-c77d-596f-9e07-512d3dba7416','body',3,'Đạt Best Residential Design in Asia 2025 (AADA) — bảo chứng thiết kế.','neutral','verified','{"Giải"}',true),
+  ('ed4b6564-c77d-596f-9e07-512d3dba7416','proof',1,'121 dinh thự Elie Saab, giải Best Residential Design in Asia 2025 — đẳng cấp Masterise.','neutral','verified','{"Quy mô","Thương hiệu","Giải"}',true)
+on conflict (node_id, role, variant_no) do nothing;
