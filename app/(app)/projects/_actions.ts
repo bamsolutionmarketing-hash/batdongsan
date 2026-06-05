@@ -5,20 +5,20 @@ import { createClient } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth";
 import { getActiveTier, checkPostQuota } from "@/lib/gate/tier";
 import { nodesByIds } from "@/lib/repo/nodes";
+import { blocksByNode } from "@/lib/repo/blocks";
+import { getBranding } from "@/lib/repo/branding";
+import { getProjectById } from "@/lib/repo/projects";
+import { listTemplates } from "@/lib/repo/templates";
+import { pickTemplate } from "@/lib/engine/templates";
+import { assembleCaption, type NodeWithBlocks } from "@/lib/engine/assembly";
+import { PROMPT_VERSION } from "@/lib/engine/promptComposer";
 import { buildTempCaption } from "@/lib/engine/tempCaption";
+import { isoWeek } from "@/lib/engine/variants";
 
-// ISO week key for deterministic per-week variant rotation.
-function isoWeek(d = new Date()): string {
-  const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-  const day = date.getUTCDay() || 7;
-  date.setUTCDate(date.getUTCDate() + 4 - day);
-  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-  const week = Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-  return `${date.getUTCFullYear()}-W${week}`;
-}
+const DEFAULT_STRUCTURE = ["hook", "body", "proof", "cta"];
 
-// Create a post from 1–4 selected nodes. Gate → validate → caption → log.
-// Caption is a deterministic temporary build (full Assembly Engine = S4).
+// Create a post from 1–4 selected nodes: gate → validate → Assembly Engine
+// (falls back to a deterministic temp caption when blocks aren't authored yet).
 export async function createPost(projectId: string, slug: string, nodeIds: string[]) {
   const back = `/projects/${slug}`;
   const session = await getSession();
@@ -28,7 +28,6 @@ export async function createPost(projectId: string, slug: string, nodeIds: strin
     redirect(`${back}?error=${encodeURIComponent("Chọn 1–4 điểm")}`);
   }
 
-  // Gate: tier + daily quota.
   const tierRes = await getActiveTier(session.userId);
   const tier = tierRes.ok ? tierRes.data : "free";
   const quota = await checkPostQuota(session.userId, tier);
@@ -36,15 +35,50 @@ export async function createPost(projectId: string, slug: string, nodeIds: strin
     redirect(`${back}?error=${encodeURIComponent(`Hết lượt hôm nay (${quota.data.used}/${quota.data.limit})`)}`);
   }
 
-  // Validate the nodes belong to this project (and are enabled).
   const nodesRes = await nodesByIds(nodeIds);
   const nodes = nodesRes.ok ? nodesRes.data : [];
   if (nodes.length !== nodeIds.length || nodes.some((n) => n.projectId !== projectId)) {
     redirect(`${back}?error=${encodeURIComponent("Điểm không hợp lệ")}`);
   }
 
-  const caption = buildTempCaption(nodes);
-  const variantSeed = `${session.userId}:${[...nodeIds].sort().join(",")}:${isoWeek()}`;
+  const seed = `${session.userId}:${[...nodeIds].sort().join(",")}:${isoWeek()}`;
+
+  // Gather blocks + context for the engine.
+  const [brandingRes, projectRes, templatesRes, ...blockResults] = await Promise.all([
+    getBranding(session.userId),
+    getProjectById(projectId),
+    listTemplates(),
+    ...nodes.map((n) => blocksByNode(n.id)),
+  ]);
+  const branding = brandingRes.ok ? brandingRes.data : null;
+  const project = projectRes.ok ? projectRes.data : null;
+  const templates = templatesRes.ok ? templatesRes.data : [];
+
+  const nodesWithBlocks: NodeWithBlocks[] = nodes.map((n, i) => ({
+    id: n.id,
+    label: n.label,
+    category: n.category,
+    facts: n.facts,
+    blocks: blockResults[i]?.ok ? blockResults[i].data : [],
+  }));
+  const ctaBlocks = nodesWithBlocks.flatMap((n) => n.blocks.filter((b) => b.role === "cta"));
+
+  const template = pickTemplate(templates, nodes.map((n) => n.category), seed);
+  const assembled = assembleCaption({
+    structure: template?.structure ?? DEFAULT_STRUCTURE,
+    nodes: nodesWithBlocks,
+    ctaBlocks,
+    ctx: {
+      branding: branding
+        ? { displayName: branding.displayName, phone: branding.phone, zalo: branding.zalo }
+        : undefined,
+      project: project ? { name: project.name, view360Url: project.view360Url } : undefined,
+    },
+    seed,
+  });
+
+  const usedEngine = assembled.caption.length > 0;
+  const caption = usedEngine ? assembled.caption : buildTempCaption(nodes);
 
   const supabase = createClient();
   const { data, error } = await supabase
@@ -53,8 +87,10 @@ export async function createPost(projectId: string, slug: string, nodeIds: strin
       user_id: session.userId,
       project_id: projectId,
       node_ids: nodeIds,
-      variant_seed: variantSeed,
+      variant_seed: seed,
       caption,
+      template_id: usedEngine ? template?.id ?? null : null,
+      prompt_version: usedEngine ? PROMPT_VERSION : null,
     })
     .select("id")
     .single();
