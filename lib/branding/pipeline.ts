@@ -11,13 +11,13 @@ const cleanHook = (s: string) => s.trim().replace(/^["“”']+|["“”']+$/g, 
 async function nodeMeta(admin: ReturnType<typeof createAdminClient>, nodeIds: string[]) {
   const { data: nodes } = await admin
     .from("knowledge_nodes")
-    .select("id, label, talkpoint, project_id")
+    .select("id, label, talkpoint, category, project_id")
     .in("id", nodeIds);
-  const rows = (nodes ?? []) as { id: string; label: string; talkpoint: string | null; project_id: string }[];
+  const rows = (nodes ?? []) as { id: string; label: string; talkpoint: string | null; category: string; project_id: string }[];
   const projectIds = [...new Set(rows.map((r) => r.project_id))];
   const { data: projs } = await admin.from("projects").select("id, name").in("id", projectIds);
   const projName = new Map((projs ?? []).map((p: { id: string; name: string }) => [p.id, p.name]));
-  return new Map(rows.map((r) => [r.id, { label: r.label, talkpoint: r.talkpoint, project: projName.get(r.project_id) ?? null }]));
+  return new Map(rows.map((r) => [r.id, { label: r.label, talkpoint: r.talkpoint, category: r.category, project: projName.get(r.project_id) ?? null }]));
 }
 
 export interface BrandedImage {
@@ -101,7 +101,7 @@ export async function getBrandedImages(
     }
     if (!masterBuf) {
       masterBuf = await placeholderMaster({
-        label: info?.label ?? "Dự án", project: info?.project, story: opts.story,
+        label: info?.label ?? "Dự án", project: info?.project, category: info?.category, story: opts.story,
       });
     }
 
