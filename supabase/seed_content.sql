@@ -310,3 +310,103 @@ insert into node_content_blocks (node_id, role, variant_no, text, tone, min_conf
   ('f0e122ef-2006-5380-a617-cd45a8157665','body',3,'Lộ trình: 2026 hạ tầng → 2030 tầm ASEAN → 2035 tầm toàn cầu.','neutral','verified','{"Lộ trình"}',true),
   ('f0e122ef-2006-5380-a617-cd45a8157665','proof',1,'NĐ 323/2025, ~898 ha Thủ Thiêm, lộ trình 2026–2035 — động lực tài chính kề khu Đông.','neutral','verified','{"Công bố","Quy mô HCM","Lộ trình"}',true)
 on conflict (node_id, role, variant_no) do nothing;
+
+-- ── Batch 6: KHU ĐÔNG SÀI GÒN — remaining infra/macro nodes ──────────────────
+insert into node_content_blocks (node_id, role, variant_no, text, tone, min_confidence, fact_keys, is_enabled) values
+  -- an-phu-interchange (5cb6d239)
+  ('5cb6d239-8f6a-5ee6-be07-2e1694cb5ddd','hook',1,'Nút giao An Phú 3 tầng về đích Q2/2026 — cửa ngõ cao tốc khu Đông sắp thông.','fomo','verified','{"Hoàn thành","Loại"}',true),
+  ('5cb6d239-8f6a-5ee6-be07-2e1694cb5ddd','hook',2,'Đường hầm HC1-02 đã mở — hạng mục nút giao An Phú đang dần hoàn thiện.','neutral','verified','{"Đường hầm HC1-02"}',true),
+  ('5cb6d239-8f6a-5ee6-be07-2e1694cb5ddd','hook',3,'Nơi cao tốc Long Thành gặp khu Đông, một nút giao 3 tầng đang gỡ nút thắt.','story','verified','{}',true),
+  ('5cb6d239-8f6a-5ee6-be07-2e1694cb5ddd','body',1,'Nút giao 3 tầng, tổng vốn hơn VND 3,400 tỷ — đầu mối cao tốc TP.HCM – Long Thành – Dầu Giây.','neutral','verified','{"Loại","Vốn"}',true),
+  ('5cb6d239-8f6a-5ee6-be07-2e1694cb5ddd','body',2,'Đường hầm HC1-02 đã mở thông, các hạng mục còn lại đang gấp rút.','neutral','verified','{"Đường hầm HC1-02"}',true),
+  ('5cb6d239-8f6a-5ee6-be07-2e1694cb5ddd','body',3,'Dự kiến hoàn thành Q2/2026 — giải toả cửa ngõ phía Đông TP.HCM.','neutral','verified','{"Hoàn thành"}',true),
+  ('5cb6d239-8f6a-5ee6-be07-2e1694cb5ddd','proof',1,'Nút 3 tầng hơn VND 3,400 tỷ, hầm HC1-02 đã mở, về đích Q2/2026 — cửa ngõ khu Đông đang khơi thông.','neutral','verified','{"Loại","Vốn","Hoàn thành"}',true),
+  -- cai-mep (5396ba6f)
+  ('5396ba6f-4a9d-5d6d-878d-b14eb28c45d9','hook',1,'Cái Mép – Thị Vải: cảng nước sâu DUY NHẤT Việt Nam, ngay sát trục khu Đông.','fomo','verified','{"Đặc điểm"}',true),
+  ('5396ba6f-4a9d-5d6d-878d-b14eb28c45d9','hook',2,'Cảng đi thẳng Mỹ/EU, throughput 2024 đạt 6.5 triệu TEU (+33%) — động lực logistic phía Đông.','neutral','verified','{"Tuyến đến Mỹ/EU","Throughput 2024"}',true),
+  ('5396ba6f-4a9d-5d6d-878d-b14eb28c45d9','hook',3,'Hàng hoá Việt ra thế giới qua một cửa: Cái Mép. Và khu Đông nằm trên trục dẫn về cửa đó.','story','verified','{}',true),
+  ('5396ba6f-4a9d-5d6d-878d-b14eb28c45d9','body',1,'Cảng nước sâu duy nhất VN, đi thẳng Mỹ/EU (chỉ sau Singapore/Malaysia trong ĐNÁ).','neutral','verified','{"Đặc điểm","Tuyến đến Mỹ/EU"}',true),
+  ('5396ba6f-4a9d-5d6d-878d-b14eb28c45d9','body',2,'Throughput 2024 đạt 6.5 triệu TEU, tăng 33% so cùng kỳ.','neutral','verified','{"Throughput 2024"}',true),
+  ('5396ba6f-4a9d-5d6d-878d-b14eb28c45d9','body',3,'9 tháng đầu 2025 tiếp tục tăng 18% — nhu cầu logistic phía Đông bền vững.','neutral','verified','{"Tăng trưởng 9T/2025"}',true),
+  ('5396ba6f-4a9d-5d6d-878d-b14eb28c45d9','proof',1,'Cảng nước sâu duy nhất VN, 6.5 triệu TEU (+33%), tuyến thẳng Mỹ/EU — động cơ kinh tế trục Đông.','neutral','verified','{"Đặc điểm","Throughput 2024","Tuyến đến Mỹ/EU"}',true),
+  -- cao-toc-long-thanh (c0009f40)
+  ('c0009f40-a3e8-552a-bde6-0ff8282be270','hook',1,'Cao tốc Long Thành mở rộng 8–10 làn, hoàn thành 12/2026 — đồng bộ ngày sân bay mở.','fomo','verified','{"Quy mô","Hoàn thành"}',true),
+  ('c0009f40-a3e8-552a-bde6-0ff8282be270','hook',2,'Đã khởi công 19/8/2025: nâng cấp tuyến huyết mạch nối khu Đông tới sân bay Long Thành.','neutral','verified','{"Khởi công"}',true),
+  ('c0009f40-a3e8-552a-bde6-0ff8282be270','hook',3,'Sân bay sắp mở, đường dẫn phải lớn theo. Cao tốc Long Thành đang mở rộng kịp giờ.','story','verified','{}',true),
+  ('c0009f40-a3e8-552a-bde6-0ff8282be270','body',1,'Quy mô mở rộng lên 8–10 làn xe — tăng năng lực trục cao tốc phía Đông.','neutral','verified','{"Quy mô"}',true),
+  ('c0009f40-a3e8-552a-bde6-0ff8282be270','body',2,'Khởi công 19/8/2025, hoàn thành tháng 12/2026 — đồng bộ với sân bay Long Thành.','neutral','verified','{"Khởi công","Hoàn thành"}',true),
+  ('c0009f40-a3e8-552a-bde6-0ff8282be270','body',3,'Tuyến cao tốc là mạch nối chính giữa khu Đông TP.HCM và sân bay Long Thành.','neutral','verified','{}',true),
+  ('c0009f40-a3e8-552a-bde6-0ff8282be270','proof',1,'Mở rộng 8–10 làn, khởi công 8/2025, về đích 12/2026 — đồng bộ sân bay Long Thành.','neutral','verified','{"Quy mô","Khởi công","Hoàn thành"}',true),
+  -- gia-binh-airport (faa80c96)
+  ('faa80c96-4365-59a1-9897-d1dc5a7e98c4','hook',1,'Sân bay QT Gia Bình (~VND 196,378 tỷ) do Masterise tham gia — tầm vóc hàng không mới.','fomo','verified','{"Tổng đầu tư","Pháp nhân"}',true),
+  ('faa80c96-4365-59a1-9897-d1dc5a7e98c4','hook',2,'Quy mô ~1,960 ha, ICAO 4F, 2 đường băng 3,500m — sân bay quốc tế cấp cao nhất.','neutral','verified','{"Quy mô"}',true),
+  ('faa80c96-4365-59a1-9897-d1dc5a7e98c4','hook',3,'Từ nhà ở tới hạ tầng hàng không: Masterise đang mở rộng vai trò ở tầm quốc gia.','story','verified','{"Pháp nhân"}',true),
+  ('faa80c96-4365-59a1-9897-d1dc5a7e98c4','body',1,'Tổng đầu tư ~VND 196,378 tỷ; quy mô ~1,960 ha, chuẩn ICAO 4F, 2 đường băng 3,500m.','neutral','verified','{"Tổng đầu tư","Quy mô"}',true),
+  ('faa80c96-4365-59a1-9897-d1dc5a7e98c4','body',2,'Công suất 2030: 30 triệu khách + 1.6 triệu tấn; 2050: 50 triệu khách + 2.5 triệu tấn.','neutral','verified','{"Công suất 2030","Công suất 2050"}',true),
+  ('faa80c96-4365-59a1-9897-d1dc5a7e98c4','body',3,'Quốc hội phê duyệt theo NQ 256/2025/QH15 (11/12/2025); pháp nhân CTCP Hạ tầng HK Masterise (80%).','neutral','verified','{"Phê duyệt","Pháp nhân"}',true),
+  ('faa80c96-4365-59a1-9897-d1dc5a7e98c4','proof',1,'~VND 196,378 tỷ, 1,960 ha ICAO 4F, Quốc hội duyệt 12/2025, Masterise nắm 80% — năng lực hạ tầng tầm quốc gia.','neutral','verified','{"Tổng đầu tư","Quy mô","Phê duyệt","Pháp nhân"}',true),
+  -- inter-port-road (1dd8dcf7)
+  ('1dd8dcf7-8509-5528-9e4a-7b04a753ec7d','hook',1,'Đường liên cảng Cát Lái – Phú Hữu: 5.9 km, 12 làn rộng 60m — trục logistic sát Phú Hữu.','neutral','verified','{"Chiều dài","Rộng"}',true),
+  ('1dd8dcf7-8509-5528-9e4a-7b04a753ec7d','hook',2,'Một trục 12 làn ~VND 9,000 tỷ đang hình thành ngay cạnh Phú Hữu — hạ tầng cảng cho khu Đông.','fomo','verified','{"Rộng","Vốn"}',true),
+  ('1dd8dcf7-8509-5528-9e4a-7b04a753ec7d','hook',3,'Xe container cần lối riêng. Đường liên cảng đang tách dòng, trả lại đường cho cư dân khu Đông.','story','verified','{}',true),
+  ('1dd8dcf7-8509-5528-9e4a-7b04a753ec7d','body',1,'Tuyến dài 5.9 km, mặt cắt 60m với 12 làn xe — trục chuyên dụng nối cảng.','neutral','verified','{"Chiều dài","Rộng"}',true),
+  ('1dd8dcf7-8509-5528-9e4a-7b04a753ec7d','body',2,'Tổng vốn ~VND 9,000 tỷ — quy mô đầu tư lớn cho hạ tầng cảng phía Đông.','neutral','verified','{"Vốn"}',true),
+  ('1dd8dcf7-8509-5528-9e4a-7b04a753ec7d','body',3,'Kết nối Cát Lái – Phú Hữu, gỡ tải cho mạng đường khu Đông.','neutral','verified','{"Chiều dài"}',true),
+  ('1dd8dcf7-8509-5528-9e4a-7b04a753ec7d','proof',1,'5.9 km, 12 làn 60m, ~VND 9,000 tỷ — trục liên cảng nâng năng lực logistic khu Đông.','neutral','verified','{"Chiều dài","Rộng","Vốn"}',true),
+  -- long-thanh-airport (cc48c271) — Cosmo node
+  ('cc48c271-5b68-55bd-98a0-db5084ffe518','hook',1,'Sân bay Long Thành đã bay thử Boeing 787 (15/12/2025) — khai thác thương mại giữa 2026.','fomo','verified','{"Bay thử Boeing 787","Khai thác TM"}',true),
+  ('cc48c271-5b68-55bd-98a0-db5084ffe518','hook',2,'Giai đoạn 1: 25 triệu khách/năm, vốn ~US$16 tỷ — sân bay tầm khu vực cho phía Đông.','neutral','verified','{"Giai đoạn 1"}',true),
+  ('cc48c271-5b68-55bd-98a0-db5084ffe518','hook',3,'Chuyến bay thương mại đầu tiên đã định ngày. Cửa ngõ hàng không của khu Đông sắp mở.','story','verified','{"Chuyến TM đầu"}',true),
+  ('cc48c271-5b68-55bd-98a0-db5084ffe518','body',1,'Giai đoạn 1 công suất 25 triệu khách/năm, tổng vốn ~US$16 tỷ.','neutral','verified','{"Giai đoạn 1"}',true),
+  ('cc48c271-5b68-55bd-98a0-db5084ffe518','body',2,'Bay thử Boeing 787 ngày 15/12/2025, chuyến thương mại đầu 19/12/2025.','neutral','verified','{"Bay thử Boeing 787","Chuyến TM đầu"}',true),
+  ('cc48c271-5b68-55bd-98a0-db5084ffe518','body',3,'Khai thác thương mại giữa 2026 — mở ra làn sóng chuyên gia về phía Đông.','neutral','verified','{"Khai thác TM"}',true),
+  ('cc48c271-5b68-55bd-98a0-db5084ffe518','proof',1,'25 triệu khách/năm, bay thử 12/2025, khai thác giữa 2026 — sân bay đã thành hình.','neutral','verified','{"Giai đoạn 1","Bay thử Boeing 787","Khai thác TM"}',true),
+  -- macro-vn (2ccab86d)
+  ('2ccab86d-aff9-50bb-8c94-ffd5a4a27f36','hook',1,'GDP quý 1/2025 tăng 6.93% — cao nhất kể từ 2020. Nền kinh tế đang vào pha tăng tốc.','neutral','verified','{"GDP Q1/2025"}',true),
+  ('2ccab86d-aff9-50bb-8c94-ffd5a4a27f36','hook',2,'FDI giải ngân 2025 đạt US$27.62 tỷ — cao nhất 5 năm. Dòng vốn ngoại đang đổ về.','fomo','verified','{"FDI giải ngân 2025"}',true),
+  ('2ccab86d-aff9-50bb-8c94-ffd5a4a27f36','hook',3,'Khi kinh tế tăng tốc, người ta tìm nơi giữ tài sản. Bất động sản khu Đông vào tầm ngắm.','story','verified','{}',true),
+  ('2ccab86d-aff9-50bb-8c94-ffd5a4a27f36','body',1,'GDP Q1/2025 +6.93% (cao nhất từ 2020); GRDP TP.HCM 2025 +7.53%.','neutral','verified','{"GDP Q1/2025","GRDP HCM 2025"}',true),
+  ('2ccab86d-aff9-50bb-8c94-ffd5a4a27f36','body',2,'FDI giải ngân 2025 đạt US$27.62 tỷ, tăng 9% — mức cao nhất 5 năm.','neutral','verified','{"FDI giải ngân 2025"}',true),
+  ('2ccab86d-aff9-50bb-8c94-ffd5a4a27f36','body',3,'Trong bối cảnh đó, bất động sản tiếp tục là kênh trú ẩn tài sản dài hạn.','neutral','verified','{"Dòng tiền"}',true),
+  ('2ccab86d-aff9-50bb-8c94-ffd5a4a27f36','proof',1,'GDP +6.93%, GRDP HCM +7.53%, FDI US$27.62 tỷ — nền vĩ mô vững cho thị trường BĐS.','neutral','verified','{"GDP Q1/2025","GRDP HCM 2025","FDI giải ngân 2025"}',true),
+  -- masterise-group (a7f489a9)
+  ('a7f489a9-22cb-5766-a5b2-c9056e48579c','hook',1,'Từ Thảo Điền Investment 2007 tới Masterise Group hôm nay — hệ sinh thái đứng sau [TEN_DU_AN].','story','verified','{"Thành lập","Đổi tên"}',true),
+  ('a7f489a9-22cb-5766-a5b2-c9056e48579c','hook',2,'Vốn điều lệ tăng lên VND 35,200 tỷ (8/2025) — quy mô tập đoàn đa ngành.','neutral','verified','{"Vốn điều lệ"}',true),
+  ('a7f489a9-22cb-5766-a5b2-c9056e48579c','hook',3,'BĐS, vận hành, hospitality, hạ tầng — một hệ sinh thái khép kín ít tập đoàn có.','fomo','verified','{"Mảng"}',true),
+  ('a7f489a9-22cb-5766-a5b2-c9056e48579c','body',1,'Thành lập 2007 (tiền thân Thảo Điền Investment), đổi tên Masterise Group năm 2019.','neutral','verified','{"Thành lập","Đổi tên"}',true),
+  ('a7f489a9-22cb-5766-a5b2-c9056e48579c','body',2,'Vốn điều lệ từ VND 6,727 tỷ lên 35,200 tỷ (8/2025) — tăng trưởng quy mô mạnh.','neutral','verified','{"Vốn điều lệ"}',true),
+  ('a7f489a9-22cb-5766-a5b2-c9056e48579c','body',3,'Hoạt động 4 mảng: BĐS, vận hành, hospitality, hạ tầng; chủ tịch Hồ Anh Minh (từ 13/1/2025).','neutral','verified','{"Mảng","Chủ tịch"}',true),
+  ('a7f489a9-22cb-5766-a5b2-c9056e48579c','proof',1,'Từ 2007, vốn điều lệ 35,200 tỷ, 4 mảng kinh doanh — bề dày tập đoàn hậu thuẫn [TEN_DU_AN].','neutral','verified','{"Thành lập","Vốn điều lệ","Mảng"}',true),
+  -- rach-chiec (96c486f9)
+  ('96c486f9-87a9-5b54-a990-84f5206a409f','hook',1,'KLH TDTT Rạch Chiếc (~6 tỷ USD) khởi công 2026 — biểu tượng thể thao quốc gia ở khu Đông.','fomo','verified','{"Vốn","Khởi công"}',true),
+  ('96c486f9-87a9-5b54-a990-84f5206a409f','hook',2,'Quy mô 186.78 ha với sân vận động 65,000–75,000 chỗ — tổ hợp thể thao tầm vóc.','neutral','verified','{"Quy mô","Sân vận động"}',true),
+  ('96c486f9-87a9-5b54-a990-84f5206a409f','hook',3,'Một biểu tượng quốc gia đang mọc lên ở khu Đông. Rạch Chiếc đổi vị thế cả vùng.','story','verified','{"Tầm nhìn"}',true),
+  ('96c486f9-87a9-5b54-a990-84f5206a409f','body',1,'Quy mô 186.78 ha, tổng vốn ~VND 145,629 tỷ (~6 tỷ USD).','neutral','verified','{"Quy mô","Vốn"}',true),
+  ('96c486f9-87a9-5b54-a990-84f5206a409f','body',2,'Sân vận động 65,000–75,000 chỗ — quy mô hàng đầu khu vực.','neutral','verified','{"Sân vận động"}',true),
+  ('96c486f9-87a9-5b54-a990-84f5206a409f','body',3,'Khởi công 15/01/2026, tầm nhìn 2030 trở thành biểu tượng quốc gia.','neutral','verified','{"Khởi công","Tầm nhìn"}',true),
+  ('96c486f9-87a9-5b54-a990-84f5206a409f','proof',1,'186.78 ha, ~6 tỷ USD, SVĐ tới 75,000 chỗ, khởi công 2026 — đại tổ hợp thể thao của khu Đông.','neutral','verified','{"Quy mô","Vốn","Sân vận động","Khởi công"}',true),
+  -- thu-duc-master-plan (cb586749)
+  ('cb586749-4363-5a46-ae26-719528505670','hook',1,'Masterplan TP Thủ Đức 2040 đã được duyệt (QĐ 202/QĐ-TTg) — Gladia nằm trong khu Bình Trưng Tây.','neutral','verified','{"Duyệt","Khu Bình Trưng Tây"}',true),
+  ('cb586749-4363-5a46-ae26-719528505670','hook',2,'535 dự án ~US$31.6 tỷ chờ rót vào một thành phố quy hoạch bài bản — đó là Thủ Đức.','fomo','verified','{"Gọi vốn"}',true),
+  ('cb586749-4363-5a46-ae26-719528505670','hook',3,'Quy hoạch là lời hứa của tương lai. Thủ Đức 2040 đã ký, và [TEN_DU_AN] ở trong khung.','story','verified','{"Tầm nhìn"}',true),
+  ('cb586749-4363-5a46-ae26-719528505670','body',1,'Duyệt 21/1/2025 theo Quyết định 202/QĐ-TTg, tầm nhìn 2040 định hướng 2050.','neutral','verified','{"Duyệt","Tầm nhìn"}',true),
+  ('cb586749-4363-5a46-ae26-719528505670','body',2,'Thu hút 535 dự án với tổng vốn ~US$31.6 tỷ — lực đầu tư khổng lồ.','neutral','verified','{"Gọi vốn"}',true),
+  ('cb586749-4363-5a46-ae26-719528505670','body',3,'Khu Bình Trưng Tây trong masterplan bao gồm Gladia — vị trí trong quy hoạch chính thức.','neutral','verified','{"Khu Bình Trưng Tây"}',true),
+  ('cb586749-4363-5a46-ae26-719528505670','proof',1,'QĐ 202/QĐ-TTg, tầm nhìn 2040, 535 dự án ~US$31.6 tỷ, Gladia trong khu Bình Trưng Tây.','neutral','verified','{"Duyệt","Gọi vốn","Khu Bình Trưng Tây"}',true),
+  -- vanh-dai-3 (b2fa26a2) — Cosmo node
+  ('b2fa26a2-36bf-5d52-bbde-988aea043798','hook',1,'Vành đai 3 vận hành toàn tuyến 30/6/2026 — vòng kết nối khu Đông sắp khép.','fomo','verified','{"Toàn tuyến"}',true),
+  ('b2fa26a2-36bf-5d52-bbde-988aea043798','hook',2,'Đoạn Đông 14.7 km đã thông kỹ thuật 19/12/2025 — tiến độ đang về đích.','neutral','verified','{"Đoạn Đông 14.7km"}',true),
+  ('b2fa26a2-36bf-5d52-bbde-988aea043798','hook',3,'Bốn tỉnh thành nối bằng một vành đai. Khu Đông là một mắt xích trung tâm.','story','verified','{"Kết nối"}',true),
+  ('b2fa26a2-36bf-5d52-bbde-988aea043798','body',1,'Toàn tuyến 76.34 km, tổng vốn ~VND 75,378 tỷ — hạ tầng trọng điểm quốc gia.','neutral','verified','{"Tổng"}',true),
+  ('b2fa26a2-36bf-5d52-bbde-988aea043798','body',2,'Đoạn phía Đông 14.7 km đã thông kỹ thuật ngày 19/12/2025.','neutral','verified','{"Đoạn Đông 14.7km"}',true),
+  ('b2fa26a2-36bf-5d52-bbde-988aea043798','body',3,'Kết nối TP.HCM – Đồng Nai – Tây Ninh – BR-VT; vận hành toàn tuyến 30/6/2026.','neutral','verified','{"Kết nối","Toàn tuyến"}',true),
+  ('b2fa26a2-36bf-5d52-bbde-988aea043798','proof',1,'76.34 km, ~VND 75,378 tỷ, đoạn Đông thông 12/2025, toàn tuyến 6/2026 — vành đai khép quanh khu Đông.','neutral','verified','{"Tổng","Đoạn Đông 14.7km","Toàn tuyến"}',true),
+  -- vo-chi-cong (a685ea87)
+  ('a685ea87-40f2-5267-b4e4-88e66941ed1b','hook',1,'Võ Chí Công — một phần Vành đai 2, trục chính kết nối khu Đông.','neutral','verified','{"Hiện tại"}',true),
+  ('a685ea87-40f2-5267-b4e4-88e66941ed1b','hook',2,'Trục liên cảng 12 làn ~VND 9,000 tỷ đang trình duyệt ngay trên tuyến Võ Chí Công.','fomo','verified','{"Đường liên cảng","Vốn"}',true),
+  ('a685ea87-40f2-5267-b4e4-88e66941ed1b','hook',3,'Những con đường lớn định hình vùng đất. Võ Chí Công đang là một trong số đó ở khu Đông.','story','verified','{}',true),
+  ('a685ea87-40f2-5267-b4e4-88e66941ed1b','body',1,'Hiện là một phần Vành đai 2 — trục giao thông xương sống phía Đông.','neutral','verified','{"Hiện tại"}',true),
+  ('a685ea87-40f2-5267-b4e4-88e66941ed1b','body',2,'Đường liên cảng trên trục: 5.9 km, rộng 60m, 12 làn, vốn ~VND 9,000 tỷ.','neutral','verified','{"Đường liên cảng","Vốn"}',true),
+  ('a685ea87-40f2-5267-b4e4-88e66941ed1b','body',3,'Hồ sơ trình duyệt ngày 24/12/2025 — bước tiến pháp lý mới.','neutral','verified','{"Trình duyệt"}',true),
+  ('a685ea87-40f2-5267-b4e4-88e66941ed1b','proof',1,'Một phần Vành đai 2, trục liên cảng 12 làn ~VND 9,000 tỷ, trình duyệt 12/2025 — hạ tầng trục Đông.','neutral','verified','{"Hiện tại","Đường liên cảng","Vốn"}',true)
+on conflict (node_id, role, variant_no) do nothing;
