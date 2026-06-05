@@ -27,13 +27,13 @@ export default async function ProjectPage({ params }: { params: { slug: string }
       <header className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">{project.name}</h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-muted-foreground">
             {developer && `${developer.name} · `}
             {project.locationText}
           </p>
           {project.phase && <p className="mt-0.5 text-xs text-amber-400/80">{project.phase}</p>}
         </div>
-        <Link href="/" className="whitespace-nowrap text-sm text-slate-400 hover:text-slate-200">
+        <Link href="/" className="whitespace-nowrap text-sm text-muted-foreground hover:text-foreground">
           ← Trang chủ
         </Link>
       </header>
@@ -46,7 +46,7 @@ export default async function ProjectPage({ params }: { params: { slug: string }
       </section>
 
       <section>
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">
+        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Bản đồ tri thức dự án
         </h2>
         <ProjectKnowledgeMap data={graph} notesById={notesById} />
@@ -57,9 +57,9 @@ export default async function ProjectPage({ params }: { params: { slug: string }
 
 function Fact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md border border-slate-800 bg-slate-900 p-3">
-      <p className="text-[11px] uppercase tracking-wide text-slate-500">{label}</p>
-      <p className="mt-0.5 text-sm text-slate-100">{value || "—"}</p>
+    <div className="rounded-md border border-border bg-card p-3">
+      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-0.5 text-sm text-foreground">{value || "—"}</p>
     </div>
   );
 }

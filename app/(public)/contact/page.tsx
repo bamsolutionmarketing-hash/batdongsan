@@ -6,7 +6,7 @@ import { submitLead, type ContactState } from "./actions";
 
 const initial: ContactState = {};
 const input =
-  "rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm outline-none focus:border-sky-500";
+  "rounded-md border border-border bg-muted px-3 py-2 text-sm outline-none focus:border-sky-500";
 
 export default function ContactPage() {
   const [pending, startTransition] = useTransition();
@@ -23,7 +23,7 @@ export default function ContactPage() {
     <main className="mx-auto flex min-h-screen max-w-lg flex-col justify-center gap-6 p-6">
       <div>
         <h1 className="text-2xl font-bold">Đăng ký dùng cho team</h1>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted-foreground">
           Trang bị kiến thức dự án + nội dung bán hàng cho cả đội sale của bạn — rút ngắn thời gian
           đào tạo nhân viên mới. Để lại thông tin, chúng tôi sẽ liên hệ tư vấn gói phù hợp.
         </p>
@@ -34,7 +34,7 @@ export default function ContactPage() {
           <p className="text-emerald-200">
             Cảm ơn bạn! Chúng tôi đã nhận thông tin và sẽ liên hệ sớm.
           </p>
-          <Link href="/" className="mt-3 inline-block text-sm text-slate-300 hover:text-slate-100">
+          <Link href="/" className="mt-3 inline-block text-sm text-foreground hover:text-foreground">
             ← Về trang chủ
           </Link>
         </div>
@@ -64,7 +64,7 @@ export default function ContactPage() {
           >
             {pending ? "Đang gửi…" : "Gửi đăng ký"}
           </button>
-          <Link href="/" className="text-center text-sm text-slate-400 hover:text-slate-200">
+          <Link href="/" className="text-center text-sm text-muted-foreground hover:text-foreground">
             ← Về trang chủ
           </Link>
         </form>

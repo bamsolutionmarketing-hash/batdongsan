@@ -27,7 +27,7 @@ export function GraphTeaser() {
         linkColors={EDGE_KIND_COLORS}
         legend={LEGEND}
       />
-      <p className="text-center text-xs text-slate-500">
+      <p className="text-center text-xs text-muted-foreground">
         Chạm vào điểm để chọn (đang chọn {picked.length}/4) — đây chính là cách bạn dựng bài trong app.
       </p>
     </div>

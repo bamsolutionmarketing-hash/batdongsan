@@ -12,7 +12,7 @@ import {
 } from "@/app/(admin)/admin/_actions";
 import { Button } from "@/components/ui/button";
 
-const input = "w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100";
+const input = "w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground";
 
 export default async function EditProjectPage({
   params, searchParams,
@@ -40,7 +40,7 @@ export default async function EditProjectPage({
     <main className="mx-auto flex max-w-4xl flex-col gap-8 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{project.name}</h1>
-        <Link href="/admin/projects" className="text-sm text-slate-400 hover:text-slate-200">← Danh sách</Link>
+        <Link href="/admin/projects" className="text-sm text-muted-foreground hover:text-foreground">← Danh sách</Link>
       </div>
       <Notice error={searchParams.error} ok={searchParams.ok} />
 
@@ -56,9 +56,9 @@ export default async function EditProjectPage({
         <h2 className="text-lg font-semibold">Nodes ({nodes.length})</h2>
         <div className="flex flex-col gap-2">
           {nodes.map((n) => (
-            <div key={n.id} className="flex items-center gap-3 rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-sm">
-              <span className="font-medium text-slate-100">{n.label}</span>
-              <span className="text-xs text-slate-500">{n.category} · {n.nodeKey} · {n.facts.length} facts</span>
+            <div key={n.id} className="flex items-center gap-3 rounded-md border border-border bg-card px-3 py-2 text-sm">
+              <span className="font-medium text-foreground">{n.label}</span>
+              <span className="text-xs text-muted-foreground">{n.category} · {n.nodeKey} · {n.facts.length} facts</span>
               <Link
                 href={`/admin/projects/${project.id}/nodes/${n.id}/blocks`}
                 className="ml-auto text-xs text-sky-400 hover:text-sky-300"
@@ -73,7 +73,7 @@ export default async function EditProjectPage({
             </div>
           ))}
         </div>
-        <details className="rounded-md border border-slate-800 bg-slate-950 p-3">
+        <details className="rounded-md border border-border bg-background p-3">
           <summary className="cursor-pointer text-sm text-sky-400">+ Thêm node</summary>
           <form action={createNode} className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <input type="hidden" name="project_id" value={project.id} />
@@ -97,10 +97,10 @@ export default async function EditProjectPage({
         <h2 className="text-lg font-semibold">Links ({links.length})</h2>
         <div className="flex flex-col gap-2">
           {links.map((l) => (
-            <div key={l.id} className="flex items-center gap-2 rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-sm">
-              <span className="text-slate-200">{labelById[l.sourceNode] ?? "?"}</span>
-              <span className="text-slate-500">→ {l.label ?? ""} →</span>
-              <span className="text-slate-200">{labelById[l.targetNode] ?? "?"}</span>
+            <div key={l.id} className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm">
+              <span className="text-foreground">{labelById[l.sourceNode] ?? "?"}</span>
+              <span className="text-muted-foreground">→ {l.label ?? ""} →</span>
+              <span className="text-foreground">{labelById[l.targetNode] ?? "?"}</span>
               <form action={deleteLink} className="ml-auto">
                 <input type="hidden" name="id" value={l.id} />
                 <input type="hidden" name="project_id" value={project.id} />
@@ -110,7 +110,7 @@ export default async function EditProjectPage({
           ))}
         </div>
         {nodes.length >= 2 && (
-          <form action={createLink} className="grid grid-cols-1 gap-2 rounded-md border border-slate-800 bg-slate-950 p-3 sm:grid-cols-4">
+          <form action={createLink} className="grid grid-cols-1 gap-2 rounded-md border border-border bg-background p-3 sm:grid-cols-4">
             <input type="hidden" name="project_id" value={project.id} />
             <select name="source_node" className={input}>
               {nodes.map((n) => <option key={n.id} value={n.id}>{n.label}</option>)}
@@ -127,12 +127,12 @@ export default async function EditProjectPage({
       {/* Time triggers (drive "Hôm Nay" suggestions) */}
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Time triggers ({triggers.length})</h2>
-        <p className="text-xs text-slate-500">Đẩy gợi ý bài vào màn Hôm Nay khi tới gần ngày.</p>
+        <p className="text-xs text-muted-foreground">Đẩy gợi ý bài vào màn Hôm Nay khi tới gần ngày.</p>
         <div className="flex flex-col gap-2">
           {triggers.map((t) => (
-            <div key={t.id} className="flex items-center gap-2 rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-sm">
-              <span className="text-slate-100">{t.label}</span>
-              <span className="text-xs text-slate-500">
+            <div key={t.id} className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm">
+              <span className="text-foreground">{t.label}</span>
+              <span className="text-xs text-muted-foreground">
                 {t.triggerDate} · trước {t.activeDaysBefore} ngày{t.suggestedAngle ? ` · ${t.suggestedAngle}` : ""} · {t.nodeIds.length} node
               </span>
               <form action={deleteTrigger} className="ml-auto">
@@ -143,7 +143,7 @@ export default async function EditProjectPage({
             </div>
           ))}
         </div>
-        <details className="rounded-md border border-slate-800 bg-slate-950 p-3">
+        <details className="rounded-md border border-border bg-background p-3">
           <summary className="cursor-pointer text-sm text-sky-400">+ Thêm trigger</summary>
           <form action={createTrigger} className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <input type="hidden" name="project_id" value={project.id} />
@@ -160,7 +160,7 @@ export default async function EditProjectPage({
               {NODE_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
             <div className="sm:col-span-2">
-              <p className="mb-1 text-[11px] uppercase tracking-wide text-slate-500">Nodes chọn sẵn (Ctrl/Cmd để chọn nhiều)</p>
+              <p className="mb-1 text-[11px] uppercase tracking-wide text-muted-foreground">Nodes chọn sẵn (Ctrl/Cmd để chọn nhiều)</p>
               <select name="node_ids" multiple size={4} className={`${input} h-auto`}>
                 {nodes.map((n) => <option key={n.id} value={n.id}>{n.label}</option>)}
               </select>

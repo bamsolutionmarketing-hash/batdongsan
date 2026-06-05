@@ -27,7 +27,7 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between">
             <p className="text-[11px] uppercase tracking-wide text-sky-400">Gợi ý bài hôm nay</p>
             {post.daysLeft != null && post.daysLeft >= 0 && (
-              <span className={`rounded-full px-2.5 py-0.5 text-xs ${post.daysLeft <= 2 ? "bg-red-950/40 text-red-300 border border-red-800/60" : "bg-slate-800 text-slate-300"}`}>
+              <span className={`rounded-full px-2.5 py-0.5 text-xs ${post.daysLeft <= 2 ? "bg-red-950/40 text-red-300 border border-red-800/60" : "bg-muted text-foreground"}`}>
                 ⏳ còn {post.daysLeft} ngày
               </span>
             )}
@@ -36,7 +36,7 @@ export default async function DashboardPage() {
           <CardDesc>{post.reason}</CardDesc>
           <div className="mt-3 flex flex-wrap gap-1.5">
             {post.nodeLabels.map((l) => (
-              <span key={l} className="rounded-full border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-xs text-slate-300">{l}</span>
+              <span key={l} className="rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs text-foreground">{l}</span>
             ))}
           </div>
           <form action={createPostAction} className="mt-4">
@@ -56,12 +56,12 @@ export default async function DashboardPage() {
 
       {alternates.length > 0 && (
         <section>
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">Gợi ý khác</h2>
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Gợi ý khác</h2>
           <div className="flex flex-col gap-2">
             {alternates.map((a) => (
-              <div key={a.angle} className="flex flex-wrap items-center gap-2 rounded-md border border-slate-800 bg-slate-900 px-3 py-2">
-                <span className="text-sm font-medium text-slate-100">{a.title}</span>
-                <span className="text-xs text-slate-500">{a.nodeLabels.join(" · ")}</span>
+              <div key={a.angle} className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-card px-3 py-2">
+                <span className="text-sm font-medium text-foreground">{a.title}</span>
+                <span className="text-xs text-muted-foreground">{a.nodeLabels.join(" · ")}</span>
                 <form action={createPostAction} className="ml-auto">
                   <input type="hidden" name="project_id" value={a.projectId} />
                   <input type="hidden" name="slug" value={a.projectSlug} />
@@ -75,15 +75,15 @@ export default async function DashboardPage() {
       )}
 
       <section>
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">Việc hôm nay ({tasks.length})</h2>
+        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Việc hôm nay ({tasks.length})</h2>
         {tasks.length === 0 ? (
-          <p className="text-sm text-slate-500">Không có việc nào. 🎉</p>
+          <p className="text-sm text-muted-foreground">Không có việc nào. 🎉</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {tasks.map((t) => (
-              <li key={t.id} className="flex items-center gap-2 rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-sm">
-                <span className="text-slate-300">{t.kind === "note" ? "📝" : t.kind === "share" ? "🔁" : "📲"}</span>
-                <span className="text-slate-100">{t.label}</span>
+              <li key={t.id} className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm">
+                <span className="text-foreground">{t.kind === "note" ? "📝" : t.kind === "share" ? "🔁" : "📲"}</span>
+                <span className="text-foreground">{t.label}</span>
                 {t.kind === "note" && <Link href="/notes" className="ml-auto text-xs text-sky-400">Ghi chú →</Link>}
               </li>
             ))}

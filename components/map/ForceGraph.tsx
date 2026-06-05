@@ -115,7 +115,7 @@ export function ForceGraph({
   );
 
   return (
-    <div className="relative h-[60vh] min-h-[380px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-900 sm:h-[560px]">
+    <div className="relative h-[60vh] min-h-[380px] w-full overflow-hidden rounded-lg border border-border bg-card sm:h-[560px]">
       <ForceGraph2D
         ref={fgRef}
         graphData={graph}
@@ -203,7 +203,7 @@ export function ForceGraph({
 
 function Legend({ items }: { items: LegendItem[] }) {
   return (
-    <div className="pointer-events-none absolute bottom-3 left-3 flex flex-col gap-1 rounded-md bg-slate-950/70 p-2 text-[10px] text-slate-300 backdrop-blur">
+    <div className="pointer-events-none absolute bottom-3 left-3 flex flex-col gap-1 rounded-md bg-background/70 p-2 text-[10px] text-foreground backdrop-blur">
       {items.map((it) => (
         <div key={it.label} className="flex items-center gap-1.5">
           <span className="h-0.5 w-4 rounded" style={{ backgroundColor: it.color }} />

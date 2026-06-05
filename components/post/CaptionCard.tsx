@@ -56,24 +56,24 @@ export function CaptionCard({ caption, composer }: { caption: string; composer: 
   };
 
   const pill = (active: boolean) =>
-    `rounded-full px-3 py-1 text-xs ${active ? "bg-sky-600 text-white" : "border border-slate-700 text-slate-300 hover:border-slate-500"}`;
+    `rounded-full px-3 py-1 text-xs ${active ? "bg-sky-600 text-white" : "border border-border text-foreground hover:border-foreground/30"}`;
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="whitespace-pre-line rounded-lg border border-slate-800 bg-slate-900 p-4 text-sm leading-relaxed text-slate-100">
+      <div className="whitespace-pre-line rounded-lg border border-border bg-card p-4 text-sm leading-relaxed text-foreground">
         {caption}
       </div>
       <div className="flex flex-wrap gap-2">
         <button onClick={() => copy(caption, "caption")} className="rounded-md bg-sky-600 px-3 py-2 text-sm font-medium text-white hover:bg-sky-500">
           {copied === "caption" ? "✓ Đã copy" : "Copy bài"}
         </button>
-        <button onClick={() => copy(prompt, "prompt")} className="rounded-md border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 hover:border-slate-500">
+        <button onClick={() => copy(prompt, "prompt")} className="rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground hover:border-foreground/30">
           {copied === "prompt" ? "✓ Đã copy" : "Copy kèm prompt AI"}
         </button>
       </div>
 
-      <details className="rounded-md border border-slate-800 bg-slate-950 p-3">
-        <summary className="cursor-pointer text-sm text-slate-400">Tùy chọn prompt AI (mode × tone)</summary>
+      <details className="rounded-md border border-border bg-background p-3">
+        <summary className="cursor-pointer text-sm text-muted-foreground">Tùy chọn prompt AI (mode × tone)</summary>
         <div className="mt-3 flex flex-col gap-2">
           <div className="flex flex-wrap gap-1.5">
             {MODES.map((m) => (
@@ -85,7 +85,7 @@ export function CaptionCard({ caption, composer }: { caption: string; composer: 
               <button key={t.v} onClick={() => setTone(t.v)} className={pill(tone === t.v)}>{t.label}</button>
             ))}
           </div>
-          <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap rounded bg-slate-900 p-3 text-xs text-slate-300">{prompt}</pre>
+          <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap rounded bg-card p-3 text-xs text-foreground">{prompt}</pre>
         </div>
       </details>
     </div>

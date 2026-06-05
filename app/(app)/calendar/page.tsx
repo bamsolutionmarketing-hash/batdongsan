@@ -65,15 +65,15 @@ export default async function CalendarPage({
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Lịch đăng — {m + 1}/{y}</h1>
         <div className="flex items-center gap-2 text-sm">
-          <Link href={`/calendar?y=${prevM.y}&m=${prevM.m}`} className="rounded border border-slate-700 px-2 py-1 text-slate-300 hover:border-slate-500">←</Link>
-          <Link href="/calendar" className="rounded border border-slate-700 px-2 py-1 text-slate-400 hover:border-slate-500">Nay</Link>
-          <Link href={`/calendar?y=${nextM.y}&m=${nextM.m}`} className="rounded border border-slate-700 px-2 py-1 text-slate-300 hover:border-slate-500">→</Link>
+          <Link href={`/calendar?y=${prevM.y}&m=${prevM.m}`} className="rounded border border-border px-2 py-1 text-foreground hover:border-foreground/30">←</Link>
+          <Link href="/calendar" className="rounded border border-border px-2 py-1 text-muted-foreground hover:border-foreground/30">Nay</Link>
+          <Link href={`/calendar?y=${nextM.y}&m=${nextM.m}`} className="rounded border border-border px-2 py-1 text-foreground hover:border-foreground/30">→</Link>
         </div>
       </div>
-      <p className="text-sm text-slate-500">Chấm xanh = đã đăng (số bài). ⏳ = hạn chiến dịch.</p>
+      <p className="text-sm text-muted-foreground">Chấm xanh = đã đăng (số bài). ⏳ = hạn chiến dịch.</p>
 
       <div className="grid grid-cols-7 gap-1 text-center text-xs">
-        {DOW.map((d) => <div key={d} className="py-1 text-slate-500">{d}</div>)}
+        {DOW.map((d) => <div key={d} className="py-1 text-muted-foreground">{d}</div>)}
         {cells.map((d, i) => {
           if (d == null) return <div key={`e${i}`} />;
           const ds = ymd(d);
@@ -84,9 +84,9 @@ export default async function CalendarPage({
             <div
               key={ds}
               title={deadlines?.join(" · ")}
-              className={`flex h-12 flex-col items-center justify-center rounded-md border ${isToday ? "border-sky-600" : deadlines ? "border-amber-700/60" : "border-slate-800"} bg-slate-900`}
+              className={`flex h-12 flex-col items-center justify-center rounded-md border ${isToday ? "border-sky-600" : deadlines ? "border-amber-700/60" : "border-border"} bg-card`}
             >
-              <span className="text-slate-200">{d}</span>
+              <span className="text-foreground">{d}</span>
               <span className="mt-0.5 flex items-center gap-0.5">
                 {count > 0 && (
                   <span className="flex items-center gap-0.5 text-[10px] text-emerald-400">
@@ -102,14 +102,14 @@ export default async function CalendarPage({
 
       {upcoming.length > 0 && (
         <section>
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">Hạn sắp tới</h2>
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Hạn sắp tới</h2>
           <ul className="flex flex-col gap-2">
             {upcoming.map((t, i) => (
-              <li key={`${t.triggerDate}-${i}`} className="flex items-center gap-2 rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-sm">
+              <li key={`${t.triggerDate}-${i}`} className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm">
                 <span className="text-amber-400">⏳</span>
-                <span className="text-slate-100">{t.label}</span>
-                <span className="ml-auto text-xs text-slate-500">{t.triggerDate}</span>
-                <span className={`rounded-full px-2 py-0.5 text-xs ${t.left <= 2 ? "bg-red-950/40 text-red-300" : "bg-slate-800 text-slate-300"}`}>
+                <span className="text-foreground">{t.label}</span>
+                <span className="ml-auto text-xs text-muted-foreground">{t.triggerDate}</span>
+                <span className={`rounded-full px-2 py-0.5 text-xs ${t.left <= 2 ? "bg-red-950/40 text-red-300" : "bg-muted text-foreground"}`}>
                   {t.left === 0 ? "hôm nay" : `còn ${t.left} ngày`}
                 </span>
               </li>

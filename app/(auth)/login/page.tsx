@@ -40,7 +40,7 @@ export default function LoginPage({
           Trợ lý BĐS
         </p>
         <h1 className="text-2xl font-bold">Đăng nhập</h1>
-        <p className="text-sm text-slate-400">Trợ lý bán hàng BĐS cho đội sale của bạn.</p>
+        <p className="text-sm text-muted-foreground">Trợ lý bán hàng BĐS cho đội sale của bạn.</p>
       </div>
 
       <form onSubmit={submit(login, setLoginError)} className="flex flex-col gap-3">
@@ -50,14 +50,14 @@ export default function LoginPage({
           type="email"
           required
           placeholder="Email"
-          className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm outline-none focus:border-sky-500"
+          className="rounded-md border border-border bg-muted px-3 py-2 text-sm outline-none focus:border-sky-500"
         />
         <input
           name="password"
           type="password"
           required
           placeholder="Mật khẩu"
-          className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm outline-none focus:border-sky-500"
+          className="rounded-md border border-border bg-muted px-3 py-2 text-sm outline-none focus:border-sky-500"
         />
         {loginError && <p className="text-sm text-red-400">{loginError}</p>}
         <button
@@ -69,18 +69,18 @@ export default function LoginPage({
         </button>
       </form>
 
-      <div className="flex items-center gap-3 text-xs text-slate-500">
-        <span className="h-px flex-1 bg-slate-800" /> hoặc <span className="h-px flex-1 bg-slate-800" />
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <span className="h-px flex-1 bg-muted" /> hoặc <span className="h-px flex-1 bg-muted" />
       </div>
 
       <form onSubmit={submit(signup, setSignupError)} className="flex flex-col gap-3">
-        <p className="text-sm text-slate-400">Chưa có tài khoản? Đăng ký:</p>
+        <p className="text-sm text-muted-foreground">Chưa có tài khoản? Đăng ký:</p>
         <input
           name="email"
           type="email"
           required
           placeholder="Email"
-          className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm outline-none focus:border-sky-500"
+          className="rounded-md border border-border bg-muted px-3 py-2 text-sm outline-none focus:border-sky-500"
         />
         <input
           name="password"
@@ -88,13 +88,13 @@ export default function LoginPage({
           required
           minLength={6}
           placeholder="Mật khẩu (tối thiểu 6 ký tự)"
-          className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm outline-none focus:border-sky-500"
+          className="rounded-md border border-border bg-muted px-3 py-2 text-sm outline-none focus:border-sky-500"
         />
         {signupError && <p className="text-sm text-red-400">{signupError}</p>}
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md border border-slate-600 px-3 py-2 text-sm font-medium hover:border-slate-400 disabled:opacity-50"
+          className="rounded-md border border-border px-3 py-2 text-sm font-medium hover:border-foreground/30 disabled:opacity-50"
         >
           {pending ? "Đang tạo…" : "Đăng ký"}
         </button>

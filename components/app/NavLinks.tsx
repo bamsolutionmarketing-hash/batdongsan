@@ -9,7 +9,7 @@ export function NavLinks({ admin }: { admin?: boolean }) {
   const path = usePathname() ?? "";
   const active = (href: string) => path === href || path.startsWith(href + "/");
   const cls = (on: boolean) =>
-    `rounded-md px-3 py-1.5 text-sm transition ${on ? "bg-slate-800 text-slate-100" : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"}`;
+    `rounded-md px-3 py-1.5 text-sm transition ${on ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"}`;
   return (
     <div className="flex items-center gap-1">
       {NAV_TABS.map((t) => (

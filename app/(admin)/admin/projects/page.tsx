@@ -15,7 +15,7 @@ export default async function AdminProjectsPage() {
       <div className="flex flex-col gap-3">
         {projects.map((p) => (
           <Link key={p.id} href={`/admin/projects/${p.id}`}>
-            <Card className="flex items-center justify-between transition hover:border-slate-600">
+            <Card className="flex items-center justify-between transition hover:border-border">
               <div>
                 <CardTitle className="text-base">{p.name}</CardTitle>
                 <CardDesc>
@@ -23,7 +23,7 @@ export default async function AdminProjectsPage() {
                   {p.isDemo ? " · demo" : ""}
                 </CardDesc>
               </div>
-              <span className="text-slate-500">→</span>
+              <span className="text-muted-foreground">→</span>
             </Card>
           </Link>
         ))}

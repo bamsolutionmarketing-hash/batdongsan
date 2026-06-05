@@ -30,7 +30,7 @@ export function ProjectKnowledgeMap({
 
   if (data.nodes.length === 0) {
     return (
-      <div className="rounded-lg border border-slate-800 bg-slate-900 p-6 text-center text-sm text-slate-400">
+      <div className="rounded-lg border border-border bg-card p-6 text-center text-sm text-muted-foreground">
         Dự án chưa có bản đồ tri thức. Quản trị viên có thể tạo trong trang chỉnh sửa.
       </div>
     );
@@ -47,13 +47,13 @@ export function ProjectKnowledgeMap({
         legend={legend}
       />
       {selected && (
-        <div className="rounded-lg border border-slate-800 bg-slate-900 p-4">
-          <p className="text-[11px] uppercase tracking-wide text-slate-500">
+        <div className="rounded-lg border border-border bg-card p-4">
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
             {NODE_KIND_LABEL[selected.kind] ?? selected.kind}
           </p>
-          <h3 className="text-sm font-semibold text-slate-100">{selected.label}</h3>
+          <h3 className="text-sm font-semibold text-foreground">{selected.label}</h3>
           {selected.note && (
-            <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-slate-300">
+            <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-foreground">
               {selected.note}
             </p>
           )}

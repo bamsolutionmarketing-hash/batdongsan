@@ -2,8 +2,8 @@ import type { Project } from "@/types/domain";
 import type { Developer } from "@/lib/repo/developers";
 
 const input =
-  "w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100";
-const label = "text-[11px] uppercase tracking-wide text-slate-500";
+  "w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground";
+const label = "text-[11px] uppercase tracking-wide text-muted-foreground";
 
 // Shared project form fields. `p` undefined → create mode.
 export function ProjectFields({ p, developers }: { p?: Project; developers: Developer[] }) {
@@ -46,7 +46,7 @@ function Field({ name, label: l, def, type = "text", required }: {
 }
 function Check({ name, label: l, def }: { name: string; label: string; def?: boolean }) {
   return (
-    <label className="flex items-center gap-2 text-sm text-slate-300">
+    <label className="flex items-center gap-2 text-sm text-foreground">
       <input type="checkbox" name={name} defaultChecked={def} className="h-4 w-4" />
       {l}
     </label>

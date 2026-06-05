@@ -79,7 +79,7 @@ export default async function PostResultPage({
     <main className="mx-auto flex max-w-2xl flex-col gap-5 p-4 sm:p-6">
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Bài đã tạo</h1>
-        <Link href={`/projects/${params.slug}`} className="text-sm text-slate-400 hover:text-slate-200">
+        <Link href={`/projects/${params.slug}`} className="text-sm text-muted-foreground hover:text-foreground">
           ← Tạo bài khác
         </Link>
       </header>
@@ -96,7 +96,7 @@ export default async function PostResultPage({
 
       {editable.slots.length > 0 ? (
         <>
-          <p className="text-xs text-slate-500">Bấm ‹ › ở mỗi đoạn để đổi mẫu; bài bên dưới cập nhật ngay.</p>
+          <p className="text-xs text-muted-foreground">Bấm ‹ › ở mỗi đoạn để đổi mẫu; bài bên dưới cập nhật ngay.</p>
           <CaptionEditor slots={editable.slots} addable={editable.addable} composer={composer} postId={post.id} slug={params.slug} />
         </>
       ) : (
@@ -111,14 +111,14 @@ export default async function PostResultPage({
       )}
 
       <section>
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">Ảnh đóng logo</h2>
+        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Ảnh đóng logo</h2>
         <BrandedImageGrid images={images} labels={labelById} postId={post.id} slug={params.slug} />
       </section>
 
       {nodes.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {nodes.map((n) => (
-            <span key={n.id} className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs text-slate-300">
+            <span key={n.id} className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground">
               {n.label}
             </span>
           ))}

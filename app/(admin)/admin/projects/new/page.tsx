@@ -16,7 +16,7 @@ export default async function NewProjectPage({
     <main className="mx-auto flex max-w-3xl flex-col gap-5 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Dự án mới</h1>
-        <Link href="/admin/projects" className="text-sm text-slate-400 hover:text-slate-200">← Danh sách</Link>
+        <Link href="/admin/projects" className="text-sm text-muted-foreground hover:text-foreground">← Danh sách</Link>
       </div>
       <Notice error={searchParams.error} />
       <form action={createProject} className="flex flex-col gap-4">

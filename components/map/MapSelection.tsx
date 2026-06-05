@@ -56,9 +56,9 @@ export function MapSelection({
         legend={legend}
       />
 
-      <div className="sticky bottom-20 z-30 flex flex-wrap items-center gap-2 rounded-lg border border-slate-700 bg-slate-900/95 p-3 backdrop-blur sm:bottom-3">
+      <div className="sticky bottom-20 z-30 flex flex-wrap items-center gap-2 rounded-lg border border-border bg-card/95 p-3 backdrop-blur sm:bottom-3">
         {selected.length === 0 ? (
-          <span className="text-sm text-slate-400">Chạm vào điểm trên bản đồ để chọn (tối đa {MAX}).</span>
+          <span className="text-sm text-muted-foreground">Chạm vào điểm trên bản đồ để chọn (tối đa {MAX}).</span>
         ) : (
           selected.map((id) => (
             <button

@@ -6,11 +6,11 @@ import { useCountUp } from "@/lib/landing/useScroll";
 export function Counter({ to, label, suffix = "" }: { to: number; label: string; suffix?: string }) {
   const { ref, val } = useCountUp(to);
   return (
-    <div className="text-center">
-      <div className="text-3xl font-bold text-slate-100 sm:text-4xl">
+    <div>
+      <div className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
         <span ref={ref}>{val.toLocaleString("vi-VN")}</span>{suffix}
       </div>
-      <div className="mt-1 text-sm text-slate-400">{label}</div>
+      <div className="mt-1 text-sm text-muted-foreground">{label}</div>
     </div>
   );
 }

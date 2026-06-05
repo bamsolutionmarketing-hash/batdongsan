@@ -2,130 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
+@layer base {
+  :root {
+    /* ===== LIGHT ===== */
+    --background: 0 0% 100%;
+    --background-subtle: 0 0% 98%;
+    --foreground: 240 10% 4%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 240 10% 4%;
+    --primary: 240 10% 4%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 10% 4%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 10% 4%;
+    --brand: 217 91% 60%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* ===== DARK ===== */
+    --background: 240 10% 4%;
+    --background-subtle: 240 6% 8%;
+    --foreground: 0 0% 98%;
+    --muted: 240 4% 12%;
+    --muted-foreground: 240 5% 65%;
+    --card: 240 8% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 8% 6%;
+    --popover-foreground: 0 0% 98%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 0 0% 83%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 10% 4%;
+    --secondary: 240 4% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 240 4% 14%;
+    --accent-foreground: 0 0% 98%;
+    --brand: 217 91% 60%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 98%;
+  }
 }
 
 @layer base {
+  * { border-color: hsl(var(--border)); }
   html {
     scroll-behavior: smooth;
     font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   }
-  body {
-    @apply bg-slate-950 text-slate-100 antialiased;
-    /* Subtle top glow for depth (over the flat slate background). */
-    background-image: radial-gradient(50rem 50rem at 50% -10%, rgba(14, 165, 233, 0.07), transparent 70%);
-    background-attachment: fixed;
-  }
-  ::selection {
-    @apply bg-sky-500/30 text-white;
-  }
-  /* Consistent keyboard focus ring across interactive elements. */
-  :focus-visible {
-    @apply outline-none ring-2 ring-sky-500/50 ring-offset-2 ring-offset-slate-950;
-  }
+  body { @apply bg-background text-foreground antialiased; }
+  ::selection { @apply bg-foreground/15; }
+  :focus-visible { @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background; }
 }
 
-/* ── Landing page motion ──────────────────────────────────────────────── */
-@keyframes lp-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-@keyframes lp-aurora {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-@keyframes lp-pulse-ring {
-  0% { transform: scale(0.6); opacity: 0.7; }
-  100% { transform: scale(1.8); opacity: 0; }
-}
-@keyframes lp-fade {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Restrained champagne-gold aurora for the real-estate landing. */
-.lp-aurora {
-  background-image:
-    radial-gradient(42rem 32rem at 15% 6%, rgba(212, 175, 95, 0.12), transparent 62%),
-    radial-gradient(40rem 32rem at 85% 16%, rgba(186, 147, 62, 0.10), transparent 62%),
-    radial-gradient(42rem 30rem at 50% 98%, rgba(146, 109, 39, 0.08), transparent 64%);
-  background-size: 200% 200%;
-  animation: lp-aurora 22s ease-in-out infinite;
-}
-
-/* Elegant high-contrast display serif (luxury headings). */
-.font-display {
-  font-family: var(--font-display), ui-serif, Georgia, "Times New Roman", serif;
-  letter-spacing: -0.005em;
-}
-
-/* Champagne-gold gradient text (refined, not bright yellow). */
-.text-gold {
-  background-image: linear-gradient(105deg, #f6e7bf, #e3c074 42%, #c79a3e);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* Light hero: warm off-white fading into the dark body, with a gold glow. */
-.lp-hero-light {
-  background:
-    radial-gradient(36rem 24rem at 82% -8%, rgba(201, 162, 75, 0.22), transparent 60%),
-    linear-gradient(180deg, #faf7f1 0%, #f3ecdd 52%, #020617 100%);
-}
-/* Deeper gold gradient text that reads on a light background. */
-.text-gold-light {
-  background-image: linear-gradient(100deg, #b8860b, #d4a017 38%, #9a7b1a);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* Small uppercase tracked label above section titles. */
-.eyebrow {
-  font-size: 0.72rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: #d4af5f;
-}
-
-/* Hairline gold divider. */
-.lp-divider {
-  height: 1px;
-  background-image: linear-gradient(to right, transparent, rgba(212, 175, 95, 0.35), transparent);
-}
-
-/* Flip card (genially-style): rotateY reveal. */
+/* Subtle scroll-reveal + flip used by the landing. */
 .flip-card { perspective: 1200px; }
-.flip-inner {
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-.flip-card:hover .flip-inner,
-.flip-card:focus-within .flip-inner,
-.flip-card.is-flipped .flip-inner { transform: rotateY(180deg); }
-.flip-face {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
+.flip-inner { position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.flip-card:hover .flip-inner, .flip-card:focus-within .flip-inner, .flip-card.is-flipped .flip-inner { transform: rotateY(180deg); }
+.flip-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .flip-back { transform: rotateY(180deg); }
+
 @media (prefers-reduced-motion: reduce) {
   .flip-inner { transition: none; }
-}
-.lp-grid {
-  background-image:
-    linear-gradient(to right, rgba(148, 163, 184, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 75%);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lp-aurora { animation: none; }
-  *[style*="lp-float"] { animation: none !important; }
 }

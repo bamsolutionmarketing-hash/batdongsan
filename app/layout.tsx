@@ -1,15 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 
-// Elegant high-contrast serif for luxury headings.
-const display = Cormorant_Garamond({
-  subsets: ["latin", "vietnamese"],
-  weight: ["500", "600", "700"],
-  variable: "--font-display",
-  display: "swap",
-});
-// Clean modern sans for body/UI.
+// Inter — geometric neo-grotesque, the de-facto modern UI sans (latin + vi).
 const sans = Inter({
   subsets: ["latin", "vietnamese"],
   variable: "--font-sans",
@@ -22,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#020617",
+  themeColor: "#0a0a0b",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -30,8 +24,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={`${display.variable} ${sans.variable}`}>
-      <body>{children}</body>
+    <html lang="vi" suppressHydrationWarning className={sans.variable}>
+      <body className="font-sans">
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

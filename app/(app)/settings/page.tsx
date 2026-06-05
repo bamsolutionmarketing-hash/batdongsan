@@ -4,8 +4,8 @@ import { saveBranding } from "./_actions";
 import { Notice } from "@/app/(admin)/admin/_Notice";
 import { Button } from "@/components/ui/button";
 
-const input = "w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100";
-const label = "text-[11px] uppercase tracking-wide text-slate-500";
+const input = "w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground";
+const label = "text-[11px] uppercase tracking-wide text-muted-foreground";
 
 export default async function SettingsPage({
   searchParams,
@@ -20,7 +20,7 @@ export default async function SettingsPage({
   return (
     <main className="mx-auto flex max-w-xl flex-col gap-5 p-4 sm:p-6">
       <h1 className="text-2xl font-bold">Thương hiệu cá nhân</h1>
-      <p className="text-sm text-slate-400">
+      <p className="text-sm text-muted-foreground">
         Tên + SĐT này tự điền vào bài ([TEN_SALE]/[SDT]) và đóng lên ảnh khi tạo bài.
       </p>
       {next && (
@@ -45,7 +45,7 @@ export default async function SettingsPage({
         </div>
         <div>
           <p className={label}>Logo (PNG/JPEG/WebP/SVG ≤2MB){b?.logoPath ? " — đã có" : ""}</p>
-          <input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="text-sm text-slate-300" />
+          <input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="text-sm text-foreground" />
         </div>
         <Button type="submit" className="self-start">Lưu</Button>
       </form>

@@ -10,7 +10,7 @@ export default async function ProjectsPage() {
       <h1 className="text-2xl font-bold">Dự án</h1>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((p) => (
-          <Card key={p.id} className="flex flex-col transition hover:-translate-y-0.5 hover:border-slate-700 hover:shadow-lg hover:shadow-slate-950/60">
+          <Card key={p.id} className="flex flex-col transition hover:-translate-y-0.5 hover:border-border hover:shadow-card-hover">
             <CardTitle>{p.name}</CardTitle>
             {p.locationText && <CardDesc>{p.locationText}</CardDesc>}
             <ButtonLink href={`/projects/${p.slug}`} variant="outline" className="mt-4 self-start">

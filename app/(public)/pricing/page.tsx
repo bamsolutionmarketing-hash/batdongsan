@@ -15,10 +15,10 @@ export default function PricingPage({ searchParams }: { searchParams: { error?: 
       <Notice error={searchParams.error} />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {TIERS.map((t) => (
-          <div key={t.name} className="rounded-lg border border-slate-800 bg-slate-900 p-5">
-            <h2 className="text-lg font-semibold text-slate-100">{t.name}</h2>
+          <div key={t.name} className="rounded-lg border border-border bg-card p-5">
+            <h2 className="text-lg font-semibold text-foreground">{t.name}</h2>
             <p className="mt-1 text-2xl font-bold text-sky-400">{t.price}</p>
-            <ul className="mt-3 flex flex-col gap-1 text-sm text-slate-400">
+            <ul className="mt-3 flex flex-col gap-1 text-sm text-muted-foreground">
               {t.items.map((i) => <li key={i}>• {i}</li>)}
             </ul>
             {t.tier === "free" ? (
@@ -32,7 +32,7 @@ export default function PricingPage({ searchParams }: { searchParams: { error?: 
           </div>
         ))}
       </div>
-      <p className="text-xs text-slate-600">
+      <p className="text-xs text-muted-foreground">
         Thanh toán đang ở chế độ thử nghiệm (stub). Tích hợp PayOS thật khi có khóa API.
       </p>
     </main>
