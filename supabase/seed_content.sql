@@ -91,3 +91,71 @@ insert into node_content_blocks (node_id, role, variant_no, text, tone, min_conf
   ('e39eede8-8f14-53a1-9389-91752c72dee7','body',3,'Toàn tuyến kỹ thuật đã thông ngày 8/11/2025 — hạ tầng đã chạy thực tế.','neutral','verified','{"Mốc"}',true),
   ('e39eede8-8f14-53a1-9389-91752c72dee7','proof',1,'6.7 km, 6 làn, thông tuyến 8/11/2025 — hạ tầng hiện hữu, không phải quy hoạch trên giấy.','neutral','verified','{"Chiều dài","Đoạn TGC","Mốc"}',true)
 on conflict (node_id, role, variant_no) do nothing;
+
+-- ── Batch 3: high-leverage supporting nodes (infra / dev / amenity / finance) ──
+insert into node_content_blocks (node_id, role, variant_no, text, tone, min_confidence, fact_keys, is_enabled) values
+  -- long-thanh (60d51813) — Sân bay Long Thành
+  ('60d51813-8d63-52e2-8e65-b8bc04c8dd98','hook',1,'Sân bay Long Thành khai thác thương mại Q4/2026 — làn sóng chuyên gia về khu Đông bắt đầu.','fomo','verified','{"Khai trương TM"}',true),
+  ('60d51813-8d63-52e2-8e65-b8bc04c8dd98','hook',2,'Mỗi sân bay lớn mở ra đều kéo theo một vùng đô thị mới. Long Thành đang viết kịch bản đó cho khu Đông.','story','verified','{}',true),
+  ('60d51813-8d63-52e2-8e65-b8bc04c8dd98','hook',3,'Cách [TEN_DU_AN] ~20 phút cao tốc: sân bay quốc tế lớn nhất Đông Nam Á tương lai.','neutral','verified','{"Cách Gladia"}',true),
+  ('60d51813-8d63-52e2-8e65-b8bc04c8dd98','body',1,'Tổng vốn chương trình ~US$16 tỷ, quy mô 5,000 ha — hạ tầng hàng không tầm khu vực.','neutral','verified','{"Tổng vốn","Diện tích"}',true),
+  ('60d51813-8d63-52e2-8e65-b8bc04c8dd98','body',2,'Giai đoạn 1 công suất 25 triệu khách/năm, tiến độ đạt 72% (3/2026).','neutral','verified','{"Phase 1","Phase 1 hoàn thành"}',true),
+  ('60d51813-8d63-52e2-8e65-b8bc04c8dd98','body',3,'Đến 2050 đạt 100 triệu khách/năm — quy mô lớn nhất Đông Nam Á.','neutral','verified','{"Phase 3 (2050)"}',true),
+  ('60d51813-8d63-52e2-8e65-b8bc04c8dd98','proof',1,'~US$16 tỷ, 5,000 ha, khai thác Q4/2026, cách dự án ~20 phút — cú hích hạ tầng có thật.','neutral','verified','{"Tổng vốn","Diện tích","Khai trương TM","Cách Gladia"}',true),
+  -- ring-road-3 (570e76d0) — Vành đai 3
+  ('570e76d0-fbb9-5cf8-a877-e3cdb1681822','hook',1,'Vành đai 3 hoàn thành 30/6/2026 — Phú Hữu thành cửa ngõ logistic phía Nam.','fomo','verified','{"HOÀN THÀNH"}',true),
+  ('570e76d0-fbb9-5cf8-a877-e3cdb1681822','hook',2,'Một vành đai kinh tế 76 km đang khép vòng quanh khu Đông — và [TEN_DU_AN] nằm trong đó.','neutral','verified','{"Tổng"}',true),
+  ('570e76d0-fbb9-5cf8-a877-e3cdb1681822','hook',3,'Đường tới đâu, giá trị tới đó. Vành đai 3 đang vẽ lại bản đồ khu Đông.','story','verified','{}',true),
+  ('570e76d0-fbb9-5cf8-a877-e3cdb1681822','body',1,'Toàn tuyến 76.34 km, tổng vốn VND 75,378 tỷ (~US$3 tỷ) — hạ tầng trọng điểm quốc gia.','neutral','verified','{"Tổng","Vốn"}',true),
+  ('570e76d0-fbb9-5cf8-a877-e3cdb1681822','body',2,'Đoạn cao tốc 8 làn, tốc độ 100 km/h, đi qua TP.HCM – Đồng Nai – Tây Ninh.','neutral','verified','{"Đoạn cao tốc","Đi qua"}',true),
+  ('570e76d0-fbb9-5cf8-a877-e3cdb1681822','body',3,'Mở cửa 30/4/2026, hoàn thành toàn tuyến 30/6/2026 — mốc tiến độ rõ ràng.','neutral','verified','{"Mở cửa","HOÀN THÀNH"}',true),
+  ('570e76d0-fbb9-5cf8-a877-e3cdb1681822','proof',1,'76.34 km, ~US$3 tỷ, hoàn thành 30/6/2026 — lực đẩy hạ tầng khu Đông là dữ kiện, không phải kỳ vọng.','neutral','verified','{"Tổng","Vốn","HOÀN THÀNH"}',true),
+  -- khang-dien (b14f2673) — chủ đầu tư
+  ('b14f2673-525d-56e7-bb54-d773a64f01ca','hook',1,'Chủ đầu tư trong rổ VN30, giao sổ hồng trước khi mở bán — đó là Khang Điền.','neutral','verified','{"Index"}',true),
+  ('b14f2673-525d-56e7-bb54-d773a64f01ca','hook',2,'Không nhiều chủ đầu tư giữ tỷ lệ hấp thụ ~100% qua mọi chu kỳ. Khang Điền thì có.','fomo','verified','{"Tỷ lệ hấp thụ"}',true),
+  ('b14f2673-525d-56e7-bb54-d773a64f01ca','hook',3,'Chủ tịch xuất thân ngành luật — và triết lý pháp lý sạch ngấm vào từng dự án Khang Điền.','story','verified','{}',true),
+  ('b14f2673-525d-56e7-bb54-d773a64f01ca','body',1,'Thành lập 2001, niêm yết HoSE 2010, hiện thuộc rổ VN30.','neutral','verified','{"Thành lập","Index"}',true),
+  ('b14f2673-525d-56e7-bb54-d773a64f01ca','body',2,'Vốn hóa ~VND 28,500 tỷ, đã bàn giao 20,000+ căn, hấp thụ ~100%.','neutral','verified','{"Vốn hóa","Track record","Tỷ lệ hấp thụ"}',true),
+  ('b14f2673-525d-56e7-bb54-d773a64f01ca','body',3,'Đòn bẩy thận trọng (Debt/equity < 1.0) — tài chính lành mạnh, bảo chứng tiến độ.','neutral','verified','{"Đòn bẩy"}',true),
+  ('b14f2673-525d-56e7-bb54-d773a64f01ca','proof',1,'VN30, 20,000+ căn đã giao, hấp thụ ~100%, nợ/vốn < 1.0 — hồ sơ chủ đầu tư minh bạch.','neutral','verified','{"Index","Track record","Tỷ lệ hấp thụ","Đòn bẩy"}',true),
+  -- metro-6 (2e80db57) — GLADIA LINE
+  ('2e80db57-0974-50f3-a33a-9d2b18498397','hook',1,'Trạm cuối Metro Line 6 đặt ngay cạnh [TEN_DU_AN] — không phải dự án nào cũng có vị trí này.','fomo','verified','{"Trạm cuối"}',true),
+  ('2e80db57-0974-50f3-a33a-9d2b18498397','hook',2,'Tuyến metro 53.8 km, 38 trạm nối Tân Sơn Nhất tới Phú Hữu — khu Đông lên mạng lưới.','neutral','verified','{"Tổng","Phase 1"}',true),
+  ('2e80db57-0974-50f3-a33a-9d2b18498397','hook',3,'Khi Long Thành mở cửa, Tân Sơn Nhất quá tải — Metro 6 gần như là lựa chọn bắt buộc.','story','verified','{}',true),
+  ('2e80db57-0974-50f3-a33a-9d2b18498397','body',1,'Quy mô 53.8 km với 38 trạm; giai đoạn 1 chạy Tân Sơn Nhất → Phú Hữu.','neutral','verified','{"Tổng","Phase 1"}',true),
+  ('2e80db57-0974-50f3-a33a-9d2b18498397','body',2,'Khởi công 2026, hoàn thành 2030 — lộ trình hạ tầng trung hạn.','neutral','verified','{"Khởi công","Hoàn thành"}',true),
+  ('2e80db57-0974-50f3-a33a-9d2b18498397','body',3,'Trạm cuối Phú Hữu ngay cạnh dự án — kết nối đường sắt đô thị tận cửa.','neutral','verified','{"Trạm cuối"}',true),
+  ('2e80db57-0974-50f3-a33a-9d2b18498397','proof',1,'53.8 km, 38 trạm, trạm cuối Phú Hữu cạnh dự án, hoàn thành 2030 — kết nối metro trong quy hoạch.','neutral','verified','{"Tổng","Trạm cuối","Hoàn thành"}',true),
+  -- masterise-homes (b3118f66) — chủ đầu tư Cosmo
+  ('b3118f66-71cd-5a63-9105-5a97cdbf493c','hook',1,'Hơn một thập kỷ, 27+ dự án — từ Masteri Thảo Điền đến Grand Marina. [TEN_DU_AN] kế thừa tất cả.','story','verified','{"Quy mô"}',true),
+  ('b3118f66-71cd-5a63-9105-5a97cdbf493c','hook',2,'Chủ đầu tư Masterise Homes — chuẩn branded residences quốc tế tại Việt Nam.','neutral','verified','{}',true),
+  ('b3118f66-71cd-5a63-9105-5a97cdbf493c','hook',3,'Không nhiều chủ đầu tư phủ 4 thành phố với 27+ dự án cao cấp. Masterise thì có.','fomo','verified','{"Quy mô","Phạm vi"}',true),
+  ('b3118f66-71cd-5a63-9105-5a97cdbf493c','body',1,'Khởi đầu 2014 với Masteri Thảo Điền, đến nay 27+ dự án đẳng cấp quốc tế.','neutral','verified','{"Khởi đầu","Quy mô"}',true),
+  ('b3118f66-71cd-5a63-9105-5a97cdbf493c','body',2,'Hiện diện tại HCM, Hà Nội, Hải Phòng, Đà Nẵng — quy mô toàn quốc.','neutral','verified','{"Phạm vi"}',true),
+  ('b3118f66-71cd-5a63-9105-5a97cdbf493c','body',3,'Ba phân khúc: Branded Residences, LUMIÈRE, Masteri Collection — phủ nhiều nhu cầu.','neutral','verified','{"3 phân khúc"}',true),
+  ('b3118f66-71cd-5a63-9105-5a97cdbf493c','proof',1,'Từ 2014, 27+ dự án, 4 thành phố — bề dày Masterise Homes bảo chứng cho [TEN_DU_AN].','neutral','verified','{"Khởi đầu","Quy mô","Phạm vi"}',true),
+  -- amenities (5a098ea5) — 29+ tiện ích
+  ('5a098ea5-5037-59e7-8581-133ec4abdd4e','hook',1,'29+ tiện ích đặc quyền ngay khối đế — sống, làm việc, nghỉ ngơi trong cùng một nơi.','neutral','verified','{"Tổng"}',true),
+  ('5a098ea5-5037-59e7-8581-133ec4abdd4e','hook',2,'Hồ vô cực, co-working, teen club… đủ cho cả gia đình mà không cần rời toà nhà.','fomo','verified','{"Hồ bơi","Làm việc"}',true),
+  ('5a098ea5-5037-59e7-8581-133ec4abdd4e','hook',3,'Một ngày của cư dân: sáng gym, trưa co-working, chiều hồ bơi vô cực — tất cả tại gia.','story','verified','{"Sức khoẻ","Làm việc","Hồ bơi"}',true),
+  ('5a098ea5-5037-59e7-8581-133ec4abdd4e','body',1,'Tổng 23 tiện ích ngoài trời + 6 trong nhà — hệ tiện ích khép kín.','neutral','verified','{"Tổng"}',true),
+  ('5a098ea5-5037-59e7-8581-133ec4abdd4e','body',2,'Khu nước: hồ vô cực, Jacuzzi, hồ trẻ em và hồ nước nóng.','neutral','verified','{"Hồ bơi"}',true),
+  ('5a098ea5-5037-59e7-8581-133ec4abdd4e','body',3,'Làm việc & sức khoẻ: business lounge, co-working, thư viện, gym, yoga, sàn tắm nắng.','neutral','verified','{"Làm việc","Sức khoẻ"}',true),
+  ('5a098ea5-5037-59e7-8581-133ec4abdd4e','proof',1,'23 tiện ích ngoài trời + 6 trong nhà, từ hồ vô cực đến co-working — đúng tinh thần work-life.','neutral','verified','{"Tổng","Hồ bơi","Làm việc"}',true),
+  -- foster-partners (15cd78db)
+  ('15cd78db-de64-5b19-a2bd-a2e0b9b245bb','hook',1,'Khu đô thị DUY NHẤT tại TP.HCM do Foster + Partners quy hoạch — pedigree không đối thủ.','fomo','verified','{"Vai trò"}',true),
+  ('15cd78db-de64-5b19-a2bd-a2e0b9b245bb','hook',2,'Studio đứng sau Apple HQ và sân bay Hong Kong đặt bút cho nơi [TEN_DU_AN] toạ lạc.','story','verified','{"Công trình"}',true),
+  ('15cd78db-de64-5b19-a2bd-a2e0b9b245bb','hook',3,'Foster + Partners — sáng lập bởi Norman Foster, chủ nhân giải Pritzker.','neutral','verified','{"Sáng lập"}',true),
+  ('15cd78db-de64-5b19-a2bd-a2e0b9b245bb','body',1,'Vai trò: cố vấn kiến trúc & quy hoạch tổng thể The Global City.','neutral','verified','{"Vai trò"}',true),
+  ('15cd78db-de64-5b19-a2bd-a2e0b9b245bb','body',2,'Hồ sơ công trình: Apple HQ, Sân bay Hong Kong, Bloomberg HQ.','neutral','verified','{"Công trình"}',true),
+  ('15cd78db-de64-5b19-a2bd-a2e0b9b245bb','body',3,'Ký kết hợp tác 22/02/2022 tại London — cam kết thiết kế đẳng cấp toàn cầu.','neutral','verified','{"Ký kết"}',true),
+  ('15cd78db-de64-5b19-a2bd-a2e0b9b245bb','proof',1,'Norman Foster (Pritzker), Apple HQ, quy hoạch tổng thể TGC — bảo chứng thiết kế hiếm có.','neutral','verified','{"Sáng lập","Công trình","Vai trò"}',true),
+  -- market-2026 (4a6791a9) — finance (no price-growth forecast)
+  ('4a6791a9-3101-5527-b17d-d5f781a1e46f','hook',1,'Phân khúc bình dân đang biến mất khỏi trung tâm — quỹ đất cao cấp khu Đông ngày càng hiếm.','fomo','verified','{}',true),
+  ('4a6791a9-3101-5527-b17d-d5f781a1e46f','hook',2,'Hấp thụ căn hộ 2025 đạt 82% — cao nhất 5 năm. Thị trường đang nóng lại.','neutral','verified','{"Hấp thụ 2025"}',true),
+  ('4a6791a9-3101-5527-b17d-d5f781a1e46f','hook',3,'Người mua sớm luôn đón được mặt bằng giá mới. Khu Đông 2026 đang ở điểm đó.','story','verified','{}',true),
+  ('4a6791a9-3101-5527-b17d-d5f781a1e46f','body',1,'Tỷ lệ hấp thụ 2025 đạt 82% — mức cao nhất trong 5 năm.','neutral','verified','{"Hấp thụ 2025"}',true),
+  ('4a6791a9-3101-5527-b17d-d5f781a1e46f','body',2,'Giá sơ cấp HCM ~92–102 triệu/m²; phân khúc >110tr/m² chiếm 56% nguồn cung mới.','neutral','verified','{"Giá sơ cấp HCM","Cao cấp >110tr/m²"}',true),
+  ('4a6791a9-3101-5527-b17d-d5f781a1e46f','body',3,'Khu Đông chiếm ~50% pipeline 2026–28 — tâm điểm nguồn cung mới.','neutral','verified','{"Pipeline khu Đông"}',true),
+  ('4a6791a9-3101-5527-b17d-d5f781a1e46f','proof',1,'Hấp thụ 82%, giá sơ cấp 92–102 triệu/m², khu Đông ~50% pipeline — số liệu Savills/CBRE.','neutral','verified','{"Hấp thụ 2025","Giá sơ cấp HCM","Pipeline khu Đông"}',true)
+on conflict (node_id, role, variant_no) do nothing;
