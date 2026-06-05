@@ -7,6 +7,19 @@ export interface Developer {
   slug: string;
 }
 
+// All developers (for admin project form select).
+export async function listDevelopers(): Promise<Result<Developer[]>> {
+  if (!isSupabaseConfigured()) return ok([]);
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("developers")
+    .select("id, name, slug")
+    .order("name", { ascending: true })
+    .limit(200);
+  if (error) return err("INTERNAL", error.message);
+  return ok((data as Developer[]) ?? []);
+}
+
 // Developer name by id (for project headers). Returns null when unknown.
 export async function getDeveloper(id: string | null): Promise<Result<Developer | null>> {
   if (!id || !isSupabaseConfigured()) return ok(null);

@@ -75,3 +75,15 @@ export async function getProjectBySlug(slug: string): Promise<Result<Project | n
   if (error) return err("INTERNAL", error.message);
   return ok(data ? toProject(data as ProjectRow) : null);
 }
+
+export async function getProjectById(id: string): Promise<Result<Project | null>> {
+  if (!isSupabaseConfigured()) return ok(null);
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("projects")
+    .select(COLUMNS)
+    .eq("id", id)
+    .maybeSingle();
+  if (error) return err("INTERNAL", error.message);
+  return ok(data ? toProject(data as ProjectRow) : null);
+}
