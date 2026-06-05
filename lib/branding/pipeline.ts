@@ -101,7 +101,8 @@ export async function getBrandedImages(
     }
     if (!masterBuf) {
       masterBuf = await placeholderMaster({
-        label: info?.label ?? "Dự án", project: info?.project, category: info?.category, story: opts.story,
+        label: info?.label ?? "Dự án", project: info?.project, category: info?.category,
+        story: opts.story, logo: logoBuf,
       });
     }
 
