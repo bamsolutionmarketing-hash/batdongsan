@@ -24,7 +24,7 @@ const THEME: Record<string, { hue: number; vi: string }> = {
   comparable: { hue: 285, vi: "So sánh" },
   event: { hue: 330, vi: "Sự kiện" },
 };
-const themeFor = (cat?: string | null) => (cat && THEME[cat]) || { hue: 215, vi: cat ?? "Điểm nổi bật" };
+export const themeFor = (cat?: string | null) => (cat && THEME[cat]) || { hue: 215, vi: cat ?? "Điểm nổi bật" };
 
 // Greedy word-wrap to ~max chars/line, capped at maxLines.
 function wrap(s: string, max: number, maxLines = 4): string[] {

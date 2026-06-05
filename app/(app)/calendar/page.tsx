@@ -24,10 +24,11 @@ export default async function CalendarPage({
     listTriggers(),
   ]);
 
-  // Posts per day.
+  // Posted posts per day (marked "đã đăng").
   const postCount = new Map<string, number>();
   for (const p of postsRes.ok ? postsRes.data : []) {
-    const d = p.createdAt.slice(0, 10);
+    if (!p.postedAt) continue;
+    const d = p.postedAt.slice(0, 10);
     postCount.set(d, (postCount.get(d) ?? 0) + 1);
   }
   // Campaign deadlines per day.

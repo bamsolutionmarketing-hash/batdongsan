@@ -32,6 +32,8 @@ export interface SuggestInput {
   candidates: Candidate[];
   dueNotes: DueNote[];
   hadPostYesterday: boolean;
+  /** Days (yyyy-mm-dd) a post was marked posted — drives the streak when given. */
+  streakDays?: string[];
 }
 
 export interface SuggestedPost {
@@ -111,7 +113,11 @@ const daysBetween = (today: Date, dateStr: string) =>
 
 export function chooseSuggestion(input: SuggestInput): Suggestion {
   const { today, triggers, recent, candidates, dueNotes, hadPostYesterday } = input;
-  const streak = computeStreak(today, recent);
+  // Streak from posted days when provided, else from recent (created) posts.
+  const streakSource = input.streakDays
+    ? input.streakDays.map((d) => ({ createdAt: d, nodeIds: [] as string[] }))
+    : recent;
+  const streak = computeStreak(today, streakSource);
   const usedRecently = new Set(recent.flatMap((p) => p.nodeIds));
 
   const active = triggers.find((t) => triggerActive(today, t));

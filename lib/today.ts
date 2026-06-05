@@ -19,6 +19,8 @@ export async function getToday(userId: string): Promise<Suggestion> {
   const recent = recentRes.ok ? recentRes.data : [];
   const yesterday = ymd(new Date(today.getTime() - 86400000));
   const hadPostYesterday = recent.some((p) => p.createdAt.slice(0, 10) === yesterday);
+  // Streak counts days a post was actually marked "đã đăng".
+  const postedDays = recent.filter((p) => p.postedAt).map((p) => p.postedAt!.slice(0, 10));
 
   return chooseSuggestion({
     today,
@@ -27,5 +29,6 @@ export async function getToday(userId: string): Promise<Suggestion> {
     candidates: cands.ok ? cands.data : [],
     dueNotes: due.ok ? due.data.map((n) => ({ id: n.id, text: n.text })) : [],
     hadPostYesterday,
+    streakDays: postedDays,
   });
 }

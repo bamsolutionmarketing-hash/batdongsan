@@ -5,12 +5,13 @@ import { nodesByIds, linksByProject } from "@/lib/repo/nodes";
 import { getProjectById } from "@/lib/repo/projects";
 import { getBranding } from "@/lib/repo/branding";
 import { getActiveTier } from "@/lib/gate/tier";
-import { getBrandedImages } from "@/lib/branding/pipeline";
+import { getBrandedImages, getCarousel, getCollage, type AssembledSet } from "@/lib/branding/pipeline";
 import { getSession } from "@/lib/auth";
 import { getEditableComposition } from "@/lib/post/editable";
 import { CaptionCard } from "@/components/post/CaptionCard";
 import { CaptionEditor } from "@/components/post/CaptionEditor";
 import { BrandedImageGrid } from "@/components/post/BrandedImageGrid";
+import { ImageSetView } from "@/components/post/ImageSetPanel";
 import { Button } from "@/components/ui/button";
 import { reRollPost } from "@/app/(app)/projects/_actions";
 
@@ -18,7 +19,7 @@ export default async function PostResultPage({
   params, searchParams,
 }: {
   params: { slug: string; id: string };
-  searchParams: { rolled?: string; error?: string; saved?: string };
+  searchParams: { rolled?: string; error?: string; saved?: string; set?: string };
 }) {
   const res = await getPostById(params.id);
   if (!res.ok || !res.data) notFound();
@@ -52,12 +53,17 @@ export default async function PostResultPage({
           .join(" – ")
       : null;
 
-  // Branded feed images (free tier gets a watermark).
+  // Image set: "single" (per-node branded grid, default), "carousel", or
+  // "collage". Only the requested set is generated (lazy, on tab click).
+  const setKind = searchParams.set === "carousel" ? "carousel" : searchParams.set === "collage" ? "collage" : "single";
   let images: { url: string; nodeId: string; placeholder?: boolean }[] = [];
+  let assembled: AssembledSet | null = null;
   if (session) {
     const tierRes = await getActiveTier(session.userId);
     const watermark = (tierRes.ok ? tierRes.data : "free") === "free" ? "via app" : null;
-    images = await getBrandedImages(session.userId, post.nodeIds, { watermark });
+    if (setKind === "single") images = await getBrandedImages(session.userId, post.nodeIds, { watermark });
+    else if (setKind === "carousel") assembled = await getCarousel(session.userId, post.id, post.nodeIds, { watermark });
+    else assembled = await getCollage(session.userId, post.id, post.nodeIds, { watermark });
   }
 
   // Editable per-slot composition (variant picker). Empty for temp-caption posts
@@ -74,6 +80,13 @@ export default async function PostResultPage({
     links,
     branding: { displayName: branding?.displayName, phone: branding?.phone, zalo: branding?.zalo },
   };
+
+  const base = `/projects/${params.slug}/post/${post.id}`;
+  const setTabs: [string, string][] = [
+    ["single", "Ảnh lẻ"],
+    ["carousel", "Carousel"],
+    ...(post.nodeIds.length >= 2 ? ([["collage", "Ghép"]] as [string, string][]) : []),
+  ];
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-5 p-4 sm:p-6">
@@ -111,8 +124,26 @@ export default async function PostResultPage({
       )}
 
       <section>
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Ảnh đóng logo</h2>
-        <BrandedImageGrid images={images} labels={labelById} postId={post.id} slug={params.slug} />
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Bộ ảnh</h2>
+          <div className="flex gap-1 text-xs">
+            {setTabs.map(([k, lbl]) => (
+              <Link
+                key={k}
+                href={k === "single" ? base : `${base}?set=${k}`}
+                scroll={false}
+                className={`rounded-full px-3 py-1 transition ${setKind === k ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground hover:text-foreground"}`}
+              >
+                {lbl}
+              </Link>
+            ))}
+          </div>
+        </div>
+        {setKind === "single" ? (
+          <BrandedImageGrid images={images} labels={labelById} postId={post.id} slug={params.slug} />
+        ) : (
+          <ImageSetView kind={setKind} set={assembled} />
+        )}
       </section>
 
       {nodes.length > 0 && (
