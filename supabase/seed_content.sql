@@ -588,3 +588,207 @@ insert into node_content_blocks (node_id, role, variant_no, text, tone, min_conf
   ('848ed61e-802f-5ada-955a-ec40a9d99b76','body',2,'Khởi công 19/12/2025, dự kiến hoàn thành 2027.','neutral','verified','{"Khởi công","Hoàn thành"}',true),
   ('848ed61e-802f-5ada-955a-ec40a9d99b76','proof',1,'Phú Hữu → Gò Dưa ~9 km, khởi công 12/2025, về đích 2027 — khép vòng Vành đai 2.','neutral','verified','{"Đoạn 1+2+3","Khởi công","Hoàn thành"}',true)
 on conflict (node_id, role, variant_no) do nothing;
+
+-- ── Batch 8 (Wave B): final thin nodes — locations/certs/events/partners ──────
+insert into node_content_blocks (node_id, role, variant_no, text, tone, min_confidence, fact_keys, is_enabled) values
+  -- an-phu (c284a55c)
+  ('c284a55c-690f-519b-907c-711662abe3e4','hook',1,'An Phú — khu cao cấp Q2 cũ với loạt landmark như Estella Heights, Palm City.','neutral','verified','{"Vai trò","Dự án landmark"}',true),
+  ('c284a55c-690f-519b-907c-711662abe3e4','hook',2,'Những khu từng là "Q2" nay thành toạ độ cao cấp. An Phú là một ví dụ.','story','verified','{"Vai trò"}',true),
+  ('c284a55c-690f-519b-907c-711662abe3e4','body',1,'Vai trò: khu cao cấp Quận 2 cũ; landmark gồm Estella Heights (Keppel) và Palm City.','neutral','verified','{"Vai trò","Dự án landmark"}',true),
+  ('c284a55c-690f-519b-907c-711662abe3e4','proof',1,'Khu cao cấp Q2 cũ với Estella Heights, Palm City — bối cảnh đô thị trưởng thành.','neutral','verified','{"Vai trò","Dự án landmark"}',true),
+  -- binh-trung-dong (ae73b1d8)
+  ('ae73b1d8-3f7a-5f35-bcac-b03c07810160','hook',1,'Bình Trưng Đông — Q2 cũ, nay thuộc TP Thủ Đức, nơi Gladia toạ lạc mặt tiền Võ Chí Công.','neutral','verified','{"Khu vực","Vị trí Gladia"}',true),
+  ('ae73b1d8-3f7a-5f35-bcac-b03c07810160','hook',2,'Một phường ven sông Q2 cũ đang lên đời cùng TP Thủ Đức — đó là Bình Trưng Đông.','story','verified','{"Khu vực"}',true),
+  ('ae73b1d8-3f7a-5f35-bcac-b03c07810160','body',1,'Khu vực Q2 cũ, nay TP Thủ Đức; Gladia nằm mặt tiền Võ Chí Công.','neutral','verified','{"Khu vực","Vị trí Gladia"}',true),
+  ('ae73b1d8-3f7a-5f35-bcac-b03c07810160','proof',1,'Bình Trưng Đông (TP Thủ Đức), Gladia mặt tiền Võ Chí Công — vị trí trục chính.','neutral','verified','{"Khu vực","Vị trí Gladia"}',true),
+  -- cat-lai-port (5d2c743a)
+  ('5d2c743a-b05c-5c24-b897-9ad43150b13e','hook',1,'Cảng Cát Lái — cảng container lớn nhất Việt Nam, kết nối Gladia qua Mỹ Thủy.','neutral','verified','{"Đặc điểm","Kết nối Gladia"}',true),
+  ('5d2c743a-b05c-5c24-b897-9ad43150b13e','hook',2,'Cảng container số 1 Việt Nam nằm ngay trục giao thông của khu Đông.','fomo','verified','{"Đặc điểm"}',true),
+  ('5d2c743a-b05c-5c24-b897-9ad43150b13e','body',1,'Là cảng container lớn nhất VN; kết nối Gladia qua nút Mỹ Thủy và đường liên cảng.','neutral','verified','{"Đặc điểm","Kết nối Gladia"}',true),
+  ('5d2c743a-b05c-5c24-b897-9ad43150b13e','proof',1,'Cảng container lớn nhất VN, kết nối qua Mỹ Thủy + liên cảng — động lực logistic sát Gladia.','neutral','verified','{"Đặc điểm","Kết nối Gladia"}',true),
+  -- land-price-list (70097cf3)
+  ('70097cf3-8705-59a6-9654-f857b87b61e9','hook',1,'Bảng giá đất mới hiệu lực 1/1/2026 — tăng tới 8 lần so bảng cũ.','fomo','verified','{"Hiệu lực","Tăng"}',true),
+  ('70097cf3-8705-59a6-9654-f857b87b61e9','hook',2,'Khung giá đất nhà nước điều chỉnh mạnh từ 1/1/2026 — bối cảnh định giá mới.','neutral','verified','{"Hiệu lực"}',true),
+  ('70097cf3-8705-59a6-9654-f857b87b61e9','body',1,'Hiệu lực 1/1/2026, bảng giá đất tăng lên đến 8 lần bảng cũ.','neutral','verified','{"Hiệu lực","Tăng"}',true),
+  ('70097cf3-8705-59a6-9654-f857b87b61e9','proof',1,'Bảng giá đất mới (1/1/2026) tăng tới 8× — mặt bằng định giá khu vực thay đổi.','neutral','verified','{"Hiệu lực","Tăng"}',true),
+  -- leed (3ba4e9a8)
+  ('3ba4e9a8-a3a9-50b2-8654-1f7ee455e050','hook',1,'LEED — chuẩn công trình xanh của USGBC (Mỹ) từ 1998, 4 hạng tới Platinum.','neutral','verified','{"Ra mắt","4 hạng"}',true),
+  ('3ba4e9a8-a3a9-50b2-8654-1f7ee455e050','hook',2,'Từ Mỹ 1998, LEED trở thành ngôn ngữ chung của công trình xanh toàn cầu.','story','verified','{"Ra mắt"}',true),
+  ('3ba4e9a8-a3a9-50b2-8654-1f7ee455e050','body',1,'Ra mắt 1998 bởi USGBC; xếp 4 hạng từ Certified đến Platinum.','neutral','verified','{"Ra mắt","4 hạng"}',true),
+  ('3ba4e9a8-a3a9-50b2-8654-1f7ee455e050','proof',1,'LEED (USGBC, 1998), 4 hạng tới Platinum — chuẩn xanh quốc tế tham chiếu.','neutral','verified','{"Ra mắt","4 hạng"}',true),
+  -- lotus-vn (b2df30b0)
+  ('b2df30b0-b5bd-5b78-bd6b-b1ad42423e06','hook',1,'LOTUS — bộ tiêu chí công trình xanh của Hội đồng Công trình Xanh Việt Nam.','neutral','verified','{"Ra mắt"}',true),
+  ('b2df30b0-b5bd-5b78-bd6b-b1ad42423e06','hook',2,'Tới 4/2024 đã có 63 dự án đạt LOTUS tại Việt Nam.','neutral','verified','{"Số dự án đạt"}',true),
+  ('b2df30b0-b5bd-5b78-bd6b-b1ad42423e06','body',1,'Ra mắt 2010 bởi Vietnam Green Building Council; 63 dự án đạt tại VN (4/2024).','neutral','verified','{"Ra mắt","Số dự án đạt"}',true),
+  ('b2df30b0-b5bd-5b78-bd6b-b1ad42423e06','proof',1,'LOTUS (VGBC, 2010), 63 dự án tại VN — chuẩn xanh nội địa.','neutral','verified','{"Ra mắt","Số dự án đạt"}',true),
+  -- net-zero (952992bd)
+  ('952992bd-30cf-513a-a154-ce1c2bdf7352','hook',1,'Net-Zero 2050 — cam kết của Việt Nam tại COP26, Keppel đồng hành.','neutral','verified','{"Cam kết","Keppel"}',true),
+  ('952992bd-30cf-513a-a154-ce1c2bdf7352','hook',2,'Một cam kết quốc gia tại COP26 đang định hình cách các dự án được xây.','story','verified','{"Cam kết"}',true),
+  ('952992bd-30cf-513a-a154-ce1c2bdf7352','body',1,'Việt Nam cam kết Net-Zero 2050 tại COP26; Keppel cam kết đồng hành.','neutral','verified','{"Cam kết","Keppel"}',true),
+  ('952992bd-30cf-513a-a154-ce1c2bdf7352','proof',1,'Net-Zero 2050 (COP26) cùng cam kết của Keppel — định hướng phát triển bền vững.','neutral','verified','{"Cam kết","Keppel"}',true),
+  -- phu-huu (f3ef550d)
+  ('f3ef550d-31ac-5400-8dd7-b87309c9da98','hook',1,'Phú Hữu — Q9 cũ (nay TP Thủ Đức), giá đất 28–150 triệu/m² tùy mặt tiền.','neutral','verified','{"Khu vực","Giá hiện tại"}',true),
+  ('f3ef550d-31ac-5400-8dd7-b87309c9da98','hook',2,'Đất Phú Hữu đã chạm 150 triệu/m² ở mặt tiền — sức nóng trục Đông.','fomo','verified','{"Giá hiện tại"}',true),
+  ('f3ef550d-31ac-5400-8dd7-b87309c9da98','body',1,'Khu vực Q9 cũ, nay TP Thủ Đức; giá hiện 28–150 triệu/m² tùy mặt tiền.','neutral','verified','{"Khu vực","Giá hiện tại"}',true),
+  ('f3ef550d-31ac-5400-8dd7-b87309c9da98','proof',1,'Phú Hữu (TP Thủ Đức), giá 28–150 triệu/m² — mặt bằng giá khu vực.','neutral','verified','{"Khu vực","Giá hiện tại"}',true),
+  -- tan-son-nhat (5d67986f)
+  ('5d67986f-ff80-54c5-9682-03e7a578baae','hook',1,'Tân Sơn Nhất quá tải nghiêm trọng — lý do Long Thành và metro trở nên cấp thiết.','neutral','verified','{"Hiện tại"}',true),
+  ('5d67986f-ff80-54c5-9682-03e7a578baae','hook',2,'Sau khi Long Thành mở, Tân Sơn Nhất chỉ giữ ~20% chuyến quốc tế — dòng khách dịch về Đông.','fomo','verified','{"Sau Long Thành"}',true),
+  ('5d67986f-ff80-54c5-9682-03e7a578baae','body',1,'Hiện quá tải nghiêm trọng; sau Long Thành dự kiến giữ lại ~20% chuyến quốc tế.','neutral','verified','{"Hiện tại","Sau Long Thành"}',true),
+  ('5d67986f-ff80-54c5-9682-03e7a578baae','proof',1,'Tân Sơn Nhất quá tải, hậu Long Thành giữ ~20% chuyến quốc tế — trọng tâm hàng không dịch về Đông.','neutral','verified','{"Hiện tại","Sau Long Thành"}',true),
+  -- thao-dien (d632342e)
+  ('d632342e-7b2f-54f1-b36b-5545e6ecf3ba','hook',1,'Thảo Điền nay US$3,933–7,000+/m² — bài học giá khi metro về.','story','verified','{"Giá hiện tại"}',true),
+  ('d632342e-7b2f-54f1-b36b-5545e6ecf3ba','hook',2,'Sau Metro số 1, một số khu Thảo Điền tăng +50 đến +200% — hiệu ứng hạ tầng rõ rệt.','fomo','verified','{"Sau Metro 1"}',true),
+  ('d632342e-7b2f-54f1-b36b-5545e6ecf3ba','body',1,'Giá hiện tại US$3,933–7,000+/m²; sau Metro 1 ghi nhận tăng +50 đến +200%.','neutral','verified','{"Giá hiện tại","Sau Metro 1"}',true),
+  ('d632342e-7b2f-54f1-b36b-5545e6ecf3ba','proof',1,'Thảo Điền US$3,933–7,000+/m², tăng +50–200% sau Metro 1 — track record hiệu ứng metro.','neutral','verified','{"Giá hiện tại","Sau Metro 1"}',true),
+  -- the-classia (ab2b8213)
+  ('ab2b8213-bc22-5207-8c36-443fc5ba631b','hook',1,'The Classia — dòng biệt thự đã bàn giao, một comparable khu Đông.','neutral','verified','{"Loại","Hiện trạng"}',true),
+  ('ab2b8213-bc22-5207-8c36-443fc5ba631b','hook',2,'Một khu biệt thự đã giao và có cư dân — tham chiếu cho sản phẩm thấp tầng phía Đông.','story','verified','{"Hiện trạng"}',true),
+  ('ab2b8213-bc22-5207-8c36-443fc5ba631b','body',1,'Loại hình biệt thự, hiện trạng đã bàn giao.','neutral','verified','{"Loại","Hiện trạng"}',true),
+  ('ab2b8213-bc22-5207-8c36-443fc5ba631b','proof',1,'Biệt thự The Classia đã bàn giao — comparable thấp tầng khu Đông.','neutral','verified','{"Loại","Hiện trạng"}',true),
+  -- verosa-park (a392d84c)
+  ('a392d84c-df67-5237-8d92-ae565596a507','hook',1,'Verosa Park — biệt thự/nhà phố đã bàn giao, pháp lý đầy đủ.','neutral','verified','{"Loại","Hiện trạng"}',true),
+  ('a392d84c-df67-5237-8d92-ae565596a507','hook',2,'Một khu compound thấp tầng đã giao, sổ đầy đủ — chuẩn mực sản phẩm khu Đông.','story','verified','{"Hiện trạng"}',true),
+  ('a392d84c-df67-5237-8d92-ae565596a507','body',1,'Loại hình biệt thự nhà phố; đã giao và đầy đủ pháp lý.','neutral','verified','{"Loại","Hiện trạng"}',true),
+  ('a392d84c-df67-5237-8d92-ae565596a507','proof',1,'Verosa Park: biệt thự nhà phố đã giao, pháp lý đầy đủ — comparable thấp tầng.','neutral','verified','{"Loại","Hiện trạng"}',true),
+  -- aih-hospital (8a00c0b3) — unverified node, only honest nearby-hospital fact
+  ('8a00c0b3-f34d-5578-a6e6-e5f896ceab61','hook',1,'Bệnh viện quốc tế lân cận khu vực: AIH, Vinmec Central Park, FV.','neutral','verified','{"BV gần nhất xác nhận"}',true),
+  ('8a00c0b3-f34d-5578-a6e6-e5f896ceab61','body',1,'Các bệnh viện quốc tế gần nhất được xác nhận: AIH, Vinmec Central Park, FV.','neutral','verified','{"BV gần nhất xác nhận"}',true),
+  -- metro-2 gladia (51435925) — 1 fact
+  ('51435925-cc2a-5a00-9c30-4b01d388138f','hook',1,'Metro Line 2 khởi công 15/1/2026 — mạng đường sắt đô thị TP.HCM tiếp tục mở rộng.','fomo','verified','{"Khởi công"}',true),
+  ('51435925-cc2a-5a00-9c30-4b01d388138f','hook',2,'Thêm một tuyến metro bước vào thi công từ 1/2026 — hạ tầng công cộng dày thêm.','neutral','verified','{"Khởi công"}',true),
+  ('51435925-cc2a-5a00-9c30-4b01d388138f','body',1,'Metro Line 2 khởi công ngày 15/1/2026.','neutral','verified','{"Khởi công"}',true),
+  -- the-privia (c5168388) — 1 fact
+  ('c5168388-9b8e-5f15-8f07-78dae331a558','hook',1,'The Privia — dự án cao tầng, một comparable khu vực.','neutral','verified','{"Loại"}',true),
+  ('c5168388-9b8e-5f15-8f07-78dae331a558','hook',2,'Thêm một dự án cao tầng trong bức tranh nguồn cung phía Tây TP.HCM.','story','verified','{}',true),
+  ('c5168388-9b8e-5f15-8f07-78dae331a558','body',1,'Loại hình: cao tầng.','neutral','verified','{"Loại"}',true),
+  -- thu-thiem gladia (c51558f3) — 1 fact
+  ('c51558f3-0885-5a97-8d2c-65228554b7d5','hook',1,'Thủ Thiêm — CBD tài chính mới của TP.HCM, ngay kề khu Đông.','fomo','verified','{"Vai trò"}',true),
+  ('c51558f3-0885-5a97-8d2c-65228554b7d5','hook',2,'Mỗi siêu đô thị cần một trung tâm tài chính. Của TP.HCM là Thủ Thiêm.','story','verified','{"Vai trò"}',true),
+  ('c51558f3-0885-5a97-8d2c-65228554b7d5','body',1,'Vai trò: CBD tài chính mới của TP.HCM.','neutral','verified','{"Vai trò"}',true),
+  -- atvcg (b86c76db)
+  ('b86c76db-5456-5748-8eec-281469b3f973','hook',1,'Concert ATVCG hút 20.000 → hơn 50.000 người/đêm ngay tại The Global City.','fomo','verified','{"Quy mô"}',true),
+  ('b86c76db-5456-5748-8eec-281469b3f973','hook',2,'Một township sống động: đêm nhạc 50.000 người đã diễn ra ngay tại TGC.','story','verified','{"Thời gian"}',true),
+  ('b86c76db-5456-5748-8eec-281469b3f973','body',1,'Chặng cuối 6–7/9/2025, quy mô 20.000 đến hơn 50.000 người mỗi đêm.','neutral','verified','{"Thời gian","Quy mô"}',true),
+  ('b86c76db-5456-5748-8eec-281469b3f973','proof',1,'Concert 50.000 người/đêm (9/2025) tại TGC — đời sống sự kiện sôi động.','neutral','verified','{"Thời gian","Quy mô"}',true),
+  -- branded-residences (22567a09)
+  ('22567a09-5af3-57d0-be5a-2123df44d8be','hook',1,'Branded Residences của Masterise: 3 dự án — Grand Marina, The Grand Hanoi, The Rivus.','neutral','verified','{"Số dự án","Gồm"}',true),
+  ('22567a09-5af3-57d0-be5a-2123df44d8be','hook',2,'Chỉ 3 dự án branded residences đỉnh cao — và [TEN_DU_AN] cùng hệ Masterise.','fomo','verified','{"Số dự án"}',true),
+  ('22567a09-5af3-57d0-be5a-2123df44d8be','body',1,'Gồm 3 dự án: Grand Marina, The Grand Hanoi, The Rivus.','neutral','verified','{"Số dự án","Gồm"}',true),
+  ('22567a09-5af3-57d0-be5a-2123df44d8be','proof',1,'3 branded residences (Grand Marina, Grand Hanoi, Rivus) — đỉnh thương hiệu Masterise.','neutral','verified','{"Số dự án","Gồm"}',true),
+  -- canal-of-love (fca6ecd9)
+  ('fca6ecd9-5453-5254-b0cc-cd9bb2421d13','hook',1,'Kênh đào nhạc nước al-fresco lớn nhất Đông Nam Á — ~2 km ngay tại The Global City.','fomo','verified','{"Chiều dài","Vị thế"}',true),
+  ('fca6ecd9-5453-5254-b0cc-cd9bb2421d13','hook',2,'Tưởng tượng dạo bộ bên kênh nhạc nước 2 km — đó là tiện ích của TGC.','story','verified','{"Chiều dài"}',true),
+  ('fca6ecd9-5453-5254-b0cc-cd9bb2421d13','body',1,'Kênh dài ~2 km, được giới thiệu là kênh nhạc nước al-fresco lớn nhất ĐNÁ.','neutral','verified','{"Chiều dài","Vị thế"}',true),
+  ('fca6ecd9-5453-5254-b0cc-cd9bb2421d13','proof',1,'Kênh nhạc nước ~2 km, lớn nhất ĐNÁ — điểm nhấn cảnh quan TGC.','neutral','verified','{"Chiều dài","Vị thế"}',true),
+  -- daddy-cool (d82dcb0c)
+  ('d82dcb0c-6633-5928-80bc-2d4442b694ac','hook',1,'Daddy Cool Diner — diner retro Mỹ thập niên 90, mở cửa Tết 2026 tại TGC.','neutral','verified','{"Loại","Mở cửa"}',true),
+  ('d82dcb0c-6633-5928-80bc-2d4442b694ac','hook',2,'Một điểm đến ~1,000+ khách/ngày sắp khai trương ngay trong khu đô thị.','fomo','verified','{"Mở cửa"}',true),
+  ('d82dcb0c-6633-5928-80bc-2d4442b694ac','body',1,'Phong cách diner retro Mỹ thập niên 90; mở cửa Tết 2026, ~1,000+ khách/ngày.','neutral','verified','{"Loại","Mở cửa"}',true),
+  ('d82dcb0c-6633-5928-80bc-2d4442b694ac','proof',1,'Diner retro Mỹ, mở Tết 2026, ~1,000+ khách/ngày — tiện ích F&B điểm nhấn.','neutral','verified','{"Loại","Mở cửa"}',true),
+  -- global-wishmas (8ae11e78)
+  ('8ae11e78-e2be-5746-810c-fd8d76abe3c4','hook',1,'Chợ Giáng sinh châu Âu + diễu hành ngay tại township — Global Wishmas 2025.','story','verified','{"Loại"}',true),
+  ('8ae11e78-e2be-5746-810c-fd8d76abe3c4','hook',2,'Township có cả lễ hội Giáng sinh kiểu châu Âu — đời sống cư dân TGC khác biệt.','fomo','verified','{"Loại"}',true),
+  ('8ae11e78-e2be-5746-810c-fd8d76abe3c4','body',1,'Diễn ra 20, 21, 24/12/2025 — chợ Giáng sinh châu Âu kèm diễu hành.','neutral','verified','{"Thời gian","Loại"}',true),
+  ('8ae11e78-e2be-5746-810c-fd8d76abe3c4','proof',1,'Global Wishmas 12/2025: chợ Giáng sinh + diễu hành — đời sống lễ hội tại TGC.','neutral','verified','{"Thời gian","Loại"}',true),
+  -- lumiere-midtown (e09ba101) — broker price = sales_claim
+  ('e09ba101-7d71-5b48-bfcf-d84b0136b9d8','hook',1,'LUMIÈRE Midtown — đại diện dòng LUMIÈRE Series tại The Global City.','neutral','verified','{"Dòng"}',true),
+  ('e09ba101-7d71-5b48-bfcf-d84b0136b9d8','hook',2,'Giá tham khảo LUMIÈRE Midtown ~150–160 triệu/m² (theo môi giới) — định vị cao cấp.','fomo','sales_claim','{"Giá tham khảo"}',true),
+  ('e09ba101-7d71-5b48-bfcf-d84b0136b9d8','body',1,'Thuộc dòng LUMIÈRE Series, hiện diện tại The Global City.','neutral','verified','{"Dòng"}',true),
+  ('e09ba101-7d71-5b48-bfcf-d84b0136b9d8','proof',1,'LUMIÈRE Midtown tại TGC, giá tham khảo ~150–160 triệu/m² (môi giới).','neutral','sales_claim','{"Dòng","Giá tham khảo"}',true),
+  -- masteri-grand-view (e1037914) — broker price
+  ('e1037914-1ce0-5576-aae8-3b61b603e99b','hook',1,'Masteri Grand View — định vị flexi-luxury, modernista trong The Global City.','neutral','verified','{"Định vị"}',true),
+  ('e1037914-1ce0-5576-aae8-3b61b603e99b','hook',2,'Giá tham khảo Masteri Grand View ~120–130 triệu/m² (theo môi giới).','fomo','sales_claim','{"Giá tham khảo"}',true),
+  ('e1037914-1ce0-5576-aae8-3b61b603e99b','body',1,'Định vị flexi-luxury, phong cách modernista.','neutral','verified','{"Định vị"}',true),
+  ('e1037914-1ce0-5576-aae8-3b61b603e99b','proof',1,'Grand View: flexi-luxury, giá tham khảo ~120–130 triệu/m² (môi giới).','neutral','sales_claim','{"Định vị","Giá tham khảo"}',true),
+  -- masteri-park-place (a1258df7)
+  ('a1258df7-5adc-5c26-8b95-e19449c0d78b','hook',1,'Masteri Park Place — cụm CT5 ôm 2 mặt nước, định vị giao điểm năng lượng.','neutral','verified','{"Vị trí","Định vị"}',true),
+  ('a1258df7-5adc-5c26-8b95-e19449c0d78b','hook',2,'Sống giữa 2 mặt nước trong lòng đại đô thị — tinh thần của Park Place.','story','verified','{"Vị trí"}',true),
+  ('a1258df7-5adc-5c26-8b95-e19449c0d78b','body',1,'Vị trí CT5, ôm 2 mặt nước; định vị giao điểm năng lượng.','neutral','verified','{"Vị trí","Định vị"}',true),
+  ('a1258df7-5adc-5c26-8b95-e19449c0d78b','proof',1,'CT5 ôm 2 mặt nước, giao điểm năng lượng — cụm sản phẩm trong TGC.','neutral','verified','{"Vị trí","Định vị"}',true),
+  -- masterise-pm (5efd62f3)
+  ('5efd62f3-2209-50ad-baac-f29bd057fc34','hook',1,'Masterise Property Management vận hành The Global City và [TEN_DU_AN].','neutral','verified','{"Vai trò","Áp dụng"}',true),
+  ('5efd62f3-2209-50ad-baac-f29bd057fc34','hook',2,'Cùng đơn vị vận hành chuyên nghiệp cho cả khu đô thị — giá trị hậu bàn giao.','fomo','verified','{"Vai trò"}',true),
+  ('5efd62f3-2209-50ad-baac-f29bd057fc34','body',1,'Vai trò vận hành & quản lý BĐS; áp dụng cho The Global City và Cosmo Central.','neutral','verified','{"Vai trò","Áp dụng"}',true),
+  ('5efd62f3-2209-50ad-baac-f29bd057fc34','proof',1,'Masterise PM vận hành TGC + Cosmo Central — chuẩn quản lý đồng bộ.','neutral','verified','{"Vai trò","Áp dụng"}',true),
+  -- pink-run (17ca43cb)
+  ('17ca43cb-1098-55ae-8793-86286c2643ea','hook',1,'Hơn 5.000 runner trên đường chạy Pink Run ngay tại township (10/2025).','story','verified','{"Quy mô"}',true),
+  ('17ca43cb-1098-55ae-8793-86286c2643ea','hook',2,'Một cộng đồng vận động >5.000 người — đời sống cư dân TGC năng động.','fomo','verified','{"Quy mô"}',true),
+  ('17ca43cb-1098-55ae-8793-86286c2643ea','body',1,'Diễn ra 25/10/2025 với hơn 5.000 runner.','neutral','verified','{"Thời gian","Quy mô"}',true),
+  ('17ca43cb-1098-55ae-8793-86286c2643ea','proof',1,'Pink Run 10/2025, >5.000 runner — cộng đồng năng động tại TGC.','neutral','verified','{"Thời gian","Quy mô"}',true),
+  -- ppa-tour (d7a82721)
+  ('d7a82721-0a3f-5bda-94bc-a0f7017de6be','hook',1,'Giải pickleball quốc tế PPA Tour Asia tổ chức ngay tại TGC Sports Complex.','fomo','verified','{"Môn","Địa điểm"}',true),
+  ('d7a82721-0a3f-5bda-94bc-a0f7017de6be','hook',2,'Township có sân chơi tầm quốc tế — PPA Tour Asia đã chọn TGC.','story','verified','{"Địa điểm"}',true),
+  ('d7a82721-0a3f-5bda-94bc-a0f7017de6be','body',1,'Môn pickleball quốc tế, tổ chức tại TGC Sports Complex / Arena.','neutral','verified','{"Môn","Địa điểm"}',true),
+  ('d7a82721-0a3f-5bda-94bc-a0f7017de6be','proof',1,'PPA Tour Asia (pickleball quốc tế) tại TGC Arena — hạ tầng thể thao đẳng cấp.','neutral','verified','{"Môn","Địa điểm"}',true),
+  -- quoc-thien (1d902bc9)
+  ('1d902bc9-2008-5cf3-a109-aa7a98cd5a7d','hook',1,'Đêm nhạc SKYNote 2025: The Reflection của Quốc Thiên đã diễn ra tại township.','story','verified','{"Tên","Thời gian"}',true),
+  ('1d902bc9-2008-5cf3-a109-aa7a98cd5a7d','hook',2,'Township có chuỗi sự kiện âm nhạc riêng — đời sống văn hoá sôi động.','fomo','verified','{}',true),
+  ('1d902bc9-2008-5cf3-a109-aa7a98cd5a7d','body',1,'Diễn ra 22/11/2025 — chương trình SKYNote 2025: The Reflection.','neutral','verified','{"Thời gian","Tên"}',true),
+  ('1d902bc9-2008-5cf3-a109-aa7a98cd5a7d','proof',1,'SKYNote 2025 (Quốc Thiên, 11/2025) tại TGC — chuỗi sự kiện văn hoá.','neutral','verified','{"Thời gian","Tên"}',true),
+  -- saigon-sports-city cosmo (1463d5e0)
+  ('1463d5e0-3a04-5441-a817-12655c62c7d3','hook',1,'Saigon Sports City — khu 64 ha; Keppel đã bán 70% (2025), giữ 30%.','neutral','verified','{"Quy mô","Ghi chú"}',true),
+  ('1463d5e0-3a04-5441-a817-12655c62c7d3','hook',2,'Một đại dự án thể thao 64 ha trong vùng — bối cảnh khu Đông.','story','verified','{"Quy mô"}',true),
+  ('1463d5e0-3a04-5441-a817-12655c62c7d3','body',1,'Quy mô 64 ha; ghi chú: Keppel đã bán 70% năm 2025, giữ lại 30%.','neutral','verified','{"Quy mô","Ghi chú"}',true),
+  ('1463d5e0-3a04-5441-a817-12655c62c7d3','proof',1,'64 ha, Keppel giữ 30% sau khi bán 70% (2025) — tham chiếu thị trường.','neutral','verified','{"Quy mô","Ghi chú"}',true),
+  -- soho-district (e5852e72)
+  ('e5852e72-7a6f-56dd-a2ef-5ef900fa3091','hook',1,'Khu SOHO — shophouse thấp tầng liền kề [TEN_DU_AN].','neutral','verified','{"Loại","Vị trí"}',true),
+  ('e5852e72-7a6f-56dd-a2ef-5ef900fa3091','hook',2,'Shophouse kinh doanh ngay sát chân dự án — tiện ích thương mại tận cửa.','fomo','verified','{"Vị trí"}',true),
+  ('e5852e72-7a6f-56dd-a2ef-5ef900fa3091','body',1,'Loại hình shophouse thấp tầng; vị trí liền kề Cosmo Central.','neutral','verified','{"Loại","Vị trí"}',true),
+  ('e5852e72-7a6f-56dd-a2ef-5ef900fa3091','proof',1,'SOHO shophouse thấp tầng kề Cosmo Central — hệ thương mại sát cư dân.','neutral','verified','{"Loại","Vị trí"}',true),
+  -- sola (c8d0354c) — broker price
+  ('c8d0354c-a0c6-5eae-985e-c788aa4a525a','hook',1,'SOLA Villas — dòng biệt thự/dinh thự trong The Global City.','neutral','verified','{"Loại"}',true),
+  ('c8d0354c-a0c6-5eae-985e-c788aa4a525a','hook',2,'Giá đất SOLA Villas tham khảo ~380–570 triệu/m² (theo môi giới).','fomo','sales_claim','{"Giá đất tham khảo"}',true),
+  ('c8d0354c-a0c6-5eae-985e-c788aa4a525a','body',1,'Loại hình biệt thự/dinh thự cao cấp.','neutral','verified','{"Loại"}',true),
+  ('c8d0354c-a0c6-5eae-985e-c788aa4a525a','proof',1,'SOLA Villas, giá đất tham khảo ~380–570 triệu/m² (môi giới) — phân khúc đỉnh.','neutral','sales_claim','{"Loại","Giá đất tham khảo"}',true),
+  -- soobin-concert (8ab78428)
+  ('8ab78428-a7de-5312-b886-b85595dd9e98','hook',1,'Đêm nhạc SOOBIN — All-Rounder The Final đã diễn ra tại township (11/2025).','story','verified','{"Tên","Thời gian"}',true),
+  ('8ab78428-a7de-5312-b886-b85595dd9e98','hook',2,'Township thu hút các show lớn — đời sống giải trí ngay tại nơi ở.','fomo','verified','{}',true),
+  ('8ab78428-a7de-5312-b886-b85595dd9e98','body',1,'Diễn ra 29/11/2025 — chương trình All-Rounder The Final.','neutral','verified','{"Thời gian","Tên"}',true),
+  ('8ab78428-a7de-5312-b886-b85595dd9e98','proof',1,'SOOBIN All-Rounder The Final (11/2025) tại TGC — sự kiện giải trí lớn.','neutral','verified','{"Thời gian","Tên"}',true),
+  -- tgc-school-hospital (aede14ad)
+  ('aede14ad-6087-56c9-9f53-baa74d1cae80','hook',1,'The Global City quy hoạch 6 trường quốc tế + 1 bệnh viện tiêu chuẩn quốc tế.','neutral','verified','{"Giáo dục","Y tế"}',true),
+  ('aede14ad-6087-56c9-9f53-baa74d1cae80','hook',2,'Học quốc tế và y tế chuẩn quốc tế trong cùng một khu đô thị — hiếm có.','fomo','verified','{"Giáo dục"}',true),
+  ('aede14ad-6087-56c9-9f53-baa74d1cae80','body',1,'Giáo dục: 6 trường tiêu chuẩn quốc tế; y tế: 1 bệnh viện tiêu chuẩn quốc tế.','neutral','verified','{"Giáo dục","Y tế"}',true),
+  ('aede14ad-6087-56c9-9f53-baa74d1cae80','proof',1,'6 trường quốc tế + 1 bệnh viện quốc tế trong TGC — hệ tiện ích an cư trọn vẹn.','neutral','verified','{"Giáo dục","Y tế"}',true),
+  -- the-grand-hanoi (e7c905de)
+  ('e7c905de-8605-573d-b8b5-9d078849ba0c','hook',1,'The Grand Hanoi — Ritz-Carlton thứ 5 châu Á-TBD, tại 22–24 Hàng Bài.','neutral','verified','{"Vị trí","Thương hiệu"}',true),
+  ('e7c905de-8605-573d-b8b5-9d078849ba0c','hook',2,'Một dự án Masterise mang thương hiệu Ritz-Carlton — đẳng cấp branded residences.','fomo','verified','{"Thương hiệu"}',true),
+  ('e7c905de-8605-573d-b8b5-9d078849ba0c','body',1,'Vị trí 22–24 Hàng Bài, Hà Nội; thương hiệu Ritz-Carlton thứ 5 châu Á – TBD.','neutral','verified','{"Vị trí","Thương hiệu"}',true),
+  ('e7c905de-8605-573d-b8b5-9d078849ba0c','proof',1,'The Grand Hanoi (Hàng Bài) mang Ritz-Carlton — bề dày branded residences Masterise.','neutral','verified','{"Vị trí","Thương hiệu"}',true),
+  -- thu-thiem-cbd (be8e927b) — broker price
+  ('be8e927b-b5e2-5cf9-921d-cc99b0c98a04','hook',1,'Thủ Thiêm — CBD tài chính mới của TP.HCM, kề khu Đông.','neutral','verified','{"Vai trò"}',true),
+  ('be8e927b-b5e2-5cf9-921d-cc99b0c98a04','hook',2,'Biệt thự Sala Thủ Thiêm tham khảo 900 triệu – 1.5 tỷ/m² (theo môi giới) — mặt bằng đỉnh.','fomo','sales_claim','{"Giá biệt thự Sala"}',true),
+  ('be8e927b-b5e2-5cf9-921d-cc99b0c98a04','body',1,'Vai trò CBD tài chính mới của TP.HCM.','neutral','verified','{"Vai trò"}',true),
+  ('be8e927b-b5e2-5cf9-921d-cc99b0c98a04','proof',1,'Thủ Thiêm CBD; biệt thự Sala tham khảo 900 triệu–1.5 tỷ/m² (môi giới).','neutral','sales_claim','{"Vai trò","Giá biệt thự Sala"}',true),
+  -- tttm-mall (32636c4e)
+  ('32636c4e-7017-5ed9-8a3e-58241a3b03a3','hook',1,'TTTM Grade-A ~123,000 m² — thuộc nhóm lớn nhất Việt Nam, ngay tại TGC.','fomo','verified','{"Quy mô","Hạng"}',true),
+  ('32636c4e-7017-5ed9-8a3e-58241a3b03a3','hook',2,'Một trung tâm thương mại tầm cỡ ngay trong khu đô thị — tiện ích tận cửa.','story','verified','{"Hạng"}',true),
+  ('32636c4e-7017-5ed9-8a3e-58241a3b03a3','body',1,'Quy mô ~123,000 m² (một số tài liệu 125,000); hạng Grade-A.','neutral','verified','{"Quy mô","Hạng"}',true),
+  ('32636c4e-7017-5ed9-8a3e-58241a3b03a3','proof',1,'TTTM ~123,000 m² Grade-A, nhóm lớn nhất VN — tiện ích thương mại TGC.','neutral','verified','{"Quy mô","Hạng"}',true),
+  -- view-360 (96a36515)
+  ('96a36515-accc-5a3d-ab8c-10295f8a134e','hook',1,'Xem phối cảnh 360° tổng thể dự án — trải nghiệm tương tác trực quan.','neutral','verified','{"Loại"}',true),
+  ('96a36515-accc-5a3d-ab8c-10295f8a134e','hook',2,'Phối cảnh 360° từ masterisehomes.com — xem tổng thể trước khi quyết định.','neutral','verified','{"Nguồn"}',true),
+  ('96a36515-accc-5a3d-ab8c-10295f8a134e','body',1,'Loại tương tác 360° tổng thể; nguồn masterisehomes.com.','neutral','verified','{"Loại","Nguồn"}',true),
+  -- watg (c0ef2956)
+  ('c0ef2956-cace-5e18-af36-de97977e9469','hook',1,'WATG — top 3 hãng thiết kế hospitality thế giới — quy hoạch cảnh quan TGC.','fomo','verified','{"Vai trò","Vị thế"}',true),
+  ('c0ef2956-cace-5e18-af36-de97977e9469','hook',2,'Cảnh quan của nơi bạn sống do một hãng top 3 thế giới chấp bút — đó là WATG.','story','verified','{"Vị thế"}',true),
+  ('c0ef2956-cace-5e18-af36-de97977e9469','body',1,'Vai trò: quy hoạch cảnh quan The Global City; thuộc top 3 hãng hospitality thế giới.','neutral','verified','{"Vai trò","Vị thế"}',true),
+  ('c0ef2956-cace-5e18-af36-de97977e9469','proof',1,'WATG (top 3 thế giới) thiết kế cảnh quan TGC — pedigree cảnh quan đẳng cấp.','neutral','verified','{"Vai trò","Vị thế"}',true),
+  -- elie-saab (6ed156ea) — 1 fact
+  ('6ed156ea-d2f5-5dee-89c1-92a70039f163','hook',1,'Nhà mốt Haute Couture Elie Saab hợp tác The Rivus — 121 dinh thự độc bản.','fomo','verified','{"Hợp tác"}',true),
+  ('6ed156ea-d2f5-5dee-89c1-92a70039f163','hook',2,'Khi một nhà mốt Paris làm nhà, kết quả là The Rivus by Elie Saab.','story','verified','{"Hợp tác"}',true),
+  ('6ed156ea-d2f5-5dee-89c1-92a70039f163','body',1,'Hợp tác cùng The Rivus — 121 dinh thự.','neutral','verified','{"Hợp tác"}',true),
+  -- marriott (54485e33) — 1 fact
+  ('54485e33-e6fa-5955-bfa6-c291d9d53581','hook',1,'Marriott International hợp tác Grand Marina (Marriott, JW Marriott).','neutral','verified','{"Hợp tác"}',true),
+  ('54485e33-e6fa-5955-bfa6-c291d9d53581','hook',2,'Thương hiệu khách sạn hàng đầu thế giới đứng cùng hệ Masterise.','fomo','verified','{}',true),
+  ('54485e33-e6fa-5955-bfa6-c291d9d53581','body',1,'Hợp tác: Grand Marina với Marriott và JW Marriott.','neutral','verified','{"Hợp tác"}',true),
+  -- masterise-he (379ba9ad) — 1 fact
+  ('379ba9ad-fda6-5063-84b3-5b090650faa3','hook',1,'Masterise Hospitality & Entertainment vận hành TTTM, F&B, sự kiện tại TGC.','neutral','verified','{"Vai trò"}',true),
+  ('379ba9ad-fda6-5063-84b3-5b090650faa3','hook',2,'Một đơn vị chuyên vận hành trải nghiệm sống — giá trị cộng thêm cho cư dân.','fomo','verified','{}',true),
+  ('379ba9ad-fda6-5063-84b3-5b090650faa3','body',1,'Vai trò: TTTM, F&B và sự kiện tại The Global City.','neutral','verified','{"Vai trò"}',true),
+  -- ritz-carlton (c7f367e6) — 1 fact
+  ('c7f367e6-2f45-56a3-a4ed-db758c1e5e6c','hook',1,'The Ritz-Carlton hợp tác The Grand Hanoi — đỉnh cao thương hiệu lưu trú.','fomo','verified','{"Hợp tác"}',true),
+  ('c7f367e6-2f45-56a3-a4ed-db758c1e5e6c','hook',2,'Một cái tên như Ritz-Carlton đứng sau dự án — đẳng cấp được bảo chứng.','story','verified','{"Hợp tác"}',true),
+  ('c7f367e6-2f45-56a3-a4ed-db758c1e5e6c','body',1,'Hợp tác: The Grand Hanoi.','neutral','verified','{"Hợp tác"}',true)
+on conflict (node_id, role, variant_no) do nothing;
