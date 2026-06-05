@@ -11,13 +11,14 @@ import { Footer } from "@/components/landing/Footer";
 import { FlipCard } from "@/components/landing/FlipCard";
 import { ScrollStory } from "@/components/landing/ScrollStory";
 
+const IMG = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=700`;
 const FEATURES = [
-  { icon: "🗺️", title: "Bản đồ tri thức", desc: "Chọn 1–4 điểm, máy dựng bài quanh đúng câu chuyện.", back: "112 điểm tri thức, nối theo quan hệ thật — chạm là ra góc kể." },
-  { icon: "☀️", title: "Gợi ý “Hôm Nay”", desc: "Mỗi sáng một gợi ý theo nhịp tuần và deadline.", back: "Kèm chuỗi ngày đăng đều và đếm ngược các mốc sắp tới." },
-  { icon: "✅", title: "Soạn đúng dữ liệu", desc: "Chỉ dùng số liệu đã xác thực. Không bịa, không sai pháp lý.", back: "640 mẫu câu, mỗi câu gắn dữ kiện đã kiểm — sai số là bị chặn." },
-  { icon: "🤖", title: "Prompt AI", desc: "Một cú dán sang ChatGPT/Gemini là ra bài chuẩn.", back: "6 khối ràng buộc để AI chỉ dùng dữ liệu cho sẵn — không thêm thắt." },
-  { icon: "🖼️", title: "Ảnh đóng logo", desc: "Tự tạo ảnh feed + story 9:16 có logo, watermark.", back: "Có placeholder kể cả khi bạn chưa có ảnh thật." },
-  { icon: "🗓️", title: "Lịch & deadline", desc: "Theo dõi đã đăng theo ngày, nhắc hạn chiến dịch.", back: "Đánh dấu ngày đã đăng + đếm ngược hạn để không lỡ sóng." },
+  { icon: "🗺️", title: "Bản đồ tri thức", desc: "Chọn 1–4 điểm, máy dựng bài quanh đúng câu chuyện.", back: "112 điểm tri thức, nối theo quan hệ thật — chạm là ra góc kể.", img: IMG("1486406146926-c627a92ad1ab") },
+  { icon: "☀️", title: "Gợi ý “Hôm Nay”", desc: "Mỗi sáng một gợi ý theo nhịp tuần và deadline.", back: "Kèm chuỗi ngày đăng đều và đếm ngược các mốc sắp tới.", img: IMG("1564013799919-ab600027ffc6") },
+  { icon: "✅", title: "Soạn đúng dữ liệu", desc: "Chỉ dùng số liệu đã xác thực. Không bịa, không sai pháp lý.", back: "640 mẫu câu, mỗi câu gắn dữ kiện đã kiểm — sai số là bị chặn.", img: IMG("1502672260266-1c1ef2d93688") },
+  { icon: "🤖", title: "Prompt AI", desc: "Một cú dán sang ChatGPT/Gemini là ra bài chuẩn.", back: "6 khối ràng buộc để AI chỉ dùng dữ liệu cho sẵn — không thêm thắt.", img: IMG("1545324418-cc1a3fa10c00") },
+  { icon: "🖼️", title: "Ảnh đóng logo", desc: "Tự tạo ảnh feed + story 9:16 có logo, watermark.", back: "Có placeholder kể cả khi bạn chưa có ảnh thật.", img: IMG("1512917774080-9991f1c4c750") },
+  { icon: "🗓️", title: "Lịch & deadline", desc: "Theo dõi đã đăng theo ngày, nhắc hạn chiến dịch.", back: "Đánh dấu ngày đã đăng + đếm ngược hạn để không lỡ sóng.", img: IMG("1493809842364-78817add7ffb") },
 ];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
@@ -68,21 +69,31 @@ export default async function Home() {
             {FEATURES.map((f, i) => (
               <Reveal key={f.title} delay={(i % 3) * 80}>
                 <FlipCard
-                  height="h-52"
+                  height="h-64"
                   front={
-                    <div className="flex h-full flex-col justify-between rounded-lg border border-border bg-card p-6 shadow-card">
-                      <div className="grid h-11 w-11 place-items-center rounded-lg bg-muted text-xl">{f.icon}</div>
-                      <div>
-                        <h3 className="text-lg font-semibold tracking-tight text-foreground">{f.title}</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
-                        <span className="mt-3 inline-block text-xs text-brand">Lật xem →</span>
+                    <div className="relative h-full overflow-hidden rounded-lg border border-border bg-muted shadow-card">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={f.img} alt={f.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/10" />
+                      <div className="relative flex h-full flex-col justify-between p-5">
+                        <span className="grid h-10 w-10 place-items-center rounded-lg bg-white/15 text-xl backdrop-blur-sm">{f.icon}</span>
+                        <div>
+                          <h3 className="text-lg font-semibold tracking-tight text-white">{f.title}</h3>
+                          <p className="mt-1 text-sm text-white/80">{f.desc}</p>
+                          <span className="mt-2 inline-block text-xs text-white/70">Lật xem →</span>
+                        </div>
                       </div>
                     </div>
                   }
                   back={
-                    <div className="flex h-full flex-col justify-center rounded-lg border border-border bg-foreground p-6 text-background">
-                      <h3 className="text-lg font-semibold tracking-tight">{f.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed opacity-90">{f.back}</p>
+                    <div className="relative h-full overflow-hidden rounded-lg border border-border bg-card">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={f.img} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-[0.12]" />
+                      <div className="relative flex h-full flex-col justify-center p-6">
+                        <span className="text-xl">{f.icon}</span>
+                        <h3 className="mt-2 text-lg font-semibold tracking-tight text-foreground">{f.title}</h3>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.back}</p>
+                      </div>
                     </div>
                   }
                 />
