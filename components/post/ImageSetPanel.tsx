@@ -4,13 +4,18 @@ export interface SetView { urls: string[]; placeholder: boolean }
 
 // Renders an assembled image set: a swipeable carousel strip (one card per
 // slide, numbered, per-slide download) or a single collage image. Read-only.
-export function ImageSetView({ kind, set }: { kind: "carousel" | "collage"; set: SetView | null }) {
+export function ImageSetView({ kind, set }: { kind: "carousel" | "collage" | "facts"; set: SetView | null }) {
   if (!set || set.urls.length === 0) {
     return (
       <p className="rounded-md border border-border bg-card p-3 text-xs text-muted-foreground">
-        Chưa tạo được bộ ảnh. Thiết lập{" "}
-        <Link href="/settings" className="text-brand underline">Thương hiệu</Link>{" "}
-        (tên + SĐT){kind === "collage" ? " và chọn ≥2 điểm" : ""} trước.
+        {kind === "facts" ? (
+          <>Các điểm chưa có số liệu để dựng thẻ. Thêm dữ kiện (facts) cho node, hoặc thiết lập{" "}
+            <Link href="/settings" className="text-brand underline">Thương hiệu</Link>.</>
+        ) : (
+          <>Chưa tạo được bộ ảnh. Thiết lập{" "}
+            <Link href="/settings" className="text-brand underline">Thương hiệu</Link>{" "}
+            (tên + SĐT){kind === "collage" ? " và chọn ≥2 điểm" : ""} trước.</>
+        )}
       </p>
     );
   }

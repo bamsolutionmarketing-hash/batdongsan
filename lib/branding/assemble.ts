@@ -273,3 +273,67 @@ export async function buildCollage(
   }
   return sharp(base).composite(layers).jpeg({ quality: 86 }).toBuffer();
 }
+
+export interface FactRow { key: string; value: string }
+export interface FactCard {
+  hue: number;
+  chip?: string | null; // category label (vi) or "Tổng quan"
+  title: string;
+  rows: FactRow[]; // up to 6 rendered
+  index: number;
+  total: number;
+}
+
+// One 1080×1350 data card: themed gradient, chip + title, then key→value rows
+// (key in accent caps, value bold below, hairline divider). Branding footer.
+async function renderFactCard(c: FactCard, brand: SetBrand): Promise<Buffer> {
+  const accent = `hsl(${c.hue},80%,64%)`;
+  const base = await sharp(Buffer.from(gradientSvg(CW, CH, c.hue))).jpeg({ quality: 90 }).toBuffer();
+  let parts = "";
+
+  let y = 96;
+  if (c.chip) {
+    const label = c.chip.toUpperCase();
+    const chipW = label.length * 16 + 44, chipH = 48;
+    parts +=
+      `<rect x="${PAD}" y="56" width="${chipW}" height="${chipH}" rx="24" fill="hsl(${c.hue},60%,50%,0.18)" stroke="${accent}" stroke-opacity="0.55"/>` +
+      `<text x="${PAD + chipW / 2}" y="${56 + chipH / 2 + 1}" font-family="sans-serif" font-size="26" font-weight="700" letter-spacing="2" fill="${accent}" text-anchor="middle" dominant-baseline="central">${esc(label)}</text>`;
+    y = 56 + chipH + 44;
+  }
+
+  const title = wrap(c.title, 20, 2), tSize = 58;
+  parts += title
+    .map((ln, i) => `<text x="${PAD}" y="${y + i * tSize * 1.1 + tSize * 0.5}" font-family="sans-serif" font-size="${tSize}" font-weight="800" fill="#ffffff">${esc(ln)}</text>`)
+    .join("");
+  y += title.length * tSize * 1.1 + 22;
+  parts += `<rect x="${PAD}" y="${y}" width="84" height="6" rx="3" fill="${accent}"/>`;
+  y += 48;
+
+  const bottomLimit = CH - 150;
+  for (const r of c.rows.slice(0, 6)) {
+    if (y > bottomLimit - 90) break;
+    const kSize = 26, vSize = 40;
+    parts += `<text x="${PAD}" y="${y}" font-family="sans-serif" font-size="${kSize}" font-weight="600" letter-spacing="1" fill="${accent}" dominant-baseline="central">${esc(r.key.toUpperCase())}</text>`;
+    y += kSize + 16;
+    const vlines = wrap(r.value, 26, 2);
+    parts += vlines
+      .map((ln, i) => `<text x="${PAD}" y="${y + i * vSize * 1.12}" font-family="sans-serif" font-size="${vSize}" font-weight="700" fill="#ffffff" dominant-baseline="central">${esc(ln)}</text>`)
+      .join("");
+    y += vlines.length * vSize * 1.12 + 12;
+    parts += `<rect x="${PAD}" y="${y}" width="${CW - PAD * 2}" height="1.5" fill="rgba(255,255,255,0.13)"/>`;
+    y += 28;
+  }
+
+  const svg = `<svg width="${CW}" height="${CH}" xmlns="http://www.w3.org/2000/svg">${parts}${footerSvg(brand, accent, c.index, c.total)}</svg>`;
+  const layers: sharp.OverlayOptions[] = [{ input: Buffer.from(svg), top: 0, left: 0 }];
+  if (brand.logo) {
+    const lg = await logoLayer(brand.logo, 108);
+    if (lg) layers.push({ input: lg.buf, top: 52, left: CW - PAD - lg.w });
+  }
+  return sharp(base).composite(layers).jpeg({ quality: 88 }).toBuffer();
+}
+
+// Build a set of data cards (project summary + per-node facts).
+export async function buildFactCards(cards: FactCard[], brand: SetBrand): Promise<Buffer[]> {
+  return Promise.all(cards.map((c) => renderFactCard(c, brand)));
+}

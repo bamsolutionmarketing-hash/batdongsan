@@ -4,7 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getBranding } from "@/lib/repo/branding";
 import { compositeImage } from "./composite";
 import { placeholderMaster, themeFor } from "./placeholder";
-import { buildCarousel, buildCollage, type Slide, type SetBrand } from "./assemble";
+import { buildCarousel, buildCollage, buildFactCards, type Slide, type SetBrand, type FactCard } from "./assemble";
 
 const cleanHook = (s: string) => s.trim().replace(/^["“”']+|["“”']+$/g, "").trim();
 
@@ -242,4 +242,68 @@ export async function getCollage(
   await admin.storage.from("branded").upload(path, buf, { contentType: "image/jpeg", upsert: true });
   const url = await signed(admin, path);
   return { urls: url ? [url] : [], placeholder: masters.some((m) => m.placeholder) };
+}
+
+type NodeFactRow = { id: string; label: string; category: string; facts: { key: string; value: string }[] | null; project_id: string };
+type ProjectRow = { name: string; location_text: string | null; phase: string | null; price_min: number | null; price_max: number | null };
+
+// Fact-cards: a project summary card + one data card per node that has facts.
+// Pure infographics (no photos), so they never use a placeholder master.
+export async function getFactCards(
+  userId: string, postId: string, nodeIds: string[], opts: { watermark?: string | null } = {},
+): Promise<AssembledSet> {
+  let admin: Admin;
+  try { admin = createAdminClient(); } catch { return { urls: [], placeholder: false }; }
+  const bl = await brandAndLogo(admin, userId);
+  if (!bl) return { urls: [], placeholder: false };
+  const { branding, logoBuf } = bl;
+  const ids = nodeIds.slice(0, 4);
+  if (!ids.length) return { urls: [], placeholder: false };
+
+  const { data: nrows } = await admin.from("knowledge_nodes").select("id, label, category, facts, project_id").in("id", ids);
+  const byId = new Map((nrows as NodeFactRow[] ?? []).map((n) => [n.id, n]));
+  const projectId = byId.get(ids[0])?.project_id;
+  let project: ProjectRow | null = null;
+  if (projectId) {
+    const { data } = await admin.from("projects").select("name, location_text, phase, price_min, price_max").eq("id", projectId).maybeSingle();
+    project = (data as ProjectRow) ?? null;
+  }
+
+  const cards: FactCard[] = [];
+  // Project summary card (when it carries ≥2 meaningful rows).
+  if (project) {
+    const rows: { key: string; value: string }[] = [];
+    if (project.location_text) rows.push({ key: "Vị trí", value: project.location_text });
+    if (project.phase) rows.push({ key: "Giai đoạn", value: project.phase });
+    if (project.price_min != null || project.price_max != null) {
+      rows.push({ key: "Khoảng giá", value: [project.price_min, project.price_max].filter((v) => v != null).map((v) => Number(v).toLocaleString("vi-VN")).join(" – ") });
+    }
+    rows.push({ key: "Điểm nổi bật", value: `${ids.length} điểm trong bài` });
+    if (rows.length >= 2) cards.push({ hue: themeFor(byId.get(ids[0])?.category).hue, chip: "Tổng quan", title: project.name, rows, index: 0, total: 0 });
+  }
+  // Per-node fact cards (skip nodes with no facts).
+  for (const id of ids) {
+    const n = byId.get(id);
+    if (!n) continue;
+    const rows = (Array.isArray(n.facts) ? n.facts : [])
+      .filter((f) => f && f.key && f.value)
+      .map((f) => ({ key: String(f.key), value: String(f.value) }));
+    if (!rows.length) continue;
+    const th = themeFor(n.category);
+    cards.push({ hue: th.hue, chip: th.vi, title: n.label, rows, index: 0, total: 0 });
+  }
+  if (!cards.length) return { urls: [], placeholder: false };
+  const total = cards.length;
+  cards.forEach((c, i) => { c.index = i + 1; c.total = total; });
+
+  const hash = brandingHash([branding.logoPath, branding.displayName, branding.phone, "facts", ids.join(","), opts.watermark]);
+  const paths = cards.map((_, i) => `${userId}/sets/${postId}-${hash}-f${i}.jpg`);
+  const pre = await Promise.all(paths.map((p) => signed(admin, p)));
+  if (pre.every((u): u is string => !!u)) return { urls: pre, placeholder: false };
+
+  const setBrand: SetBrand = { name: branding.displayName, phone: branding.phone, zalo: branding.zalo, logo: logoBuf, watermark: opts.watermark };
+  const bufs = await buildFactCards(cards, setBrand);
+  await Promise.all(bufs.map((b, i) => admin.storage.from("branded").upload(paths[i], b, { contentType: "image/jpeg", upsert: true })));
+  const urls = (await Promise.all(paths.map((p) => signed(admin, p)))).filter((u): u is string => !!u);
+  return { urls, placeholder: false };
 }

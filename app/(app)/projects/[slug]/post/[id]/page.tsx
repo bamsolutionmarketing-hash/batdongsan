@@ -5,13 +5,14 @@ import { nodesByIds, linksByProject } from "@/lib/repo/nodes";
 import { getProjectById } from "@/lib/repo/projects";
 import { getBranding } from "@/lib/repo/branding";
 import { getActiveTier } from "@/lib/gate/tier";
-import { getBrandedImages, getCarousel, getCollage, type AssembledSet } from "@/lib/branding/pipeline";
+import { getBrandedImages, getCarousel, getCollage, getFactCards, type AssembledSet } from "@/lib/branding/pipeline";
 import { getSession } from "@/lib/auth";
 import { getEditableComposition } from "@/lib/post/editable";
 import { CaptionCard } from "@/components/post/CaptionCard";
 import { CaptionEditor } from "@/components/post/CaptionEditor";
 import { BrandedImageGrid } from "@/components/post/BrandedImageGrid";
 import { ImageSetView } from "@/components/post/ImageSetPanel";
+import { VideoMaker } from "@/components/post/VideoMaker";
 import { Button } from "@/components/ui/button";
 import { reRollPost } from "@/app/(app)/projects/_actions";
 
@@ -53,17 +54,23 @@ export default async function PostResultPage({
           .join(" – ")
       : null;
 
-  // Image set: "single" (per-node branded grid, default), "carousel", or
-  // "collage". Only the requested set is generated (lazy, on tab click).
-  const setKind = searchParams.set === "carousel" ? "carousel" : searchParams.set === "collage" ? "collage" : "single";
+  // Image set: "single" (per-node branded grid, default), "carousel", "collage",
+  // "facts" (data cards), or "video" (client slideshow from carousel slides).
+  // Only the requested set is generated (lazy, on tab click).
+  const SET_KINDS = ["single", "carousel", "collage", "facts", "video"] as const;
+  type SetKind = (typeof SET_KINDS)[number];
+  const setKind: SetKind = (SET_KINDS as readonly string[]).includes(searchParams.set ?? "")
+    ? (searchParams.set as SetKind)
+    : "single";
   let images: { url: string; nodeId: string; placeholder?: boolean }[] = [];
   let assembled: AssembledSet | null = null;
   if (session) {
     const tierRes = await getActiveTier(session.userId);
     const watermark = (tierRes.ok ? tierRes.data : "free") === "free" ? "via app" : null;
     if (setKind === "single") images = await getBrandedImages(session.userId, post.nodeIds, { watermark });
-    else if (setKind === "carousel") assembled = await getCarousel(session.userId, post.id, post.nodeIds, { watermark });
-    else assembled = await getCollage(session.userId, post.id, post.nodeIds, { watermark });
+    else if (setKind === "carousel" || setKind === "video") assembled = await getCarousel(session.userId, post.id, post.nodeIds, { watermark });
+    else if (setKind === "collage") assembled = await getCollage(session.userId, post.id, post.nodeIds, { watermark });
+    else assembled = await getFactCards(session.userId, post.id, post.nodeIds, { watermark });
   }
 
   // Editable per-slot composition (variant picker). Empty for temp-caption posts
@@ -86,6 +93,8 @@ export default async function PostResultPage({
     ["single", "Ảnh lẻ"],
     ["carousel", "Carousel"],
     ...(post.nodeIds.length >= 2 ? ([["collage", "Ghép"]] as [string, string][]) : []),
+    ["facts", "Số liệu"],
+    ["video", "Video"],
   ];
 
   return (
@@ -141,6 +150,8 @@ export default async function PostResultPage({
         </div>
         {setKind === "single" ? (
           <BrandedImageGrid images={images} labels={labelById} postId={post.id} slug={params.slug} />
+        ) : setKind === "video" ? (
+          <VideoMaker images={assembled?.urls ?? []} postId={post.id} />
         ) : (
           <ImageSetView kind={setKind} set={assembled} />
         )}
