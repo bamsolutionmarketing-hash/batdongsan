@@ -53,7 +53,7 @@ export default async function PostResultPage({
       : null;
 
   // Branded feed images (free tier gets a watermark).
-  let images: { url: string; nodeId: string }[] = [];
+  let images: { url: string; nodeId: string; placeholder?: boolean }[] = [];
   if (session) {
     const tierRes = await getActiveTier(session.userId);
     const watermark = (tierRes.ok ? tierRes.data : "free") === "free" ? "via app" : null;
@@ -112,7 +112,7 @@ export default async function PostResultPage({
 
       <section>
         <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">Ảnh đóng logo</h2>
-        <BrandedImageGrid images={images} postId={post.id} slug={params.slug} />
+        <BrandedImageGrid images={images} labels={labelById} postId={post.id} slug={params.slug} />
       </section>
 
       {nodes.length > 0 && (

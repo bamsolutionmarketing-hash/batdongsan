@@ -23,6 +23,7 @@ async function nodeMeta(admin: ReturnType<typeof createAdminClient>, nodeIds: st
 export interface BrandedImage {
   url: string;
   nodeId: string;
+  placeholder: boolean; // true when the master is a generated placeholder (no uploaded photo)
 }
 
 function brandingHash(parts: (string | null | undefined)[]): string {
@@ -89,7 +90,7 @@ export async function getBrandedImages(
         .maybeSingle();
       if (cached && (cached as any).branding_hash === hash) {
         const s = await admin.storage.from("branded").createSignedUrl((cached as any).storage_path, 3600);
-        if (s.data) { out.push({ url: s.data.signedUrl, nodeId }); continue; }
+        if (s.data) { out.push({ url: s.data.signedUrl, nodeId, placeholder: false }); continue; }
       }
     }
 
@@ -124,7 +125,7 @@ export async function getBrandedImages(
       });
     }
     const s = await admin.storage.from("branded").createSignedUrl(outPath, 3600);
-    if (s.data) out.push({ url: s.data.signedUrl, nodeId });
+    if (s.data) out.push({ url: s.data.signedUrl, nodeId, placeholder: !asset });
   }
   return out;
 }
