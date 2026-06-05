@@ -56,7 +56,13 @@ export default async function EditProjectPage({
             <div key={n.id} className="flex items-center gap-3 rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-sm">
               <span className="font-medium text-slate-100">{n.label}</span>
               <span className="text-xs text-slate-500">{n.category} · {n.nodeKey} · {n.facts.length} facts</span>
-              <form action={deleteNode} className="ml-auto">
+              <Link
+                href={`/admin/projects/${project.id}/nodes/${n.id}/blocks`}
+                className="ml-auto text-xs text-sky-400 hover:text-sky-300"
+              >
+                Blocks →
+              </Link>
+              <form action={deleteNode}>
                 <input type="hidden" name="id" value={n.id} />
                 <input type="hidden" name="project_id" value={project.id} />
                 <button className="text-xs text-red-400 hover:text-red-300">Xóa</button>

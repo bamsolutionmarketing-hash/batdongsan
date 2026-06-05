@@ -68,6 +68,18 @@ export interface KnowledgeLink {
   label: string | null;
 }
 
+export interface ContentBlock {
+  id: string;
+  nodeId: string;
+  role: BlockRole;
+  variantNo: number;
+  text: string;
+  tone: BlockTone;
+  minConfidence: Confidence;
+  factKeys: string[];
+  isEnabled: boolean;
+}
+
 export interface AgentBranding {
   userId: string;
   displayName: string;

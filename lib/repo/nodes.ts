@@ -71,6 +71,18 @@ export async function nodesByProjectAll(projectId: string): Promise<Result<Knowl
   return ok((data as NodeRow[]).map(toNode));
 }
 
+export async function getNodeById(id: string): Promise<Result<KnowledgeNode | null>> {
+  if (!isSupabaseConfigured()) return ok(null);
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("knowledge_nodes")
+    .select("id, project_id, node_key, label, category, sub_label, facts, talkpoint, description, sort_order")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) return err("INTERNAL", error.message);
+  return ok(data ? toNode(data as NodeRow) : null);
+}
+
 export async function linksByProject(projectId: string): Promise<Result<KnowledgeLink[]>> {
   if (!isSupabaseConfigured()) return ok([]);
   const supabase = createClient();
