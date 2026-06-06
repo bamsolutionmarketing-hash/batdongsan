@@ -45,6 +45,8 @@ async function SuperPanel({ supabase }: { supabase: ReturnType<typeof createClie
     <>
       <section className="grid grid-cols-3 gap-2">{stat("Dự án", projects)}{stat("Người dùng", users)}{stat("Hook kịch bản", hooks)}</section>
 
+      <Link href="/admin/analytics"><Card className="transition hover:border-foreground/30"><CardTitle>📊 Phân tích hệ thống</CardTitle><CardDesc>Người dùng, hoạt động tạo bài/video, dự án đang thuê — toàn hệ.</CardDesc></Card></Link>
+
       <Link href="/admin/projects"><Card className="transition hover:border-foreground/30"><CardTitle>Dự án & nội dung</CardTitle><CardDesc>Tạo/sửa dự án, node tri thức, khối nội dung, ảnh (chỉ super admin).</CardDesc></Card></Link>
 
       <section className="rounded-lg border border-border bg-card p-4">
