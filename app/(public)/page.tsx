@@ -25,6 +25,18 @@ const FEATURES = [
   { icon: "calendar" as const, title: "Lịch & deadline", desc: "Theo dõi đã đăng theo ngày, nhắc hạn chiến dịch.", back: "Đánh dấu ngày đã đăng + đếm ngược hạn để không lỡ sóng.", img: IMG("1506784983877-45594efa4cbe") },
 ];
 
+// Recognisable VN developments for the showcase grid. Names + locations are
+// real; images are high-quality architecture photos (swap for official renders
+// any time). Known-good Unsplash IDs.
+const SHOWCASE = [
+  { name: "Vinhomes Central Park", location: "Bình Thạnh, TP.HCM", tag: "Căn hộ cao cấp", img: IMG("1545324418-cc1a3fa10c00") },
+  { name: "Vinhomes Grand Park", location: "TP. Thủ Đức", tag: "Đại đô thị", img: IMG("1486406146926-c627a92ad1ab") },
+  { name: "Vinhomes Ocean Park", location: "Gia Lâm, Hà Nội", tag: "Biển hồ nội đô", img: IMG("1480714378408-67cf0d13bc1b") },
+  { name: "Masteri Thảo Điền", location: "TP. Thủ Đức", tag: "Liền kề Metro", img: IMG("1502672260266-1c1ef2d93688") },
+  { name: "Aqua City", location: "Biên Hòa, Đồng Nai", tag: "Đô thị sinh thái", img: IMG("1512917774080-9991f1c4c750") },
+  { name: "Ecopark", location: "Văn Giang, Hưng Yên", tag: "Xanh · nghỉ dưỡng", img: IMG("1493809842364-78817add7ffb") },
+];
+
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">{children}</p>;
 }
@@ -170,40 +182,48 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── Demo projects ────────────────────────────────────────────────── */}
-      {projects.length > 0 && (
-        <section className="border-t border-border bg-background-subtle">
-          <div className="mx-auto max-w-6xl px-5 py-20 sm:px-6 sm:py-28">
-            <Reveal>
-              <Eyebrow>Dự án</Eyebrow>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Dự án tiêu biểu</h2>
-            </Reveal>
-            <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {projects.map((p, i) => (
-                <Reveal key={p.id} delay={(i % 3) * 80}>
-                  <Link
-                    href="/signup"
-                    className="group block overflow-hidden rounded-lg border border-border bg-card shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover"
-                  >
-                    <div className="relative aspect-[16/10] w-full bg-muted">
-                      {p.thumbnailUrl ? (
+      {/* ── Showcase projects ────────────────────────────────────────────── */}
+      {(() => {
+        const cards = [
+          ...SHOWCASE,
+          ...projects.map((p) => ({ name: p.name, location: p.locationText ?? "", tag: "Đang triển khai", img: p.thumbnailUrl ?? "" })),
+        ];
+        return (
+          <section className="border-t border-border bg-background-subtle">
+            <div className="mx-auto max-w-6xl px-5 py-20 sm:px-6 sm:py-28">
+              <Reveal>
+                <Eyebrow>Dự án</Eyebrow>
+                <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Dự án tiêu biểu</h2>
+                <p className="mt-4 max-w-md leading-relaxed text-muted-foreground">Những dự án lớn đã có sẵn bản đồ tri thức — chọn điểm là ra bài.</p>
+              </Reveal>
+              <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {cards.map((c, i) => (
+                  <Reveal key={c.name + i} delay={(i % 3) * 80}>
+                    <Link
+                      href="/signup"
+                      className="group relative block aspect-[16/11] overflow-hidden rounded-xl border border-border bg-muted shadow-card transition hover:-translate-y-1 hover:shadow-card-hover"
+                    >
+                      {c.img ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={p.thumbnailUrl} alt={p.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                        <img src={c.img} alt={c.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-muted to-background text-4xl">🏢</div>
+                        <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-muted to-background text-4xl">🏢</div>
                       )}
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-base font-semibold tracking-tight text-foreground">{p.name}</h3>
-                      {p.locationText && <p className="mt-1 text-sm text-muted-foreground">{p.locationText}</p>}
-                    </div>
-                  </Link>
-                </Reveal>
-              ))}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
+                      {c.tag && <span className="absolute left-3 top-3 rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-medium text-white backdrop-blur">{c.tag}</span>}
+                      <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                        <h3 className="text-lg font-semibold tracking-tight">{c.name}</h3>
+                        {c.location && <p className="mt-0.5 text-sm text-white/80">📍 {c.location}</p>}
+                        <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-white/90 opacity-0 transition-opacity duration-300 group-hover:opacity-100">Xem mẫu bài <span aria-hidden>→</span></span>
+                      </div>
+                    </Link>
+                  </Reveal>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })()}
 
       {/* ── Final CTA ────────────────────────────────────────────────────── */}
       <section className="border-t border-border">
