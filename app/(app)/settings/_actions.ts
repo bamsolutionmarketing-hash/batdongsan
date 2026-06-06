@@ -54,6 +54,13 @@ export async function saveBranding(fd: FormData) {
   }
 
   const supabase = createClient();
+  const numOrNull = (k: string) => {
+    const s = str(fd, k);
+    return s === "" ? null : Number(s);
+  };
+  const tones = fd.getAll("tone_profile").map(String).filter((t) => ["chuyen_gia", "than_thien", "ke_chuyen"].includes(t));
+  const toneProfile = tones.length ? tones : ["chuyen_gia", "than_thien"];
+
   const { error } = await supabase.from("agent_branding").upsert({
     user_id: session.userId,
     display_name: parsed.data.display_name,
@@ -61,6 +68,11 @@ export async function saveBranding(fd: FormData) {
     zalo: parsed.data.zalo,
     position: parsed.data.position,
     logo_path: logoPath,
+    so_nam_kn: numOrNull("so_nam_kn"),
+    so_giao_dich: numOrNull("so_giao_dich"),
+    khu_vuc_chuyen: str(fd, "khu_vuc_chuyen") || null,
+    kenh_dat: str(fd, "kenh_dat") || null,
+    tone_profile: toneProfile,
   });
   if (error) fail(error.message);
   revalidatePath("/settings");

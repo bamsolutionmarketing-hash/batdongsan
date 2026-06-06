@@ -47,6 +47,28 @@ export default async function SettingsPage({
           <p className={label}>Logo (PNG/JPEG/WebP/SVG ≤2MB){b?.logoPath ? " — đã có" : ""}</p>
           <input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="text-sm text-foreground" />
         </div>
+
+        <hr className="border-border" />
+        <p className="text-sm font-medium text-foreground">Hồ sơ cho kịch bản video</p>
+        <p className="-mt-1 text-xs text-muted-foreground">Dùng để lắp hook uy tín (CTX/PROOF) và chọn giọng phù hợp.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <div><p className={label}>Số năm kinh nghiệm</p><input name="so_nam_kn" type="number" min="0" defaultValue={b?.soNamKn ?? ""} className={input} /></div>
+          <div><p className={label}>Số giao dịch</p><input name="so_giao_dich" type="number" min="0" defaultValue={b?.soGiaoDich ?? ""} className={input} /></div>
+        </div>
+        <div><p className={label}>Khu vực chuyên</p><input name="khu_vuc_chuyen" defaultValue={b?.khuVucChuyen ?? ""} placeholder="vd: căn hộ khu Đông" className={input} /></div>
+        <div><p className={label}>Kênh đặt lịch / bio</p><input name="kenh_dat" defaultValue={b?.kenhDat ?? ""} placeholder="vd: link ở bio" className={input} /></div>
+        <div>
+          <p className={label}>Giọng văn (chọn ≥1)</p>
+          <div className="mt-1 flex flex-wrap gap-3 text-sm text-foreground">
+            {([["chuyen_gia", "Chuyên gia"], ["than_thien", "Thân thiện"], ["ke_chuyen", "Kể chuyện"]] as const).map(([v, lbl]) => (
+              <label key={v} className="flex items-center gap-1.5">
+                <input type="checkbox" name="tone_profile" value={v} defaultChecked={(b?.toneProfile ?? ["chuyen_gia", "than_thien"]).includes(v)} />
+                {lbl}
+              </label>
+            ))}
+          </div>
+        </div>
+
         <Button type="submit" className="self-start">Lưu</Button>
       </form>
     </main>
