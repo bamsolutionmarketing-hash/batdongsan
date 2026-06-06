@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { ForceGraph } from "./ForceGraph";
 import { NODE_KIND_COLORS, NODE_KIND_LABEL, EDGE_KIND_COLORS } from "@/lib/map/project-graph";
 import { createPost } from "@/app/(app)/projects/_actions";
@@ -24,6 +25,7 @@ export function MapSelection({
 }) {
   const [selected, setSelected] = useState<string[]>([]);
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
   const legend = useMemo(
     () =>
@@ -70,13 +72,21 @@ export function MapSelection({
             </button>
           ))
         )}
-        <button
-          onClick={submit}
-          disabled={selected.length === 0 || pending}
-          className="ml-auto rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-500 disabled:opacity-50"
-        >
-          {pending ? "Đang tạo…" : `Tạo bài (${selected.length})`}
-        </button>
+        <div className="ml-auto flex gap-2">
+          <button
+            onClick={() => router.push(`/scripts?project=${projectId}`)}
+            className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:border-foreground/40"
+          >
+            🎬 Tạo video
+          </button>
+          <button
+            onClick={submit}
+            disabled={selected.length === 0 || pending}
+            className="rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-500 disabled:opacity-50"
+          >
+            {pending ? "Đang tạo…" : `📄 Tạo bài viết (${selected.length})`}
+          </button>
+        </div>
       </div>
     </div>
   );
