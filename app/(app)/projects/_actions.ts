@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth";
 import { checkDailyQuota } from "@/lib/gate/tier";
+import { canAccessProject } from "@/lib/repo/access";
 import { nodesByIds } from "@/lib/repo/nodes";
 import { blocksByNode } from "@/lib/repo/blocks";
 import { getBranding } from "@/lib/repo/branding";
@@ -81,6 +82,11 @@ export async function createPost(projectId: string, slug: string, nodeIds: strin
 
   if (nodeIds.length < 1 || nodeIds.length > 4) {
     redirect(`${back}?error=${encodeURIComponent("Chọn 1–4 điểm")}`);
+  }
+
+  // Access gate: the project must be unlocked for this user.
+  if (!(await canAccessProject(session.userId, projectId))) {
+    redirect(`/projects?error=${encodeURIComponent("Dự án chưa được mở khoá")}`);
   }
 
   // Onboarding gate: branding must be complete before the first post.

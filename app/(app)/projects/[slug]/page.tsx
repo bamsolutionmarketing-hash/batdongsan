@@ -4,8 +4,10 @@ import { getProjectBySlug } from "@/lib/repo/projects";
 import { nodesByProject, linksByProject } from "@/lib/repo/nodes";
 import { getBranding } from "@/lib/repo/branding";
 import { getSession } from "@/lib/auth";
+import { canAccessProject } from "@/lib/repo/access";
 import { buildGraph } from "@/lib/map/buildGraph";
 import { MapSelection } from "@/components/map/MapSelection";
+import { ButtonLink } from "@/components/ui/button";
 import { Notice } from "@/app/(admin)/admin/_Notice";
 
 export default async function AppProjectPage({
@@ -18,6 +20,17 @@ export default async function AppProjectPage({
   if (!res.ok || !res.data) notFound();
   const project = res.data;
   const session = await getSession();
+
+  // Gate: project must be unlocked (in-plan, paid, or inherited admin pool).
+  if (session && !(await canAccessProject(session.userId, project.id))) {
+    return (
+      <main className="mx-auto flex max-w-md flex-col gap-4 p-6 text-center">
+        <h1 className="text-2xl font-bold">{project.name}</h1>
+        <p className="text-sm text-muted-foreground">Dự án này chưa được mở khoá trong tài khoản của bạn.</p>
+        <ButtonLink href="/projects" className="self-center">← Mở khoá ở trang Dự án</ButtonLink>
+      </main>
+    );
+  }
   const [nodesRes, linksRes, brandingRes] = await Promise.all([
     nodesByProject(project.id),
     linksByProject(project.id),

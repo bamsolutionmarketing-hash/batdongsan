@@ -38,7 +38,7 @@ async function SuperPanel({ supabase }: { supabase: ReturnType<typeof createClie
   const stat = (l: string, v: number | null) => (
     <div className="rounded-md border border-border bg-card px-3 py-2"><p className="text-lg font-semibold text-foreground">{v ?? "—"}</p><p className="text-xs text-muted-foreground">{l}</p></div>
   );
-  type Row = { email: string; full_name: string | null; agent_quota: number | null; daily_quota: number | null; active_count: number };
+  type Row = { email: string; full_name: string | null; agent_quota: number | null; daily_quota: number | null; project_quota: number | null; active_count: number };
   const rows = (admins ?? []) as Row[];
 
   return (
@@ -49,24 +49,26 @@ async function SuperPanel({ supabase }: { supabase: ReturnType<typeof createClie
 
       <section className="rounded-lg border border-border bg-card p-4">
         <h2 className="text-sm font-semibold text-foreground">Cấp quyền Admin (theo email)</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">User phải đã đăng ký. agent_quota = số agent active tối đa; daily_quota = lượt/ngày cho agent của admin đó (trống = không giới hạn).</p>
-        <form action={promoteAdminAction} className="mt-3 grid gap-2 sm:grid-cols-4">
+        <p className="mt-0.5 text-xs text-muted-foreground">User phải đã đăng ký. agent_quota = số agent active tối đa; daily_quota = lượt/ngày cho agent; project_quota = số dự án trong pool admin (sub-agent xem được). Trống = 0/không giới hạn.</p>
+        <form action={promoteAdminAction} className="mt-3 grid gap-2 sm:grid-cols-5">
           <input name="email" type="email" required placeholder="email user" className={`${input} sm:col-span-2`} />
           <input name="agent_quota" type="number" min="0" placeholder="agent_quota" className={input} />
           <input name="daily_quota" type="number" min="0" placeholder="daily_quota" className={input} />
-          <Button type="submit" className="sm:col-span-4 self-start">Cấp quyền Admin</Button>
+          <input name="project_quota" type="number" min="0" placeholder="project_quota" className={input} />
+          <Button type="submit" className="sm:col-span-5 self-start">Cấp quyền Admin</Button>
         </form>
 
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="text-muted-foreground"><tr><th className="py-1">Admin</th><th>Active/Quota</th><th>Lượt/ngày</th></tr></thead>
+            <thead className="text-muted-foreground"><tr><th className="py-1">Admin</th><th>Active/Quota</th><th>Lượt/ngày</th><th>Pool dự án</th></tr></thead>
             <tbody>
-              {rows.length === 0 ? <tr><td colSpan={3} className="py-2 text-muted-foreground">Chưa có admin nào.</td></tr> :
+              {rows.length === 0 ? <tr><td colSpan={4} className="py-2 text-muted-foreground">Chưa có admin nào.</td></tr> :
                 rows.map((r) => (
                   <tr key={r.email} className="border-t border-border">
                     <td className="py-1 text-foreground">{r.email}</td>
                     <td>{r.active_count}/{r.agent_quota ?? "∞"}</td>
                     <td>{r.daily_quota ?? "∞"}</td>
+                    <td>{r.project_quota ?? 0}</td>
                   </tr>
                 ))}
             </tbody>

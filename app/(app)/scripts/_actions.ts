@@ -4,6 +4,7 @@ import { requireSession } from "@/lib/auth";
 import { generateScript, type GenerateInput } from "@/lib/script/generate";
 import { upsertProjectScriptFact, upsertMarketFact, ingestPerformance, type PerfMetrics } from "@/lib/repo/scripts";
 import { checkDailyQuota } from "@/lib/gate/tier";
+import { canAccessProject } from "@/lib/repo/access";
 import type { ScriptResult, Platform, Duration } from "@/lib/script-engine/types";
 
 export interface GenerateArgs {
@@ -18,6 +19,13 @@ export interface GenerateArgs {
 // Assemble a script for the current agent. Returns a serializable ScriptResult.
 export async function generateScriptAction(args: GenerateArgs): Promise<ScriptResult> {
   const session = await requireSession();
+  // Access gate: the project must be unlocked for this user.
+  if (!(await canAccessProject(session.userId, args.projectId))) {
+    return {
+      status: "BLOCKED",
+      lint: { hardBlocks: [{ rule: "ACCESS:locked", match: args.projectId, where: "project", message: "Dự án chưa được mở khoá. Mở khoá ở trang Dự án." }], warnings: [] },
+    };
+  }
   // Daily quota is shared with posts (free = 3/day combined).
   const quota = await checkDailyQuota(session.userId);
   if (quota.ok && !quota.data.allowed) {

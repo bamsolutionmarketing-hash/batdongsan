@@ -20,6 +20,7 @@ export async function promoteAdminAction(fd: FormData) {
     p_email: str(fd, "email"),
     p_agent_quota: numOrNull(fd, "agent_quota"),
     p_daily_quota: numOrNull(fd, "daily_quota"),
+    p_project_quota: numOrNull(fd, "project_quota"),
   });
   if (error) back("error=" + encodeURIComponent(error.message));
   revalidatePath("/admin");

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { listPublishedProjects, getProjectById } from "@/lib/repo/projects";
+import { getAccessState } from "@/lib/repo/access";
 import { ScriptPanel } from "@/components/script/ScriptPanel";
 import { Card, CardTitle, CardDesc } from "@/components/ui/card";
 
@@ -34,8 +35,8 @@ export default async function ScriptsPage({
     );
   }
 
-  const res = await listPublishedProjects();
-  const projects = res.ok ? res.data : [];
+  const [res, state] = await Promise.all([listPublishedProjects(), getAccessState(session.userId)]);
+  const projects = (res.ok ? res.data : []).filter((p) => state.all || state.accessible.has(p.id));
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-4 p-4 sm:p-6">
       <div>
@@ -44,8 +45,8 @@ export default async function ScriptsPage({
       </div>
       {projects.length === 0 ? (
         <Card>
-          <CardTitle>Chưa có dự án</CardTitle>
-          <CardDesc>Chưa có dự án nào để tạo kịch bản.</CardDesc>
+          <CardTitle>Chưa có dự án đã mở khoá</CardTitle>
+          <CardDesc>Mở khoá một dự án ở trang Dự án để tạo kịch bản video.</CardDesc>
         </Card>
       ) : (
         <div className="grid gap-2 sm:grid-cols-2">
