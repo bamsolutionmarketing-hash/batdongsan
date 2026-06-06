@@ -13,12 +13,12 @@ const EB = "text-[11px] uppercase tracking-widest text-muted-foreground";
 
 // Per-feature gradient for the sticky panel backdrop.
 const THEME = [
-  "from-sky-500/25 to-indigo-500/10",
-  "from-amber-400/25 to-orange-500/10",
-  "from-emerald-500/25 to-teal-500/10",
-  "from-violet-500/25 to-fuchsia-500/10",
-  "from-rose-500/20 to-pink-500/10",
-  "from-cyan-500/25 to-blue-500/10",
+  "from-sky-500/30 to-indigo-500/10",
+  "from-amber-400/30 to-orange-500/10",
+  "from-emerald-500/30 to-teal-500/10",
+  "from-violet-500/30 to-fuchsia-500/10",
+  "from-rose-500/25 to-pink-500/10",
+  "from-cyan-500/30 to-blue-500/10",
 ];
 
 // ── Designed visuals, one per feature (no stock photos) ─────────────────────
@@ -122,8 +122,8 @@ function Visual({ i }: { i: number }) {
   );
 }
 
-// Sticky scrollytelling for the feature list: scrolling the left items swaps the
-// sticky right visual + highlights the active feature.
+// Sticky scrollytelling with strong motion: inactive items recede (dim + blur +
+// scale + slide), the active one pops; the sticky visual zooms/blurs in.
 export function FeatureScroll({ features }: { features: Feature[] }) {
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLDivElement | null)[]>([]);
@@ -140,36 +140,47 @@ export function FeatureScroll({ features }: { features: Feature[] }) {
   return (
     <div className="mt-8 grid gap-10 lg:grid-cols-2">
       <div>
-        {features.map((f, i) => (
-          <div
-            key={f.title}
-            data-i={i}
-            ref={(el) => { refs.current[i] = el; }}
-            className={`flex min-h-[62vh] flex-col justify-center transition-opacity duration-300 ${active === i ? "opacity-100" : "opacity-40"}`}
-          >
-            <span className="grid h-12 w-12 place-items-center rounded-xl bg-muted text-2xl">{f.icon}</span>
-            <h3 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{f.title}</h3>
-            <p className="mt-3 max-w-md text-lg leading-relaxed text-muted-foreground">{f.desc}</p>
-            <p className="mt-2 max-w-md leading-relaxed text-muted-foreground/80">{f.back}</p>
-            <div className={`mt-6 h-[300px] rounded-xl bg-gradient-to-br p-3 lg:hidden ${THEME[i % THEME.length]}`}>
-              <Visual i={i} />
+        {features.map((f, i) => {
+          const on = active === i;
+          return (
+            <div
+              key={f.title}
+              data-i={i}
+              ref={(el) => { refs.current[i] = el; }}
+              className={`flex min-h-[64vh] flex-col justify-center transition-all duration-500 ease-out will-change-transform motion-reduce:transition-none ${on ? "translate-x-0 scale-100 opacity-100 blur-0" : "-translate-x-2 scale-[0.92] opacity-30 blur-[2px]"}`}
+            >
+              <div className="flex items-center gap-3">
+                <span className={`grid h-14 w-14 place-items-center rounded-2xl text-2xl transition-all duration-500 ${on ? `scale-110 bg-gradient-to-br ${THEME[i % THEME.length]} text-foreground shadow-lg ring-2 ring-foreground/10` : "scale-90 bg-muted"}`}>{f.icon}</span>
+                <span className={`text-5xl font-bold leading-none transition-colors duration-500 ${on ? "text-foreground/15" : "text-foreground/5"}`}>{String(i + 1).padStart(2, "0")}</span>
+              </div>
+              <h3 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{f.title}</h3>
+              <span className={`mt-2 h-1 rounded-full bg-gradient-to-r transition-all duration-500 ${THEME[i % THEME.length]} ${on ? "w-16 opacity-100" : "w-0 opacity-0"}`} />
+              <p className="mt-3 max-w-md text-lg leading-relaxed text-muted-foreground">{f.desc}</p>
+              <p className="mt-2 max-w-md leading-relaxed text-muted-foreground/80">{f.back}</p>
+              <div className={`mt-6 h-[300px] rounded-xl bg-gradient-to-br p-3 lg:hidden ${THEME[i % THEME.length]}`}>
+                <Visual i={i} />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="hidden lg:block">
         <div className="sticky top-0 flex h-screen items-center">
-          <div className={`relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-br p-5 shadow-card transition-colors duration-500 ${THEME[active % THEME.length]}`}>
+          <div className={`relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-br p-5 shadow-card transition-all duration-700 ${THEME[active % THEME.length]}`}>
+            <span className="pointer-events-none absolute -right-3 -top-10 select-none text-[150px] font-bold leading-none text-foreground/5">{String(active + 1).padStart(2, "0")}</span>
             {features.map((_, i) => (
-              <div key={i} className={`absolute inset-5 transition-all duration-500 ${active === i ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}>
+              <div key={i} className={`absolute inset-5 transition-all duration-700 ease-out will-change-transform motion-reduce:transition-none ${active === i ? "scale-100 opacity-100 blur-0" : "pointer-events-none scale-110 opacity-0 blur-md"}`}>
                 <Visual i={i} />
               </div>
             ))}
             <div className="absolute right-4 top-4 z-10 flex flex-col gap-1.5">
               {features.map((_, i) => (
-                <span key={i} className={`w-1.5 rounded-full transition-all duration-300 ${active === i ? "h-5 bg-foreground" : "h-1.5 bg-foreground/30"}`} />
+                <span key={i} className={`w-1.5 rounded-full transition-all duration-300 ${active === i ? "h-6 bg-foreground" : "h-1.5 bg-foreground/30"}`} />
               ))}
+            </div>
+            <div className="absolute inset-x-5 bottom-3 z-10 h-1 overflow-hidden rounded-full bg-foreground/10">
+              <div className="h-full rounded-full bg-foreground/70 transition-all duration-500" style={{ width: `${((active + 1) / features.length) * 100}%` }} />
             </div>
           </div>
         </div>

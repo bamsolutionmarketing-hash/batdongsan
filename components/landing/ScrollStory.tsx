@@ -95,7 +95,7 @@ export function ScrollStory() {
                 key={i}
                 data-i={i}
                 ref={(el) => { refs.current[i] = el; }}
-                className={`flex min-h-[68vh] flex-col justify-center transition-opacity duration-300 ${active === i ? "opacity-100" : "opacity-40"}`}
+                className={`flex min-h-[68vh] flex-col justify-center transition-all duration-500 ease-out will-change-transform motion-reduce:transition-none ${active === i ? "translate-x-0 scale-100 opacity-100 blur-0" : "-translate-x-2 scale-[0.94] opacity-30 blur-[2px]"}`}
               >
                 <span className="text-5xl font-semibold tracking-tight text-muted-foreground/50">{s.k}</span>
                 <h3 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{s.title}</h3>
@@ -108,16 +108,20 @@ export function ScrollStory() {
           </div>
           <div className="hidden lg:block">
             <div className="sticky top-0 flex h-screen items-center">
-              <div className={`relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-br p-5 shadow-card transition-colors duration-500 ${THEME[active % THEME.length]}`}>
+              <div className={`relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-br p-5 shadow-card transition-all duration-700 ${THEME[active % THEME.length]}`}>
+                <span className="pointer-events-none absolute -right-3 -top-10 select-none text-[150px] font-bold leading-none text-foreground/5">{STEPS[active].k}</span>
                 {STEPS.map((_, i) => (
-                  <div key={i} className={`absolute inset-5 flex items-center transition-all duration-500 ${active === i ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}>
+                  <div key={i} className={`absolute inset-5 flex items-center transition-all duration-700 ease-out will-change-transform motion-reduce:transition-none ${active === i ? "scale-100 opacity-100 blur-0" : "pointer-events-none scale-110 opacity-0 blur-md"}`}>
                     <Screen i={i} active={active === i} />
                   </div>
                 ))}
                 <div className="absolute right-4 top-4 z-10 flex flex-col gap-1.5">
                   {STEPS.map((_, i) => (
-                    <span key={i} className={`w-1.5 rounded-full transition-all duration-300 ${active === i ? "h-5 bg-foreground" : "h-1.5 bg-foreground/30"}`} />
+                    <span key={i} className={`w-1.5 rounded-full transition-all duration-300 ${active === i ? "h-6 bg-foreground" : "h-1.5 bg-foreground/30"}`} />
                   ))}
+                </div>
+                <div className="absolute inset-x-5 bottom-3 z-10 h-1 overflow-hidden rounded-full bg-foreground/10">
+                  <div className="h-full rounded-full bg-foreground/70 transition-all duration-500" style={{ width: `${((active + 1) / STEPS.length) * 100}%` }} />
                 </div>
               </div>
             </div>
