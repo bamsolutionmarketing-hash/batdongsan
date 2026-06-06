@@ -29,5 +29,11 @@ values
    '00000000-0000-0000-0000-0000000000e3',
    'Vinhomes Saigon Park', 'vinhomes-saigon-park',
    'Giai đoạn 1 — khởi công 29/4/2026', 'Xã Xuân Thới Sơn (Hóc Môn), giáp Quận 12, TP.HCM', 'upcoming', null,
+   null, null, 'broker_estimate', false, true),
+  -- The Global City — masterplan 117,4 ha (Masterise); Cosmo Central is one phân khu.
+  ('00000000-0000-0000-0000-00000000b002',
+   '00000000-0000-0000-0000-0000000000e1',
+   'The Global City', 'the-global-city',
+   'Đại đô thị 117,4 ha — downtown khu Đông', 'Đỗ Xuân Hợp, P. Bình Trưng, TP.HCM', 'selling', null,
    null, null, 'broker_estimate', false, true)
 on conflict (id) do nothing;
