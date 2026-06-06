@@ -21,6 +21,14 @@ export interface GenerateInput {
   nodeIds?: string[]; // knowledge-map nodes the agent picked (bias BODY by topic)
 }
 
+// Deterministic index into a pool from a string key.
+function hashIdx(s: string, n: number): number {
+  if (n <= 0) return 0;
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h % n;
+}
+
 // End-to-end script generation for an agent. Deterministic given the same
 // (user, project, recipe, date, attempt). Persists the log + bumps rotation.
 export async function generateScript(userId: string, input: GenerateInput): Promise<ScriptResult> {
@@ -53,21 +61,23 @@ export async function generateScript(userId: string, input: GenerateInput): Prom
     branding: { displayName: branding?.displayName, phone: branding?.phone, zalo: branding?.zalo },
     project: { name: project?.name, view360Url: project?.view360Url },
   };
+  const seed = hashSeed([
+    userId, input.projectId, recipe.id, today.toISOString().slice(0, 10),
+    input.attempt ?? 0, (input.nodeIds ?? []).join(","),
+  ]);
   const selectedNodes = nodesRes.ok
     ? nodesRes.data.map((n) => {
-        const usable = (bodyMap.get(n.id) ?? []).find((b) => blockUsable(b, n.facts).usable);
-        const body = usable ? fillVars(usable.text, varCtx).text : null;
+        // Rotate among usable body variants by seed (so re-roll varies the body
+        // line as more variants are authored).
+        const usable = (bodyMap.get(n.id) ?? []).filter((b) => blockUsable(b, n.facts).usable);
+        const pick = usable.length ? usable[hashIdx(`${seed}:bodyvar:${n.id}`, usable.length)] : undefined;
+        const body = pick ? fillVars(pick.text, varCtx).text : null;
         return {
           id: n.id, category: n.category, label: n.label, talkpoint: n.talkpoint, body,
           facts: n.facts.map((f) => ({ key: f.key, value: f.value, confidence: f.confidence })),
         };
       })
     : [];
-
-  const seed = hashSeed([
-    userId, input.projectId, recipe.id, today.toISOString().slice(0, 10),
-    input.attempt ?? 0, (input.nodeIds ?? []).join(","),
-  ]);
 
   const result = assembleScript({
     recipe, platform: input.platform, durationS: input.durationS,

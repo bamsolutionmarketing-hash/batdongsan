@@ -129,7 +129,7 @@ export function ScriptPanel({ projectId, nodeIds, projectName }: { projectId: st
         </button>
         {result?.status === "OK" && (
           <>
-            <button onClick={() => run(attempt + 1)} disabled={pending} className="rounded-md border border-border px-3 py-2 text-sm text-foreground hover:border-foreground/30">Đổi hook</button>
+            <button onClick={() => run(attempt + 1)} disabled={pending} className="rounded-md border border-border px-3 py-2 text-sm text-foreground hover:border-foreground/30">🎲 Đổi mẫu</button>
             <button onClick={() => copy(scriptText, "script")} className="rounded-md border border-border px-3 py-2 text-sm text-foreground hover:border-foreground/30">{copied === "script" ? "✓ Đã copy" : "Copy kịch bản"}</button>
             <button onClick={() => copy(aiPrompt, "prompt")} className="rounded-md border border-border px-3 py-2 text-sm text-foreground hover:border-foreground/30">{copied === "prompt" ? "✓ Đã copy" : "Copy kèm prompt AI"}</button>
           </>
