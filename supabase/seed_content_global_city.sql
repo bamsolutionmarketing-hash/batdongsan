@@ -247,3 +247,67 @@ from (values
 ) as v(node_key, role, variant_no, text, tone, min_confidence, fact_keys)
 join knowledge_nodes n on n.project_id='00000000-0000-0000-0000-00000000b002' and n.node_key=v.node_key
 on conflict (node_id, role, variant_no) do nothing;
+
+-- ── Batch D: tiện ích phụ · cluster thể thao · so sánh · infra · vĩ mô · pháp lý
+-- Hoàn tất phủ 100% (93/93 node). Honest-advisor cho caotoc/metro/tcb/benhvien/future.
+insert into node_content_blocks (node_id, role, variant_no, text, tone, min_confidence, fact_keys, is_enabled)
+select n.id, v.role::block_role_t, v.variant_no, v.text, v.tone::block_tone_t, v.min_confidence::confidence_t, v.fact_keys, true
+from (values
+  ('ti-citypark','hook',1,'City Park (có đường đua Go-Kart) đã mở cửa 30/3/2024 — tầng tiện ích đời sống cuối tuần của [TEN_DU_AN] vận hành thật.','story','verified',array[]::text[]),
+  ('ti-citypark','body',1,'Cùng kênh nhạc nước, City Park giúp dự án có nhịp sống thật trước khi cư dân cao tầng dọn về — điều các đại đô thị vùng ven thường thiếu 3–5 năm đầu.','neutral','verified',array[]::text[]),
+  ('ti-mpp30','hook',1,'Hệ 30+ tiện ích Masteri Park Place: công viên ven sông, bể bơi resort, gym, yoga, thư viện, sảnh đón chuẩn khách sạn.','neutral','verified',array[]::text[]),
+  ('ti-mpp30','body',1,'Bàn giao theo bộ chuẩn Masteri Collection (thiết bị thương hiệu) — đồng nhất chuỗi Masteri, giảm chi phí hoàn thiện cho người mua cho thuê.','neutral','verified',array[]::text[]),
+  ('ti-vanphong','hook',1,'Tháp văn phòng hạng A + Convention Center + Lifestyle Hub ngay nội khu [TEN_DU_AN] — nguồn cầu thuê căn hộ bền nhất là người làm việc tại chỗ.','neutral','verified',array[]::text[]),
+  ('ti-vanphong','body',1,'Văn phòng hạng A vận hành = tệp khách thuê chuyên gia/quản lý ngay nội khu, giảm phụ thuộc tệp thuê từ Quận 1/Thảo Điền.','neutral','verified',array[]::text[]),
+  ('ti-benhvien','hook',1,'Quy hoạch bệnh viện tiêu chuẩn quốc tế ~2 ha trong [TEN_DU_AN]. Em nói rõ: chưa công bố đơn vị vận hành — nói "quy hoạch có bệnh viện", không hứa thương hiệu.','story','verified',array[]::text[]),
+  ('pk-future','hook',1,'The Peak, Midtown là các cụm tháp tương lai theo nguồn thị trường — chưa có công bố chính thức từ CĐT, em chỉ dùng làm tham chiếu tổng nguồn cung.','story','verified',array[]::text[]),
+  ('pk-future','body',1,'Nguồn cung tương lai lớn có thể pha loãng tăng giá ngắn hạn các tháp hiện hữu, nhưng kéo dài vòng đời marketing và mật độ cư dân — tốt cho khai thác.','neutral','verified',array[]::text[]),
+  ('rach-chiec','hook',1,'Khu liên hợp TDTT Quốc gia Rạch Chiếc 186,78 ha (~6 tỷ USD), sân vận động 65.000–75.000 chỗ, khởi công 15/1/2026 — biểu tượng quốc gia sát [TEN_DU_AN].','neutral','verified',array['Quy mô','Vốn','Sân vận động','Khởi công']),
+  ('rach-chiec','body',1,'[TEN_DU_AN] nằm trong cụm đô thị – thể thao cùng Rạch Chiếc và Saigon Sports City — cư dân có cả tổ hợp thể thao quốc gia trong bán kính gần.','story','verified',array['Tầm nhìn']),
+  ('saigon-sports-city','hook',1,'Saigon Sports City 64 ha (Keppel) — mắt xích giữa Rạch Chiếc và [TEN_DU_AN] trong cụm đô thị – thể thao 368 ha.','neutral','verified',array['Quy mô']),
+  ('saigon-sports-city','body',1,'Keppel đã chuyển nhượng 70% vốn (2025), giữ 30% — hiệu ứng cụm nhiều CĐT lớn cùng đầu tư vào một vùng làm tăng tốc lên đời cả khu.','neutral','verified',array['Ghi chú']),
+  ('metropole-tt','hook',1,'Metropole Thủ Thiêm (SonKim) — trần giá hạng sang, 2PN tới ~300–440 triệu/m². Mốc để định vị [TEN_DU_AN] (~120–170).','neutral','verified',array['Giá tham khảo','Chủ đầu tư']),
+  ('the-river-tt','hook',1,'The River Thủ Thiêm (Refico) — căn hộ hàng hiệu ven sông, cùng cụm nguồn cung hạng sang Thủ Thiêm.','neutral','verified',array['Chủ đầu tư','Đặc điểm']),
+  ('tt-eaton','hook',1,'Eaton Park (Gamuda) ~115+ triệu/m², gần lõi Thủ Thiêm — nhưng là dự án đơn lẻ, thiếu hệ tiện ích đại đô thị (mall, trường, kênh) như [TEN_DU_AN].','neutral','verified',array['Giá','Vị trí']),
+  ('tt-eaton','body',1,'Em so sánh thẳng: [TEN_DU_AN] thắng ở hệ sinh thái tự chủ; Eaton thắng ở khoảng cách tới Thủ Thiêm. Tùy ưu tiên của Anh/Chị.','story','verified',array['Chủ đầu tư']),
+  ('zeit-river-tt','hook',1,'Zeit River (GS E&C, Hàn Quốc) đang bàn giao tại Thủ Thiêm — nguồn cung hạng sang hiện hữu, cạnh tranh tệp khách cao cấp với [TEN_DU_AN].','neutral','verified',array['Chủ đầu tư','Tiến độ']),
+  ('tt-thuthiem','hook',1,'Thủ Thiêm là trần giá khu Đông (300–440 triệu/m²) — khoảng cách với [TEN_DU_AN] (~120–170) là dư địa kể chuyện nếu khu Đông tiếp tục lên hạng.','story','verified',array[]::text[]),
+  ('tt-thuthiem','body',1,'Đồng thời đây cũng là lời nhắc trung thực: [TEN_DU_AN] chưa phải lõi CBD ven sông Quận 1 — định giá theo đúng vị thế của nó.','story','verified',array[]::text[]),
+  ('tt-vgp','hook',1,'Vinhomes Grand Park không phải đối thủ giá mà là điểm so sánh giá trị — chứng minh mô hình đại đô thị tự vận hành làm tăng giá và giữ thanh khoản.','story','verified',array[]::text[]),
+  ('tt-vgp','body',1,'VGP 45–65 triệu/m² hợp ngân sách 3–5 tỷ; khách 6 tỷ+ cần địa chỉ trung tâm mới thì [TEN_DU_AN] — hai phân khúc khác nhau.','neutral','verified',array[]::text[]),
+  ('tt-giagc','hook',1,'Lịch sử giá [TEN_DU_AN]: SOHO → Grand View → Park Place, mặt bằng leo thang qua từng đợt mở bán — vào sớm thường có lợi thế giá.','story','verified',array[]::text[]),
+  ('tt-giagc','body',1,'Em luôn nói rõ: giá rao thứ cấp (mức trần) gồm căn view đẹp tầng cao, mang tính niêm yết — không phải giá khớp, cần đối chiếu giao dịch thực.','story','verified',array[]::text[]),
+  ('tt-thanhkhoan','hook',1,'Quy luật thanh khoản nội khu: căn hộ 1–2PN (6–10 tỷ) thoát hàng nhanh nhất; nhà phố và biệt thự siêu sang tệp hẹp hơn.','neutral','verified',array[]::text[]),
+  ('tt-thanhkhoan','body',1,'Nhà đầu tư cần thanh khoản nên chọn căn hộ diện tích vừa, vị trí view đặc trưng (kênh/sông) để khác biệt khi bán lại.','story','verified',array[]::text[]),
+  ('cdt-group','hook',1,'Masterise Group tăng vốn hơn 35.227 tỷ và lấn sân hàng không — tập đoàn mẹ quy mô lớn, đang mở rộng, đứng sau [TEN_DU_AN].','neutral','verified',array[]::text[]),
+  ('cdt-group','body',1,'Em nhìn hai chiều: quy mô lớn là tín hiệu năng lực huy động vốn, nhưng cũng nghĩa là nguồn lực phân bổ cho nhiều mặt trận — cần theo dõi tiến độ.','story','verified',array[]::text[]),
+  ('cdt-tcb','hook',1,'Trục Techcombank – Masterise giúp chính sách vay 70–80%, hỗ trợ lãi suất 0% vận hành trơn tru cho người mua [TEN_DU_AN].','neutral','verified',array[]::text[]),
+  ('cdt-tcb','body',1,'Mặt còn lại em cũng nói thẳng: mức độ tập trung vào một hệ sinh thái là yếu tố cần cân nhắc với danh mục lớn.','story','verified',array[]::text[]),
+  ('macro-vn','hook',1,'GDP Q1/2025 +6,93% (cao nhất từ 2020), FDI giải ngân 2025 ~27,62 tỷ USD (cao nhất 5 năm) — nền vĩ mô đỡ giá bất động sản cao cấp.','neutral','verified',array['GDP Q1/2025','FDI giải ngân 2025']),
+  ('macro-vn','body',1,'Chứng khoán và vàng biến động, lãi suất hạ — dòng tiền tìm về bất động sản chuẩn quốc tế, lý do căn hộ cao cấp khu Đông hút vốn mạnh.','story','verified',array['Dòng tiền','GRDP HCM 2025']),
+  ('thu-thiem-cbd','hook',1,'Thủ Thiêm đã chạm ngưỡng tỷ đồng/m² (biệt thự Sala) — [TEN_DU_AN] cách ~10 phút, giá căn hộ, đang ở vùng định giá hấp dẫn hơn nhiều so với CBD mới.','story','verified',array['Giá biệt thự Sala','Vai trò']),
+  ('dt-kh','hook',1,'CĐT định vị khách Masteri Park Place là The Energized Strivers — thế hệ trẻ thành đạt, gia đình đa thế hệ, xem nhà là trạm tiếp năng lượng.','neutral','verified',array[]::text[]),
+  ('dt-kh','body',1,'Ứng dụng tư vấn: chốt khách ở thật bằng trải nghiệm (view kênh, trường cho con); chốt nhà đầu tư bằng chính tệp khách thuê tương lai là nhóm này.','story','verified',array[]::text[]),
+  ('dt-trigger','hook',1,'Tín hiệu MUA mạnh hơn: An Phú thông xe ~30/6/2026, Vành đai 3 thông xe, Lotte chốt ngày khai trương, Grand View bàn giao đúng hạn.','neutral','verified',array[]::text[]),
+  ('dt-trigger','body',1,'Tín hiệu thận trọng: hạ tầng trượt hơn 6 tháng, giá thứ cấp đi ngang khi khu Đông bung hàng, chính sách hỗ trợ lãi suất bị rút ngắn. Em theo dõi giúp Anh/Chị.','story','verified',array[]::text[]),
+  ('ht-lienphuong','hook',1,'Đường Liên Phường 60m chạy xuyên dự án — Masterise chi hơn 350 tỷ, thông xe kỹ thuật 8/11/2025 — đại lộ mặt tiền của mall và các tháp.','neutral','verified',array[]::text[]),
+  ('ht-lienphuong','body',1,'Trục này mở hướng kết nối về Vành đai 3 và khu công nghệ cao — xương sống giao thông nội khu [TEN_DU_AN].','neutral','verified',array[]::text[]),
+  ('ht-caotoc','hook',1,'Cao tốc Long Thành mở rộng lên 8–10 làn (2025–2027) — giải nút thắt tuyến huyết mạch nối [TEN_DU_AN] với sân bay Long Thành.','neutral','verified',array[]::text[]),
+  ('ht-caotoc','body',1,'Em nói thật: giai đoạn mở rộng có thể gây ùn ứ cục bộ 2025–2027 trước khi thông thoáng — chuẩn bị tâm lý cho khách ở thật về trải nghiệm ngắn hạn.','story','verified',array[]::text[]),
+  ('ht-metro','hook',1,'Trung thực khi tư vấn: [TEN_DU_AN] không nằm sát ga Metro số 1 — lợi thế metro là gián tiếp (nâng mặt bằng khu Đông), không phải tiện ích cửa nhà.','story','verified',array[]::text[]),
+  ('metro-2-tham-luong','hook',1,'Metro số 2 (Bến Thành – Tham Lương) 11,3 km, 11 ga, khởi công 15/1/2026, vận hành Q4/2030 — trục xương sống kết nối trung tâm.','neutral','verified',array['Tuyến','Quy mô','Vận hành']),
+  ('metro-2-thu-thiem','hook',1,'Metro 2 nhánh Bến Thành – Thủ Thiêm: 6 ga ngầm xuyên đáy sông Sài Gòn — [TEN_DU_AN] tiếp cận qua Ga Thủ Thiêm chỉ ~10 phút.','neutral','verified',array['Tuyến','Quy mô']),
+  ('metro-2-thu-thiem','body',1,'Trục Tham Lương – Bến Thành – Thủ Thiêm – Long Thành trở thành xương sống metro, vận hành Q3/2030 — kết nối vùng cho khu Đông.','neutral','verified',array['Vận hành']),
+  ('thu-thiem-long-thanh-rail','hook',1,'Đường sắt đô thị Thủ Thiêm – Long Thành (48 km, ~84.000 tỷ) — từ Ga Thủ Thiêm tới sân bay Long Thành chỉ 30 phút, vận hành 2030.','neutral','verified',array['Chiều dài','Kết nối','Vận hành']),
+  ('vanh-dai-2','hook',1,'Vành đai 2 (đoạn 1+2+3, ~9 km) khởi công 19/12/2025, hoàn thành 2027 — khép kín đẩy xe tải khỏi trục trung tâm, nâng chất lượng sống quanh [TEN_DU_AN].','neutral','verified',array['Đoạn 1+2+3','Khởi công','Hoàn thành']),
+  ('tq-rachchiec','hook',1,'[TEN_DU_AN] nằm trong cụm đô thị Rạch Chiếc gần 500 ha — hiệu ứng cụm nhiều CĐT lớn cùng đầu tư làm tăng tốc lên đời cả vùng.','neutral','verified',array[]::text[]),
+  ('tq-rachchiec','body',1,'Cụm gồm Saigon Sports City (Keppel), KLH TDTT Rạch Chiếc và [TEN_DU_AN] — critical mass cho cả vùng giá trị, không phải dự án đơn độc.','story','verified',array[]::text[]),
+  ('tq-sanpham','hook',1,'Cơ cấu [TEN_DU_AN]: ~1.800–2.392 sản phẩm thấp tầng + ~8.000–10.000 căn hộ cao tầng — một đại đô thị đa sản phẩm thực thụ.','neutral','verified',array[]::text[]),
+  ('tq-sanpham','body',1,'Từ nhà phố SOHO (đã có sổ), biệt thự đảo SOLA, đến căn hộ Park Place/Cosmo/Grand View/Lumière — đủ dải sản phẩm cho mọi mục tiêu.','neutral','verified',array[]::text[]),
+  ('pl-timeline','hook',1,'Điểm mạnh pháp lý cốt lõi: đất đã giao từ 2001, quy hoạch 1/500 phê duyệt 2015 — nền pháp lý gốc lâu đời hiếm có ở quỹ đất lõi khu Đông.','neutral','verified',array[]::text[]),
+  ('pl-timeline','body',1,'Chuỗi pháp lý đầy đủ từ chủ trương đầu tư, giao đất đến quy hoạch chi tiết — khác hẳn các dự án vùng ven chỉ có chủ trương.','story','verified',array[]::text[]),
+  ('pl-nganhang','hook',1,'Khi ký HĐMB, em luôn kiểm hai điều: chứng thư bảo lãnh nghĩa vụ tài chính của CĐT cho đúng căn, và căn đã giải chấp khỏi khoản vay dự án.','story','verified',array[]::text[]),
+  ('pl-nganhang','body',1,'Techcombank/TCBS thu xếp vốn chủ đạo; BIDV hỗ trợ vay tới 70% tại Cosmo Central — nhiều lựa chọn ngân hàng cho người mua.','neutral','verified',array[]::text[])
+) as v(node_key, role, variant_no, text, tone, min_confidence, fact_keys)
+join knowledge_nodes n on n.project_id='00000000-0000-0000-0000-00000000b002' and n.node_key=v.node_key
+on conflict (node_id, role, variant_no) do nothing;
