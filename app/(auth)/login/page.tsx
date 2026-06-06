@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { login, signup, type AuthState } from "./actions";
+import { Logo } from "@/components/landing/Logo";
 
 const initial: AuthState = {};
 
@@ -41,10 +42,7 @@ export default function LoginPage({
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 p-6">
       <div>
-        <p className="mb-2 inline-flex items-center gap-2 text-sm font-semibold tracking-wide text-sky-400">
-          <span className="grid h-7 w-7 place-items-center rounded-md bg-sky-600 text-[11px] font-bold text-white">BĐS</span>
-          Trợ lý BĐS
-        </p>
+        <div className="mb-3"><Logo /></div>
         <h1 className="text-2xl font-bold">Đăng nhập</h1>
         <p className="text-sm text-muted-foreground">Trợ lý bán hàng BĐS cho đội sale của bạn.</p>
       </div>

@@ -10,6 +10,7 @@ import { Counter } from "@/components/landing/Counter";
 import { Footer } from "@/components/landing/Footer";
 import { FeatureScroll } from "@/components/landing/FeatureScroll";
 import { ScrollStory } from "@/components/landing/ScrollStory";
+import { SmoothScroll } from "@/components/landing/SmoothScroll";
 
 const FEATURES = [
   { icon: "🗺️", title: "Bản đồ tri thức", desc: "Chọn 1–4 điểm, máy dựng bài quanh đúng câu chuyện.", back: "112 điểm tri thức, nối theo quan hệ thật — chạm là ra góc kể." },
@@ -29,6 +30,7 @@ export default async function Home() {
   const projects = res.ok ? res.data : [];
 
   return (
+    <SmoothScroll>
     <div className="min-h-screen bg-background">
       <MarketingHeader />
 
@@ -49,7 +51,7 @@ export default async function Home() {
             <a href="#demo" className="rounded-md border border-border px-5 py-3 text-sm font-medium text-foreground transition hover:bg-accent">Xem demo</a>
           </div>
         </div>
-        <div className="animate-fade-up [animation-delay:120ms]">
+        <div className="animate-fade-up [animation-delay:120ms]" data-parallax="14">
           <HeroInteractive />
         </div>
       </section>
@@ -204,5 +206,6 @@ export default async function Home() {
 
       <Footer />
     </div>
+    </SmoothScroll>
   );
 }
