@@ -1,30 +1,9 @@
-// Brand mark for NhaPilot — a dark monogram tile (blue "N" peak + silver "P" +
-// paper-plane accent) with an optional "NhaPilot" wordmark (blue Nha / silver
-// Pilot). Recreated in SVG/CSS so it scales crisply and is theme-aware.
+/* eslint-disable @next/next/no-img-element */
+// Brand mark for NhaPilot: the NP monogram (public/brand/mark.svg) + an optional
+// "NhaPilot" wordmark (blue Nha / silver Pilot).
 
-export function BrandIcon({ className = "" }: { className?: string }) {
-  return (
-    <span className={`relative grid shrink-0 place-items-center overflow-hidden rounded-[28%] bg-gradient-to-br from-slate-800 to-slate-950 ring-1 ring-sky-400/40 shadow-[0_6px_16px_-6px_rgba(56,130,246,0.6)] ${className}`}>
-      <svg viewBox="0 0 48 48" className="h-[76%] w-[76%]" fill="none" aria-hidden>
-        <defs>
-          <linearGradient id="np-blue" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#7dd3fc" />
-            <stop offset="1" stopColor="#1d4ed8" />
-          </linearGradient>
-          <linearGradient id="np-silver" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#f1f5f9" />
-            <stop offset="1" stopColor="#64748b" />
-          </linearGradient>
-        </defs>
-        {/* N as an ascending roof/peak */}
-        <path d="M8 39 V13 L22 33 V13" stroke="url(#np-blue)" strokeWidth="4.6" strokeLinecap="round" strokeLinejoin="round" />
-        {/* P */}
-        <path d="M29 39 V11 h6.5 a6.5 6.5 0 0 1 0 13 H29" stroke="url(#np-silver)" strokeWidth="4.6" strokeLinecap="round" strokeLinejoin="round" />
-        {/* paper-plane accent */}
-        <path d="M22.5 19 l9 4.2 -3.4 1.2 -1.2 3.6 z" fill="url(#np-blue)" />
-      </svg>
-    </span>
-  );
+export function BrandIcon({ className = "h-8 w-8" }: { className?: string }) {
+  return <img src="/brand/mark.svg" alt="NhaPilot" className={`shrink-0 object-contain ${className}`} />;
 }
 
 export function Logo({ withWordmark = true, className = "" }: { withWordmark?: boolean; className?: string }) {
