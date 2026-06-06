@@ -115,15 +115,22 @@ export default async function Home() {
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 sm:px-6 sm:py-28 lg:grid-cols-2">
           <Reveal>
             <div>
-              <Eyebrow>Trên di động</Eyebrow>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Làm việc gọn trong lòng bàn tay</h2>
+              <Eyebrow>Làm mọi lúc, mọi nơi</Eyebrow>
+              <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">Cả xưởng nội dung<br className="hidden sm:block" /> gọn trong lòng bàn tay</h2>
               <p className="mt-4 max-w-md leading-relaxed text-muted-foreground">
-                Mở app buổi sáng, nhận gợi ý, tạo bài và tải ảnh — giữ chuỗi đăng đều mỗi ngày.
+                Mở app buổi sáng, nhận gợi ý, tạo bài và tải ảnh trong 2 phút — giữ chuỗi đăng đều mỗi ngày.
               </p>
               <div className="mt-10 grid grid-cols-3 gap-4">
-                <Counter to={112} label="Điểm tri thức" />
-                <Counter to={640} label="Mẫu câu" />
-                <Counter to={12} label="Giọng × định dạng" />
+                <Counter to={112} suffix="+" label="điểm tri thức để kể" />
+                <Counter to={640} suffix="+" label="mẫu câu sẵn dùng" />
+                <Counter to={12} label="giọng & định dạng" />
+              </div>
+              <div className="mt-10 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                <Link href="/signup" className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-card transition hover:bg-primary/90 hover:shadow-card-hover">
+                  Tạo bài đầu tiên miễn phí
+                  <span aria-hidden>→</span>
+                </Link>
+                <span className="text-xs text-muted-foreground">Không cần thẻ · xong trong 2 phút</span>
               </div>
             </div>
           </Reveal>
