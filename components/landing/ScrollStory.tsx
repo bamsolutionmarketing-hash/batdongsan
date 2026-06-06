@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 
 const EB = "text-xs uppercase tracking-widest text-muted-foreground";
-const ACCENT = ["#38bdf8", "#a78bfa", "#34d399"]; // one colour per step
-const hx = (c: string, a: number) => c + Math.round(a * 255).toString(16).padStart(2, "0");
 
 function ScreenChoose({ active }: { active: boolean }) {
   return (
@@ -96,45 +94,31 @@ export function ScrollStory() {
                 key={i}
                 data-i={i}
                 ref={(el) => { refs.current[i] = el; }}
-                className={`flex min-h-[68vh] flex-col justify-center transition-all duration-500 ease-out will-change-transform motion-reduce:transition-none ${active === i ? "translate-x-0 scale-100 opacity-100 blur-0" : "-translate-x-2 scale-[0.94] opacity-30 blur-[2px]"}`}
+                className={`flex min-h-[68vh] flex-col justify-center transition-opacity duration-500 ease-out ${active === i ? "opacity-100" : "opacity-45"}`}
               >
-                <span className="text-5xl font-bold tracking-tight" style={{ color: hx(ACCENT[i % ACCENT.length], active === i ? 0.5 : 0.18) }}>{s.k}</span>
+                <span className={`text-5xl font-semibold tracking-tight transition-colors duration-500 ${active === i ? "text-foreground/40" : "text-foreground/15"}`}>{s.k}</span>
                 <h3 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{s.title}</h3>
-                <span className="mt-2 block h-1 rounded-full transition-all duration-500" style={{ background: ACCENT[i % ACCENT.length], width: active === i ? 56 : 0, opacity: active === i ? 1 : 0 }} />
-                <p className="mt-3 max-w-md leading-relaxed text-muted-foreground">{s.desc}</p>
-                <div className="mt-6 rounded-2xl p-3 lg:hidden" style={{ background: `linear-gradient(135deg, ${hx(ACCENT[i % ACCENT.length], 0.25)}, transparent)` }}>
-                  <div className="h-[300px]"><Screen i={i} active={active === i} /></div>
+                <span className={`mt-3 block h-px rounded-full bg-brand transition-all duration-500 ${active === i ? "w-12 opacity-100" : "w-0 opacity-0"}`} />
+                <p className="mt-4 max-w-md leading-relaxed text-muted-foreground">{s.desc}</p>
+                <div className="mt-7 rounded-2xl border border-border bg-card p-4 shadow-[0_24px_60px_-40px_rgba(0,0,0,0.5)] lg:hidden">
+                  <div className="h-[280px]"><Screen i={i} active={active === i} /></div>
                 </div>
               </div>
             ))}
           </div>
           <div className="hidden lg:block">
-            <div className="sticky top-0 flex h-screen items-center [perspective:1400px]">
-              <div
-                className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.75rem] border border-white/10 p-5 transition-all duration-700 ease-out [transform-style:preserve-3d]"
-                style={{
-                  background: `linear-gradient(135deg, ${hx(ACCENT[active % ACCENT.length], 0.28)}, ${hx(ACCENT[active % ACCENT.length], 0.05)} 60%, transparent)`,
-                  transform: `rotateX(4deg) rotateY(${active % 2 ? 9 : -9}deg)`,
-                  boxShadow: `0 40px 90px -25px ${hx(ACCENT[active % ACCENT.length], 0.55)}, inset 0 1px 0 0 rgba(255,255,255,0.12)`,
-                }}
-              >
-                <span className="pointer-events-none absolute -right-3 -top-12 select-none text-[160px] font-bold leading-none" style={{ color: hx(ACCENT[active % ACCENT.length], 0.12) }}>{STEPS[active].k}</span>
-                {STEPS.map((_, i) => {
-                  const on = active === i;
-                  return (
-                    <div key={i} className="absolute inset-5 flex items-center transition-all duration-700 ease-out will-change-transform motion-reduce:transition-none"
-                      style={{ opacity: on ? 1 : 0, transform: on ? "rotateY(0deg) translateZ(40px)" : `rotateY(${i % 2 ? 22 : -22}deg) translateZ(-40px)`, pointerEvents: on ? undefined : "none" }}>
-                      <Screen i={i} active={on} />
-                    </div>
-                  );
-                })}
-                <div className="absolute right-4 top-4 z-10 flex flex-col gap-1.5">
+            <div className="sticky top-0 flex h-screen items-center">
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.75rem] border border-border bg-card p-6 shadow-[0_40px_90px_-50px_rgba(0,0,0,0.6)]">
+                <span className="pointer-events-none absolute right-5 top-4 select-none text-7xl font-semibold leading-none text-foreground/[0.04]">{STEPS[active].k}</span>
+                {STEPS.map((_, i) => (
+                  <div key={i} className={`absolute inset-6 flex items-center transition-all duration-500 ease-out ${active === i ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}>
+                    <Screen i={i} active={active === i} />
+                  </div>
+                ))}
+                <div className="absolute inset-x-6 bottom-5 flex gap-1.5">
                   {STEPS.map((_, i) => (
-                    <span key={i} className="w-1.5 rounded-full transition-all duration-300" style={{ height: active === i ? 24 : 6, background: active === i ? ACCENT[i % ACCENT.length] : "rgba(255,255,255,0.3)" }} />
+                    <span key={i} className={`h-0.5 flex-1 rounded-full transition-colors duration-300 ${active === i ? "bg-brand" : "bg-border"}`} />
                   ))}
-                </div>
-                <div className="absolute inset-x-5 bottom-3 z-10 h-1 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${((active + 1) / STEPS.length) * 100}%`, background: ACCENT[active % ACCENT.length] }} />
                 </div>
               </div>
             </div>

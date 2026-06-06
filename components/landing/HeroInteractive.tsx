@@ -6,9 +6,9 @@ import { usePrefersReducedMotion } from "@/lib/landing/useScroll";
 // Real estate photos (Unsplash CDN). z = depth → stronger parallax on tilt.
 const W = "auto=format&fit=crop&q=80&w=700";
 const CARDS = [
-  { src: `https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?${W}`, cls: "left-[6%] top-[12%] h-[72%] w-[58%]", z: 0, rot: "-2deg" },
-  { src: `https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?${W}`, cls: "right-[3%] top-[4%] h-[40%] w-[46%]", z: 70, rot: "3deg" },
-  { src: `https://images.unsplash.com/photo-1512917774080-9991f1c4c750?${W}`, cls: "right-[8%] bottom-[6%] h-[36%] w-[42%]", z: 45, rot: "-3deg" },
+  { src: `https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?${W}`, cls: "left-0 top-[10%] h-[80%] w-[56%]", z: 0, rot: "-1.5deg" },
+  { src: `https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?${W}`, cls: "right-0 top-0 h-[44%] w-[42%]", z: 60, rot: "2deg" },
+  { src: `https://images.unsplash.com/photo-1512917774080-9991f1c4c750?${W}`, cls: "right-[4%] bottom-[2%] h-[42%] w-[40%]", z: 40, rot: "-2deg" },
 ];
 
 export function HeroInteractive() {
@@ -23,7 +23,7 @@ export function HeroInteractive() {
       raf = 0;
       x += (tx - x) * 0.12;
       y += (ty - y) * 0.12;
-      scene.style.transform = `rotateX(${-y * 7}deg) rotateY(${x * 9}deg)`;
+      scene.style.transform = `rotateX(${-y * 4}deg) rotateY(${x * 5}deg)`;
       if (Math.abs(tx - x) > 0.001 || Math.abs(ty - y) > 0.001) raf = requestAnimationFrame(loop);
     };
     const onMove = (e: MouseEvent) => {
@@ -46,7 +46,7 @@ export function HeroInteractive() {
         {CARDS.map((c, i) => (
           <figure
             key={i}
-            className={`absolute overflow-hidden rounded-2xl border border-border bg-muted shadow-card-hover ring-1 ring-black/5 ${c.cls}`}
+            className={`absolute overflow-hidden rounded-2xl border border-border bg-muted shadow-[0_30px_60px_-30px_rgba(0,0,0,0.45)] ${c.cls}`}
             style={{ transform: `translateZ(${c.z}px) rotate(${c.rot})` }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
