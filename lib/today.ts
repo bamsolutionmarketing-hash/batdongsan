@@ -3,6 +3,7 @@ import { listTriggers } from "@/lib/repo/triggers";
 import { listDueNotes } from "@/lib/repo/notes";
 import { listRecentPosts } from "@/lib/repo/posts";
 import { candidateNodes } from "@/lib/repo/nodes";
+import { getAccessState } from "@/lib/repo/access";
 import { chooseSuggestion, type Suggestion } from "@/lib/engine/suggestion";
 
 const ymd = (d: Date) => d.toISOString().slice(0, 10);
@@ -10,10 +11,14 @@ const ymd = (d: Date) => d.toISOString().slice(0, 10);
 // Assemble the "Hôm Nay" suggestion for a user (IO + pure engine).
 export async function getToday(userId: string): Promise<Suggestion> {
   const today = new Date();
+  // Only suggest from projects the agent has unlocked (so "Tạo bài ngay" is
+  // always actionable). Super admin (all) → no scoping.
+  const access = await getAccessState(userId);
+  const allowed = access.all ? undefined : Array.from(access.accessible);
   const [trig, recentRes, cands, due] = await Promise.all([
     listTriggers(),
     listRecentPosts(userId),
-    candidateNodes(),
+    candidateNodes(allowed),
     listDueNotes(userId, ymd(today)),
   ]);
   const recent = recentRes.ok ? recentRes.data : [];

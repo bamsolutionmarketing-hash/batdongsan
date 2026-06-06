@@ -188,18 +188,23 @@ describe("selectedNodes — video bám node tri thức", () => {
   const recipe = getRecipe("CT-02")!;
   const bodyCount = (recipe.chain[30] ?? []).filter((c) => c.type.startsWith("BODY_")).length;
 
-  it("blocks (NODES:count) when picked-node count != BODY positions", () => {
+  it("mismatched node count still generates (soft warning, never blocks)", () => {
     const wrong = Array.from({ length: bodyCount + 1 }, (_, i) => ({ id: `n${i}`, category: "amenity", label: `L${i}` }));
     const r = assembleScript(base({ selectedNodes: wrong }));
-    expect(r.status).toBe("BLOCKED");
-    expect(r.lint!.hardBlocks[0].rule).toBe("NODES:count");
+    expect(r.status).toBe("OK");
+    expect(r.lint!.warnings.some((w) => w.rule === "NODES:count")).toBe(true);
   });
 
-  it("matching count ⇒ OK and node labels surface as overlays", () => {
-    const nodes = Array.from({ length: bodyCount }, (_, i) => ({ id: `n${i}`, category: "amenity", label: `Tiện ích ${i}` }));
+  it("node talkpoint drives the body speech; label shows as overlay", () => {
+    const nodes = [
+      { id: "n0", category: "amenity", label: "Hồ bơi vô cực", talkpoint: "Hồ bơi tràn bờ tầng cao nhìn ra sông", facts: [{ key: "Diện tích", value: "1200m²" }] },
+      { id: "n1", category: "location", label: "Vị trí kết nối", talkpoint: "Sát Vành đai 3, 10 phút vào trung tâm" },
+    ];
     const r = assembleScript(base({ selectedNodes: nodes }));
     expect(r.status).toBe("OK");
+    const speeches = r.script!.map((l) => l.speech).join(" || ");
     const overlays = r.script!.map((l) => l.overlay).join(" || ");
-    expect(nodes.some((n) => overlays.includes(n.label))).toBe(true);
+    expect(speeches).toContain("Hồ bơi tràn bờ");
+    expect(overlays).toContain("Hồ bơi vô cực");
   });
 });

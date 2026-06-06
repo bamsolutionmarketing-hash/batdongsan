@@ -7,11 +7,13 @@ import { renderNodes, renderTwoColumn, renderCaption, renderShotlist, totalWords
 import { runComplianceLint } from "./lint";
 import { HOOK_BANK } from "./data/hooks";
 
-// A knowledge-map node the agent picked, to bias BODY positions by topic.
+// A knowledge-map node the agent picked, to drive a BODY segment.
 export interface SelectedNode {
   id: string;
   category: string;
   label: string;
+  talkpoint?: string | null;
+  facts?: { key: string; value: string; confidence?: string }[];
 }
 
 // Map a knowledge-node category → the BODY/PROOF template type that best fits
@@ -56,6 +58,27 @@ const hookToPicked = (h: (typeof HOOK_BANK)[number]): PickedNode => ({
   id: h.id, type: "HOOK", family: h.family, text: h.text, onscreen: h.onscreen, visual: h.visual, duration: h.duration,
 });
 
+// Turn a picked knowledge-map node into a BODY segment: speech from the node's
+// talkpoint (+ a verified fact), overlay = label. Author-written content, so it
+// carries the node's real substance into the script (no template filler).
+function nodeToSegment(n: SelectedNode): PickedNode {
+  const tp = (n.talkpoint ?? "").trim().replace(/^["“”']+|["“”']+$/g, "").trim();
+  const verified = (n.facts ?? []).filter((f) => (f.confidence ?? "verified") === "verified");
+  const top = verified[0];
+  const factClause = top ? `${top.key}: ${top.value}` : "";
+  const speech = tp || (factClause ? `${n.label} — ${factClause}` : n.label);
+  const words = speech.split(/\s+/).filter(Boolean).length;
+  const secs = Math.min(8, Math.max(3, Math.round(words / 2.5)));
+  return {
+    id: `KN-${n.id.slice(0, 8)}`,
+    type: CATEGORY_TO_BODY[n.category] ?? "BODY_POINT",
+    text: speech,
+    onscreen: top ? `${n.label} · ${top.value}` : n.label,
+    visual: `Hình minh hoạ: ${n.label}`,
+    duration: [secs, secs],
+  };
+}
+
 // Full deterministic assembly (Spec 2.7). Pure: all data already resolved into
 // `slots`; rotation/seed/today supplied by the caller. NO LLM, NO I/O.
 export function assembleScript(args: AssembleArgs): ScriptResult {
@@ -82,39 +105,33 @@ export function assembleScript(args: AssembleArgs): ScriptResult {
     if (alt) altHook = { id: alt.id, family: alt.family, text: alt.text, onscreen: alt.onscreen, visual: alt.visual };
   }
 
-  // 2. CHAIN — when the agent picked map nodes, each BODY position is driven by
-  // one node: count must match (R-NODES), the template type follows the node's
-  // category, and the on-screen overlay carries the node's label.
+  // 2. CHAIN. When the agent picked map nodes, each node becomes a BODY segment
+  // (talkpoint + verified fact as speech). Node count is free — the body run is
+  // replaced by the chosen nodes; budget fit (R2) trims if too long. Non-BODY
+  // positions (CTX/PROOF/PAYOFF/CTA/LOOP) keep their templates. A soft warning
+  // is surfaced when the node count differs from the recipe's body count.
   const sel = args.selectedNodes;
-  if (sel && sel.length > 0 && sel.length !== bodyCount) {
-    return {
-      status: "BLOCKED",
-      lint: {
-        hardBlocks: [{
-          rule: "NODES:count",
-          match: `${sel.length}/${bodyCount}`,
-          where: "chain",
-          message: `Bạn chọn ${sel.length} node nhưng kịch bản ${durationS}s cần ${bodyCount} đoạn nội dung. Hãy chọn đúng ${bodyCount} node hoặc đổi thời lượng.`,
-        }],
-        warnings: [],
-      },
-    };
-  }
+  const useNodes = !!(sel && sel.length > 0);
+  const nodeWarning =
+    useNodes && sel!.length !== bodyCount
+      ? `Recipe “${recipe.nameVi}” ${durationS}s gợi ý ${bodyCount} đoạn; bạn chọn ${sel!.length} điểm — kịch bản tự co (có thể cắt bớt khi quá dài).`
+      : null;
 
-  let bodyIdx = 0;
+  let nodesInserted = false;
   chain.forEach((slot, i) => {
     const isBody = slot.type.startsWith("BODY_");
-    const node = sel && sel.length > 0 && isBody ? sel[bodyIdx] : undefined;
-    const type: Exclude<NodeType, "HOOK"> = node ? CATEGORY_TO_BODY[node.category] ?? slot.type : slot.type;
-    if (isBody) bodyIdx++;
-
-    let picked2 = selectNode(type, ctx, i + 1, slot.deliversTag);
-    if (!picked2 && type !== slot.type) picked2 = selectNode(slot.type, ctx, i + 1, slot.deliversTag);
-    if (picked2) {
+    if (useNodes && isBody) {
+      if (!nodesInserted) {
+        for (const n of sel!) picked.push(nodeToSegment(n));
+        nodesInserted = true;
+      }
+      return; // node segments replace the template body run
+    }
+    const node2 = selectNode(slot.type, ctx, i + 1, slot.deliversTag);
+    if (node2) {
       picked.push({
-        id: picked2.id, type: picked2.type, text: picked2.text,
-        onscreen: node ? node.label : picked2.onscreen ?? "",
-        visual: picked2.visual, duration: picked2.duration,
+        id: node2.id, type: node2.type, text: node2.text,
+        onscreen: node2.onscreen ?? "", visual: node2.visual, duration: node2.duration,
       });
     }
   });
@@ -127,6 +144,9 @@ export function assembleScript(args: AssembleArgs): ScriptResult {
 
   // 5. COMPLIANCE LINT (R10)
   const lint = runComplianceLint(rendered, slots);
+  if (nodeWarning) {
+    lint.warnings.push({ rule: "NODES:count", match: `${sel!.length}/${bodyCount}`, where: "chain", message: nodeWarning });
+  }
 
   // 6. VIEWS
   const script = renderTwoColumn(rendered);

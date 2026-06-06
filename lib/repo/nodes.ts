@@ -112,17 +112,21 @@ export async function linksByProject(projectId: string): Promise<Result<Knowledg
 
 // Candidate nodes for "Hôm Nay" suggestions: enabled nodes of published
 // projects, with project slug. (RLS already scopes to visible projects.)
-export async function candidateNodes(): Promise<
+export async function candidateNodes(allowedProjectIds?: string[]): Promise<
   Result<{ id: string; label: string; category: string; projectId: string; projectSlug: string }[]>
 > {
   if (!isSupabaseConfigured()) return ok([]);
+  // Scope to the projects the agent may use (dashboard suggestions stay
+  // actionable). undefined = no scoping (e.g. super admin sees all).
+  if (allowedProjectIds && allowedProjectIds.length === 0) return ok([]);
   const supabase = createClient();
-  const { data, error } = await supabase
+  let q = supabase
     .from("knowledge_nodes")
     .select("id, label, category, project_id, projects!inner(slug, is_published)")
     .eq("is_enabled", true)
-    .eq("projects.is_published", true)
-    .limit(2000);
+    .eq("projects.is_published", true);
+  if (allowedProjectIds) q = q.in("project_id", allowedProjectIds);
+  const { data, error } = await q.limit(2000);
   if (error) return err("INTERNAL", error.message);
   return ok(
     (data as any[]).map((r) => ({

@@ -58,6 +58,14 @@ export function ScriptPanel({ projectId, nodeIds, projectName }: { projectId: st
     });
   };
 
+  // Recommended body-segment count for the current recipe × duration (a hint;
+  // the agent may pick fewer/more — the script adapts).
+  const recommended = useMemo(() => {
+    const r = RECIPES.find((x) => x.id === contentType);
+    const chain = r?.chain[durationS] ?? r?.chain[30] ?? [];
+    return chain.filter((c) => c.type.startsWith("BODY_")).length;
+  }, [contentType, durationS]);
+
   const scriptText = result?.script
     ? result.script.map((l) => `[${l.start}-${l.end}s] HÌNH: ${l.visual}\nTIẾNG: ${l.speech}\nOVERLAY: ${l.overlay}`).join("\n\n")
     : "";
@@ -90,7 +98,8 @@ export function ScriptPanel({ projectId, nodeIds, projectName }: { projectId: st
 
       {nodeIds && nodeIds.length > 0 && (
         <p className="rounded-md border border-sky-700/50 bg-sky-950/30 px-3 py-2 text-xs text-sky-300">
-          Bám theo {nodeIds.length} điểm tri thức đã chọn — mỗi đoạn nội dung sẽ theo chủ đề một điểm. Số điểm cần khớp số đoạn của độ dài (đổi độ dài nếu lệch).
+          Bám theo {nodeIds.length} điểm đã chọn — lời thoại lấy từ nội dung từng điểm.
+          {recommended > 0 && ` Recipe này gợi ý ~${recommended} đoạn cho ${durationS}s${nodeIds.length !== recommended ? " (lệch vẫn tạo được, kịch bản tự co)" : ""}.`}
         </p>
       )}
 

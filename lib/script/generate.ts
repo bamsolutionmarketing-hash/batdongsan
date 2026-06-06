@@ -37,7 +37,10 @@ export async function generateScript(userId: string, input: GenerateInput): Prom
   const weights = weightsRes.ok ? weightsRes.data : new Map();
   // Preserve the agent's chosen order (nodesByIds already returns input order).
   const selectedNodes = nodesRes.ok
-    ? nodesRes.data.map((n) => ({ id: n.id, category: n.category, label: n.label }))
+    ? nodesRes.data.map((n) => ({
+        id: n.id, category: n.category, label: n.label, talkpoint: n.talkpoint,
+        facts: n.facts.map((f) => ({ key: f.key, value: f.value, confidence: f.confidence })),
+      }))
     : [];
 
   const seed = hashSeed([
