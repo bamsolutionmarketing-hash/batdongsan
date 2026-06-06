@@ -19,19 +19,27 @@ export interface ComposeLink {
   to: string; // target node label
 }
 
+export interface ComposeProject {
+  name?: string | null;
+  locationText?: string | null;
+  phase?: string | null;
+  priceText?: string | null;
+}
+
+export interface ComposeBranding {
+  displayName?: string | null;
+  phone?: string | null;
+  zalo?: string | null;
+}
+
 export interface ComposeInput {
   mode: ComposeMode;
   tone: ComposeTone;
   caption: string;
-  project: {
-    name?: string | null;
-    locationText?: string | null;
-    phase?: string | null;
-    priceText?: string | null;
-  };
+  project: ComposeProject;
   nodes: ComposeNode[];
   links?: ComposeLink[];
-  branding: { displayName?: string | null; phone?: string | null; zalo?: string | null };
+  branding: ComposeBranding;
 }
 
 // A fact counts as verified when it has no explicit confidence (our seeds) or
@@ -51,13 +59,13 @@ function tokensIn(s: string): string[] {
   return [...out];
 }
 
-// Compose the rigorous mega-prompt. Pure, server-safe, NO AI call.
-// Output is a self-contained brief: any fresh AI chat can turn it into a
-// standard-compliant VN real-estate post on the first paste.
-export function composePrompt(input: ComposeInput): string {
-  const { mode, tone, caption, project, nodes, links, branding } = input;
+// ── shared builders (used by both the post and the video prompt) ────────────
 
-  // ── ① verified data, grouped by node, with angle + relationships ──────────
+// Block ①: verified data grouped by node, with angle + relationships. This is
+// the single compliance gate — anything not here is invisible to the AI.
+export function verifiedDataBlock(
+  project: ComposeProject, nodes: ComposeNode[], links?: ComposeLink[],
+): string {
   const projMeta = [
     project.name ? `Dự án: ${project.name}` : null,
     project.locationText ? `Vị trí: ${project.locationText}` : null,
@@ -80,14 +88,19 @@ export function composePrompt(input: ComposeInput): string {
     .map((l) => `   - ${l.from} —(${l.label ?? "liên quan"})→ ${l.to}`)
     .filter(Boolean);
 
-  const block1 = [
+  return [
     "① DỮ LIỆU ĐÃ XÁC THỰC — chỉ được dùng dữ kiện trong khối này",
     projMeta || null,
     nodeBlocks.length ? nodeBlocks.join("\n") : "(không có điểm nội dung)",
     relLines.length ? "QUAN HỆ GIỮA CÁC ĐIỂM:\n" + relLines.join("\n") : null,
   ].filter(Boolean).join("\n");
+}
 
-  // ── variable legend: known mappings + keep-verbatim instruction ───────────
+// Variable legend: known mappings + keep-verbatim instruction for [TOKENS] still
+// present in the text. Returns "" when the text has no tokens.
+export function variableLegend(
+  text: string, project: ComposeProject, branding: ComposeBranding,
+): string {
   const known: Record<string, string | null | undefined> = {
     TEN_DU_AN: project.name,
     TEN_SALE: branding.displayName,
@@ -95,19 +108,30 @@ export function composePrompt(input: ComposeInput): string {
     ZALO: branding.zalo,
     VI_TRI: project.locationText,
   };
-  const present = tokensIn(caption);
-  let legend = "";
-  if (present.length) {
-    const mapped = present
-      .map((t) => (known[t] ? `[${t}] = ${known[t]}` : `[${t}] = (giữ nguyên ký hiệu)`))
-      .join(" · ");
-    legend = `KÝ HIỆU TRONG BÀI (thay đúng giá trị, nếu chưa biết thì GIỮ NGUYÊN ký hiệu):\n${mapped}`;
-  }
+  const present = tokensIn(text);
+  if (!present.length) return "";
+  const mapped = present
+    .map((t) => (known[t] ? `[${t}] = ${known[t]}` : `[${t}] = (giữ nguyên ký hiệu)`))
+    .join(" · ");
+  return `KÝ HIỆU TRONG BÀI (thay đúng giá trị, nếu chưa biết thì GIỮ NGUYÊN ký hiệu):\n${mapped}`;
+}
 
-  // ── ⑤ contact line (kept intact in the output) ────────────────────────────
-  const contact = [branding.displayName, branding.phone, branding.zalo ? `Zalo ${branding.zalo}` : null]
+// Contact line kept intact at the end of the output.
+export function contactLine(branding: ComposeBranding): string {
+  return [branding.displayName, branding.phone, branding.zalo ? `Zalo ${branding.zalo}` : null]
     .filter(Boolean)
     .join(" — ");
+}
+
+// Compose the rigorous mega-prompt. Pure, server-safe, NO AI call.
+// Output is a self-contained brief: any fresh AI chat can turn it into a
+// standard-compliant VN real-estate post on the first paste.
+export function composePrompt(input: ComposeInput): string {
+  const { mode, tone, caption, project, nodes, links, branding } = input;
+
+  const block1 = verifiedDataBlock(project, nodes, links);
+  const legend = variableLegend(caption, project, branding);
+  const contact = contactLine(branding);
 
   // Assemble. `null` entries are dropped; "" entries are kept as blank lines.
   const parts: (string | null)[] = [
