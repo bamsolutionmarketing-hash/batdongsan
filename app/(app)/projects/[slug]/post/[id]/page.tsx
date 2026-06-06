@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getPostById } from "@/lib/repo/posts";
 import { nodesByIds, linksByProject } from "@/lib/repo/nodes";
 import { getProjectById } from "@/lib/repo/projects";
 import { getBranding } from "@/lib/repo/branding";
 import { getActiveTier } from "@/lib/gate/tier";
-import { getBrandedImages, getCarousel, getCollage, getFactCards, type AssembledSet } from "@/lib/branding/pipeline";
+import { getBrandedImages, getCarousel, getCollage, getFactCards } from "@/lib/branding/pipeline";
 import { getSession } from "@/lib/auth";
 import { getEditableComposition } from "@/lib/post/editable";
 import { CaptionCard } from "@/components/post/CaptionCard";
@@ -63,16 +64,6 @@ export default async function PostResultPage({
   const setKind: SetKind = (SET_KINDS as readonly string[]).includes(searchParams.set ?? "")
     ? (searchParams.set as SetKind)
     : "single";
-  let images: { url: string; nodeId: string; placeholder?: boolean }[] = [];
-  let assembled: AssembledSet | null = null;
-  if (session) {
-    const tierRes = await getActiveTier(session.userId);
-    const watermark = (tierRes.ok ? tierRes.data : "free") === "free" ? "via app" : null;
-    if (setKind === "single") images = await getBrandedImages(session.userId, post.nodeIds, { watermark });
-    else if (setKind === "carousel" || setKind === "video") assembled = await getCarousel(session.userId, post.id, post.nodeIds, { watermark });
-    else if (setKind === "collage") assembled = await getCollage(session.userId, post.id, post.nodeIds, { watermark });
-    else assembled = await getFactCards(session.userId, post.id, post.nodeIds, { watermark });
-  }
 
   // Editable per-slot composition (variant picker). Empty for temp-caption posts
   // (no authored blocks) → fall back to the static caption card.
@@ -149,16 +140,11 @@ export default async function PostResultPage({
             ))}
           </div>
         </div>
-        {setKind === "single" ? (
-          <BrandedImageGrid images={images} labels={labelById} postId={post.id} slug={params.slug} />
-        ) : setKind === "video" ? (
-          <div className="flex flex-col gap-4">
-            <ScriptPanel projectId={post.projectId} />
-            <VideoMaker images={assembled?.urls ?? []} postId={post.id} />
-          </div>
-        ) : (
-          <ImageSetView kind={setKind} set={assembled} />
-        )}
+        <Suspense key={setKind} fallback={<div className="h-48 animate-pulse rounded-lg bg-muted" />}>
+          {session ? (
+            <ImageSetSection userId={session.userId} post={post} setKind={setKind} labelById={labelById} slug={params.slug} />
+          ) : null}
+        </Suspense>
       </section>
 
       {nodes.length > 0 && (
@@ -177,4 +163,46 @@ export default async function PostResultPage({
       )}
     </main>
   );
+}
+
+// Heavy image-set generation, streamed via <Suspense> so the caption shows
+// immediately when opening a post (the click never feels unresponsive).
+async function ImageSetSection({
+  userId, post, setKind, labelById, slug,
+}: {
+  userId: string;
+  post: { id: string; projectId: string; nodeIds: string[] };
+  setKind: "single" | "carousel" | "collage" | "facts" | "video";
+  labelById: Record<string, string>;
+  slug: string;
+}) {
+  try {
+    const tierRes = await getActiveTier(userId);
+    const watermark = (tierRes.ok ? tierRes.data : "free") === "free" ? "via app" : null;
+
+    if (setKind === "single") {
+      const images = await getBrandedImages(userId, post.nodeIds, { watermark });
+      return <BrandedImageGrid images={images} labels={labelById} postId={post.id} slug={slug} />;
+    }
+    if (setKind === "video") {
+      const assembled = await getCarousel(userId, post.id, post.nodeIds, { watermark });
+      return (
+        <div className="flex flex-col gap-4">
+          <ScriptPanel projectId={post.projectId} />
+          <VideoMaker images={assembled?.urls ?? []} postId={post.id} />
+        </div>
+      );
+    }
+    const assembled =
+      setKind === "carousel" ? await getCarousel(userId, post.id, post.nodeIds, { watermark })
+      : setKind === "collage" ? await getCollage(userId, post.id, post.nodeIds, { watermark })
+      : await getFactCards(userId, post.id, post.nodeIds, { watermark });
+    return <ImageSetView kind={setKind} set={assembled} />;
+  } catch {
+    return (
+      <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-300">
+        Không tạo được bộ ảnh lúc này — caption ở trên vẫn dùng được. Thử tải lại trang.
+      </p>
+    );
+  }
 }
