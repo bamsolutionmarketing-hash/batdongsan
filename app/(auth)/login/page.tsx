@@ -8,9 +8,15 @@ const initial: AuthState = {};
 export default function LoginPage({
   searchParams,
 }: {
-  searchParams: { redirect?: string };
+  searchParams: { redirect?: string; reason?: string };
 }) {
   const redirectTo = searchParams.redirect ?? "/dashboard";
+  const deviceMsg =
+    searchParams.reason === "device"
+      ? "Thiết bị này đã bị đăng xuất do tài khoản vượt giới hạn 2 thiết bị."
+      : searchParams.reason === "device-self"
+        ? "Đã đăng xuất thiết bị này."
+        : undefined;
   const [pending, startTransition] = useTransition();
   const [loginError, setLoginError] = useState<string>();
   const [signupError, setSignupError] = useState<string>();
@@ -42,6 +48,10 @@ export default function LoginPage({
         <h1 className="text-2xl font-bold">Đăng nhập</h1>
         <p className="text-sm text-muted-foreground">Trợ lý bán hàng BĐS cho đội sale của bạn.</p>
       </div>
+
+      {deviceMsg && (
+        <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-300">{deviceMsg}</p>
+      )}
 
       <form onSubmit={submit(login, setLoginError)} className="flex flex-col gap-3">
         <input type="hidden" name="redirect" value={redirectTo} />

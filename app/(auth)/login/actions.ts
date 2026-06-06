@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -33,6 +34,18 @@ export async function signup(_prev: AuthState, formData: FormData): Promise<Auth
 
 export async function signout() {
   const supabase = createClient();
+  // Free this device's slot so the 2-device limit doesn't strand the user.
+  const deviceId = cookies().get("bds_device")?.value;
+  if (deviceId) {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) {
+      await supabase
+        .from("user_devices")
+        .update({ revoked_at: new Date().toISOString() })
+        .eq("user_id", data.user.id)
+        .eq("device_id", deviceId);
+    }
+  }
   await supabase.auth.signOut();
   redirect("/login");
 }

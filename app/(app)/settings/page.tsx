@@ -71,6 +71,8 @@ export default async function SettingsPage({
 
         <Button type="submit" className="self-start">Lưu</Button>
       </form>
+
+      <a href="/devices" className="text-sm text-sky-400 hover:underline">Quản lý thiết bị đăng nhập →</a>
     </main>
   );
 }
