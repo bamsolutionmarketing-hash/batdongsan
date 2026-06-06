@@ -195,6 +195,18 @@ describe("selectedNodes — video bám node tri thức", () => {
     expect(r.lint!.warnings.some((w) => w.rule === "NODES:count")).toBe(true);
   });
 
+  it("prefers authored body line over talkpoint; skips nodes with neither", () => {
+    const nodes = [
+      { id: "n0", category: "amenity", label: "Hồ bơi", body: "Hồ bơi tràn bờ tầng 30 nhìn ra sông", talkpoint: "tp khác" },
+      { id: "n1", category: "location", label: "Node rỗng" }, // no body, no talkpoint → skipped
+    ];
+    const r = assembleScript(base({ selectedNodes: nodes }));
+    expect(r.status).toBe("OK");
+    const speeches = r.script!.map((l) => l.speech).join(" || ");
+    expect(speeches).toContain("Hồ bơi tràn bờ tầng 30");
+    expect(speeches).not.toContain("Node rỗng"); // empty node produced no segment
+  });
+
   it("node talkpoint drives the body speech; label shows as overlay", () => {
     const nodes = [
       { id: "n0", category: "amenity", label: "Hồ bơi vô cực", talkpoint: "Hồ bơi tràn bờ tầng cao nhìn ra sông", facts: [{ key: "Diện tích", value: "1200m²" }] },

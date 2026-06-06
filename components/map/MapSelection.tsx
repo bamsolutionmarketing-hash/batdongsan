@@ -74,16 +74,11 @@ export function MapSelection({
         )}
         <div className="ml-auto flex gap-2">
           <button
-            onClick={() =>
-              router.push(
-                selected.length > 0
-                  ? `/scripts?project=${projectId}&nodes=${selected.join(",")}`
-                  : `/scripts?project=${projectId}`,
-              )
-            }
-            className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:border-foreground/40"
+            onClick={() => router.push(`/scripts?project=${projectId}&nodes=${selected.join(",")}`)}
+            disabled={selected.length === 0}
+            className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:border-foreground/40 disabled:opacity-50"
           >
-            {selected.length > 0 ? `🎬 Tạo video (${selected.length})` : "🎬 Tạo video"}
+            🎬 Tạo video ({selected.length})
           </button>
           <button
             onClick={submit}

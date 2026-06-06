@@ -5,6 +5,10 @@ import { hashSeed } from "@/lib/script-engine/seed";
 import { getRotation, bumpRotation, saveScript, getTemplateWeights } from "@/lib/repo/scripts";
 import { getBranding as getBrandingRepo } from "@/lib/repo/branding";
 import { nodesByIds } from "@/lib/repo/nodes";
+import { bodyBlocksByNodes } from "@/lib/repo/blocks";
+import { getProjectById } from "@/lib/repo/projects";
+import { blockUsable } from "@/lib/engine/compliance";
+import { substitute as fillVars } from "@/lib/engine/variables";
 import type { Platform, Duration, ScriptResult, Tone } from "@/lib/script-engine/types";
 
 export interface GenerateInput {
@@ -23,24 +27,41 @@ export async function generateScript(userId: string, input: GenerateInput): Prom
   const recipe = getRecipe(input.contentType ?? "") ?? RECIPES[0];
   const today = new Date();
 
-  const [slots, brandingRes, rotationRes, weightsRes, nodesRes] = await Promise.all([
+  const hasNodes = !!input.nodeIds?.length;
+  const [slots, brandingRes, rotationRes, weightsRes, nodesRes, blocksRes, projRes] = await Promise.all([
     resolveSlots(userId, input.projectId),
     getBrandingRepo(userId),
     getRotation(userId),
     getTemplateWeights(userId),
-    input.nodeIds?.length ? nodesByIds(input.nodeIds) : Promise.resolve({ ok: true as const, data: [] }),
+    hasNodes ? nodesByIds(input.nodeIds!) : Promise.resolve({ ok: true as const, data: [] }),
+    hasNodes ? bodyBlocksByNodes(input.nodeIds!) : Promise.resolve({ ok: true as const, data: new Map() }),
+    hasNodes ? getProjectById(input.projectId) : Promise.resolve({ ok: true as const, data: null }),
   ]);
 
   const branding = brandingRes.ok ? brandingRes.data : null;
   const agentTone: Tone[] = (branding?.toneProfile?.length ? branding.toneProfile : ["chuyen_gia", "than_thien"]) as Tone[];
   const rotation = rotationRes.ok ? rotationRes.data : new Map();
   const weights = weightsRes.ok ? weightsRes.data : new Map();
-  // Preserve the agent's chosen order (nodesByIds already returns input order).
+
+  // Build each picked node's body line from the Super-Admin-authored content
+  // blocks (role=body): pick the first compliance-usable variant and fill
+  // [TOKEN]s. Falls back to talkpoint in the engine; nodes with neither are
+  // skipped (no junk segment). Preserves the agent's chosen order.
+  const bodyMap = (blocksRes.ok ? blocksRes.data : new Map()) as Map<string, import("@/types/domain").ContentBlock[]>;
+  const project = projRes.ok ? projRes.data : null;
+  const varCtx = {
+    branding: { displayName: branding?.displayName, phone: branding?.phone, zalo: branding?.zalo },
+    project: { name: project?.name, view360Url: project?.view360Url },
+  };
   const selectedNodes = nodesRes.ok
-    ? nodesRes.data.map((n) => ({
-        id: n.id, category: n.category, label: n.label, talkpoint: n.talkpoint,
-        facts: n.facts.map((f) => ({ key: f.key, value: f.value, confidence: f.confidence })),
-      }))
+    ? nodesRes.data.map((n) => {
+        const usable = (bodyMap.get(n.id) ?? []).find((b) => blockUsable(b, n.facts).usable);
+        const body = usable ? fillVars(usable.text, varCtx).text : null;
+        return {
+          id: n.id, category: n.category, label: n.label, talkpoint: n.talkpoint, body,
+          facts: n.facts.map((f) => ({ key: f.key, value: f.value, confidence: f.confidence })),
+        };
+      })
     : [];
 
   const seed = hashSeed([

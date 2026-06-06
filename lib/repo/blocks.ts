@@ -29,6 +29,32 @@ const toBlock = (r: BlockRow): ContentBlock => ({
   isEnabled: r.is_enabled,
 });
 
+// Enabled BODY blocks for several nodes at once (source of the video script
+// body when the agent picks map nodes).
+export async function bodyBlocksByNodes(nodeIds: string[]): Promise<Result<Map<string, ContentBlock[]>>> {
+  const m = new Map<string, ContentBlock[]>();
+  if (nodeIds.length === 0) return ok(m);
+  let supabase;
+  try {
+    supabase = createAdminClient();
+  } catch (e) {
+    return err("INTERNAL", (e as Error).message);
+  }
+  const { data, error } = await supabase
+    .from("node_content_blocks")
+    .select("id, node_id, role, variant_no, text, tone, min_confidence, fact_keys, is_enabled")
+    .in("node_id", nodeIds)
+    .eq("role", "body")
+    .eq("is_enabled", true)
+    .order("variant_no", { ascending: true });
+  if (error) return err("INTERNAL", error.message);
+  for (const r of data as BlockRow[]) {
+    const b = toBlock(r);
+    m.set(b.nodeId, [...(m.get(b.nodeId) ?? []), b]);
+  }
+  return ok(m);
+}
+
 export async function blocksByNode(nodeId: string): Promise<Result<ContentBlock[]>> {
   let supabase;
   try {

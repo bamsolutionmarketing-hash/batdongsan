@@ -12,6 +12,7 @@ export interface SelectedNode {
   id: string;
   category: string;
   label: string;
+  body?: string | null; // authored content-block line (preferred speech)
   talkpoint?: string | null;
   facts?: { key: string; value: string; confidence?: string }[];
 }
@@ -58,15 +59,15 @@ const hookToPicked = (h: (typeof HOOK_BANK)[number]): PickedNode => ({
   id: h.id, type: "HOOK", family: h.family, text: h.text, onscreen: h.onscreen, visual: h.visual, duration: h.duration,
 });
 
-// Turn a picked knowledge-map node into a BODY segment: speech from the node's
-// talkpoint (+ a verified fact), overlay = label. Author-written content, so it
-// carries the node's real substance into the script (no template filler).
-function nodeToSegment(n: SelectedNode): PickedNode {
-  const tp = (n.talkpoint ?? "").trim().replace(/^["“”']+|["“”']+$/g, "").trim();
-  const verified = (n.facts ?? []).filter((f) => (f.confidence ?? "verified") === "verified");
-  const top = verified[0];
-  const factClause = top ? `${top.key}: ${top.value}` : "";
-  const speech = tp || (factClause ? `${n.label} — ${factClause}` : n.label);
+// Turn a picked knowledge-map node into a BODY segment. Speech = the authored
+// content-block line (preferred) or the node's talkpoint. A node with neither
+// is SKIPPED (returns null) so the script never carries a junk "Label — key:
+// value" line. Overlay = label (+ a verified fact when present).
+function nodeToSegment(n: SelectedNode): PickedNode | null {
+  const clean = (s: string) => s.trim().replace(/^["“”']+|["“”']+$/g, "").trim();
+  const speech = clean(n.body ?? "") || clean(n.talkpoint ?? "");
+  if (!speech) return null;
+  const top = (n.facts ?? []).find((f) => (f.confidence ?? "verified") === "verified");
   const words = speech.split(/\s+/).filter(Boolean).length;
   const secs = Math.min(8, Math.max(3, Math.round(words / 2.5)));
   return {
@@ -112,6 +113,8 @@ export function assembleScript(args: AssembleArgs): ScriptResult {
   // is surfaced when the node count differs from the recipe's body count.
   const sel = args.selectedNodes;
   const useNodes = !!(sel && sel.length > 0);
+  // Tie the payoff's "promised thing" to the first picked node when node-driven.
+  if (useNodes && !slots.values.cai_duoc_hua) slots.values.cai_duoc_hua = sel![0].label;
   const nodeWarning =
     useNodes && sel!.length !== bodyCount
       ? `Recipe “${recipe.nameVi}” ${durationS}s gợi ý ${bodyCount} đoạn; bạn chọn ${sel!.length} điểm — kịch bản tự co (có thể cắt bớt khi quá dài).`
@@ -122,7 +125,10 @@ export function assembleScript(args: AssembleArgs): ScriptResult {
     const isBody = slot.type.startsWith("BODY_");
     if (useNodes && isBody) {
       if (!nodesInserted) {
-        for (const n of sel!) picked.push(nodeToSegment(n));
+        for (const n of sel!) {
+          const seg = nodeToSegment(n);
+          if (seg) picked.push(seg);
+        }
         nodesInserted = true;
       }
       return; // node segments replace the template body run

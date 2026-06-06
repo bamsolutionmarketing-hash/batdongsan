@@ -91,10 +91,10 @@ export default async function DashboardPage() {
         )}
       </section>
 
-      <Link href="/scripts">
+      <Link href="/projects">
         <Card className="border-sky-900/50 transition hover:border-sky-700/70">
           <CardTitle>🎬 Tạo video / kịch bản</CardTitle>
-          <CardDesc>Chọn dự án và tạo kịch bản quay video (TikTok / Reels / Shorts).</CardDesc>
+          <CardDesc>Mở một dự án, chọn các điểm trên bản đồ rồi bấm “Tạo video” — kịch bản sẽ bám đúng nội dung điểm đã chọn.</CardDesc>
         </Card>
       </Link>
     </main>

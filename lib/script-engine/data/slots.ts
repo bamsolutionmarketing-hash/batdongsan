@@ -91,8 +91,29 @@ export function slotDef(key: string): SlotDef | undefined {
   return SLOT_REGISTRY[key];
 }
 
-// Human-readable placeholder for an unregistered content slot (e.g. y_chinh →
-// "「ý chính」"). Keeps the script editable instead of leaking raw {{tokens}}.
+// Smooth Vietnamese defaults for the content slots used by PAYOFF/CTX/PROOF
+// templates, so an unfilled slot reads naturally instead of leaking a bracketed
+// placeholder like "「cai duoc hua」".
+const CONTENT_FALLBACK: Record<string, string> = {
+  cai_duoc_hua: "điều bạn đang tìm",
+  dap_an: "câu trả lời ngay sau đây",
+  lua_chon: "phương án phù hợp nhất",
+  lua_chon_tot_nhat: "lựa chọn đáng cân nhắc",
+  ly_do_1cau: "lý do rất rõ ràng",
+  twist: "điều ít người để ý",
+  trang_thai_truoc: "lúc ban đầu",
+  trang_thai_sau: "kết quả sau đó",
+  y_chinh: "ý chính",
+  dien_giai: "phần giải thích",
+  tac_dong: "tác động thực tế",
+};
+
+export function contentFallback(key: string): string | undefined {
+  return CONTENT_FALLBACK[key];
+}
+
+// Human-readable placeholder for an unregistered content slot. Prefers a smooth
+// default; else a readable phrase (no leaked raw {{tokens}}).
 export function humanizeSlot(key: string): string {
-  return "「" + key.replace(/_/g, " ") + "」";
+  return CONTENT_FALLBACK[key] ?? key.replace(/_/g, " ");
 }
