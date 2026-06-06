@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { getToday } from "@/lib/today";
+import { getBranding } from "@/lib/repo/branding";
+import { getAccessState } from "@/lib/repo/access";
 import { createPostAction } from "@/app/(app)/projects/_actions";
 import { Card, CardTitle, CardDesc } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +12,15 @@ export default async function DashboardPage() {
   const session = await getSession();
   if (!session) redirect("/login");
   const { post, alternates, tasks, streak } = await getToday(session.userId);
+
+  // Onboarding nudge for agents who haven't set branding + opened a project.
+  let needsOnboarding = false;
+  if (session.profile?.role === "agent") {
+    const [bRes, access] = await Promise.all([getBranding(session.userId), getAccessState(session.userId)]);
+    const b = bRes.ok ? bRes.data : null;
+    const brandingReady = !!b && !!b.displayName?.trim() && !!b.phone?.trim();
+    needsOnboarding = !brandingReady || access.accessible.size === 0;
+  }
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-5 p-4 sm:p-6">
@@ -21,6 +32,15 @@ export default async function DashboardPage() {
           </span>
         )}
       </div>
+
+      {needsOnboarding && (
+        <Link href="/onboarding">
+          <Card className="border-sky-700/60 bg-sky-950/20 transition hover:border-sky-600">
+            <CardTitle>👋 Hoàn tất thiết lập trong 3 bước</CardTitle>
+            <CardDesc>Đặt tên + SĐT, chọn dự án đầu tiên (miễn phí) và tạo bài đầu — chỉ vài phút.</CardDesc>
+          </Card>
+        </Link>
+      )}
 
       {post ? (
         <Card className="border-sky-900/50">
