@@ -149,3 +149,54 @@ insert into knowledge_links (id, project_id, source_node, target_node, label) va
   ('75253e77-3c01-54aa-8b0f-1036f59401e6','00000000-0000-0000-0000-00000000b002','ed5f7c6d-11c0-5077-b373-483596374c0a','df3409b9-dce2-5cdd-92b8-cacf3552365b',null),
   ('0e36fc0f-783e-53dc-a8b6-937b8290e66f','00000000-0000-0000-0000-00000000b002','ed5f7c6d-11c0-5077-b373-483596374c0a','56c860b8-9b18-5d19-8847-f8de2b344c2a',null),
   ('ef8a69a0-7503-5026-9c3e-cd7e5e5f65f9','00000000-0000-0000-0000-00000000b002','57063a5f-a416-5041-ab8b-421a08e3eb16','05cb3eb8-3fa2-5f97-8b1a-82739a67edad',null);
+
+-- ── Expansion: ecosystem nodes imported from the Cosmo project (a006) ─────────
+-- Events, partners, brands, Masterise megaprojects, Thủ Thiêm finance, Metro 2.
+-- Runs after seed_knowledge_cosmo.sql (sql_paths order), so a006 already exists.
+-- Deterministic ids (md5 of a stable name); idempotent.
+with keys as (
+  select unnest(array[
+    'branded-residences','grand-marina','masteri-collection','the-grand-hanoi','the-rivus',
+    'rach-chiec','saigon-sports-city',
+    'atvcg','daddy-cool','global-wishmas','pink-run','ppa-tour','quoc-thien','soobin-concert',
+    'ifc-thu-thiem','macro-vn','thu-thiem-cbd',
+    'cau-can-gio','cau-phu-my-2','gia-binh-airport','masterise-he','masterise-pm',
+    'metro-2-tham-luong','metro-2-thu-thiem','thu-thiem-long-thanh-rail','vanh-dai-2',
+    'elie-saab','marriott','ritz-carlton','watg'
+  ]) as node_key
+)
+insert into knowledge_nodes (id, project_id, node_key, label, category, sub_label, facts, talkpoint, description, sort_order)
+select (md5('tgc-import:'||s.node_key))::uuid,
+       '00000000-0000-0000-0000-00000000b002',
+       s.node_key, s.label, s.category, s.sub_label, s.facts, s.talkpoint, s.description,
+       100 + row_number() over (order by s.category, s.node_key)
+from knowledge_nodes s
+join keys k on k.node_key = s.node_key
+where s.project_id = '00000000-0000-0000-0000-00000000a006'
+on conflict (id) do nothing;
+
+insert into knowledge_links (id, project_id, source_node, target_node, label)
+select (md5('tgc-import-hero:'||i.node_key))::uuid, '00000000-0000-0000-0000-00000000b002', h.id, i.id, null
+from knowledge_nodes i
+cross join (select id from knowledge_nodes where project_id='00000000-0000-0000-0000-00000000b002' and node_key='tgc') h
+where i.project_id='00000000-0000-0000-0000-00000000b002'
+  and i.id = (md5('tgc-import:'||i.node_key))::uuid
+on conflict (id) do nothing;
+
+insert into knowledge_links (id, project_id, source_node, target_node, label)
+select (md5('tgc-import-edge:'||i.node_key))::uuid, '00000000-0000-0000-0000-00000000b002', i.id, t.id, null
+from knowledge_nodes i
+join knowledge_nodes t
+  on t.project_id='00000000-0000-0000-0000-00000000b002'
+ and t.node_key = case i.category
+       when 'event' then 'ti-kenh'
+       when 'partner' then 'cdt-track'
+       when 'brand' then 'cdt-track'
+       when 'group' then 'cdt-group'
+       when 'finance' then 'tt-hcm'
+       when 'infra' then 'ht-tacdong'
+       when 'cluster' then 'tq-rachchiec'
+       else 'tgc' end
+where i.project_id='00000000-0000-0000-0000-00000000b002'
+  and i.id = (md5('tgc-import:'||i.node_key))::uuid
+on conflict (id) do nothing;
