@@ -63,3 +63,40 @@ export async function deleteAsset(fd: FormData) {
   revalidatePath(path);
   redirect(`${path}?ok=1`);
 }
+
+// ── project representative image (public `thumbnails` bucket) ───────────────
+const THUMB_MAX = 5 * 1024 * 1024;
+
+export async function uploadProjectThumbnail(fd: FormData) {
+  const projectId = str(fd, "project_id");
+  const path = `/admin/projects/${projectId}`;
+  const file = fd.get("file");
+  if (!(file instanceof File) || file.size === 0) fail(path, "Chưa chọn ảnh");
+  if (file.size > THUMB_MAX) fail(path, "Ảnh quá lớn (>5MB)");
+  const ext = EXT[file.type];
+  if (!ext) fail(path, "Định dạng phải là PNG/JPEG/WebP");
+
+  const supabase = createAdminClient();
+  const storagePath = `${projectId}/${randomUUID()}.${ext}`;
+  const buf = Buffer.from(await file.arrayBuffer());
+  const up = await supabase.storage
+    .from("thumbnails")
+    .upload(storagePath, buf, { contentType: file.type, upsert: false });
+  if (up.error) fail(path, up.error.message);
+
+  const publicUrl = supabase.storage.from("thumbnails").getPublicUrl(storagePath).data.publicUrl;
+  const { error } = await supabase.from("projects").update({ thumbnail_url: publicUrl }).eq("id", projectId);
+  if (error) fail(path, error.message);
+  revalidatePath(path);
+  redirect(`${path}?ok=1`);
+}
+
+export async function removeProjectThumbnail(fd: FormData) {
+  const projectId = str(fd, "project_id");
+  const path = `/admin/projects/${projectId}`;
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("projects").update({ thumbnail_url: null }).eq("id", projectId);
+  if (error) fail(path, error.message);
+  revalidatePath(path);
+  redirect(`${path}?ok=1`);
+}

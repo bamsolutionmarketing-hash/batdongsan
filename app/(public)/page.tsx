@@ -196,23 +196,28 @@ export default async function Home() {
         <section className="border-t border-border bg-background-subtle">
           <div className="mx-auto max-w-6xl px-5 py-20 sm:px-6 sm:py-28">
             <Reveal>
-              <Eyebrow>Dự án mẫu</Eyebrow>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Khám phá bản đồ tri thức</h2>
+              <Eyebrow>Dự án</Eyebrow>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Dự án tiêu biểu</h2>
             </Reveal>
             <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {projects.map((p, i) => (
                 <Reveal key={p.id} delay={(i % 3) * 80}>
                   <Link
-                    href={`/p/${p.slug}`}
-                    className="group block rounded-lg border border-border bg-card p-6 shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover"
+                    href="/signup"
+                    className="group block overflow-hidden rounded-lg border border-border bg-card shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover"
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-lg font-semibold tracking-tight text-foreground">{p.name}</h3>
-                      {p.phase && <span className="shrink-0 rounded-full border border-border bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">{p.phase}</span>}
+                    <div className="relative aspect-[16/10] w-full bg-muted">
+                      {p.thumbnailUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.thumbnailUrl} alt={p.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-muted to-background text-4xl">🏢</div>
+                      )}
                     </div>
-                    {p.locationText && <p className="mt-1.5 text-sm text-muted-foreground">{p.locationText}</p>}
-                    {(p.priceMin || p.priceMax) && <p className="mt-3 text-sm font-medium text-foreground">{priceLabel(p.priceMin, p.priceMax)}</p>}
-                    <span className="mt-4 inline-flex items-center gap-1 text-xs text-muted-foreground transition group-hover:text-brand">Mở bản đồ →</span>
+                    <div className="p-4">
+                      <h3 className="text-base font-semibold tracking-tight text-foreground">{p.name}</h3>
+                      {p.locationText && <p className="mt-1 text-sm text-muted-foreground">{p.locationText}</p>}
+                    </div>
                   </Link>
                 </Reveal>
               ))}
@@ -235,13 +240,4 @@ export default async function Home() {
       <Footer />
     </div>
   );
-}
-
-// VND/m² (bigint) → "x–y tr/m²".
-function priceLabel(min: number | null, max: number | null): string {
-  const m = (v: number) => Math.round(v / 1_000_000);
-  if (min && max) return `${m(min)}–${m(max)} tr/m²`;
-  if (min) return `từ ${m(min)} tr/m²`;
-  if (max) return `đến ${m(max)} tr/m²`;
-  return "";
 }

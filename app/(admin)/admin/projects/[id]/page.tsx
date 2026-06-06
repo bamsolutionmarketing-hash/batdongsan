@@ -10,6 +10,7 @@ import { NODE_CATEGORIES } from "@/app/(admin)/admin/_constants";
 import {
   updateProject, createNode, deleteNode, createLink, deleteLink, createTrigger, deleteTrigger,
 } from "@/app/(admin)/admin/_actions";
+import { uploadProjectThumbnail, removeProjectThumbnail } from "@/app/(admin)/admin/_asset_actions";
 import { Button } from "@/components/ui/button";
 import { requireSuper } from "@/lib/auth";
 
@@ -52,6 +53,27 @@ export default async function EditProjectPage({
         <ProjectFields p={project} developers={developers} />
         <Button type="submit" className="self-start">Lưu dự án</Button>
       </form>
+
+      {/* Representative image (shown on the public landing card) */}
+      <section className="flex flex-col gap-3 rounded-md border border-border bg-card p-4">
+        <h2 className="text-sm font-semibold text-foreground">Ảnh đại diện dự án</h2>
+        <p className="text-xs text-muted-foreground">Hiển thị trên card ở trang chủ public. PNG/JPEG/WebP, ≤ 5MB.</p>
+        {project.thumbnailUrl && (
+          <div className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={project.thumbnailUrl} alt={project.name} className="h-28 w-44 rounded-md border border-border object-cover" />
+            <form action={removeProjectThumbnail}>
+              <input type="hidden" name="project_id" value={project.id} />
+              <button className="text-xs text-red-400 hover:text-red-300">Xóa ảnh</button>
+            </form>
+          </div>
+        )}
+        <form action={uploadProjectThumbnail} className="flex flex-wrap items-center gap-2">
+          <input type="hidden" name="project_id" value={project.id} />
+          <input type="file" name="file" accept="image/png,image/jpeg,image/webp" required className="text-sm text-foreground" />
+          <Button type="submit" variant="outline" className="px-3 py-1.5 text-sm">{project.thumbnailUrl ? "Đổi ảnh" : "Tải ảnh lên"}</Button>
+        </form>
+      </section>
 
       {/* Nodes */}
       <section className="flex flex-col gap-3">
