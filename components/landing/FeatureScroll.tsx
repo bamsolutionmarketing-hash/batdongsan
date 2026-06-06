@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ICONS, type IconKey } from "./Icons";
+import { BrandWatermark } from "./Logo";
 
 export interface Feature {
   icon: IconKey;
@@ -61,6 +62,7 @@ export function FeatureScroll({ features }: { features: Feature[] }) {
         <img src={f.img} alt={f.title} loading="lazy" onError={(e) => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 h-full w-full object-cover" />
         {f.stamp && <Watermark phone={f.stamp} />}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <BrandWatermark onDark className="absolute right-4 top-4 opacity-80" />
         <div className="absolute inset-x-0 bottom-0 p-6 text-white">
           <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/25 bg-white/10 backdrop-blur"><Ico className="h-5 w-5 text-white" /></span>
           <h4 className="mt-3 text-xl font-semibold tracking-tight">{f.title}</h4>

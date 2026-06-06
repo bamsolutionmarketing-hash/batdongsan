@@ -6,6 +6,16 @@ export function BrandIcon({ className = "h-8 w-8" }: { className?: string }) {
   return <img src="/brand/mark.svg" alt="NhaPilot" className={`shrink-0 object-contain ${className}`} />;
 }
 
+// Compact brand lockup (icon + "NhaPilot") for watermarks / corner badges.
+export function BrandWatermark({ className = "", onDark = false }: { className?: string; onDark?: boolean }) {
+  return (
+    <span className={`pointer-events-none inline-flex select-none items-center gap-1.5 ${className}`} aria-hidden>
+      <img src="/brand/mark.svg" alt="" className="h-4 w-4" />
+      <span className={`text-xs font-bold tracking-tight ${onDark ? "text-white" : "text-foreground"}`}>NhaPilot</span>
+    </span>
+  );
+}
+
 export function Logo({ withWordmark = true, className = "" }: { withWordmark?: boolean; className?: string }) {
   return (
     <span className={`flex items-center gap-2 ${className}`}>

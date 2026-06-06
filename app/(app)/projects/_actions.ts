@@ -218,7 +218,7 @@ export async function downloadStory(fd: FormData) {
     redirect(`/projects/${slug}/post/${postId}?error=${encodeURIComponent("Không hợp lệ")}`);
   }
   const tierRes = await getActiveTier(session.userId);
-  const watermark = (tierRes.ok ? tierRes.data : "free") === "free" ? "via app" : null;
+  const watermark = (tierRes.ok ? tierRes.data : "free") === "free" ? "NhaPilot" : null;
   const imgs = await getBrandedImages(session.userId, [nodeId], { story: true, watermark });
   if (imgs.length === 0) {
     redirect(`/projects/${slug}/post/${postId}?error=${encodeURIComponent("Chưa có ảnh/thương hiệu")}`);

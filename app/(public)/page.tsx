@@ -11,6 +11,7 @@ import { Footer } from "@/components/landing/Footer";
 import { FeatureScroll } from "@/components/landing/FeatureScroll";
 import { ScrollStory } from "@/components/landing/ScrollStory";
 import { SmoothScroll } from "@/components/landing/SmoothScroll";
+import { BrandWatermark } from "@/components/landing/Logo";
 
 // Images are curated to match each title (overhead city = map, morning interior
 // = today, glass facade = verified, neon tech = AI, photographer = branded, planner
@@ -211,6 +212,7 @@ export default async function Home() {
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
                       {c.tag && <span className="absolute left-3 top-3 rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-medium text-white backdrop-blur">{c.tag}</span>}
+                      <BrandWatermark onDark className="absolute right-3 top-3 opacity-80" />
                       <div className="absolute inset-x-0 bottom-0 p-4 text-white">
                         <h3 className="text-lg font-semibold tracking-tight">{c.name}</h3>
                         {c.location && <p className="mt-0.5 text-sm text-white/80">📍 {c.location}</p>}

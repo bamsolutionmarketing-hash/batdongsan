@@ -5,7 +5,7 @@ import { signout } from "@/app/(auth)/login/actions";
 import { BottomNav } from "@/components/app/BottomNav";
 import { NavLinks } from "@/components/app/NavLinks";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { Logo, BrandIcon } from "@/components/landing/Logo";
+import { Logo, BrandWatermark } from "@/components/landing/Logo";
 
 // Auth guard for the agent app. Redirects to /login when signed out.
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -42,6 +42,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       {/* Bottom padding clears the fixed mobile tab bar */}
       <div className="pb-20 sm:pb-0">{children}</div>
       <BottomNav />
+      {/* Persistent brand watermark (desktop corner) */}
+      <BrandWatermark className="fixed bottom-3 right-3 z-20 hidden opacity-30 sm:inline-flex" />
     </div>
   );
 }

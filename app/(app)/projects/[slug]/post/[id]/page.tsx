@@ -178,7 +178,7 @@ async function ImageSetSection({
 }) {
   try {
     const tierRes = await getActiveTier(userId);
-    const watermark = (tierRes.ok ? tierRes.data : "free") === "free" ? "via app" : null;
+    const watermark = (tierRes.ok ? tierRes.data : "free") === "free" ? "NhaPilot" : null;
 
     if (setKind === "single") {
       const images = await getBrandedImages(userId, post.nodeIds, { watermark });
