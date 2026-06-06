@@ -19,7 +19,13 @@ export interface SelectCtx {
   rotation: Map<string, RotationEntry>;
   seed: string;
   today: Date;
+  weights?: Map<string, number>; // P5 performance multiplier by template id
+  exclude?: Set<string>; // template ids to skip (A/B alternate hook)
 }
+
+// Effective pick weight = template weight × performance multiplier (P5).
+const wOf = (id: string, base: number | undefined, ctx: SelectCtx): number =>
+  (base ?? 1) * (ctx.weights?.get(id) ?? 1);
 
 // A node/hook is slot-eligible when none of its required data slots are missing
 // (R5/R8). Format slots the engine always provides never gate.
@@ -64,6 +70,7 @@ export function selectHook(ctx: SelectCtx): SelectResult<HookTemplate> {
   const base = HOOK_BANK.filter(
     (h) =>
       (h.status ?? "active") === "active" &&
+      !ctx.exclude?.has(h.id) &&
       compatLevel(h.family, recipe.id) !== "blocked" &&
       promiseMatch(h, recipe.payoffTags) &&
       toneOk(h.toneTags, agentTone) &&
@@ -89,7 +96,7 @@ export function selectHook(ctx: SelectCtx): SelectResult<HookTemplate> {
     if (tier.length === 0) continue;
     let pool = tier.filter((h) => !onCooldown(h.id, "HOOK", rotation, today));
     if (pool.length === 0) pool = tier; // R4: relax cooldown rather than fail
-    const chosen = seededPick(pool.map((h) => ({ item: h, weight: h.weight ?? 1 })), rand);
+    const chosen = seededPick(pool.map((h) => ({ item: h, weight: wOf(h.id, h.weight, ctx) })), rand);
     if (chosen) return { chosen, missingFromPool };
   }
   return { chosen: null, missingFromPool };
@@ -118,5 +125,5 @@ export function selectNode(
   const rand = rng(hashSeed([seed, type, position, deliversTag ?? ""]));
   let pool = eligible.filter((n) => !onCooldown(n.id, type, rotation, today));
   if (pool.length === 0) pool = eligible;
-  return seededPick(pool.map((n) => ({ item: n, weight: n.weight ?? 1 })), rand);
+  return seededPick(pool.map((n) => ({ item: n, weight: wOf(n.id, n.weight, ctx) })), rand);
 }

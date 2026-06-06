@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { RECIPES } from "@/lib/script-engine/data/recipes";
 import type { ScriptResult, Platform, Duration } from "@/lib/script-engine/types";
-import { generateScriptAction, saveSlotFactsAction, saveMarketFactAction } from "@/app/(app)/scripts/_actions";
+import { generateScriptAction, saveSlotFactsAction, saveMarketFactAction, ingestPerformanceAction } from "@/app/(app)/scripts/_actions";
 
 const PLATFORMS: { v: Platform; label: string }[] = [
   { v: "tiktok", label: "TikTok" },
@@ -165,8 +165,53 @@ export function ScriptPanel({ projectId }: { projectId: string }) {
         </details>
       )}
 
+      {/* A/B alternate hook */}
+      {result?.altHook && (
+        <div className="rounded-md border border-border bg-background p-3 text-sm">
+          <span className="text-xs uppercase tracking-wide text-muted-foreground">Hook A/B thay thế ({result.altHook.id})</span>
+          <p className="mt-1 text-foreground">🎤 {result.altHook.text}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">Quay thêm bản này để test 2 hook trên cùng nội dung.</p>
+        </div>
+      )}
+
+      {/* performance ingest (P5) */}
+      {result?.meta?.scriptId && <PerfForm scriptId={result.meta.scriptId} platform={platform} />}
+
       <MarketFactQuickForm khuVuc="" />
     </div>
+  );
+}
+
+// Manual performance entry → feeds EWMA template weighting (P5).
+function PerfForm({ scriptId, platform }: { scriptId: string; platform: Platform }) {
+  const [views, setViews] = useState("");
+  const [retention3s, setR3] = useState("");
+  const [completion, setCompletion] = useState("");
+  const [leads, setLeads] = useState("");
+  const [msg, setMsg] = useState("");
+  const [pending, start] = useTransition();
+  const num = (s: string) => (s.trim() === "" ? undefined : Number(s));
+  const save = () =>
+    start(async () => {
+      const r = await ingestPerformanceAction(scriptId, {
+        platform, views: num(views), retention3s: num(retention3s), completion: num(completion), leads: num(leads),
+      });
+      setMsg(r.ok ? "✓ Đã ghi nhận — hook/recipe tốt sẽ được ưu tiên lần sau" : r.error ?? "Lỗi");
+    });
+  return (
+    <details className="rounded-md border border-border bg-background p-3">
+      <summary className="cursor-pointer text-xs uppercase tracking-wide text-muted-foreground">+ Nhập hiệu suất video (P5 — nuôi gợi ý)</summary>
+      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <input placeholder="Views" value={views} onChange={(e) => setViews(e.target.value)} className="rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground" />
+        <input placeholder="Giữ 3s (0-1)" value={retention3s} onChange={(e) => setR3(e.target.value)} className="rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground" />
+        <input placeholder="Hoàn tất (0-1)" value={completion} onChange={(e) => setCompletion(e.target.value)} className="rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground" />
+        <input placeholder="Leads" value={leads} onChange={(e) => setLeads(e.target.value)} className="rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground" />
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <button onClick={save} disabled={pending} className="rounded-md border border-border px-3 py-1.5 text-sm text-foreground hover:border-foreground/30 disabled:opacity-50">Ghi nhận</button>
+        {msg && <span className="text-xs text-muted-foreground">{msg}</span>}
+      </div>
+    </details>
   );
 }
 

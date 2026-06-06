@@ -159,6 +159,8 @@ export interface ScriptResult {
   checklist?: string[];
   missingSlots?: string[];
   lint?: { hardBlocks: LintHit[]; warnings: LintHit[] };
+  // A/B: a second eligible hook for the same script (P5).
+  altHook?: { id: string; family?: HookFamily; text: string; onscreen: string; visual: string };
   meta?: {
     seed: string;
     recipeId: string;
@@ -167,6 +169,7 @@ export interface ScriptResult {
     slotSnapshot: Record<string, string>;
     platform: Platform;
     durationS: Duration;
+    scriptId?: string; // set after persistence
   };
 }
 

@@ -122,3 +122,60 @@ export async function saveScript(input: SaveScriptInput): Promise<Result<{ id: s
   if (error) return err("INTERNAL", error.message);
   return ok({ id: (data as { id: string }).id });
 }
+
+// ── performance ingest + EWMA template weighting (P5) ──────────────────────
+export interface PerfMetrics {
+  platform?: string;
+  views?: number;
+  retention3s?: number; // 0..1 (or %, normalized on read)
+  retention50?: number;
+  completion?: number;
+  likes?: number;
+  comments?: number;
+  saves?: number;
+  leads?: number;
+}
+
+export async function ingestPerformance(scriptId: string, m: PerfMetrics): Promise<Result<true>> {
+  if (!isSupabaseConfigured()) return err("INTERNAL", "Supabase chưa cấu hình");
+  const supabase = createClient();
+  const { error } = await supabase.from("script_performance").insert({
+    script_id: scriptId, platform: m.platform ?? null, views: m.views ?? null,
+    retention_3s: m.retention3s ?? null, retention_50: m.retention50 ?? null, completion: m.completion ?? null,
+    likes: m.likes ?? null, comments: m.comments ?? null, saves: m.saves ?? null, leads: m.leads ?? null,
+  });
+  if (error) return err("INTERNAL", error.message);
+  return ok(true);
+}
+
+// EWMA (α=0.3) per template over the agent's history → pick multiplier
+// (0.5..1.5). Templates with no data default to 1.0 (absent from the map).
+export async function getTemplateWeights(userId: string): Promise<Result<Map<string, number>>> {
+  if (!isSupabaseConfigured()) return ok(new Map());
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("script_performance")
+    .select("completion, retention_3s, recorded_at, generated_scripts!inner(user_id, hook_id, node_ids)")
+    .eq("generated_scripts.user_id", userId)
+    .order("recorded_at", { ascending: true });
+  if (error) return err("INTERNAL", error.message);
+
+  const ewma = new Map<string, number>();
+  const ALPHA = 0.3;
+  for (const row of (data ?? []) as unknown as Array<{
+    completion: number | null; retention_3s: number | null;
+    generated_scripts: { hook_id: string; node_ids: string[] };
+  }>) {
+    let metric = row.completion ?? row.retention_3s ?? 0;
+    if (metric > 1) metric = metric / 100; // accept percentages
+    metric = Math.max(0, Math.min(1, metric));
+    const ids = [row.generated_scripts.hook_id, ...(row.generated_scripts.node_ids ?? [])];
+    for (const id of ids) {
+      const prev = ewma.get(id);
+      ewma.set(id, prev == null ? metric : ALPHA * metric + (1 - ALPHA) * prev);
+    }
+  }
+  const weights = new Map<string, number>();
+  for (const [id, score] of ewma) weights.set(id, Math.max(0.5, Math.min(1.5, 0.5 + score)));
+  return ok(weights);
+}

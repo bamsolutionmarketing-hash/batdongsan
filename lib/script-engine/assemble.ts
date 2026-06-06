@@ -16,6 +16,8 @@ export interface AssembleArgs {
   rotation?: Map<string, RotationEntry>;
   seed: string;
   today?: Date;
+  weights?: Map<string, number>; // P5 performance multipliers
+  abHook?: boolean; // also surface an A/B alternate hook (default true)
 }
 
 // Ensure engine-generated FORMAT slots exist so nothing renders raw (P9).
@@ -43,7 +45,7 @@ export function assembleScript(args: AssembleArgs): ScriptResult {
   const bodyCount = chain.filter((c) => c.type.startsWith("BODY_")).length;
   const slots = withFormatSlots(args.slots, durationS, bodyCount, today);
 
-  const ctx: SelectCtx = { recipe, platform, slots, agentTone, rotation, seed, today };
+  const ctx: SelectCtx = { recipe, platform, slots, agentTone, rotation, seed, today, weights: args.weights };
 
   // 1. HOOK
   const hookRes = selectHook(ctx);
@@ -51,6 +53,13 @@ export function assembleScript(args: AssembleArgs): ScriptResult {
     return { status: "MISSING_SLOTS", missingSlots: hookRes.missingFromPool };
   }
   const picked: PickedNode[] = [hookToPicked(hookRes.chosen)];
+
+  // 1b. A/B alternate hook (different from the chosen one).
+  let altHook: ScriptResult["altHook"];
+  if (args.abHook !== false) {
+    const alt = selectHook({ ...ctx, exclude: new Set([hookRes.chosen.id]), seed: `${seed}:alt` }).chosen;
+    if (alt) altHook = { id: alt.id, family: alt.family, text: alt.text, onscreen: alt.onscreen, visual: alt.visual };
+  }
 
   // 2. CHAIN
   chain.forEach((slot, i) => {
@@ -105,6 +114,7 @@ export function assembleScript(args: AssembleArgs): ScriptResult {
     caption,
     checklist,
     lint,
+    altHook,
     meta,
   };
 }

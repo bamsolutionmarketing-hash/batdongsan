@@ -111,6 +111,19 @@ describe("assembleScript pipeline", () => {
     const r = assembleScript(base({ recipe: fake }));
     expect(r.status).toBe("MISSING_SLOTS");
   });
+
+  it("P5: surfaces an A/B alternate hook different from the chosen one", () => {
+    const r = assembleScript(base());
+    expect(r.altHook).toBeDefined();
+    expect(r.altHook!.id).not.toBe(r.meta!.hookId);
+  });
+
+  it("P5: a zero performance weight steers selection away from a hook", () => {
+    const def = assembleScript(base());
+    const weights = new Map([[def.meta!.hookId, 0]]);
+    const r = assembleScript(base({ weights }));
+    expect(r.meta!.hookId).not.toBe(def.meta!.hookId);
+  });
 });
 
 describe("R4 cooldown (selector)", () => {

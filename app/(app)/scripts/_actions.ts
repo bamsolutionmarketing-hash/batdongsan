@@ -2,7 +2,7 @@
 
 import { requireSession } from "@/lib/auth";
 import { generateScript, type GenerateInput } from "@/lib/script/generate";
-import { upsertProjectScriptFact, upsertMarketFact } from "@/lib/repo/scripts";
+import { upsertProjectScriptFact, upsertMarketFact, ingestPerformance, type PerfMetrics } from "@/lib/repo/scripts";
 import type { ScriptResult, Platform, Duration } from "@/lib/script-engine/types";
 
 export interface GenerateArgs {
@@ -51,5 +51,13 @@ export async function saveMarketFactAction(args: {
   const session = await requireSession();
   if (!args.source.trim()) return { ok: false, error: "Bắt buộc có nguồn (R5)." };
   const r = await upsertMarketFact(session.userId, args.khuVuc.trim(), args.key.trim(), args.value.trim(), args.source.trim(), args.validUntil || null);
+  return r.ok ? { ok: true } : { ok: false, error: r.error };
+}
+
+// Ingest performance for a generated script (P5; manual entry for now). RLS
+// ensures the script belongs to the caller.
+export async function ingestPerformanceAction(scriptId: string, metrics: PerfMetrics): Promise<{ ok: boolean; error?: string }> {
+  await requireSession();
+  const r = await ingestPerformance(scriptId, metrics);
   return r.ok ? { ok: true } : { ok: false, error: r.error };
 }
