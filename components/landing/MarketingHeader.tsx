@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Logo } from "./Logo";
+import { InstallButton } from "@/components/pwa/PWA";
 
 // Sticky marketing header — frosted, content-first (Mobbin-style).
 export function MarketingHeader() {
@@ -24,6 +25,7 @@ export function MarketingHeader() {
           <a href="#pricing" className="rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground">Bảng giá</a>
         </nav>
         <div className="ml-auto flex items-center gap-1.5">
+          <InstallButton className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-sm font-medium text-foreground transition hover:bg-accent" />
           <ThemeToggle />
           <Link href="/login" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition hover:text-foreground">Đăng nhập</Link>
           <Link href="/signup" className="rounded-md bg-primary px-3.5 py-1.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90">Dùng thử</Link>
