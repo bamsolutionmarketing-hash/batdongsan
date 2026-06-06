@@ -200,3 +200,45 @@ join knowledge_nodes t
 where i.project_id='00000000-0000-0000-0000-00000000b002'
   and i.id = (md5('tgc-import:'||i.node_key))::uuid
 on conflict (id) do nothing;
+
+-- ── Expansion: researched nodes (2026 web sources) ───────────────────────────
+-- 4 individual Thủ Thiêm competitors (break-out of the bundled cluster) + a TP
+-- Thủ Đức macro node. Broker-sourced prices tagged as "giá rao/tham khảo".
+insert into knowledge_nodes (id, project_id, node_key, label, category, sub_label, facts, talkpoint, description, sort_order) values
+  ((md5('tgc-research:empire-city'))::uuid,'00000000-0000-0000-0000-00000000b002','empire-city','Empire City Thủ Thiêm','comparable','Landmark 88 tầng · đối thủ lõi Thủ Thiêm',
+   '[{"key":"Chủ đầu tư","value":"Liên doanh Keppel Land · Gaw Capital · Trần Thái · Tiến Phước"},{"key":"Quy mô","value":"14,5 ha · ~3.787 căn · 25–88 tầng (tháp Empire 88)"},{"key":"Tổng vốn","value":"~1,2 tỷ USD"},{"key":"Giá (6/2026)","value":"~110–200 triệu/m² (giá rao/thứ cấp)"},{"key":"Bàn giao","value":"Từ 2019, các giai đoạn sau tới ~2022"}]'::jsonb,
+   'Empire City do chính Keppel đồng phát triển — cũng là chủ Saigon Sports City sát The Global City. Dùng làm mốc giá lõi Thủ Thiêm (~110–200 tr/m²) để định vị TGC (~120–170): khách trả thêm cho địa chỉ Thủ Thiêm, đổi lại TGC có hệ tiện ích all-in-one tự chủ.',
+   'Empire City (KĐT Thủ Thiêm, lô 2B) — liên doanh Keppel Land, Gaw Capital, Trần Thái, Tiến Phước; ~14,5 ha, ~730.000 m² sàn, ~3.787 căn, 25–88 tầng (landmark 88 tầng). Đã bàn giao nhiều giai đoạn 2019–2022. Giá tham khảo 6/2026 ~110–200 triệu/m² (nguồn: batdongsan.com.vn, keppelland.vn — giá rao/thứ cấp).',201),
+  ((md5('tgc-research:metropole-tt'))::uuid,'00000000-0000-0000-0000-00000000b002','metropole-tt','The Metropole Thủ Thiêm','comparable','SonKim Land · trần giá hạng sang Thủ Thiêm',
+   '[{"key":"Chủ đầu tư","value":"SonKim Land"},{"key":"Vị trí","value":"Chân cầu Ba Son (cầu Thủ Thiêm 2) · view Quận 1 + sông Sài Gòn"},{"key":"Giá tham khảo","value":"Giai đoạn mới ~10.000 USD/m² · 2PN tới ~300–440 triệu/m²"}]'::jsonb,
+   'Metropole là trần giá căn hộ hạng sang Thủ Thiêm. Khoảng cách giá so TGC (~120–170 tr/m²) là dư địa kể chuyện nếu tin khu Đông tiếp tục lên hạng — đồng thời nhắc rằng TGC chưa phải lõi CBD ven sông Quận 1.',
+   'The Metropole Thủ Thiêm (SonKim Land) — vị trí chân cầu Ba Son/Thủ Thiêm 2, view trực diện Quận 1 và sông Sài Gòn; thuộc nhóm trần giá hạng sang khu Đông (2PN tới ~300–440 triệu/m²). Nguồn: tổng hợp thị trường — giá tham khảo, cần đối chiếu giao dịch thực.',202),
+  ((md5('tgc-research:zeit-river-tt'))::uuid,'00000000-0000-0000-0000-00000000b002','zeit-river-tt','Zeit River Thủ Thiêm','comparable','GS E&C (Hàn Quốc) · đang bàn giao',
+   '[{"key":"Chủ đầu tư","value":"GS E&C / GS Group (Hàn Quốc)"},{"key":"Vị trí","value":"Chân cầu Thủ Thiêm, KĐT Thủ Thiêm"},{"key":"Tiến độ","value":"Đang bàn giao"},{"key":"Giá tham khảo","value":"1PN ~9,3 tỷ"}]'::jsonb,
+   'Chủ đầu tư Hàn Quốc, đang bàn giao — minh chứng nguồn cung hạng sang Thủ Thiêm đang hiện hữu, cạnh tranh trực tiếp tệp khách cao cấp với The Global City.',
+   'Zeit River (Thủ Thiêm Zeit) do GS E&C/GS Group phát triển, vị trí chân cầu Thủ Thiêm, hiện đang bàn giao. Giá tham khảo 1PN ~9,3 tỷ (nguồn: tổng hợp thị trường).',203),
+  ((md5('tgc-research:the-river-tt'))::uuid,'00000000-0000-0000-0000-00000000b002','the-river-tt','The River Thủ Thiêm','comparable','Refico · căn hộ hàng hiệu ven sông',
+   '[{"key":"Chủ đầu tư","value":"Refico"},{"key":"Vị trí","value":"KĐT Thủ Thiêm, ven sông Sài Gòn"},{"key":"Đặc điểm","value":"Căn hộ cao cấp/hàng hiệu ven sông, đã bàn giao"}]'::jsonb,
+   'Cùng cụm nguồn cung hạng sang Thủ Thiêm — nhắc để khách thấy bức tranh cạnh tranh ven sông, và lý do TGC chọn định vị downtown all-in-one thay vì chỉ đua view sông.',
+   'The River Thủ Thiêm (Refico) — căn hộ cao cấp ven sông trong KĐT Thủ Thiêm, kề Empire City/Metropole. Nguồn: tổng hợp thị trường.',204),
+  ((md5('tgc-research:tp-thu-duc'))::uuid,'00000000-0000-0000-0000-00000000b002','tp-thu-duc','TP Thủ Đức (đô thị sáng tạo)','location','Cực tăng trưởng · trung tâm tài chính quốc gia',
+   '[{"key":"Định hướng","value":"Đô thị sáng tạo tương tác cao · trung tâm tài chính quốc gia hướng quốc tế"},{"key":"Quy mô","value":">21.100 ha · 9 phân vùng phát triển"},{"key":"Dân số","value":"~1,8 triệu (2030) → ~2,6 triệu (2040) → ~3 triệu (sau 2040)"},{"key":"Đóng góp kinh tế","value":"~30% GDP TP.HCM (~4–5% GDP cả nước)"}]'::jsonb,
+   'The Global City nằm trong cực tăng trưởng Thủ Đức — vùng quy hoạch tạo ~30% GDP TP.HCM và là trung tâm tài chính quốc gia tương lai. Đây là câu chuyện vĩ mô đỡ giá dài hạn, mạnh hơn mọi lời quảng cáo nội khu.',
+   'TP Thủ Đức được quy hoạch >21.100 ha, 9 phân vùng phát triển, định hướng đô thị sáng tạo và trung tâm tài chính quốc gia hướng quốc tế; dân số dự kiến ~1,8 triệu (2030) → ~3 triệu (sau 2040); đóng góp ~30% GDP TP.HCM. Nguồn: baochinhphu.vn, cafef.vn, tphcm.chinhphu.vn.',205)
+on conflict (id) do nothing;
+
+insert into knowledge_links (id, project_id, source_node, target_node, label)
+select (md5('tgc-research-hero:'||i.node_key))::uuid,'00000000-0000-0000-0000-00000000b002',h.id,i.id,null
+from knowledge_nodes i
+cross join (select id from knowledge_nodes where project_id='00000000-0000-0000-0000-00000000b002' and node_key='tgc') h
+where i.project_id='00000000-0000-0000-0000-00000000b002'
+  and i.node_key in ('empire-city','metropole-tt','zeit-river-tt','the-river-tt','tp-thu-duc')
+on conflict (id) do nothing;
+
+insert into knowledge_links (id, project_id, source_node, target_node, label)
+select (md5('tgc-research-edge:'||i.node_key))::uuid,'00000000-0000-0000-0000-00000000b002',i.id,t.id,null
+from knowledge_nodes i
+join knowledge_nodes t on t.project_id='00000000-0000-0000-0000-00000000b002' and t.node_key='tt-thuthiem'
+where i.project_id='00000000-0000-0000-0000-00000000b002'
+  and i.node_key in ('empire-city','metropole-tt','zeit-river-tt','the-river-tt')
+on conflict (id) do nothing;
