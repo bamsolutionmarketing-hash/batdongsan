@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const EB = "text-xs uppercase tracking-widest text-muted-foreground";
+const THEME = ["from-sky-500/25 to-indigo-500/10", "from-violet-500/25 to-fuchsia-500/10", "from-emerald-500/25 to-teal-500/10"];
 
 function ScreenChoose({ active }: { active: boolean }) {
   return (
@@ -99,20 +100,25 @@ export function ScrollStory() {
                 <span className="text-5xl font-semibold tracking-tight text-muted-foreground/50">{s.k}</span>
                 <h3 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{s.title}</h3>
                 <p className="mt-3 max-w-md leading-relaxed text-muted-foreground">{s.desc}</p>
-                <div className="mt-6 h-[320px] lg:hidden">
-                  <Screen i={i} active={active === i} />
+                <div className={`mt-6 rounded-xl bg-gradient-to-br p-3 lg:hidden ${THEME[i % THEME.length]}`}>
+                  <div className="h-[300px]"><Screen i={i} active={active === i} /></div>
                 </div>
               </div>
             ))}
           </div>
           <div className="hidden lg:block">
-            <div className="sticky top-0 flex h-screen items-center justify-center">
-              <div className="relative h-[380px] w-full max-w-sm">
+            <div className="sticky top-0 flex h-screen items-center">
+              <div className={`relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-br p-5 shadow-card transition-colors duration-500 ${THEME[active % THEME.length]}`}>
                 {STEPS.map((_, i) => (
-                  <div key={i} className={`absolute inset-0 transition-all duration-500 ${active === i ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}>
+                  <div key={i} className={`absolute inset-5 flex items-center transition-all duration-500 ${active === i ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}>
                     <Screen i={i} active={active === i} />
                   </div>
                 ))}
+                <div className="absolute right-4 top-4 z-10 flex flex-col gap-1.5">
+                  {STEPS.map((_, i) => (
+                    <span key={i} className={`w-1.5 rounded-full transition-all duration-300 ${active === i ? "h-5 bg-foreground" : "h-1.5 bg-foreground/30"}`} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
