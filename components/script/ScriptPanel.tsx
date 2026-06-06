@@ -52,10 +52,14 @@ export function ScriptPanel({ projectId, nodeIds, projectName }: { projectId: st
     });
 
   const copy = (text: string, which: string) => {
-    navigator.clipboard?.writeText(text).then(() => {
-      setCopied(which);
-      setTimeout(() => setCopied(""), 1500);
-    });
+    if (!navigator.clipboard) return;
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopied(which);
+        setTimeout(() => setCopied(""), 1500);
+      })
+      .catch(() => {});
   };
 
   // Recommended body-segment count for the current recipe × duration (a hint;

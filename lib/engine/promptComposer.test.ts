@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { composePrompt } from "./promptComposer";
+import { composePrompt, composeScriptPrompt } from "./promptComposer";
 import type { ComposeMode, ComposeTone } from "@/types/domain";
 
 const MODES: ComposeMode[] = ["fb_post", "fb_analysis", "short_caption", "zalo_message"];
@@ -78,5 +78,40 @@ describe("composePrompt", () => {
       caption: "Ưu đãi [MA_KM] hôm nay",
     });
     expect(p).toContain("[MA_KM] = (giữ nguyên ký hiệu)");
+  });
+});
+
+describe("composeScriptPrompt (video → AI prompt)", () => {
+  const script = [
+    { start: 0, end: 3, visual: "Flycam dự án", speech: "Mở bài hook", overlay: "GLADIA" },
+    { start: 3, end: 10, visual: "Cảnh hồ bơi", speech: "Hồ bơi tràn bờ tầng cao", overlay: "Hồ bơi vô cực" },
+  ];
+
+  it("wraps the whole script with platform, scenes, caption, checklist and rules", () => {
+    const p = composeScriptPrompt({
+      platform: "tiktok",
+      durationS: 30,
+      contentTypeName: "Tour dự án",
+      projectName: "Gladia",
+      script,
+      caption: { text: "Caption mẫu", hashtags: ["#bds", "#gladia"] },
+      checklist: ["Quay flycam", "Quay hồ bơi"],
+    });
+    expect(p).toContain("TikTok");
+    expect(p).toContain("Gladia");
+    expect(p).toContain("Hồ bơi tràn bờ tầng cao"); // scene speech
+    expect(p).toContain("Hồ bơi vô cực"); // overlay
+    expect(p).toContain("Caption mẫu");
+    expect(p).toContain("#bds");
+    expect(p).toContain("Quay flycam"); // checklist
+    expect(p).toContain("KHÔNG hứa lợi nhuận"); // compliance spine
+    expect(p.length).toBeGreaterThan(100);
+  });
+
+  it("works with minimal input (no caption/checklist)", () => {
+    const p = composeScriptPrompt({ platform: "reels", durationS: 15, script });
+    expect(p).toContain("Reels");
+    expect(p).toContain("Mở bài hook");
+    expect(p).not.toContain("CAPTION & HASHTAG");
   });
 });
