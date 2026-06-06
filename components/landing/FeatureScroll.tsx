@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ICONS, type IconKey } from "./Icons";
 
 export interface Feature {
-  icon: string;
+  icon: IconKey;
   title: string;
   desc: string;
   back: string;
@@ -26,24 +27,28 @@ export function FeatureScroll({ features }: { features: Feature[] }) {
     return () => io.disconnect();
   }, []);
 
-  const Photo = ({ f }: { f: Feature }) => (
-    <>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={f.img} alt={f.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-black/5" />
-      <div className="absolute inset-x-0 bottom-0 p-6">
-        <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/15 text-lg ring-1 ring-white/20 backdrop-blur">{f.icon}</span>
-        <h4 className="mt-3 text-xl font-semibold tracking-tight text-white">{f.title}</h4>
-        <p className="mt-1 max-w-xs text-sm leading-relaxed text-white/80">{f.desc}</p>
-      </div>
-    </>
-  );
+  const Photo = ({ f }: { f: Feature }) => {
+    const Ico = ICONS[f.icon];
+    return (
+      <>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={f.img} alt={f.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+          <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/25 bg-white/10 backdrop-blur"><Ico className="h-5 w-5 text-white" /></span>
+          <h4 className="mt-3 text-xl font-semibold tracking-tight">{f.title}</h4>
+          <p className="mt-1 max-w-xs text-sm leading-relaxed text-white/85">{f.desc}</p>
+        </div>
+      </>
+    );
+  };
 
   return (
     <div className="mt-10 grid gap-12 lg:grid-cols-2">
       <div>
         {features.map((f, i) => {
           const on = active === i;
+          const Ico = ICONS[f.icon];
           return (
             <div
               key={f.title}
@@ -52,7 +57,7 @@ export function FeatureScroll({ features }: { features: Feature[] }) {
               className={`flex min-h-[60vh] flex-col justify-center transition-opacity duration-500 ease-out ${on ? "opacity-100" : "opacity-45"}`}
             >
               <div className="flex items-center gap-3">
-                <span className={`grid h-11 w-11 place-items-center rounded-xl border text-xl transition-colors duration-500 ${on ? "border-brand/40 bg-brand/10" : "border-border bg-muted"}`}>{f.icon}</span>
+                <span className={`grid h-11 w-11 place-items-center rounded-xl border transition-colors duration-500 ${on ? "border-brand/40 bg-brand/10 text-brand" : "border-border bg-muted text-muted-foreground"}`}><Ico className="h-5 w-5" /></span>
                 <span className="text-sm font-medium text-muted-foreground">{String(i + 1).padStart(2, "0")} / {String(features.length).padStart(2, "0")}</span>
               </div>
               <h3 className="mt-5 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{f.title}</h3>

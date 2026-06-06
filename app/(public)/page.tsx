@@ -12,14 +12,17 @@ import { FeatureScroll } from "@/components/landing/FeatureScroll";
 import { ScrollStory } from "@/components/landing/ScrollStory";
 import { SmoothScroll } from "@/components/landing/SmoothScroll";
 
-const IMG = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=900`;
+// Images are curated to match each title (overhead city = map, morning interior
+// = today, glass facade = verified, neon tech = AI, photographer = branded, planner
+// = calendar). All known-good Unsplash IDs.
+const IMG = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=1200`;
 const FEATURES = [
-  { icon: "🗺️", title: "Bản đồ tri thức", desc: "Chọn 1–4 điểm, máy dựng bài quanh đúng câu chuyện.", back: "112 điểm tri thức, nối theo quan hệ thật — chạm là ra góc kể.", img: IMG("1486406146926-c627a92ad1ab") },
-  { icon: "☀️", title: "Gợi ý “Hôm Nay”", desc: "Mỗi sáng một gợi ý theo nhịp tuần và deadline.", back: "Kèm chuỗi ngày đăng đều và đếm ngược các mốc sắp tới.", img: IMG("1564013799919-ab600027ffc6") },
-  { icon: "✅", title: "Soạn đúng dữ liệu", desc: "Chỉ dùng số liệu đã xác thực. Không bịa, không sai pháp lý.", back: "640 mẫu câu, mỗi câu gắn dữ kiện đã kiểm — sai số là bị chặn.", img: IMG("1502672260266-1c1ef2d93688") },
-  { icon: "🤖", title: "Prompt AI", desc: "Một cú dán sang ChatGPT/Gemini là ra bài chuẩn.", back: "6 khối ràng buộc để AI chỉ dùng dữ liệu cho sẵn — không thêm thắt.", img: IMG("1545324418-cc1a3fa10c00") },
-  { icon: "🖼️", title: "Ảnh đóng logo", desc: "Tự tạo ảnh feed + story 9:16 có logo, watermark.", back: "Có placeholder kể cả khi bạn chưa có ảnh thật.", img: IMG("1512917774080-9991f1c4c750") },
-  { icon: "🗓️", title: "Lịch & deadline", desc: "Theo dõi đã đăng theo ngày, nhắc hạn chiến dịch.", back: "Đánh dấu ngày đã đăng + đếm ngược hạn để không lỡ sóng.", img: IMG("1493809842364-78817add7ffb") },
+  { icon: "map" as const, title: "Bản đồ tri thức", desc: "Chọn 1–4 điểm, máy dựng bài quanh đúng câu chuyện.", back: "112 điểm tri thức, nối theo quan hệ thật — chạm là ra góc kể.", img: IMG("1480714378408-67cf0d13bc1b") },
+  { icon: "sun" as const, title: "Gợi ý “Hôm Nay”", desc: "Mỗi sáng một gợi ý theo nhịp tuần và deadline.", back: "Kèm chuỗi ngày đăng đều và đếm ngược các mốc sắp tới.", img: IMG("1564013799919-ab600027ffc6") },
+  { icon: "shield" as const, title: "Soạn đúng dữ liệu", desc: "Chỉ dùng số liệu đã xác thực. Không bịa, không sai pháp lý.", back: "640 mẫu câu, mỗi câu gắn dữ kiện đã kiểm — sai số là bị chặn.", img: IMG("1486406146926-c627a92ad1ab") },
+  { icon: "sparkles" as const, title: "Prompt AI", desc: "Một cú dán sang ChatGPT/Gemini là ra bài chuẩn.", back: "6 khối ràng buộc để AI chỉ dùng dữ liệu cho sẵn — không thêm thắt.", img: IMG("1620712943543-bcc4688e7485") },
+  { icon: "image" as const, title: "Ảnh đóng logo", desc: "Tự tạo ảnh feed + story 9:16 có logo, watermark.", back: "Có placeholder kể cả khi bạn chưa có ảnh thật.", img: IMG("1512917774080-9991f1c4c750") },
+  { icon: "calendar" as const, title: "Lịch & deadline", desc: "Theo dõi đã đăng theo ngày, nhắc hạn chiến dịch.", back: "Đánh dấu ngày đã đăng + đếm ngược hạn để không lỡ sóng.", img: IMG("1506784983877-45594efa4cbe") },
 ];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
