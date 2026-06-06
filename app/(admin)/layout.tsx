@@ -9,7 +9,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen">
       <nav className="flex items-center gap-4 border-b border-amber-900/40 bg-background px-6 py-3 text-sm">
-        <span className="font-semibold text-amber-400">Admin</span>
+        <Link href="/admin" className="font-semibold text-amber-400">Admin</Link>
         <Link href="/admin/projects" className="text-muted-foreground hover:text-foreground">Dự án</Link>
         <Link href="/dashboard" className="ml-auto text-muted-foreground hover:text-foreground">← App</Link>
       </nav>

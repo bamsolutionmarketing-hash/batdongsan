@@ -9,6 +9,9 @@ const TIER_RANK: Record<Tier, number> = { free: 0, pro: 1, team: 2 };
 export async function getActiveTier(userId: string): Promise<Result<Tier>> {
   if (!isSupabaseConfigured()) return ok("free");
   const supabase = createClient();
+  // Admins always get the top tier (every feature unlocked, no watermark).
+  const { data: prof } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
+  if ((prof as { role?: string } | null)?.role === "admin") return ok("team");
   const { data, error } = await supabase
     .from("subscriptions")
     .select("tier")
