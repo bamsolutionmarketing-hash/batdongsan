@@ -9,6 +9,31 @@ export interface Feature {
   desc: string;
   back: string;
   img: string;
+  stamp?: string; // phone number → renders a watermark + stamp demo on the photo
+}
+
+// Repeated diagonal watermark + a corner "stamp" — demonstrates the branded-image
+// feature directly on the photo.
+function Watermark({ phone }: { phone: string }) {
+  return (
+    <>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-[0.18] [transform:rotate(-24deg)_scale(1.4)]">
+        <div className="flex flex-col gap-6 text-[13px] font-semibold uppercase tracking-widest text-white">
+          {Array.from({ length: 7 }).map((_, r) => (
+            <div key={r} className="flex gap-6 whitespace-nowrap">
+              {Array.from({ length: 5 }).map((_, c) => <span key={c}>BĐS · {phone}</span>)}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="absolute right-3 top-3 grid h-16 w-16 -rotate-12 place-items-center rounded-full border-2 border-white/80 text-center text-white shadow-lg">
+        <div>
+          <div className="text-[8px] font-bold uppercase leading-tight tracking-widest">Đã đóng dấu</div>
+          <div className="text-[10px] font-bold leading-tight">{phone}</div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 // Sticky scrollytelling — minimalist + real imagery: a clean elevated photo card
@@ -31,8 +56,10 @@ export function FeatureScroll({ features }: { features: Feature[] }) {
     const Ico = ICONS[f.icon];
     return (
       <>
+        <div className="absolute inset-0 bg-gradient-to-br from-muted to-background-subtle" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={f.img} alt={f.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+        <img src={f.img} alt={f.title} loading="lazy" onError={(e) => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 h-full w-full object-cover" />
+        {f.stamp && <Watermark phone={f.stamp} />}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-6 text-white">
           <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/25 bg-white/10 backdrop-blur"><Ico className="h-5 w-5 text-white" /></span>

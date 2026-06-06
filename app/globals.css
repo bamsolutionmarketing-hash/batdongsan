@@ -82,3 +82,37 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-stopped { overflow: hidden; }
+
+/* ── Landing "Ba bước" card animations ─────────────────────────────── */
+@keyframes lp-pop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+  70%  { transform: translate(-50%, -50%) scale(1.12); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes lp-draw { to { stroke-dashoffset: 0; } }
+@keyframes lp-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes lp-drag {
+  0%, 14%  { transform: translate(0, 0) scale(1); }
+  24%      { transform: translate(0, -4px) scale(0.94); }      /* grab */
+  62%      { transform: translate(118px, 86px) scale(0.94); }  /* drag */
+  74%      { transform: translate(118px, 86px) scale(0.5); opacity: 1; }
+  82%      { transform: translate(118px, 86px) scale(0.4); opacity: 0; } /* drop */
+  83%      { transform: translate(0, 0) scale(1); opacity: 0; }
+  100%     { transform: translate(0, 0) scale(1); opacity: 1; } /* reset */
+}
+@keyframes lp-dropok {
+  0%, 70%  { opacity: 0; transform: scale(0.4); }
+  78%      { opacity: 1; transform: scale(1.15); }
+  90%, 100%{ opacity: 1; transform: scale(1); }
+}
+.lp-node   { animation: lp-pop 0.5s cubic-bezier(0.2,0.8,0.2,1) both; }
+.lp-line   { stroke-dasharray: 120; stroke-dashoffset: 120; animation: lp-draw 0.6s ease-out forwards; }
+.lp-caret  { animation: lp-blink 1s step-end infinite; }
+.lp-drag   { animation: lp-drag 4.2s ease-in-out infinite; }
+.lp-dropok { animation: lp-dropok 4.2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-node, .lp-line, .lp-drag, .lp-dropok { animation: none; }
+  .lp-line { stroke-dashoffset: 0; }
+  .lp-node { opacity: 1; }
+}

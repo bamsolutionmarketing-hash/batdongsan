@@ -1,26 +1,53 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const EB = "text-xs uppercase tracking-widest text-muted-foreground";
 
-function ScreenChoose({ active }: { active: boolean }) {
+// Loops through phrases with a typewriter effect (type → hold → delete → next).
+function Typer({ phrases }: { phrases: string[] }) {
+  const [text, setText] = useState("");
+  const [pi, setPi] = useState(0);
+  const [del, setDel] = useState(false);
+  useEffect(() => {
+    const full = phrases[pi];
+    let t: ReturnType<typeof setTimeout>;
+    if (!del && text === full) t = setTimeout(() => setDel(true), 1300);
+    else if (del && text === "") { setDel(false); setPi((p) => (p + 1) % phrases.length); }
+    else t = setTimeout(() => setText(del ? full.slice(0, text.length - 1) : full.slice(0, text.length + 1)), del ? 28 : 55);
+    return () => clearTimeout(t);
+  }, [text, del, pi, phrases]);
+  return <span>{text}<span className="lp-caret ml-0.5 inline-block h-[1em] w-px translate-y-[2px] bg-brand align-middle" /></span>;
+}
+
+// Card 1 — nodes pop in one by one, then lines connect them to the hub.
+const NODES: [string, number, number, boolean][] = [
+  ["Gladia", 50, 46, true],
+  ["Vành đai 3", 17, 24, false],
+  ["Long Thành", 82, 22, false],
+  ["Green Mark", 22, 76, true],
+  ["Keppel", 78, 74, false],
+];
+function ScreenChoose({ play }: { play: boolean }) {
   return (
     <div className="h-full w-full rounded-lg border border-border bg-card p-5 shadow-card">
       <p className={EB}>Bản đồ tri thức</p>
-      <div className="relative mt-4 h-[280px]">
-        {[
-          ["Gladia", "52%", "44%", true],
-          ["Vành đai 3", "18%", "22%", false],
-          ["Long Thành", "78%", "20%", false],
-          ["Green Mark", "24%", "72%", true],
-          ["Keppel", "74%", "70%", false],
-        ].map(([label, l, t, on], i) => (
-          <div key={i} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: l as string, top: t as string }}>
-            <div className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] transition-all duration-500 ${active && on ? "border-brand/60 bg-brand/10 text-foreground" : "border-border bg-muted text-muted-foreground"}`}>
-              <span className={`h-2 w-2 rounded-full ${active && on ? "bg-brand" : "bg-muted-foreground/50"}`} />{label as string}
+      <div className="relative mt-3 h-[300px]">
+        <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none">
+          {play && NODES.slice(1).map(([, l, t, on], i) => (
+            <line key={i} x1={`${NODES[0][1]}%`} y1={`${NODES[0][2]}%`} x2={`${l}%`} y2={`${t}%`}
+              className={`lp-line ${on ? "stroke-brand" : "stroke-border"}`} strokeWidth={on ? 1.6 : 1.2}
+              style={{ animationDelay: `${0.9 + i * 0.12}s` }} />
+          ))}
+        </svg>
+        {NODES.map(([label, l, t, on], i) => (
+          <div key={i} className={play ? "lp-node absolute" : "absolute opacity-0"} style={{ left: `${l}%`, top: `${t}%`, animationDelay: `${i * 0.14}s` }}>
+            <div className={`-translate-x-1/2 -translate-y-1/2 ${i === 0 ? "scale-110" : ""}`}>
+              <div className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] ${on ? "border-brand/60 bg-brand/10 text-foreground" : "border-border bg-muted text-muted-foreground"}`}>
+                <span className={`h-2 w-2 rounded-full ${on ? "bg-brand" : "bg-muted-foreground/50"}`} />{label}
+              </div>
             </div>
           </div>
         ))}
@@ -28,30 +55,62 @@ function ScreenChoose({ active }: { active: boolean }) {
     </div>
   );
 }
-function ScreenCompose({ active }: { active: boolean }) {
+
+// Card 2 — template chips cycle while the caption types itself out.
+const TPL = ["FB Post", "Zalo", "Chuyên gia", "Kể chuyện"];
+const CAPTIONS = [
+  "Gladia Q7 — căn 2PN, view sông, bàn giao 2026.",
+  "Quỹ căn cuối Green Mark, chính sách 0% lãi 18 tháng.",
+  "Cách Keppel kết nối Vành đai 3 chỉ 10 phút.",
+];
+function ScreenCompose({ play }: { play: boolean }) {
+  const [tpl, setTpl] = useState(0);
+  useEffect(() => {
+    if (!play) return;
+    const id = setInterval(() => setTpl((t) => (t + 1) % TPL.length), 2600);
+    return () => clearInterval(id);
+  }, [play]);
   return (
     <div className="h-full w-full rounded-lg border border-border bg-card p-5 shadow-card">
       <p className={EB}>Soạn & đổi mẫu</p>
       <div className="mt-4 flex flex-wrap gap-1.5">
-        {["FB Post", "Zalo", "Chuyên gia", "Kể chuyện"].map((p, i) => (
-          <span key={p} className={`rounded-full px-2.5 py-1 text-[11px] ${i === 0 || i === 2 ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>{p}</span>
+        {TPL.map((p, i) => (
+          <span key={p} className={`rounded-full px-2.5 py-1 text-[11px] transition-colors duration-300 ${i === tpl ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}>{p}</span>
         ))}
       </div>
-      <div className="mt-4 space-y-2 rounded-md border border-border bg-background-subtle p-3">
-        {[90, 80, 95, 60].map((w, i) => (
-          <div key={i} className="h-2.5 rounded-full bg-muted-foreground/25 transition-all duration-700" style={{ width: active ? `${w}%` : "20%" }} />
-        ))}
+      <div className="mt-4 min-h-[120px] rounded-md border border-border bg-background-subtle p-3 text-sm leading-relaxed text-foreground">
+        {play ? <Typer phrases={CAPTIONS} /> : CAPTIONS[0]}
+      </div>
+      <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
+        <span className="h-1.5 w-1.5 rounded-full bg-brand" /> dữ liệu đã xác thực · không bịa số
       </div>
     </div>
   );
 }
-function ScreenExport({ active }: { active: boolean }) {
+
+// Card 3 — a cursor grabs an image and drags it into the download tray.
+function ScreenExport({ play }: { play: boolean }) {
   return (
     <div className="h-full w-full rounded-lg border border-border bg-card p-5 shadow-card">
       <p className={EB}>Tải bài + ảnh</p>
-      <div className={`mt-4 grid grid-cols-2 gap-2 transition-opacity duration-700 ${active ? "opacity-100" : "opacity-40"}`}>
-        <div className="aspect-video rounded-md bg-muted" />
-        <div className="aspect-video rounded-md bg-muted" />
+      <div className="relative mt-4 h-[210px]">
+        {/* source thumbnails */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="aspect-video rounded-md bg-gradient-to-br from-muted to-background-subtle" />
+          <div className="aspect-video rounded-md bg-gradient-to-br from-muted to-background-subtle" />
+        </div>
+        {/* download tray (drop target) */}
+        <div className="absolute bottom-0 right-0 grid h-16 w-24 place-items-center rounded-lg border-2 border-dashed border-border text-muted-foreground">
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></svg>
+          {play && <span className="lp-dropok absolute -right-1.5 -top-1.5 grid h-5 w-5 place-items-center rounded-full bg-brand text-[10px] text-white">✓</span>}
+        </div>
+        {/* dragged image + cursor (move together) */}
+        {play && (
+          <div className="lp-drag absolute left-0 top-0 w-[46%]">
+            <div className="aspect-video rounded-md border border-brand/50 bg-gradient-to-br from-brand/25 to-muted shadow-lg" />
+            <svg viewBox="0 0 24 24" className="absolute -bottom-2 -right-2 h-5 w-5 text-foreground drop-shadow" fill="currentColor"><path d="M5 3l15 9-6 1.5L11 20 5 3z" /></svg>
+          </div>
+        )}
       </div>
       <div className="mt-3 flex gap-2">
         <span className="rounded-md bg-primary px-3 py-1.5 text-[11px] font-medium text-primary-foreground">Copy bài</span>
@@ -67,10 +126,10 @@ const STEPS = [
   { k: "03", title: "Tải bài + ảnh", desc: "Copy caption và tải ảnh đóng logo — đăng ngay lên Facebook/Zalo." },
 ];
 
-function Screen({ i, active }: { i: number; active: boolean }) {
-  if (i === 0) return <ScreenChoose active={active} />;
-  if (i === 1) return <ScreenCompose active={active} />;
-  return <ScreenExport active={active} />;
+function Screen({ i, play }: { i: number; play: boolean }) {
+  if (i === 0) return <ScreenChoose play={play} />;
+  if (i === 1) return <ScreenCompose play={play} />;
+  return <ScreenExport play={play} />;
 }
 
 // Pinned HORIZONTAL scroller (lg+): the section pins and the step panels slide
@@ -79,6 +138,7 @@ export function ScrollStory() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const fillRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -99,7 +159,10 @@ export function ScrollStory() {
           start: "top top",
           end: () => "+=" + dist(),
           invalidateOnRefresh: true,
-          onUpdate: (self) => { if (fillRef.current) fillRef.current.style.width = `${self.progress * 100}%`; },
+          onUpdate: (self) => {
+            if (fillRef.current) fillRef.current.style.width = `${self.progress * 100}%`;
+            setActive(Math.round(self.progress * (STEPS.length - 1)));
+          },
         },
       });
     }, section);
@@ -122,7 +185,7 @@ export function ScrollStory() {
                   <span className="mt-4 block h-px w-12 rounded-full bg-brand" />
                   <p className="mt-5 max-w-md text-lg leading-relaxed text-muted-foreground">{s.desc}</p>
                 </div>
-                <div className="h-[440px]"><Screen i={i} active /></div>
+                <div className="h-[440px]"><Screen key={`${i}-${active === i}`} i={i} play={active === i} /></div>
               </div>
             </div>
           ))}
@@ -141,7 +204,7 @@ export function ScrollStory() {
               <h3 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">{s.title}</h3>
               <p className="mt-2 leading-relaxed text-muted-foreground">{s.desc}</p>
               <div className="mt-4 h-[280px] rounded-2xl border border-border bg-card p-4 shadow-[0_24px_60px_-40px_rgba(0,0,0,0.5)]">
-                <Screen i={i} active />
+                <Screen i={i} play />
               </div>
             </div>
           ))}
