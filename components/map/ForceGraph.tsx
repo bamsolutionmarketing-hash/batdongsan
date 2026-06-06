@@ -59,6 +59,10 @@ interface ForceGraphProps {
   linkColors?: Record<string, string>;
   /** Legend rows; pass [] to hide. */
   legend?: LegendItem[];
+  /** Teaser tuning: extra zoom after fit, padding, and always-on labels. */
+  fitPadding?: number;
+  zoomBoost?: number;
+  alwaysLabels?: boolean;
 }
 
 function linkEnd(end: string | { id: string }): string {
@@ -77,6 +81,9 @@ export function ForceGraph({
   nodeColors = DEFAULT_NODE_COLORS,
   linkColors = DEFAULT_LINK_COLORS,
   legend = DEFAULT_LEGEND,
+  fitPadding = 60,
+  zoomBoost = 1,
+  alwaysLabels = false,
 }: ForceGraphProps) {
   const fgRef = useRef<any>(null);
   const [hoverId, setHoverId] = useState<string | null>(null);
@@ -96,13 +103,21 @@ export function ForceGraph({
   const focusHood = useMemo(() => neighborhood(adj, focusId), [adj, focusId]);
 
   // Fit the whole graph in view once it settles, and whenever the data changes.
-  const handleEngineStop = useCallback(() => {
-    fgRef.current?.zoomToFit(400, 60);
-  }, []);
+  // Optionally zoom in past the fit (teaser) so nodes are large & tappable.
+  const fit = useCallback(() => {
+    fgRef.current?.zoomToFit(400, fitPadding);
+    if (zoomBoost !== 1) {
+      setTimeout(() => {
+        const z = fgRef.current?.zoom?.();
+        if (z) fgRef.current.zoom(z * zoomBoost, 400);
+      }, 450);
+    }
+  }, [fitPadding, zoomBoost]);
+  const handleEngineStop = useCallback(() => fit(), [fit]);
   useEffect(() => {
-    const t = setTimeout(() => fgRef.current?.zoomToFit(400, 60), 300);
+    const t = setTimeout(fit, 300);
     return () => clearTimeout(t);
-  }, [graph]);
+  }, [graph, fit]);
 
   // Is this node "active" (full-strength) given search + focus state?
   const nodeActive = useCallback(
@@ -177,7 +192,7 @@ export function ForceGraph({
 
           // Label culling: show labels only when zoomed in, for the focused
           // neighborhood, or for hubs — so thousands of nodes stay readable.
-          const showLabel = active && (scale > 1.6 || isFocus || focusHood.has(node.id) || node.degree >= 4);
+          const showLabel = active && (alwaysLabels || scale > 1.6 || isFocus || focusHood.has(node.id) || node.degree >= 4);
           if (showLabel) {
             const label = node.label as string;
             const fontSize = Math.max(2.5, 11 / scale);
