@@ -203,3 +203,47 @@ from (values
 ) as v(node_key, role, variant_no, text, tone, min_confidence, fact_keys)
 join knowledge_nodes n on n.project_id='00000000-0000-0000-0000-00000000b002' and n.node_key=v.node_key
 on conflict (node_id, role, variant_no) do nothing;
+
+-- ── Batch C: sự kiện · đối tác · megaproject · chính sách · thương hiệu ───────
+insert into node_content_blocks (node_id, role, variant_no, text, tone, min_confidence, fact_keys, is_enabled)
+select n.id, v.role::block_role_t, v.variant_no, v.text, v.tone::block_tone_t, v.min_confidence::confidence_t, v.fact_keys, true
+from (values
+  ('atvcg','hook',1,'50.000 người đổ về [TEN_DU_AN] trong một đêm concert ATVCG — sức hút khu đô thị mà tiền không mua được.','story','verified',array['Quy mô']),
+  ('atvcg','hook',2,'Concert ATVCG chặng cuối 6–7/9/2025 tại [TEN_DU_AN] — từ 20.000 lên hơn 50.000 người/đêm.','neutral','verified',array['Thời gian','Quy mô']),
+  ('atvcg','body',1,'Sự kiện tầm cỡ kéo cả thành phố về dự án — cư dân các phân khu sống ngay tại điểm đến giải trí đó.','story','verified',array[]::text[]),
+  ('soobin-concert','hook',1,'SOOBIN — All-Rounder The Final tổ chức tại [TEN_DU_AN] ngày 29/11/2025.','neutral','verified',array['Thời gian','Tên']),
+  ('soobin-concert','hook',2,'[TEN_DU_AN] là nơi diễn ra concert của các nghệ sĩ hàng đầu — một đô thị có nhịp sống thật, không phải nơi để ngủ.','story','verified',array[]::text[]),
+  ('quoc-thien','hook',1,'Quốc Thiên SKYNote 2025: The Reflection diễn ra tại [TEN_DU_AN] ngày 22/11/2025.','neutral','verified',array['Thời gian','Tên']),
+  ('pink-run','hook',1,'Pink Run / Nón Hồng 25/10/2025 — hơn 5.000 runner về [TEN_DU_AN].','neutral','verified',array['Thời gian','Quy mô']),
+  ('pink-run','body',1,'Giải chạy cộng đồng quy mô lớn cho thấy hạ tầng tiện ích thể thao của [TEN_DU_AN] đã vận hành thật.','story','verified',array[]::text[]),
+  ('global-wishmas','hook',1,'Global Wishmas — chợ Giáng sinh châu Âu và diễu hành tại [TEN_DU_AN] (20, 21, 24/12/2025).','neutral','verified',array['Thời gian','Loại']),
+  ('ppa-tour','hook',1,'Giải Pickleball quốc tế PPA Tour Asia tổ chức tại tổ hợp thể thao [TEN_DU_AN].','neutral','verified',array['Môn','Địa điểm']),
+  ('daddy-cool','hook',1,'Daddy Cool Diner — không gian retro Mỹ thập niên 90, đón ~1.000+ khách/ngày tại [TEN_DU_AN].','neutral','verified',array['Loại','Mở cửa']),
+  ('marriott','hook',1,'Masterise hợp tác Marriott & JW Marriott tại Grand Marina — chuẩn vận hành hàng hiệu cùng hệ DNA với [TEN_DU_AN].','neutral','verified',array['Hợp tác']),
+  ('ritz-carlton','hook',1,'Ritz-Carlton (The Grand Hanoi) — một trong các thương hiệu hàng hiệu mà Masterise hợp tác phát triển.','neutral','verified',array['Hợp tác']),
+  ('elie-saab','hook',1,'The Rivus by Elie Saab — lần đầu một nhà mốt Haute Couture làm bất động sản tại Việt Nam, do Masterise phát triển.','neutral','verified',array['Hợp tác']),
+  ('watg','hook',1,'450.000 m² cây xanh và mặt nước [TEN_DU_AN] do WATG quy hoạch — top 3 hãng thiết kế hospitality thế giới.','neutral','verified',array['Vai trò','Vị thế']),
+  ('watg','body',1,'Triết lý đối thoại với thiên nhiên ngay giữa lõi đô thị — quỹ xanh là tài sản sống còn, khó dự án nào sao chép.','story','verified',array[]::text[]),
+  ('cau-phu-my-2','hook',1,'Masterise tự bỏ ~23.186 tỷ xây cầu Phú Mỹ 2 — dây văng 2 tầng đầu tiên TP.HCM. CĐT làm được hạ tầng quốc gia thì bàn giao một dự án căn hộ là chuyện trong tầm tay.','story','verified',array['Tổng đầu tư','Quy mô']),
+  ('cau-phu-my-2','body',1,'Cầu Phú Mỹ 2 (8 làn, 6,3 km) kết nối Nguyễn Hữu Thọ với đường liên cảng Đồng Nai, khởi công 15/1/2026.','neutral','verified',array['Quy mô','Kết nối','Khởi công']),
+  ('cau-can-gio','hook',1,'Cầu Cần Giờ ~13.200 tỷ (dây văng vượt sông Soài Rạp) khởi công 15/1/2026 — cùng nhà đầu tư Masterise.','neutral','verified',array['Tổng đầu tư','Khởi công']),
+  ('cau-can-gio','body',1,'Thay thế phà Bình Khánh, hoàn thành dự kiến 30/6/2029 — một trong ba megaproject hạ tầng Masterise đang triển khai.','neutral','verified',array['Thay thế','Hoàn thành']),
+  ('gia-binh-airport','hook',1,'Quốc hội giao Masterise đầu tư siêu sân bay Gia Bình ~196.000 tỷ (NQ 256/2025/QH15) — cấp tín nhiệm cao nhất một doanh nghiệp tư nhân có thể đạt được.','story','verified',array['Tổng đầu tư','Phê duyệt']),
+  ('gia-binh-airport','body',1,'Quy mô ~1.960 ha, ICAO 4F, công suất 30 triệu khách (2030) lên 50 triệu (2050) — tầm vóc tập đoàn đứng sau [TEN_DU_AN].','neutral','verified',array['Quy mô','Công suất 2030','Công suất 2050']),
+  ('masterise-he','hook',1,'Chính đội Hospitality & Entertainment của Masterise tạo ra ATVCG, SOOBIN, Global Wishmas — biến [TEN_DU_AN] thành nơi cả Sài Gòn đổ về.','story','verified',array['Vai trò']),
+  ('masterise-pm','hook',1,'Cùng đơn vị đang vận hành Grand Marina sẽ quản lý [TEN_DU_AN] — chuẩn dịch vụ không đổi.','neutral','verified',array['Vai trò','Áp dụng']),
+  ('cs-mpp','hook',1,'Masteri Park Place: hỗ trợ lãi suất 0% đến 31/10/2028, 3 phương án thanh toán, ưu đãi early bird — đòn bẩy mạnh cho người mua đúng nhịp.','neutral','verified',array[]::text[]),
+  ('cs-mpp','body',1,'Cấu trúc thanh toán giãn theo tiến độ, gánh nặng tài chính nhẹ tới sau bàn giao — em dựng bảng dòng tiền chi tiết cho từng căn.','story','verified',array[]::text[]),
+  ('cs-cosmo','hook',1,'Cosmo Central: BIDV vay 70%, hỗ trợ lãi suất 0% đến 28/3/2029, chiết khấu tới ~14,5% — chính sách dày nhất hệ [TEN_DU_AN] hiện tại.','fomo','verified',array[]::text[]),
+  ('cs-cosmo','body',1,'So với Park Place, Cosmo ưu đãi tài chính sâu hơn, đổi lại vị trí sát phố SOHO — em tư vấn chọn theo mục tiêu của Anh/Chị.','story','verified',array[]::text[]),
+  ('cs-mgv','hook',1,'Chính sách MGV cho thấy khẩu vị Masterise: mở bán chiết khấu sâu, cận bàn giao siết lại — vào sớm thường nhận cấu trúc ưu đãi tốt nhất.','neutral','verified',array[]::text[]),
+  ('cs-sola','hook',1,'SOLA vay 70%, hỗ trợ lãi suất đến 30/6/2027. Em nói rõ: với căn 47–200 tỷ, đòn bẩy lớn tạo nghĩa vụ nợ đáng kể — phân khúc này hợp vốn tự có cao.','story','verified',array[]::text[]),
+  ('branded-residences','hook',1,'Masterise làm căn hộ hàng hiệu Marriott, Ritz-Carlton, Elie Saab — chuẩn hoàn thiện đó nằm cùng hệ DNA với [TEN_DU_AN].','neutral','verified',array['Số dự án','Gồm']),
+  ('grand-marina','hook',1,'Grand Marina (Ba Son, Quận 1) — cụm Marriott & JW Marriott lớn nhất thế giới, đỉnh tháp thương hiệu Masterise.','neutral','verified',array['Vị trí','Thương hiệu']),
+  ('grand-marina','body',1,'Marriott Lake tower đã khai trương 14/11/2023 — năng lực bàn giao branded residences của Masterise được chứng minh thật.','neutral','verified',array['Mốc']),
+  ('masteri-collection','hook',1,'Masteri Collection — 15 dự án, ~27.200 căn, triết lý đô thị vị nhân sinh; Cosmo Central là phiên bản mới nhất tại [TEN_DU_AN].','neutral','verified',array['Số dự án','Số căn','Cosmo Central']),
+  ('the-rivus','hook',1,'The Rivus by Elie Saab — 121 dinh thự duy nhất Việt Nam, giải Best Residential Design in Asia 2025.','neutral','verified',array['Quy mô','Giải']),
+  ('the-grand-hanoi','hook',1,'The Grand Hanoi (22–24 Hàng Bài) — Ritz-Carlton thứ 5 châu Á – Thái Bình Dương, thuộc danh mục Masterise.','neutral','verified',array['Vị trí','Thương hiệu'])
+) as v(node_key, role, variant_no, text, tone, min_confidence, fact_keys)
+join knowledge_nodes n on n.project_id='00000000-0000-0000-0000-00000000b002' and n.node_key=v.node_key
+on conflict (node_id, role, variant_no) do nothing;
