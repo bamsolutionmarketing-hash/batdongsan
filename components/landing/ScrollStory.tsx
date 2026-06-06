@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const EB = "text-xs uppercase tracking-widest text-muted-foreground";
 
@@ -71,60 +73,80 @@ function Screen({ i, active }: { i: number; active: boolean }) {
   return <ScreenExport active={active} />;
 }
 
-// Sticky scrollytelling: scrolling the left steps swaps the sticky right screen.
+// Pinned HORIZONTAL scroller (lg+): the section pins and the step panels slide
+// left as you scroll vertically (GSAP ScrollTrigger). Mobile: vertical stack.
 export function ScrollStory() {
-  const [active, setActive] = useState(0);
-  const refs = useRef<(HTMLDivElement | null)[]>([]);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const fillRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const io = new IntersectionObserver(
-      (ents) => ents.forEach((e) => { if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.i)); }),
-      { rootMargin: "-45% 0px -45% 0px" },
-    );
-    refs.current.forEach((el) => el && io.observe(el));
-    return () => io.disconnect();
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!window.matchMedia("(min-width: 1024px)").matches) return;
+    const section = sectionRef.current, track = trackRef.current;
+    if (!section || !track) return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      const dist = () => track.scrollWidth - window.innerWidth;
+      gsap.to(track, {
+        x: () => -dist(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          pin: true,
+          scrub: 1,
+          start: "top top",
+          end: () => "+=" + dist(),
+          invalidateOnRefresh: true,
+          onUpdate: (self) => { if (fillRef.current) fillRef.current.style.width = `${self.progress * 100}%`; },
+        },
+      });
+    }, section);
+
+    const id = setTimeout(() => ScrollTrigger.refresh(), 300);
+    return () => { clearTimeout(id); ctx.revert(); };
   }, []);
 
   return (
-    <section className="bg-background">
-      <div className="mx-auto max-w-6xl px-5 sm:px-6">
-        <div className="grid gap-10 lg:grid-cols-2">
-          <div>
-            {STEPS.map((s, i) => (
-              <div
-                key={i}
-                data-i={i}
-                ref={(el) => { refs.current[i] = el; }}
-                className={`flex min-h-[68vh] flex-col justify-center transition-opacity duration-500 ease-out ${active === i ? "opacity-100" : "opacity-45"}`}
-              >
-                <span className={`text-5xl font-semibold tracking-tight transition-colors duration-500 ${active === i ? "text-foreground/40" : "text-foreground/15"}`}>{s.k}</span>
-                <h3 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{s.title}</h3>
-                <span className={`mt-3 block h-px rounded-full bg-brand transition-all duration-500 ${active === i ? "w-12 opacity-100" : "w-0 opacity-0"}`} />
-                <p className="mt-4 max-w-md leading-relaxed text-muted-foreground">{s.desc}</p>
-                <div className="mt-7 rounded-2xl border border-border bg-card p-4 shadow-[0_24px_60px_-40px_rgba(0,0,0,0.5)] lg:hidden">
-                  <div className="h-[280px]"><Screen i={i} active={active === i} /></div>
+    <>
+      {/* desktop: pinned horizontal track */}
+      <section ref={sectionRef} className="relative hidden overflow-hidden bg-background lg:block">
+        <div ref={trackRef} className="flex h-screen w-max">
+          {STEPS.map((s, i) => (
+            <div key={i} className="flex h-screen w-screen flex-none items-center">
+              <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-10 lg:grid-cols-2">
+                <div>
+                  <span className="text-6xl font-semibold tracking-tight text-foreground/15">{s.k}</span>
+                  <h3 className="mt-3 text-4xl font-semibold tracking-tight text-foreground">{s.title}</h3>
+                  <span className="mt-4 block h-px w-12 rounded-full bg-brand" />
+                  <p className="mt-5 max-w-md text-lg leading-relaxed text-muted-foreground">{s.desc}</p>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="hidden lg:block">
-            <div className="sticky top-0 flex h-screen items-center">
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.75rem] border border-border bg-card p-6 shadow-[0_40px_90px_-50px_rgba(0,0,0,0.6)]">
-                <span className="pointer-events-none absolute right-5 top-4 select-none text-7xl font-semibold leading-none text-foreground/[0.04]">{STEPS[active].k}</span>
-                {STEPS.map((_, i) => (
-                  <div key={i} className={`absolute inset-6 flex items-center transition-all duration-500 ease-out ${active === i ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}>
-                    <Screen i={i} active={active === i} />
-                  </div>
-                ))}
-                <div className="absolute inset-x-6 bottom-5 flex gap-1.5">
-                  {STEPS.map((_, i) => (
-                    <span key={i} className={`h-0.5 flex-1 rounded-full transition-colors duration-300 ${active === i ? "bg-brand" : "bg-border"}`} />
-                  ))}
-                </div>
+                <div className="h-[440px]"><Screen i={i} active /></div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
-      </div>
-    </section>
+        <div className="absolute inset-x-0 bottom-0 z-10 h-0.5 bg-border">
+          <div ref={fillRef} className="h-full bg-brand" style={{ width: "0%" }} />
+        </div>
+      </section>
+
+      {/* mobile: vertical stack */}
+      <section className="bg-background lg:hidden">
+        <div className="mx-auto flex max-w-xl flex-col gap-10 px-5 py-12">
+          {STEPS.map((s, i) => (
+            <div key={i}>
+              <span className="text-4xl font-semibold tracking-tight text-foreground/20">{s.k}</span>
+              <h3 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">{s.title}</h3>
+              <p className="mt-2 leading-relaxed text-muted-foreground">{s.desc}</p>
+              <div className="mt-4 h-[280px] rounded-2xl border border-border bg-card p-4 shadow-[0_24px_60px_-40px_rgba(0,0,0,0.5)]">
+                <Screen i={i} active />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
   );
 }

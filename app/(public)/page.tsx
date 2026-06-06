@@ -99,8 +99,9 @@ export default async function Home() {
       <div className="border-t border-border bg-background pt-20 sm:pt-28">
         <div className="mx-auto max-w-6xl px-5 text-center sm:px-6">
           <Reveal>
-            <Eyebrow>Quy trình</Eyebrow>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-5xl">Ba bước, cuộn để xem</h2>
+            <Eyebrow>Cách hoạt động</Eyebrow>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-5xl">Ba bước đến bài đăng</h2>
+            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">Cuộn xuống — từng bước lướt ngang qua màn hình.</p>
           </Reveal>
         </div>
       </div>
