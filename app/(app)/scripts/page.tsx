@@ -29,7 +29,7 @@ export default async function ScriptsPage({
           </div>
           <Link href="/scripts" className="text-sm text-sky-400 hover:underline">← Đổi dự án</Link>
         </header>
-        <ScriptPanel projectId={project.id} nodeIds={nodeIds} />
+        <ScriptPanel projectId={project.id} nodeIds={nodeIds} projectName={project.name} />
       </main>
     );
   }

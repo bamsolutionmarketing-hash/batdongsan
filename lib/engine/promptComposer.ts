@@ -158,3 +158,77 @@ export function composePrompt(input: ComposeInput): string {
   ];
   return parts.filter((l): l is string => l !== null).join("\n");
 }
+
+// ── video script → AI prompt ────────────────────────────────────────────────
+
+export interface ScriptPromptLine {
+  start: number;
+  end: number;
+  visual: string;
+  speech: string;
+  overlay: string;
+}
+
+export interface ComposeScriptInput {
+  platform: string; // tiktok | reels | shorts (or label)
+  durationS: number;
+  contentTypeName?: string | null; // recipe name (vi)
+  projectName?: string | null;
+  script: ScriptPromptLine[];
+  caption?: { text: string; hashtags: string[] } | null;
+  checklist?: string[] | null;
+}
+
+const PLATFORM_LABEL: Record<string, string> = {
+  tiktok: "TikTok", reels: "Reels (Instagram)", shorts: "YouTube Shorts",
+};
+
+// Wrap a generated video script into a self-contained brief that any external
+// generative-AI app can turn into a finished short-video script on first paste.
+// Pure; mirrors the post mega-prompt's compliance spine (no new numbers / no
+// profit promises). NO AI call.
+export function composeScriptPrompt(input: ComposeScriptInput): string {
+  const platform = PLATFORM_LABEL[input.platform] ?? input.platform;
+  const meta = [
+    `Nền tảng: ${platform}`,
+    `Thời lượng: ~${input.durationS}s`,
+    input.contentTypeName ? `Dạng nội dung: ${input.contentTypeName}` : null,
+    input.projectName ? `Dự án: ${input.projectName}` : null,
+  ].filter(Boolean).join(" · ");
+
+  const scriptBlock = input.script.length
+    ? input.script
+        .map((l) => `[${l.start}–${l.end}s]\nHÌNH: ${l.visual}\nTIẾNG: ${l.speech}\nOVERLAY: ${l.overlay}`)
+        .join("\n\n")
+    : "(chưa có phân cảnh)";
+
+  const captionBlock = input.caption
+    ? [input.caption.text, input.caption.hashtags.join(" ")].filter(Boolean).join("\n")
+    : null;
+
+  const checklistBlock = input.checklist?.length ? input.checklist.join("\n") : null;
+
+  const parts: (string | null)[] = [
+    "Bạn là biên kịch kiêm đạo diễn video ngắn bất động sản tại Việt Nam.",
+    "Nhiệm vụ: dựa trên KỊCH BẢN dưới đây, hoàn thiện thành kịch bản quay video ngắn hoàn chỉnh. Có thể đưa sang công cụ AI tạo video/sinh nội dung.",
+    "RÀNG BUỘC CỐT LÕI: chỉ dùng dữ kiện có trong kịch bản; không thêm thông tin mới.",
+    "",
+    meta || null,
+    "",
+    "① KỊCH BẢN 2 CỘT (THỜI GIAN · HÌNH · TIẾNG · OVERLAY)",
+    scriptBlock,
+    ...(captionBlock ? ["", "② CAPTION & HASHTAG", captionBlock] : []),
+    ...(checklistBlock ? ["", "③ CHECKLIST QUAY", checklistBlock] : []),
+    "",
+    "④ QUY TẮC BẮT BUỘC",
+    "- Giữ NGUYÊN 100% con số, mốc thời gian, tên riêng có trong kịch bản.",
+    "- KHÔNG thêm số liệu/giá/diện tích/tiện ích/pháp lý nào ngoài kịch bản.",
+    "- KHÔNG hứa lợi nhuận, KHÔNG cam kết tăng giá.",
+    "- Giữ nguyên thông tin liên hệ nếu có.",
+    "",
+    "⑤ ĐẦU RA",
+    "- Trả về kịch bản hoàn chỉnh: phân cảnh theo mốc thời gian, lời thoại/voiceover, gợi ý hình ảnh & góc quay, chữ overlay, và caption.",
+    "- CHỈ in nội dung; KHÔNG thêm lời dẫn/giải thích; KHÔNG bọc trong dấu ```.",
+  ];
+  return parts.filter((l): l is string => l !== null).join("\n");
+}

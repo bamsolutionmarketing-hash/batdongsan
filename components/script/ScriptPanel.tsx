@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { RECIPES } from "@/lib/script-engine/data/recipes";
 import type { ScriptResult, Platform, Duration } from "@/lib/script-engine/types";
+import { composeScriptPrompt } from "@/lib/engine/promptComposer";
 import { generateScriptAction, saveSlotFactsAction, saveMarketFactAction, ingestPerformanceAction } from "@/app/(app)/scripts/_actions";
 
 const PLATFORMS: { v: Platform; label: string }[] = [
@@ -23,7 +24,7 @@ const labelFor = (k: string) => SLOT_LABEL[k] ?? k.replace(/_/g, " ");
 const pill = (active: boolean) =>
   `rounded-full px-3 py-1 text-xs transition ${active ? "bg-primary text-primary-foreground" : "border border-border text-foreground hover:border-foreground/30"}`;
 
-export function ScriptPanel({ projectId, nodeIds }: { projectId: string; nodeIds?: string[] }) {
+export function ScriptPanel({ projectId, nodeIds, projectName }: { projectId: string; nodeIds?: string[]; projectName?: string }) {
   const [platform, setPlatform] = useState<Platform>("tiktok");
   const [durationS, setDurationS] = useState<Duration>(30);
   const [contentType, setContentType] = useState<string>("CT-01");
@@ -60,6 +61,23 @@ export function ScriptPanel({ projectId, nodeIds }: { projectId: string; nodeIds
   const scriptText = result?.script
     ? result.script.map((l) => `[${l.start}-${l.end}s] HÌNH: ${l.visual}\nTIẾNG: ${l.speech}\nOVERLAY: ${l.overlay}`).join("\n\n")
     : "";
+
+  // Wrap the whole script into a self-contained AI prompt (for an external
+  // generative-AI app), mirroring the post's "Copy kèm prompt AI".
+  const aiPrompt = useMemo(
+    () =>
+      result?.status === "OK" && result.script
+        ? composeScriptPrompt({
+            platform, durationS,
+            contentTypeName: RECIPES.find((r) => r.id === contentType)?.nameVi,
+            projectName,
+            script: result.script,
+            caption: result.caption,
+            checklist: result.checklist,
+          })
+        : "",
+    [result, platform, durationS, contentType, projectName],
+  );
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4">
@@ -100,6 +118,7 @@ export function ScriptPanel({ projectId, nodeIds }: { projectId: string; nodeIds
           <>
             <button onClick={() => run(attempt + 1)} disabled={pending} className="rounded-md border border-border px-3 py-2 text-sm text-foreground hover:border-foreground/30">Đổi hook</button>
             <button onClick={() => copy(scriptText, "script")} className="rounded-md border border-border px-3 py-2 text-sm text-foreground hover:border-foreground/30">{copied === "script" ? "✓ Đã copy" : "Copy kịch bản"}</button>
+            <button onClick={() => copy(aiPrompt, "prompt")} className="rounded-md border border-border px-3 py-2 text-sm text-foreground hover:border-foreground/30">{copied === "prompt" ? "✓ Đã copy" : "Copy prompt AI"}</button>
           </>
         )}
       </div>
@@ -168,6 +187,14 @@ export function ScriptPanel({ projectId, nodeIds }: { projectId: string; nodeIds
         <details className="rounded-md border border-border bg-background p-3">
           <summary className="cursor-pointer text-xs uppercase tracking-wide text-muted-foreground">Checklist quay</summary>
           <pre className="mt-2 whitespace-pre-wrap text-xs text-foreground">{result.checklist.join("\n")}</pre>
+        </details>
+      )}
+
+      {/* AI prompt preview */}
+      {result?.status === "OK" && aiPrompt && (
+        <details className="rounded-md border border-border bg-background p-3">
+          <summary className="cursor-pointer text-xs uppercase tracking-wide text-muted-foreground">Prompt AI (gói toàn bộ kịch bản để dán sang app AI khác)</summary>
+          <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap rounded bg-card p-3 text-xs text-foreground">{aiPrompt}</pre>
         </details>
       )}
 
