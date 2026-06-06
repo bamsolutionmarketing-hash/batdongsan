@@ -44,7 +44,7 @@ export default function LoginPage({
       <div>
         <div className="mb-3"><Logo /></div>
         <h1 className="text-2xl font-bold">Đăng nhập</h1>
-        <p className="text-sm text-muted-foreground">Trợ lý bán hàng BĐS cho đội sale của bạn.</p>
+        <p className="text-sm text-muted-foreground">NhaPilot — AI Copilot cho đội sale BĐS của bạn.</p>
       </div>
 
       {deviceMsg && (

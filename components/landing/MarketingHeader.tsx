@@ -17,7 +17,7 @@ export function MarketingHeader() {
   return (
     <header className={`sticky top-0 z-50 transition-colors duration-300 ${solid ? "border-b border-border bg-background/80 backdrop-blur-md" : "border-b border-transparent"}`}>
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 sm:px-6">
-        <Link href="/" aria-label="Trợ lý BĐS"><Logo /></Link>
+        <Link href="/" aria-label="NhaPilot"><Logo /></Link>
         <nav className="ml-3 hidden items-center gap-1 text-sm sm:flex">
           <a href="#features" className="rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground">Tính năng</a>
           <a href="#demo" className="rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground">Demo</a>

@@ -11,8 +11,8 @@ const sans = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Trợ lý BĐS",
-  description: "Trợ lý nội dung bán hàng bất động sản — bản đồ dự án + máy gợi ý bài.",
+  title: "NhaPilot — AI Copilot cho môi giới BĐS",
+  description: "NhaPilot: trợ lý nội dung bán hàng bất động sản — bản đồ tri thức dự án + máy gợi ý bài, soạn caption đúng dữ liệu.",
 };
 
 export const viewport: Viewport = {

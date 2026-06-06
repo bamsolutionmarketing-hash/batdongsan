@@ -5,6 +5,7 @@ import { signout } from "@/app/(auth)/login/actions";
 import { BottomNav } from "@/components/app/BottomNav";
 import { NavLinks } from "@/components/app/NavLinks";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { Logo, BrandIcon } from "@/components/landing/Logo";
 
 // Auth guard for the agent app. Redirects to /login when signed out.
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -16,7 +17,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen">
       {/* Desktop / tablet top nav — sticky, active-aware */}
       <nav className="sticky top-0 z-30 hidden items-center gap-4 border-b border-border bg-background/80 px-6 py-3 backdrop-blur sm:flex">
-        <Link href="/dashboard" className="mr-1 font-semibold text-foreground">Trợ lý BĐS</Link>
+        <Link href="/dashboard" className="mr-1" aria-label="NhaPilot"><Logo /></Link>
         <NavLinks admin={admin} />
         <div className="ml-auto flex items-center gap-1">
           <ThemeToggle />
@@ -28,7 +29,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
       {/* Mobile top bar — brand + admin/logout (primary nav is the bottom bar) */}
       <header className="flex items-center gap-3 border-b border-border bg-background px-4 py-3 text-sm sm:hidden">
-        <Link href="/dashboard" className="font-semibold text-foreground">Trợ lý BĐS</Link>
+        <Link href="/dashboard" aria-label="NhaPilot"><Logo /></Link>
         <div className="ml-auto flex items-center gap-3">
           {admin && <Link href="/admin/projects" className="text-brand">Admin</Link>}
           <ThemeToggle />
