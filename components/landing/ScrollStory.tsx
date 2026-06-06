@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 
 const EB = "text-xs uppercase tracking-widest text-muted-foreground";
-const THEME = ["from-sky-500/25 to-indigo-500/10", "from-violet-500/25 to-fuchsia-500/10", "from-emerald-500/25 to-teal-500/10"];
+const ACCENT = ["#38bdf8", "#a78bfa", "#34d399"]; // one colour per step
+const hx = (c: string, a: number) => c + Math.round(a * 255).toString(16).padStart(2, "0");
 
 function ScreenChoose({ active }: { active: boolean }) {
   return (
@@ -97,31 +98,43 @@ export function ScrollStory() {
                 ref={(el) => { refs.current[i] = el; }}
                 className={`flex min-h-[68vh] flex-col justify-center transition-all duration-500 ease-out will-change-transform motion-reduce:transition-none ${active === i ? "translate-x-0 scale-100 opacity-100 blur-0" : "-translate-x-2 scale-[0.94] opacity-30 blur-[2px]"}`}
               >
-                <span className="text-5xl font-semibold tracking-tight text-muted-foreground/50">{s.k}</span>
+                <span className="text-5xl font-bold tracking-tight" style={{ color: hx(ACCENT[i % ACCENT.length], active === i ? 0.5 : 0.18) }}>{s.k}</span>
                 <h3 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{s.title}</h3>
+                <span className="mt-2 block h-1 rounded-full transition-all duration-500" style={{ background: ACCENT[i % ACCENT.length], width: active === i ? 56 : 0, opacity: active === i ? 1 : 0 }} />
                 <p className="mt-3 max-w-md leading-relaxed text-muted-foreground">{s.desc}</p>
-                <div className={`mt-6 rounded-xl bg-gradient-to-br p-3 lg:hidden ${THEME[i % THEME.length]}`}>
+                <div className="mt-6 rounded-2xl p-3 lg:hidden" style={{ background: `linear-gradient(135deg, ${hx(ACCENT[i % ACCENT.length], 0.25)}, transparent)` }}>
                   <div className="h-[300px]"><Screen i={i} active={active === i} /></div>
                 </div>
               </div>
             ))}
           </div>
           <div className="hidden lg:block">
-            <div className="sticky top-0 flex h-screen items-center">
-              <div className={`relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-br p-5 shadow-card transition-all duration-700 ${THEME[active % THEME.length]}`}>
-                <span className="pointer-events-none absolute -right-3 -top-10 select-none text-[150px] font-bold leading-none text-foreground/5">{STEPS[active].k}</span>
-                {STEPS.map((_, i) => (
-                  <div key={i} className={`absolute inset-5 flex items-center transition-all duration-700 ease-out will-change-transform motion-reduce:transition-none ${active === i ? "scale-100 opacity-100 blur-0" : "pointer-events-none scale-110 opacity-0 blur-md"}`}>
-                    <Screen i={i} active={active === i} />
-                  </div>
-                ))}
+            <div className="sticky top-0 flex h-screen items-center [perspective:1400px]">
+              <div
+                className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.75rem] border border-white/10 p-5 transition-all duration-700 ease-out [transform-style:preserve-3d]"
+                style={{
+                  background: `linear-gradient(135deg, ${hx(ACCENT[active % ACCENT.length], 0.28)}, ${hx(ACCENT[active % ACCENT.length], 0.05)} 60%, transparent)`,
+                  transform: `rotateX(4deg) rotateY(${active % 2 ? 9 : -9}deg)`,
+                  boxShadow: `0 40px 90px -25px ${hx(ACCENT[active % ACCENT.length], 0.55)}, inset 0 1px 0 0 rgba(255,255,255,0.12)`,
+                }}
+              >
+                <span className="pointer-events-none absolute -right-3 -top-12 select-none text-[160px] font-bold leading-none" style={{ color: hx(ACCENT[active % ACCENT.length], 0.12) }}>{STEPS[active].k}</span>
+                {STEPS.map((_, i) => {
+                  const on = active === i;
+                  return (
+                    <div key={i} className="absolute inset-5 flex items-center transition-all duration-700 ease-out will-change-transform motion-reduce:transition-none"
+                      style={{ opacity: on ? 1 : 0, transform: on ? "rotateY(0deg) translateZ(40px)" : `rotateY(${i % 2 ? 22 : -22}deg) translateZ(-40px)`, pointerEvents: on ? undefined : "none" }}>
+                      <Screen i={i} active={on} />
+                    </div>
+                  );
+                })}
                 <div className="absolute right-4 top-4 z-10 flex flex-col gap-1.5">
                   {STEPS.map((_, i) => (
-                    <span key={i} className={`w-1.5 rounded-full transition-all duration-300 ${active === i ? "h-6 bg-foreground" : "h-1.5 bg-foreground/30"}`} />
+                    <span key={i} className="w-1.5 rounded-full transition-all duration-300" style={{ height: active === i ? 24 : 6, background: active === i ? ACCENT[i % ACCENT.length] : "rgba(255,255,255,0.3)" }} />
                   ))}
                 </div>
-                <div className="absolute inset-x-5 bottom-3 z-10 h-1 overflow-hidden rounded-full bg-foreground/10">
-                  <div className="h-full rounded-full bg-foreground/70 transition-all duration-500" style={{ width: `${((active + 1) / STEPS.length) * 100}%` }} />
+                <div className="absolute inset-x-5 bottom-3 z-10 h-1 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${((active + 1) / STEPS.length) * 100}%`, background: ACCENT[active % ACCENT.length] }} />
                 </div>
               </div>
             </div>
