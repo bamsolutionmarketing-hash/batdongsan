@@ -4,12 +4,14 @@ import { createProject } from "@/app/(admin)/admin/_actions";
 import { ProjectFields } from "@/app/(admin)/admin/projects/_ProjectFields";
 import { Notice } from "@/app/(admin)/admin/_Notice";
 import { Button } from "@/components/ui/button";
+import { requireSuper } from "@/lib/auth";
 
 export default async function NewProjectPage({
   searchParams,
 }: {
   searchParams: { error?: string };
 }) {
+  await requireSuper();
   const devRes = await listDevelopers();
   const developers = devRes.ok ? devRes.data : [];
   return (

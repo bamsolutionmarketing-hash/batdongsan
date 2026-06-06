@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth";
-import { getActiveTier, checkPostQuota } from "@/lib/gate/tier";
+import { checkDailyQuota } from "@/lib/gate/tier";
 import { nodesByIds } from "@/lib/repo/nodes";
 import { blocksByNode } from "@/lib/repo/blocks";
 import { getBranding } from "@/lib/repo/branding";
@@ -90,11 +90,9 @@ export async function createPost(projectId: string, slug: string, nodeIds: strin
     redirect(`/settings?next=${encodeURIComponent(back)}&error=${encodeURIComponent("Cập nhật Tên + SĐT trước khi tạo bài — thông tin này tự điền vào bài & đóng lên ảnh.")}`);
   }
 
-  const tierRes = await getActiveTier(session.userId);
-  const tier = tierRes.ok ? tierRes.data : "free";
-  const quota = await checkPostQuota(session.userId, tier);
+  const quota = await checkDailyQuota(session.userId);
   if (quota.ok && !quota.data.allowed) {
-    redirect(`${back}?error=${encodeURIComponent(`Hết lượt hôm nay (${quota.data.used}/${quota.data.limit})`)}`);
+    redirect(`${back}?error=${encodeURIComponent(`Hết lượt hôm nay (${quota.data.used}/${quota.data.limit}) — gồm cả bài đăng & kịch bản video`)}`);
   }
 
   const [nodesRes, projectRes] = await Promise.all([nodesByIds(nodeIds), getProjectById(projectId)]);

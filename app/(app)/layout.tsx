@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getSession } from "@/lib/auth";
+import { getSession, isAdmin } from "@/lib/auth";
 import { signout } from "@/app/(auth)/login/actions";
 import { BottomNav } from "@/components/app/BottomNav";
 import { NavLinks } from "@/components/app/NavLinks";
@@ -10,7 +10,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
   if (!session) redirect("/login");
-  const admin = session.profile?.role === "admin";
+  const admin = isAdmin(session);
 
   return (
     <div className="min-h-screen">

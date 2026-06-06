@@ -18,7 +18,7 @@ export const err = (code: ErrorCode, error: string): Result<never> => ({
 // ── Enums (mirror migration 0004) ─────────────────────────────────────────
 export type Tier = "free" | "pro" | "team";
 export type SubStatus = "active" | "past_due" | "canceled";
-export type UserRole = "agent" | "admin";
+export type UserRole = "agent" | "admin" | "super_admin";
 export type BlockRole = "hook" | "body" | "proof" | "cta";
 export type BlockTone = "neutral" | "fomo" | "story";
 export type Confidence = "verified" | "sales_claim" | "unverified";

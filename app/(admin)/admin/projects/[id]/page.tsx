@@ -11,6 +11,7 @@ import {
   updateProject, createNode, deleteNode, createLink, deleteLink, createTrigger, deleteTrigger,
 } from "@/app/(admin)/admin/_actions";
 import { Button } from "@/components/ui/button";
+import { requireSuper } from "@/lib/auth";
 
 const input = "w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground";
 
@@ -20,6 +21,7 @@ export default async function EditProjectPage({
   params: { id: string };
   searchParams: { error?: string; ok?: string };
 }) {
+  await requireSuper();
   const res = await getProjectById(params.id);
   if (!res.ok || !res.data) notFound();
   const project = res.data;

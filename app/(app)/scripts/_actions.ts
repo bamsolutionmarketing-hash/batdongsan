@@ -3,6 +3,7 @@
 import { requireSession } from "@/lib/auth";
 import { generateScript, type GenerateInput } from "@/lib/script/generate";
 import { upsertProjectScriptFact, upsertMarketFact, ingestPerformance, type PerfMetrics } from "@/lib/repo/scripts";
+import { checkDailyQuota } from "@/lib/gate/tier";
 import type { ScriptResult, Platform, Duration } from "@/lib/script-engine/types";
 
 export interface GenerateArgs {
@@ -16,6 +17,22 @@ export interface GenerateArgs {
 // Assemble a script for the current agent. Returns a serializable ScriptResult.
 export async function generateScriptAction(args: GenerateArgs): Promise<ScriptResult> {
   const session = await requireSession();
+  // Daily quota is shared with posts (free = 3/day combined).
+  const quota = await checkDailyQuota(session.userId);
+  if (quota.ok && !quota.data.allowed) {
+    return {
+      status: "BLOCKED",
+      lint: {
+        hardBlocks: [{
+          rule: "QUOTA:daily",
+          match: `${quota.data.used}/${quota.data.limit}`,
+          where: "quota",
+          message: `Hết lượt hôm nay (${quota.data.used}/${quota.data.limit}) — gồm cả bài đăng & kịch bản. Liên hệ admin để nâng cấp.`,
+        }],
+        warnings: [],
+      },
+    };
+  }
   const input: GenerateInput = {
     projectId: args.projectId,
     platform: args.platform,

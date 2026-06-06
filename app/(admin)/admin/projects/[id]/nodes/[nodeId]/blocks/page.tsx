@@ -8,6 +8,7 @@ import { uploadAsset, deleteAsset } from "@/app/(admin)/admin/_asset_actions";
 import { assetsByNode } from "@/lib/repo/assets";
 import { Notice } from "@/app/(admin)/admin/_Notice";
 import { Button } from "@/components/ui/button";
+import { requireSuper } from "@/lib/auth";
 import type { BlockRole } from "@/types/domain";
 
 const input = "w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground";
@@ -20,6 +21,7 @@ export default async function BlocksPage({
   params: { id: string; nodeId: string };
   searchParams: { error?: string; ok?: string };
 }) {
+  await requireSuper();
   const nodeRes = await getNodeById(params.nodeId);
   if (!nodeRes.ok || !nodeRes.data) notFound();
   const node = nodeRes.data;

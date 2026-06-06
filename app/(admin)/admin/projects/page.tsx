@@ -2,8 +2,10 @@ import Link from "next/link";
 import { listAllProjects } from "@/lib/repo/projects";
 import { Card, CardTitle, CardDesc } from "@/components/ui/card";
 import { ButtonLink } from "@/components/ui/button";
+import { requireSuper } from "@/lib/auth";
 
 export default async function AdminProjectsPage() {
+  await requireSuper();
   const res = await listAllProjects();
   const projects = res.ok ? res.data : [];
   return (

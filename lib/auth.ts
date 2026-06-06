@@ -1,8 +1,11 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+
+import type { UserRole } from "@/types/domain";
 
 export interface Profile {
   id: string;
-  role: "agent" | "admin";
+  role: UserRole;
   fullName: string | null;
 }
 
@@ -35,7 +38,7 @@ export async function getSession(): Promise<SessionContext | null> {
     .eq("id", user.id)
     .maybeSingle();
 
-  const row = profile as { id: string; role: "agent" | "admin"; full_name: string | null } | null;
+  const row = profile as { id: string; role: UserRole; full_name: string | null } | null;
   return {
     userId: user.id,
     email: user.email ?? null,
@@ -49,6 +52,19 @@ export async function requireSession(): Promise<SessionContext> {
   return session;
 }
 
+// Staff = admin OR super_admin (both reach the /admin panel).
 export function isAdmin(session: SessionContext | null): boolean {
-  return session?.profile?.role === "admin";
+  return session?.profile?.role === "admin" || session?.profile?.role === "super_admin";
+}
+
+// Super admin = full app control (projects/content + manage admins).
+export function isSuperAdmin(session: SessionContext | null): boolean {
+  return session?.profile?.role === "super_admin";
+}
+
+// Guard for super-admin-only pages (content management). Redirects to /admin.
+export async function requireSuper(): Promise<SessionContext> {
+  const session = await getSession();
+  if (!isSuperAdmin(session)) redirect("/admin");
+  return session!;
 }
