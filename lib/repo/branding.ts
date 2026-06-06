@@ -8,6 +8,11 @@ interface BrandingRow {
   zalo: string | null;
   logo_path: string | null;
   position: string;
+  so_nam_kn: number | null;
+  so_giao_dich: number | null;
+  khu_vuc_chuyen: string | null;
+  kenh_dat: string | null;
+  tone_profile: string[] | null;
 }
 
 const toBranding = (r: BrandingRow): AgentBranding => ({
@@ -17,6 +22,11 @@ const toBranding = (r: BrandingRow): AgentBranding => ({
   zalo: r.zalo,
   logoPath: r.logo_path,
   position: r.position,
+  soNamKn: r.so_nam_kn,
+  soGiaoDich: r.so_giao_dich,
+  khuVucChuyen: r.khu_vuc_chuyen,
+  kenhDat: r.kenh_dat,
+  toneProfile: (r.tone_profile?.length ? r.tone_profile : ["chuyen_gia", "than_thien"]) as AgentBranding["toneProfile"],
 });
 
 // The caller's branding (RLS own-row), or null if not set up yet.
@@ -25,7 +35,7 @@ export async function getBranding(userId: string): Promise<Result<AgentBranding 
   const supabase = createClient();
   const { data, error } = await supabase
     .from("agent_branding")
-    .select("user_id, display_name, phone, zalo, logo_path, position")
+    .select("user_id, display_name, phone, zalo, logo_path, position, so_nam_kn, so_giao_dich, khu_vuc_chuyen, kenh_dat, tone_profile")
     .eq("user_id", userId)
     .maybeSingle();
   if (error) return err("INTERNAL", error.message);

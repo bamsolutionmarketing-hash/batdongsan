@@ -13,7 +13,7 @@ import { CaptionEditor } from "@/components/post/CaptionEditor";
 import { BrandedImageGrid } from "@/components/post/BrandedImageGrid";
 import { ImageSetView } from "@/components/post/ImageSetPanel";
 import { VideoMaker } from "@/components/post/VideoMaker";
-import { VideoScriptCard } from "@/components/post/VideoScriptCard";
+import { ScriptPanel } from "@/components/script/ScriptPanel";
 import { Button } from "@/components/ui/button";
 import { reRollPost } from "@/app/(app)/projects/_actions";
 
@@ -153,7 +153,7 @@ export default async function PostResultPage({
           <BrandedImageGrid images={images} labels={labelById} postId={post.id} slug={params.slug} />
         ) : setKind === "video" ? (
           <div className="flex flex-col gap-4">
-            <VideoScriptCard caption={post.caption} composer={composer} />
+            <ScriptPanel projectId={post.projectId} />
             <VideoMaker images={assembled?.urls ?? []} postId={post.id} />
           </div>
         ) : (

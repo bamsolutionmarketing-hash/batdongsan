@@ -5,6 +5,7 @@ import { getToday } from "@/lib/today";
 import { createPostAction } from "@/app/(app)/projects/_actions";
 import { Card, CardTitle, CardDesc } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ScriptPanel } from "@/components/script/ScriptPanel";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -90,6 +91,13 @@ export default async function DashboardPage() {
           </ul>
         )}
       </section>
+
+      {post && (
+        <section>
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Kịch bản video hôm nay</h2>
+          <ScriptPanel projectId={post.projectId} />
+        </section>
+      )}
     </main>
   );
 }

@@ -87,6 +87,12 @@ export interface AgentBranding {
   zalo: string | null;
   logoPath: string | null;
   position: string;
+  // Script engine (0008): agent slots + tone profile.
+  soNamKn: number | null;
+  soGiaoDich: number | null;
+  khuVucChuyen: string | null;
+  kenhDat: string | null;
+  toneProfile: ComposeTone[];
 }
 
 // ── Engine I/O ────────────────────────────────────────────────────────────
