@@ -111,8 +111,32 @@ html.lenis, html.lenis body { height: auto; }
 .lp-drag   { animation: lp-drag 4.2s ease-in-out infinite; }
 .lp-dropok { animation: lp-dropok 4.2s ease-in-out infinite; }
 
+/* Phone mock — looping life: float, pulse, shine, tap ripple, toast, checks. */
+@keyframes lp-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@keyframes lp-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+@keyframes lp-shine { 0% { transform: translateX(-150%) skewX(-20deg); } 55%, 100% { transform: translateX(360%) skewX(-20deg); } }
+@keyframes lp-tap {
+  0%, 60% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+  70%     { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+  92%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.8); }
+}
+@keyframes lp-toast {
+  0%, 6%   { opacity: 0; transform: translate(-50%, -14px); }
+  14%, 38% { opacity: 1; transform: translate(-50%, 0); }
+  48%, 100%{ opacity: 0; transform: translate(-50%, -14px); }
+}
+@keyframes lp-check { 0%, 35% { opacity: 0; transform: scale(0); } 55% { transform: scale(1.25); } 70%, 100% { opacity: 1; transform: scale(1); } }
+.lp-float { animation: lp-float 5s ease-in-out infinite; }
+.lp-pulse { animation: lp-pulse 2.2s ease-in-out infinite; }
+.lp-shine { animation: lp-shine 3.2s ease-in-out infinite; }
+.lp-tap   { animation: lp-tap 3.2s ease-in-out infinite; }
+.lp-toast { animation: lp-toast 6s ease-in-out infinite; }
+.lp-check { animation: lp-check 4s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
-  .lp-node, .lp-line, .lp-drag, .lp-dropok { animation: none; }
+  .lp-node, .lp-line, .lp-drag, .lp-dropok,
+  .lp-float, .lp-pulse, .lp-shine, .lp-tap, .lp-toast, .lp-check { animation: none; }
   .lp-line { stroke-dashoffset: 0; }
-  .lp-node { opacity: 1; }
+  .lp-node, .lp-check { opacity: 1; }
+  .lp-tap, .lp-toast { opacity: 0; }
 }
