@@ -164,3 +164,96 @@ from (values
 join knowledge_nodes n
   on n.project_id = '00000000-0000-0000-0000-00000000b001' and n.node_key = v.node_key
 on conflict (node_id, role, variant_no) do nothing;
+
+-- ── Batch 2: remaining 24 nodes (lighter coverage) ───────────────────────────
+-- Partial-verified nodes (metro-4, song-sg, vin-utilities, bien-dong-gia) stay
+-- disclaimer-first; comparables/locations cite "giá rao" honestly.
+insert into node_content_blocks (node_id, role, variant_no, text, tone, min_confidence, fact_keys, is_enabled)
+select n.id, v.role::block_role_t, v.variant_no, v.text, v.tone::block_tone_t, v.min_confidence::confidence_t, v.fact_keys, true
+from (values
+  -- Cơ cấu sản phẩm (vsp-products)
+  ('vsp-products','hook',1,'Cơ cấu thấp tầng chính thức theo QH 1/500: 552 biệt thự + 2.491 nhà liền kề — con số có trong hồ sơ, không phải tin đồn.','neutral','verified',array['Biệt thự','Nhà liền kề']),
+  ('vsp-products','body',1,'436 ha đất ở, 117 ha cây xanh – mặt nước, 150 ha cụm nghiên cứu – giáo dục — đúng khung đại học quốc tế của dự án.','neutral','verified',array['Đất ở','Cây xanh – mặt nước']),
+  ('vsp-products','body',2,'Cao tầng 12–22 tầng, nhà ở xã hội 3–10 tầng — sản phẩm trải nhiều phân khúc, không chỉ thấp tầng cao cấp.','neutral','verified',array['Chung cư','Nhà ở xã hội']),
+  ('vsp-products','proof',1,'552 biệt thự + 2.491 liền kề + 815 tái định cư theo 1/500 — đây là con số chuẩn để bác mọi rumor kiểu 18.443 căn.','neutral','verified',array['Biệt thự','Nhà liền kề','Nhà tái định cư']),
+  -- Pháp nhân Berjaya (berjaya-vn)
+  ('berjaya-vn','hook',1,'Khách tra pháp lý thấy tên Berjaya thay vì Vinhomes — đừng lo, đó là pháp nhân lịch sử mà Vinhomes sở hữu ~97,9%.','story','verified',array[]::text[]),
+  ('berjaya-vn','body',1,'Pháp nhân gốc là Berjaya Land (Malaysia) cấp phép 2008, nay đã là công ty con của Vinhomes (~97,9%).','neutral','verified',array['Nguồn gốc','Hiện tại']),
+  ('berjaya-vn','proof',1,'Mọi văn bản pháp lý (QĐ 80, 273, 1426) đều cấp cho pháp nhân này — minh bạch, có thể tra cứu.','neutral','verified',array['Vai trò']),
+  -- QĐ 80 (qd-80)
+  ('qd-80','hook',1,'QĐ 80/QĐ-TTg do Thủ tướng cấp (13/1/2025) — văn bản mở khóa để dự án chạy lại sau nhiều năm đình trệ.','neutral','verified',array['Cấp','Nội dung']),
+  ('qd-80','body',1,'Quyết định cho phép tiến độ thực hiện 120 tháng — khung pháp lý dài hạn, bài bản.','neutral','verified',array['Tiến độ cho phép']),
+  ('qd-80','proof',1,'Chủ trương đầu tư được điều chỉnh ở cấp Thủ tướng Chính phủ — nền pháp lý cao nhất cho một dự án.','neutral','verified',array['Cấp']),
+  -- Metro 4 (metro-4) — disclaimer-first
+  ('metro-4','hook',1,'Metro số 4 là tin tốt để kể, không phải tin tốt để định giá. Hôm nay chỉ nên tính Metro 2 và Vành đai 3 — thứ đang thi công thật.','story','verified',array[]::text[]),
+  ('metro-4','body',1,'Depot Metro 4 quy hoạch tại Thạnh Xuân, Quận 12 (~25–27 ha) — là câu chuyện dài hạn 2030+.','neutral','verified',array['Depot 1']),
+  ('metro-4','body',2,'Dự kiến khởi công sau Q2/2026, mục tiêu ~2035, còn ở giai đoạn nghiên cứu — em không khuyên trả giá hôm nay cho catalyst này.','story','verified',array['Khởi công','Mục tiêu hoàn thành']),
+  -- Vành đai 2 (vd2)
+  ('vd2','hook',1,'Vành đai 2 đi qua Quận 12 (trục QL1A hiện hữu) — giá trị chính là giảm tải khi khép kín vành đai.','neutral','verified',array['Liên quan Q12']),
+  ('vd2','body',1,'Các đoạn còn thiếu phía Đông (Thủ Đức) đã khởi công 19/12/2025, mục tiêu 2027.','neutral','verified',array['Đoạn 1–2 (phía Đông)']),
+  -- Cầu vượt Ngã Tư Đình (nga-tu-dinh)
+  ('nga-tu-dinh','hook',1,'Cầu vượt Ngã Tư Đình (QL1 × Nguyễn Văn Quá) khởi công 19/8/2025 — gỡ một trong các điểm kẹt nặng nhất Quận 12.','neutral','verified',array['Vị trí','Khởi công']),
+  ('nga-tu-dinh','body',1,'Catalyst nhỏ nhưng tác động trực tiếp đến trải nghiệm sống khu Đông Hưng Thuận / Trung Mỹ Tây.','neutral','verified',array['Vị trí']),
+  -- Trục nội khu Q12 (truc-q12)
+  ('truc-q12','hook',1,'Đừng né câu hỏi kẹt xe — hãy lật nó: chính vì kẹt xe mà giá Quận 12 đang rẻ hơn Gò Vấp 30–40%.','story','verified',array[]::text[]),
+  ('truc-q12','body',1,'Các trục Hà Huy Giáp, Lê Văn Khương, Tô Ký quá tải giờ cao điểm — điểm trừ lớn nhất, cũng là lý do giá còn trũng.','neutral','verified',array['Hiện trạng']),
+  ('truc-q12','body',2,'Mua bây giờ là mua cái bất tiện hôm nay để lấy hạ tầng ngày mai — Metro 2 và mở rộng QL22 đang chạy thật.','story','verified',array['Các trục chính']),
+  -- QTSC (qtsc)
+  ('qtsc','hook',1,'Công viên phần mềm Quang Trung — hub IT lớn nhất Việt Nam, nằm ngay Quận 12, nguồn cầu thuê ổn định.','neutral','verified',array['Vai trò']),
+  ('qtsc','body',1,'Tệp khách nhân viên IT thu nhập khá tạo cầu thuê bền cho căn hộ khu Trung Mỹ Tây / Tân Thới Hiệp.','neutral','verified',array['Vị trí']),
+  -- Cụm KCN (kcn)
+  ('kcn','hook',1,'Vành đai KCN (Tân Bình, Vĩnh Lộc, Tân Phú Trung) tạo nền cầu thuê và cầu ở thực bền vững quanh Quận 12.','neutral','verified',array['Tác động']),
+  ('kcn','body',1,'Cầu thuê từ công nhân kỹ thuật và quản lý cấp trung — lý do tỷ lệ lấp đầy cho thuê Q12 ổn định dù giá thuê không cao.','neutral','verified',array['Các KCN']),
+  -- Sông Sài Gòn (song-sg) — honest about risk
+  ('song-sg','hook',1,'Sông Sài Gòn giáp toàn bộ ranh phía Đông Quận 12 — quỹ đất ven sông và quy hoạch đường ven sông là tài sản dài hạn.','neutral','verified',array['Liên quan Q12','Tiềm năng']),
+  ('song-sg','body',1,'Em nói thật: một phần khu ven sông nền đất yếu, ngập cục bộ — chi phí xây cao hơn, cần kiểm tra cốt nền từng vị trí.','story','verified',array['⚠ Rủi ro']),
+  -- Hệ tiện ích Vin (vin-utilities) — disclaimer-first
+  ('vin-utilities','hook',1,'Nếu vận hành đúng mô hình Vinhomes, đây có thể là cú hích tiện ích lớn nhất khu Tây Bắc — vùng đang thiếu trung tâm thương mại lớn.','story','verified',array[]::text[]),
+  ('vin-utilities','body',1,'Cụm giáo dục 150 ha có trong quy hoạch: Vinschool và đại học quốc tế (~60.000 sinh viên).','neutral','verified',array['Giáo dục']),
+  ('vin-utilities','body',2,'Tên tiện ích cụ thể như Vinmec, Vincom Mega Mall là kỳ vọng theo mô hình chuẩn — chưa có công bố riêng cho dự án, em sẽ cập nhật khi có.','story','verified',array['Thương mại']),
+  -- P. Thới An (p-thoi-an)
+  ('p-thoi-an','hook',1,'P. Thới An (mới) — tâm điểm phía Bắc Quận 12, có quy hoạch depot Metro 4 và compound Picity High Park.','neutral','verified',array['Điểm nhấn']),
+  ('p-thoi-an','body',1,'Giá đất nền Thạnh Xuân vênh lớn giữa các nguồn (20–30 vs 44–60 tr/m²) — phải định giá theo từng vị trí, em luôn đối chiếu trước khi tư vấn.','story','verified',array['Đất nền Thạnh Xuân (cũ)']),
+  -- P. An Phú Đông (p-an-phu-dong)
+  ('p-an-phu-dong','hook',1,'P. An Phú Đông (mới) ôm toàn bộ mặt sông Sài Gòn phía Đông Quận 12 — quỹ đất nhà vườn, nhà phố ven sông.','neutral','verified',array['Đặc điểm']),
+  ('p-an-phu-dong','body',1,'Thạnh Lộc cũ (55–80 tr/m²) có dải giá cao nhất Q12 nhờ giáp Gò Vấp và ven sông; An Phú Đông 30–45 tr/m².','neutral','verified',array['Đất nền']),
+  -- P. Đông Hưng Thuận (p-dong-hung-thuan)
+  ('p-dong-hung-thuan','hook',1,'P. Đông Hưng Thuận (mới) — cửa ngõ giáp Tân Bình/Gò Vấp, ngay nút An Sương, điểm đầu trục QL22 mở rộng đi Vinhomes.','neutral','verified',array['Vị trí']),
+  ('p-dong-hung-thuan','body',1,'Phường đông dân nhất Quận 12 (182.895 dân); đất nền Tân Thới Nhất 50–70 tr/m² — mặt bằng cao nhất nhì quận.','neutral','verified',array['Quy mô','Đất nền']),
+  -- P. Tân Thới Hiệp (p-tan-thoi-hiep)
+  ('p-tan-thoi-hiep','hook',1,'P. Tân Thới Hiệp (mới) — khu dân cư hiện hữu, nhiều dự án đất nền cũ, mặt bằng giá trung bình thấp.','neutral','verified',array['Đặc điểm']),
+  ('p-tan-thoi-hiep','body',1,'Đất nền Hiệp Thành 23–34 / Tân Thới Hiệp 25–33 tr/m² — hợp tệp mua ở thực ngân sách 3–5 tỷ nhà phố hẻm xe hơi.','neutral','verified',array['Đất nền']),
+  -- Xuân Thới Sơn (xuan-thoi-son)
+  ('xuan-thoi-son','hook',1,'Xuân Thới Sơn (Hóc Môn cũ) là địa bàn thực tế của Vinhomes Saigon Park — giáp ranh phía Tây Bắc Quận 12.','neutral','verified',array['Vai trò']),
+  ('xuan-thoi-son','body',1,'Khách cần phân biệt rõ: đất Quận 12 hưởng lợi gián tiếp khác đất Hóc Môn sát dự án — hai vùng giá và pháp lý nền khác nhau.','story','verified',array['Quan hệ với Q12']),
+  ('xuan-thoi-son','body',2,'Giáp QL22, Vành đai 3, kênh An Hạ, kênh Xáng — vị trí giao hạ tầng của khu Tây Bắc.','neutral','verified',array['Ranh giới']),
+  -- Picity Sky Park (picity-sky)
+  ('picity-sky','hook',1,'Picity Sky Park (Dĩ An) — cùng hệ Pi Group, giá ~40–60 tr/m², cho thấy căn hộ vùng giáp ranh đã lập mặt bằng cao hơn Quận 12.','neutral','verified',array['Giá','Vị trí']),
+  ('picity-sky','body',1,'Quy mô 1.568 căn, bàn giao Q4/2026 – Q1/2027 — tham chiếu cửa ngõ Đông Bắc cho mặt bằng giá căn hộ mới.','neutral','verified',array['Quy mô','Bàn giao']),
+  -- Hà Đô Thới An (hado-q12)
+  ('hado-q12','hook',1,'Cụm Hà Đô tại Thới An (Quận 12) — nguồn cung căn hộ và nhà phố hiện hữu, cạnh tranh phân khúc trung cấp.','neutral','verified',array['CĐT','Vị trí']),
+  ('hado-q12','body',1,'Đối thủ nguồn cung hiện hữu cùng Picity và các sản phẩm thứ cấp khu Bắc Quận 12.','neutral','verified',array['Vai trò']),
+  -- Căn hộ Q12 cũ (canho-cu-q12)
+  ('canho-cu-q12','hook',1,'Lớp căn hộ Q12 thế hệ cũ (Prosper Plaza, Tecco Green Nest, Topaz Home…) tạo sàn giá thấp cho thị trường.','neutral','verified',array['Đại diện']),
+  ('canho-cu-q12','body',1,'Bàn giao trước 2020, phân khúc bình dân (~30–38 tr/m²) — khoảng cách với Picity là premium thị trường chấp nhận trả cho compound.','neutral','verified',array['Đặc điểm','Vai trò']),
+  -- Cityland Gò Vấp (cityland-gv)
+  ('cityland-gv','hook',1,'Nhà phố compound Cityland (Gò Vấp, giáp ranh Nam Q12) neo giá cao hơn Quận 12 đáng kể — benchmark trần giá lân cận.','neutral','verified',array['Vai trò','Vị trí']),
+  ('cityland-gv','body',1,'Cityland Park Hills / Garden Hills — tham chiếu để định vị nhà phố Q12 và đối chiếu với giá rumor của Vinhomes.','neutral','verified',array['Dự án']),
+  -- Happy One Hóc Môn (happy-one-hm)
+  ('happy-one-hm','hook',1,'Happy One (Hóc Môn, trục QL22) — nguồn cung căn hộ hiếm hoi cùng hành lang hưởng lợi với Vinhomes Saigon Park.','neutral','verified',array['Vị trí','Vai trò']),
+  ('happy-one-hm','body',1,'CĐT Vạn Xuân Group — dùng làm tham chiếu giá vùng dự án so với vùng Quận 12.','neutral','verified',array['CĐT']),
+  -- Biến động giá (bien-dong-gia) — honest
+  ('bien-dong-gia','hook',1,'Giá nhà đất Quận 12 +8,5% so cùng kỳ (Nhà Tốt, T5/2026) — đã phản ánh kỳ vọng Metro 2 + Vinhomes nhưng chưa sốt nóng.','neutral','verified',array['Nhà đất Q12 (Nhà Tốt, T5/2026)']),
+  ('bien-dong-gia','body',1,'Em nói rõ: hai nguồn cho hai con số khác nhau (+8,5% nhà đất chung vs ~+15,5% riêng căn hộ) — cần đối chiếu thêm, chưa có dữ liệu CBRE/Savills.','story','verified',array['Căn hộ (một số nguồn khác)']),
+  ('bien-dong-gia','body',2,'Giá rao thường cao hơn giao dịch thực 5–15%. Mức tăng một chữ số là vùng còn vào được, khác giai đoạn sốt đất 2021–2022.','neutral','verified',array['Chênh rao vs giao dịch']),
+  -- NQ 1685 (nq-1685)
+  ('nq-1685','hook',1,'Từ 1/7/2025, Quận 12 còn 5 phường (NQ 1685): Đông Hưng Thuận, Trung Mỹ Tây, Tân Thới Hiệp, Thới An, An Phú Đông.','neutral','verified',array['Kết quả']),
+  ('nq-1685','body',1,'Hệ quả giao dịch: sổ/hợp đồng theo tên phường cũ vẫn hợp lệ, giấy tờ mới ghi tên phường mới — em thuộc bảng mapping để không nhầm thửa.','story','verified',array['Hiệu lực']),
+  -- NQ 202 (nq-202)
+  ('nq-202','hook',1,'Một câu đổi cuộc chơi với khách tỉnh: nay mua Quận 12 hay mua Dĩ An đều là hộ khẩu TP.HCM — khác nhau chỉ còn giá và hạ tầng.','story','verified',array[]::text[]),
+  ('nq-202','body',1,'Từ 1/7/2025, TP.HCM sáp nhập Bình Dương và Bà Rịa–Vũng Tàu, bỏ cấp quận/huyện — Quận 12 chỉ còn là tên khu vực.','neutral','verified',array['Thay đổi lớn']),
+  ('nq-202','proof',1,'Ranh giới tâm lý mua Bình Dương hay mua TP.HCM đã biến mất — so sánh giá Q12 với Dĩ An giờ là so sánh trong cùng một thành phố.','neutral','verified',array['Nội dung'])
+) as v(node_key, role, variant_no, text, tone, min_confidence, fact_keys)
+join knowledge_nodes n
+  on n.project_id = '00000000-0000-0000-0000-00000000b001' and n.node_key = v.node_key
+on conflict (node_id, role, variant_no) do nothing;
