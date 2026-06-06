@@ -12,6 +12,7 @@ export interface GenerateArgs {
   durationS: Duration;
   contentType?: string;
   attempt?: number;
+  nodeIds?: string[];
 }
 
 // Assemble a script for the current agent. Returns a serializable ScriptResult.
@@ -39,6 +40,7 @@ export async function generateScriptAction(args: GenerateArgs): Promise<ScriptRe
     durationS: args.durationS,
     contentType: args.contentType,
     attempt: args.attempt,
+    nodeIds: args.nodeIds,
   };
   return generateScript(session.userId, input);
 }

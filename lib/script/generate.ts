@@ -4,6 +4,7 @@ import { getRecipe, RECIPES } from "@/lib/script-engine/data/recipes";
 import { hashSeed } from "@/lib/script-engine/seed";
 import { getRotation, bumpRotation, saveScript, getTemplateWeights } from "@/lib/repo/scripts";
 import { getBranding as getBrandingRepo } from "@/lib/repo/branding";
+import { nodesByIds } from "@/lib/repo/nodes";
 import type { Platform, Duration, ScriptResult, Tone } from "@/lib/script-engine/types";
 
 export interface GenerateInput {
@@ -13,6 +14,7 @@ export interface GenerateInput {
   contentType?: string; // recipe id
   attempt?: number; // regenerate ⇒ +1
   persist?: boolean; // default true
+  nodeIds?: string[]; // knowledge-map nodes the agent picked (bias BODY by topic)
 }
 
 // End-to-end script generation for an agent. Deterministic given the same
@@ -21,23 +23,31 @@ export async function generateScript(userId: string, input: GenerateInput): Prom
   const recipe = getRecipe(input.contentType ?? "") ?? RECIPES[0];
   const today = new Date();
 
-  const [slots, brandingRes, rotationRes, weightsRes] = await Promise.all([
+  const [slots, brandingRes, rotationRes, weightsRes, nodesRes] = await Promise.all([
     resolveSlots(userId, input.projectId),
     getBrandingRepo(userId),
     getRotation(userId),
     getTemplateWeights(userId),
+    input.nodeIds?.length ? nodesByIds(input.nodeIds) : Promise.resolve({ ok: true as const, data: [] }),
   ]);
 
   const branding = brandingRes.ok ? brandingRes.data : null;
   const agentTone: Tone[] = (branding?.toneProfile?.length ? branding.toneProfile : ["chuyen_gia", "than_thien"]) as Tone[];
   const rotation = rotationRes.ok ? rotationRes.data : new Map();
   const weights = weightsRes.ok ? weightsRes.data : new Map();
+  // Preserve the agent's chosen order (nodesByIds already returns input order).
+  const selectedNodes = nodesRes.ok
+    ? nodesRes.data.map((n) => ({ id: n.id, category: n.category, label: n.label }))
+    : [];
 
-  const seed = hashSeed([userId, input.projectId, recipe.id, today.toISOString().slice(0, 10), input.attempt ?? 0]);
+  const seed = hashSeed([
+    userId, input.projectId, recipe.id, today.toISOString().slice(0, 10),
+    input.attempt ?? 0, (input.nodeIds ?? []).join(","),
+  ]);
 
   const result = assembleScript({
     recipe, platform: input.platform, durationS: input.durationS,
-    slots, agentTone, rotation, seed, today, weights,
+    slots, agentTone, rotation, seed, today, weights, selectedNodes,
   });
 
   if (result.status !== "MISSING_SLOTS" && input.persist !== false && result.meta) {

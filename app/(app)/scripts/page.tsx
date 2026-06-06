@@ -9,12 +9,13 @@ import { Card, CardTitle, CardDesc } from "@/components/ui/card";
 export default async function ScriptsPage({
   searchParams,
 }: {
-  searchParams: { project?: string };
+  searchParams: { project?: string; nodes?: string };
 }) {
   const session = await getSession();
   if (!session) redirect("/login");
 
   const projectId = searchParams.project;
+  const nodeIds = searchParams.nodes?.split(",").map((s) => s.trim()).filter(Boolean);
   if (projectId) {
     const res = await getProjectById(projectId);
     const project = res.ok ? res.data : null;
@@ -28,7 +29,7 @@ export default async function ScriptsPage({
           </div>
           <Link href="/scripts" className="text-sm text-sky-400 hover:underline">← Đổi dự án</Link>
         </header>
-        <ScriptPanel projectId={project.id} />
+        <ScriptPanel projectId={project.id} nodeIds={nodeIds} />
       </main>
     );
   }

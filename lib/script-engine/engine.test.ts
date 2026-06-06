@@ -183,3 +183,23 @@ describe("fitBudget (R2)", () => {
     expect(r.dropped[0]).toBe("L");
   });
 });
+
+describe("selectedNodes — video bám node tri thức", () => {
+  const recipe = getRecipe("CT-02")!;
+  const bodyCount = (recipe.chain[30] ?? []).filter((c) => c.type.startsWith("BODY_")).length;
+
+  it("blocks (NODES:count) when picked-node count != BODY positions", () => {
+    const wrong = Array.from({ length: bodyCount + 1 }, (_, i) => ({ id: `n${i}`, category: "amenity", label: `L${i}` }));
+    const r = assembleScript(base({ selectedNodes: wrong }));
+    expect(r.status).toBe("BLOCKED");
+    expect(r.lint!.hardBlocks[0].rule).toBe("NODES:count");
+  });
+
+  it("matching count ⇒ OK and node labels surface as overlays", () => {
+    const nodes = Array.from({ length: bodyCount }, (_, i) => ({ id: `n${i}`, category: "amenity", label: `Tiện ích ${i}` }));
+    const r = assembleScript(base({ selectedNodes: nodes }));
+    expect(r.status).toBe("OK");
+    const overlays = r.script!.map((l) => l.overlay).join(" || ");
+    expect(nodes.some((n) => overlays.includes(n.label))).toBe(true);
+  });
+});

@@ -23,7 +23,7 @@ const labelFor = (k: string) => SLOT_LABEL[k] ?? k.replace(/_/g, " ");
 const pill = (active: boolean) =>
   `rounded-full px-3 py-1 text-xs transition ${active ? "bg-primary text-primary-foreground" : "border border-border text-foreground hover:border-foreground/30"}`;
 
-export function ScriptPanel({ projectId }: { projectId: string }) {
+export function ScriptPanel({ projectId, nodeIds }: { projectId: string; nodeIds?: string[] }) {
   const [platform, setPlatform] = useState<Platform>("tiktok");
   const [durationS, setDurationS] = useState<Duration>(30);
   const [contentType, setContentType] = useState<string>("CT-01");
@@ -35,7 +35,7 @@ export function ScriptPanel({ projectId }: { projectId: string }) {
 
   const run = (a: number, ct = contentType) =>
     start(async () => {
-      const r = await generateScriptAction({ projectId, platform, durationS, contentType: ct, attempt: a });
+      const r = await generateScriptAction({ projectId, platform, durationS, contentType: ct, attempt: a, nodeIds });
       setResult(r);
       setAttempt(a);
       if (r.status === "MISSING_SLOTS") setMissing(Object.fromEntries((r.missingSlots ?? []).map((k) => [k, ""])));
@@ -45,7 +45,7 @@ export function ScriptPanel({ projectId }: { projectId: string }) {
     start(async () => {
       const entries = Object.entries(missing).map(([key, value]) => ({ key, value }));
       await saveSlotFactsAction(projectId, entries);
-      const r = await generateScriptAction({ projectId, platform, durationS, contentType, attempt });
+      const r = await generateScriptAction({ projectId, platform, durationS, contentType, attempt, nodeIds });
       setResult(r);
       if (r.status === "MISSING_SLOTS") setMissing(Object.fromEntries((r.missingSlots ?? []).map((k) => [k, ""])));
     });
@@ -69,6 +69,12 @@ export function ScriptPanel({ projectId }: { projectId: string }) {
           Chọn dạng × kênh × độ dài → kịch bản 2 cột (HÌNH | TIẾNG), caption + hashtag, checklist quay. Bám dữ liệu đã xác thực, không hứa lợi nhuận.
         </p>
       </div>
+
+      {nodeIds && nodeIds.length > 0 && (
+        <p className="rounded-md border border-sky-700/50 bg-sky-950/30 px-3 py-2 text-xs text-sky-300">
+          Bám theo {nodeIds.length} điểm tri thức đã chọn — mỗi đoạn nội dung sẽ theo chủ đề một điểm. Số điểm cần khớp số đoạn của độ dài (đổi độ dài nếu lệch).
+        </p>
+      )}
 
       {/* controls */}
       <div className="flex flex-col gap-2">
