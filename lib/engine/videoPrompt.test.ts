@@ -55,4 +55,18 @@ describe("composeVideoPrompt", () => {
   it("keeps the [TEN_SALE]/[SDT] variable legend", () => {
     expect(composeVideoPrompt(base)).toContain("KÝ HIỆU TRONG BÀI");
   });
+
+  it("injects the chosen script template arc", () => {
+    const review = composeVideoPrompt({ ...base, template: "review_nha_mau" });
+    const sosanh = composeVideoPrompt({ ...base, template: "so_sanh" });
+    expect(review).toContain("Tour / review nhà mẫu");
+    expect(review).toContain("ban công");
+    expect(sosanh).toContain("So sánh 2 lựa chọn");
+    expect(review).not.toEqual(sosanh);
+  });
+
+  it("falls back to default template for unknown id", () => {
+    expect(composeVideoPrompt({ ...base, template: "khong-ton-tai" }))
+      .toContain("Tổng quan dự án");
+  });
 });

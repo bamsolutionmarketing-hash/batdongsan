@@ -5,7 +5,7 @@ import {
 } from "./promptComposer";
 import {
   VIDEO_PROMPT_VERSION, VIDEO_ROLE_HEADER, FORMAT_GUIDE, VIDEO_TONE_GUIDE,
-  lengthPlan, VIDEO_RULES, VIDEO_OUTPUT_CONTRACT,
+  lengthPlan, VIDEO_RULES, VIDEO_OUTPUT_CONTRACT, getScriptTemplate, DEFAULT_TEMPLATE_ID,
   type VideoFormat, type VideoLength,
 } from "./videoTemplates";
 
@@ -16,6 +16,7 @@ export interface VideoPromptInput {
   format: VideoFormat;
   length: VideoLength;
   tone: ComposeTone;
+  template?: string; // script-template id (kịch bản); defaults to "tong_quan"
   caption: string; // the assembled post — content backbone to adapt into video
   project: ComposeProject;
   nodes: ComposeNode[];
@@ -28,6 +29,7 @@ export interface VideoPromptInput {
 // constrained to the same verified-data spine as the post engine.
 export function composeVideoPrompt(input: VideoPromptInput): string {
   const { format, length, tone, caption, project, nodes, links, branding } = input;
+  const tpl = getScriptTemplate(input.template ?? DEFAULT_TEMPLATE_ID);
 
   const block1 = verifiedDataBlock(project, nodes, links);
   const legend = variableLegend(`${caption} [TEN_SALE] [SDT]`, project, branding);
@@ -44,7 +46,9 @@ export function composeVideoPrompt(input: VideoPromptInput): string {
     "",
     "③ ĐỊNH DẠNG & CẤU TRÚC",
     `Kênh: ${FORMAT_GUIDE[format]}`,
-    `Khung kịch bản: ${lengthPlan(length)}`,
+    `Dạng kịch bản — ${tpl.label}: ${tpl.arc}`,
+    `Gợi ý hook: ${tpl.hook}`,
+    `Nhịp & độ dài: ${lengthPlan(length)}`,
     "",
     "④ GIỌNG",
     VIDEO_TONE_GUIDE[tone],

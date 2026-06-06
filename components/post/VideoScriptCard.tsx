@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { composeVideoPrompt } from "@/lib/engine/videoPrompt";
-import type { VideoFormat, VideoLength } from "@/lib/engine/videoTemplates";
+import { SCRIPT_TEMPLATES, DEFAULT_TEMPLATE_ID, getScriptTemplate, type VideoFormat, type VideoLength } from "@/lib/engine/videoTemplates";
 import type { ComposeTone } from "@/types/domain";
 import type { ComposerData } from "./CaptionCard";
 
@@ -26,15 +26,17 @@ const TONES: { v: ComposeTone; label: string }[] = [
 // a copy-paste brief the agent feeds to GPT/Claude to get a ready storyboard.
 // No AI runs here — same pattern as the post mega-prompt.
 export function VideoScriptCard({ caption, composer }: { caption: string; composer: ComposerData }) {
+  const [template, setTemplate] = useState<string>(DEFAULT_TEMPLATE_ID);
   const [format, setFormat] = useState<VideoFormat>("reel");
   const [length, setLength] = useState<VideoLength>(30);
   const [tone, setTone] = useState<ComposeTone>("than_thien");
   const [copied, setCopied] = useState(false);
 
   const prompt = useMemo(
-    () => composeVideoPrompt({ format, length, tone, caption, ...composer }),
-    [format, length, tone, caption, composer],
+    () => composeVideoPrompt({ template, format, length, tone, caption, ...composer }),
+    [template, format, length, tone, caption, composer],
   );
+  const tplDesc = getScriptTemplate(template).desc;
 
   const copy = async () => {
     try {
@@ -59,6 +61,19 @@ export function VideoScriptCard({ caption, composer }: { caption: string; compos
       </div>
 
       <div className="flex flex-col gap-2">
+        <label className="flex flex-col gap-1 text-xs text-muted-foreground">
+          Dạng kịch bản
+          <select
+            value={template}
+            onChange={(e) => setTemplate(e.target.value)}
+            className="rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+          >
+            {SCRIPT_TEMPLATES.map((t) => (
+              <option key={t.id} value={t.id}>{t.label}</option>
+            ))}
+          </select>
+          <span className="text-[11px] text-muted-foreground">{tplDesc}</span>
+        </label>
         <div className="flex flex-wrap gap-1.5">
           {FORMATS.map((f) => (
             <button key={f.v} onClick={() => setFormat(f.v)} className={pill(format === f.v)}>{f.label}</button>
