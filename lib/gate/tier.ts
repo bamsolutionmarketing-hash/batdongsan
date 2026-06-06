@@ -31,6 +31,9 @@ export async function checkPostQuota(userId: string, tier: Tier): Promise<Result
   if (limit === null) return ok({ allowed: true, used: 0, limit: null });
   if (!isSupabaseConfigured()) return ok({ allowed: true, used: 0, limit });
   const supabase = createClient();
+  // Admins are unlimited (no daily cap).
+  const { data: prof } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
+  if ((prof as { role?: string } | null)?.role === "admin") return ok({ allowed: true, used: 0, limit: null });
   const startOfDay = `${new Date().toISOString().slice(0, 10)}T00:00:00Z`;
   const { count, error } = await supabase
     .from("generated_posts")
