@@ -94,3 +94,75 @@ from (values
 ) as v(node_key, role, variant_no, text, tone, min_confidence, fact_keys)
 join knowledge_nodes n on n.project_id='00000000-0000-0000-0000-00000000b005' and n.node_key=v.node_key
 on conflict (node_id, role, variant_no) do nothing;
+
+-- ── Batch C: bổ sung PROOF + CTA cho các node chủ lực ────────────────────────
+insert into node_content_blocks (node_id, role, variant_no, text, tone, min_confidence, fact_keys, is_enabled)
+select n.id, v.role::block_role_t, v.variant_no, v.text, v.tone::block_tone_t, v.min_confidence::confidence_t, v.fact_keys, true
+from (values
+  ('dia-oc-bcons','proof',1,'Pháp nhân chủ đầu tư là Công ty CP Địa ốc Bcons, MST 0314704166 (GCN cấp 28/10/2017) — Anh/Chị tra cứu được trên cổng thông tin doanh nghiệp.','neutral','verified',array['Pháp nhân','MST']),
+  ('legal-milestones','proof',1,'Trình tự 2024–2025: chấp thuận chủ trương 2/8/2024 → quy hoạch 1/500 ngày 6/12/2024 → GPXD 27/6/2025 → khởi công 28/6/2025 — chuỗi văn bản nối nhau trong chưa đầy một năm.','neutral','sales_claim',array['Chấp thuận chủ trương','Quy hoạch 1/500','Giấy phép xây dựng','Khởi công']),
+  ('the-twin','proof',1,'Khối đế thương mại The Twin 7 tầng, tổng sàn ~48.000m² — quy mô thương mại hiếm có ở phân khúc tầm trung, kiểm chứng qua mặt bằng dự án.','neutral','sales_claim',array['Khối đế TTTM']),
+  ('the-gateway','proof',1,'The Gateway 812 căn trên 29 tầng với layout 1–3PN — số liệu tháp đã công bố, em đối chiếu trực tiếp trên bảng hàng khi Anh/Chị chọn căn.','neutral','sales_claim',array['Số căn','Layout']),
+  ('co-cau-can','proof',1,'Dải diện tích công bố chính thức: 1PN 43,6–45,5m², 2PN 52,5–59,2m², 3PN 85,8m² — phủ đủ nhu cầu từ độc thân tới gia đình nhỏ.','neutral','sales_claim',array['1PN','2PN','3PN']),
+  ('metro-1','proof',1,'Metro số 1 dài 19,7km, 14 ga, vận hành thương mại từ 22/12/2024 — hạ tầng đã chạy thật, không phải quy hoạch trên giấy.','neutral','verified',array['Tuyến','Vận hành']),
+  ('bcons-city','proof',1,'Bcons City đối diện đã bàn giao 4 tháp (10/2025), thứ cấp 2PN ~2,4–2,65 tỷ — bằng chứng sống về thanh khoản và giá của hệ Bcons ngay cạnh [TEN_DU_AN].','neutral','sales_claim',array['Bàn giao','Thứ cấp 2PN']),
+  ('tien-ich-74','proof',1,'74 tiện ích nội khu + 135 tiện ích Bcons City liền kề — tổng cụm tiện ích kiểm chứng được khi Anh/Chị qua tham quan trực tiếp.','neutral','sales_claim',array['Bcons Center City','Bcons City đối diện']),
+  ('gia-chinh-sach','cta',1,'Anh/Chị nhắn [TEN_SALE] – [SDT] để nhận bảng giá [TEN_DU_AN] mới nhất theo ngày hiệu lực (tháp, tầng, view, thông thủy/tim tường).','neutral','verified',array[]::text[]),
+  ('the-gateway','cta',1,'Em gửi sơ đồ tầng The Gateway và tư vấn chọn hướng Đông Nam / Tây Nam theo nhu cầu — gọi [TEN_SALE] ([SDT]).','neutral','verified',array[]::text[]),
+  ('cho-thue','cta',1,'Muốn xem bảng giá thuê thật của khu và bảng tính dòng tiền cho thuê? Nhắn [TEN_SALE] – [SDT].','neutral','verified',array[]::text[]),
+  ('du-dk-ban','cta',1,'Em gửi checklist pháp lý cần kiểm tra trước khi cọc (gồm văn bản đủ điều kiện bán) — nhắn [TEN_SALE] ([SDT]) để nhận bản đầy đủ.','neutral','verified',array[]::text[]),
+  ('bcons-city','cta',1,'Anh/Chị để lại số — [TEN_SALE] sắp lịch dẫn qua Bcons City đối diện xem cư dân, dịch vụ, giá thuê thật trước khi quyết [TEN_DU_AN] (Zalo [SDT]).','neutral','verified',array[]::text[]),
+  ('co-cau-can','cta',1,'Gửi [TEN_SALE] – [SDT] nhu cầu (ở/cho thuê, số phòng, ngân sách) — em lọc nhanh layout [TEN_DU_AN] phù hợp nhất.','neutral','verified',array[]::text[])
+) as v(node_key, role, variant_no, text, tone, min_confidence, fact_keys)
+join knowledge_nodes n on n.project_id='00000000-0000-0000-0000-00000000b005' and n.node_key=v.node_key
+on conflict (node_id, role, variant_no) do nothing;
+
+-- ── Batch D: phủ các node còn trống (CĐT phụ · sản phẩm · tiện ích · hạ tầng ──
+--    · vị trí · so sánh · rủi ro · đào tạo) ───────────────────────────────────
+insert into node_content_blocks (node_id, role, variant_no, text, tone, min_confidence, fact_keys, is_enabled)
+select n.id, v.role::block_role_t, v.variant_no, v.text, v.tone::block_tone_t, v.min_confidence::confidence_t, v.fact_keys, true
+from (values
+  -- Developer phụ
+  ('le-nhu-thach','hook',1,'Người sáng lập Bcons là TS Lê Như Thạch — xuất thân kỹ sư xây dựng và giảng viên, gắn thương hiệu với câu chuyện làm nhà cho người trẻ quanh làng đại học.','story','sales_claim',array['Vai trò','Sinh năm']),
+  ('le-nhu-thach','body',1,'Câu chuyện cá nhân là chất liệu thương hiệu mạnh — nhưng em luôn nhắc: phát ngôn của lãnh đạo không thay thế văn bản pháp lý của dự án.','neutral','verified',array[]::text[]),
+  ('bcons-construction','hook',1,'Bcons Construction là đơn vị thi công lõi của hệ sinh thái — đồng thời là tổng thầu nhiều dự án Bcons đã bàn giao.','neutral','sales_claim',array['Vai trò']),
+  ('bcons-construction','body',1,'Em không né điểm cần theo dõi: vốn điều lệ pháp nhân này biến động mạnh 2024–2025 kèm đổi tên — có thể là tái cơ cấu trước IPO. Khi Anh/Chị quan tâm năng lực tài chính, em chuyển trọng tâm về pháp nhân CĐT dự án và ngân hàng bảo lãnh.','story','unverified',array['Biến động vốn','Thay đổi tên']),
+  ('bcons-members','hook',1,'Chuỗi công ty thành viên (Home – Service – Education – Invest – Tech) giúp Bcons khép kín từ bán hàng đến vận hành sau bàn giao.','neutral','sales_claim',array['Bcons Home','Bcons Service']),
+  ('bcons-members','body',1,'Lưu ý minh bạch: Bcons Service là đơn vị vận hành liên quan vụ tranh chấp Bcons Garden 2026 — em nắm rõ để trả lời chủ động khi Anh/Chị hỏi.','neutral','verified',array['Bcons Service']),
+  ('foreign-partners','hook',1,'Bcons có hợp tác đối tác Thái (A Asset/PPSN) và Nhật (Mercuria) ở cấp hệ sinh thái — tín hiệu vốn ngoại vào tập đoàn.','neutral','unverified',array['A Asset Limited','Mercuria']),
+  ('foreign-partners','body',1,'Với riêng [TEN_DU_AN] chưa có công bố đối tác ngoại tham gia trực tiếp — em không suy diễn "vốn Nhật/Thái" cho dự án này khi chưa có văn bản.','neutral','unverified',array['Ý nghĩa']),
+  ('legal-room','body',1,'Pháp lý là khu vực không được sáng tạo: có văn bản thì nói, chưa có thì ghi rõ "theo công bố chủ đầu tư" và hẹn gửi bản scan. Em làm việc theo data room dùng chung để tránh sai lệch.','neutral','verified',array['Quy tắc dùng','Văn bản cần có']),
+
+  -- Sản phẩm còn trống
+  ('the-icon','hook',1,'The Icon — tháp căn hộ 29 tầng, 549 căn trong cụm 3 tháp ở của [TEN_DU_AN].','neutral','sales_claim',array['Loại','Số căn']),
+  ('the-icon','body',1,'Hướng view và layout chi tiết em cập nhật theo bảng hàng khi tháp mở bán — không nói trước số liệu chưa khoá.','neutral','unverified',array['Cần bổ sung']),
+  ('the-crown','hook',1,'The Crown — tháp căn hộ 29 tầng, 579 căn; tên gọi định vị nhóm khách muốn cảm giác cao cấp hơn trong cùng dự án.','neutral','sales_claim',array['Loại','Số căn']),
+  ('the-crown','body',1,'Mọi định vị "cao cấp hơn" chỉ chốt khi có bảng hàng và thông số thật — em bám dữ liệu, không bán bằng tên gọi.','neutral','unverified',array['Cần bổ sung']),
+  ('ham-lech-tang','hook',1,'Tầng hầm lệch tầng là chi tiết kỹ thuật đáng giá: hầm B1 khu thương mại (4m) giao với hầm B2 khu căn hộ (3m) — tách dòng lưu thông thương mại và cư dân.','neutral','sales_claim',array['Cấu trúc','Chiều cao B1','Chiều cao B2']),
+  ('ham-lech-tang','body',1,'Khi Anh/Chị hỏi về đậu xe và vận hành, cấu trúc hầm lệch tầng khác hẳn hầm phẳng thông thường — em giải thích bằng mặt bằng cụ thể.','neutral','sales_claim',array['Liên thông']),
+  ('tttm-7-tang','hook',1,'TTTM 7 tầng ~48.000m² sàn ở khối đế The Twin biến [TEN_DU_AN] từ "căn hộ" thành "khu phức hợp" — mua sắm, F&B, giải trí, dịch vụ ngay dưới chân nhà.','story','sales_claim',array['Quy mô','Chức năng']),
+  ('quang-truong','hook',1,'Công viên quảng trường tới 8.000m² với nhạc nước — không gian cộng đồng làm [TEN_DU_AN] có đời sống sau bàn giao, không chỉ đẹp trong phối cảnh.','story','sales_claim',array['Diện tích','Điểm nhấn']),
+  ('ho-boi','hook',1,'Hai hồ bơi ở hai cao độ: hồ vô cực tầng 7 The Twin và hồ ốc đảo dưới mặt đất — câu chuyện lifestyle, không chỉ là một tiện ích.','story','sales_claim',array['Hồ bơi 1','Hồ bơi 2']),
+
+  -- Hạ tầng còn trống
+  ('bxmd','hook',1,'Bến xe Miền Đông mới là hub liên vùng khu Đông kết nối Metro số 1 — điểm trung chuyển quan trọng trong câu chuyện kết nối của [TEN_DU_AN].','neutral','sales_claim',array['Vai trò']),
+  ('bxmd','body',1,'Các mốc "phút di chuyển" em đo theo tuyến thực tế giờ cao điểm/thấp điểm thay vì quote cố định — để Anh/Chị hình dung đúng.','neutral','unverified',array['Cần kiểm tra']),
+  ('d11','hook',1,'D11 là đường tiếp cận trực tiếp [TEN_DU_AN]: hiện hữu 7m, quy hoạch mở rộng 17m — em phân biệt rõ hiện trạng hôm nay và quy hoạch ngày mai.','neutral','unverified',array['Hiện hữu','Quy hoạch mở rộng']),
+  ('ql1k-xlhn','body',1,'Mạng trục QL1K/QL1A/Xa lộ Hà Nội quanh dự án cho kết nối đa hướng — nhưng kẹt giờ cao điểm là thật; kỳ vọng giảm tải khi Vành đai 3 và nút Tân Vạn thông xe 2026.','neutral','sales_claim',array['Các trục','Triển vọng']),
+
+  -- Vị trí còn trống
+  ('kcn-tien-ich','hook',1,'Vành đai việc làm quanh [TEN_DU_AN]: KCN Sóng Thần, Linh Trung, VSIP + thương mại GO!/Vincom Dĩ An + y tế Hoàn Mỹ — nền của cầu ở thật.','neutral','sales_claim',array['Khu công nghiệp','Thương mại','Y tế']),
+
+  -- So sánh còn trống (trung thực, không dìm đối thủ)
+  ('bcons-garden','body',1,'Bcons Garden (hơn 1.800 căn, đã bàn giao) đang có tranh chấp vận hành 2026 — em chủ động nói trước vì khách tra Google sẽ gặp; chi tiết và bản chất vụ việc em trình bày ở phần rủi ro.','neutral','verified',array['Quy mô','Vấn đề 2026']),
+  ('bcons-others','hook',1,'Chuỗi dự án Bcons đã bàn giao quanh làng đại học (Suối Tiên, Miền Đông, Green View…) là bằng chứng năng lực triển khai liên tục ở phân khúc vừa túi tiền.','neutral','sales_claim',array['Bcons Suối Tiên','Bcons Miền Đông']),
+  ('picity','body',1,'Picity Sky Park (~40–50tr/m², bàn giao Q4/2026) là đối thủ cùng dải giá sát nhất — em so sánh thẳng về vị trí tiếp cận, tiện ích khối đế và uy tín bàn giao để Anh/Chị tự cân.','neutral','sales_claim',array['Giá','Bàn giao']),
+  ('tt-avio','body',1,'TT AVIO chơi bài "chuẩn Nhật + thanh toán nhẹ" (từ ~1,1 tỷ/căn) hút khách trẻ lần đầu mua nhà — khác biệt của [TEN_DU_AN] là quy mô phức hợp và hệ tiện ích cụm.','neutral','sales_claim',array['CĐT','Giá']),
+  ('la-pura','body',1,'La Pura (Phát Đạt, ~6.000 căn, trục QL13) là nguồn cung lớn hút khách đầu tư diện rộng — dải giá 39,5–72,7tr/m² cho thấy mặt bằng "TP.HCM mới" đang định hình lại toàn khu.','neutral','sales_claim',array['Quy mô','Giá']),
+
+  -- Rủi ro & đào tạo còn trống
+  ('risk-data','body',1,'Em giữ kỷ luật dữ liệu: không quote số chưa khoá (giá, diện tích, phút di chuyển, pháp lý). Ví dụ số căn dao động 1.800–1.940 tùy tài liệu — em dùng nhất quán theo Q&A nội bộ.','neutral','unverified',array['Nguyên tắc','Số căn']),
+  ('qa-10','body',1,'Bộ 10 câu Q&A chuẩn (tổng quan → kỹ thuật → view → tiện ích → tài chính → chủ đầu tư) là khung đào tạo nội bộ để mọi tư vấn trả lời nhất quán về [TEN_DU_AN].','neutral','sales_claim',array['Q1','Q10'])
+) as v(node_key, role, variant_no, text, tone, min_confidence, fact_keys)
+join knowledge_nodes n on n.project_id='00000000-0000-0000-0000-00000000b005' and n.node_key=v.node_key
+on conflict (node_id, role, variant_no) do nothing;
