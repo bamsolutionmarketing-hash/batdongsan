@@ -2,7 +2,7 @@
 // at runtime. See scriptnodeenginespec.md.
 
 export type Platform = "tiktok" | "reels" | "shorts";
-export type Duration = 15 | 30 | 60 | 90;
+export type Duration = 15 | 30 | 60 | 90 | 120 | 180;
 
 export type NodeType =
   | "HOOK"
@@ -159,6 +159,11 @@ export interface ScriptResult {
   checklist?: string[];
   missingSlots?: string[];
   lint?: { hardBlocks: LintHit[]; warnings: LintHit[] };
+  // Self-contained copy-paste prompt (angle + verified data + arc) for an
+  // external generative AI. Built server-side; no AI call here.
+  aiPrompt?: string;
+  // Coherence of the chosen nodes against the chosen angle (R: đồng nhất).
+  cohesion?: { score: number; offTopic: string[]; angleId?: string; suggestedAngleId?: string };
   // A/B: a second eligible hook for the same script (P5).
   altHook?: { id: string; family?: HookFamily; text: string; onscreen: string; visual: string };
   meta?: {

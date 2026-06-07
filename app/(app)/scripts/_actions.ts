@@ -14,6 +14,7 @@ export interface GenerateArgs {
   contentType?: string;
   attempt?: number;
   nodeIds?: string[];
+  angle?: string;
 }
 
 // Assemble a script for the current agent. Returns a serializable ScriptResult.
@@ -49,6 +50,7 @@ export async function generateScriptAction(args: GenerateArgs): Promise<ScriptRe
     contentType: args.contentType,
     attempt: args.attempt,
     nodeIds: args.nodeIds,
+    angle: args.angle,
   };
   return generateScript(session.userId, input);
 }

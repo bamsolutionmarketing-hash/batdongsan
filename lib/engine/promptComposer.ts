@@ -177,23 +177,38 @@ export interface ComposeScriptInput {
   script: ScriptPromptLine[];
   caption?: { text: string; hashtags: string[] } | null;
   checklist?: string[] | null;
+  // Coherence guidance (single through-line) ────────────────────────────────
+  angle?: { label: string; guide: string; arc: string } | null; // góc nhìn chủ đạo
+  project?: ComposeProject | null; // for the verified-data block
+  nodes?: ComposeNode[] | null; // verified facts per node — the single data gate
+  links?: ComposeLink[] | null; // relationships between nodes
+  maxPoints?: number; // tối đa số ý chính (default 3)
 }
 
 const PLATFORM_LABEL: Record<string, string> = {
   tiktok: "TikTok", reels: "Reels (Instagram)", shorts: "YouTube Shorts",
 };
 
+const CIRCLED = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
+
+const durationLabel = (s: number): string =>
+  s >= 60 && s % 60 === 0 ? `~${s / 60} phút (${s}s)` : `~${s}s`;
+
 // Wrap a generated video script into a self-contained brief that any external
-// generative-AI app can turn into a finished short-video script on first paste.
-// Pure; mirrors the post mega-prompt's compliance spine (no new numbers / no
-// profit promises). NO AI call.
+// generative-AI app can turn into a finished, COHERENT short-video script on
+// first paste. Encodes a single góc nhìn + verified data + narrative arc +
+// mandatory transitions, mirroring the post mega-prompt's compliance spine
+// (no new numbers / no profit promises). Pure; NO AI call.
 export function composeScriptPrompt(input: ComposeScriptInput): string {
   const platform = PLATFORM_LABEL[input.platform] ?? input.platform;
+  const maxPoints = input.maxPoints ?? 3;
+  const durLabel = durationLabel(input.durationS);
+
   const meta = [
     `Nền tảng: ${platform}`,
-    `Thời lượng: ~${input.durationS}s`,
+    `Thời lượng: ${durLabel}`,
     input.contentTypeName ? `Dạng nội dung: ${input.contentTypeName}` : null,
-    input.projectName ? `Dự án: ${input.projectName}` : null,
+    input.projectName ?? input.project?.name ? `Dự án: ${input.projectName ?? input.project?.name}` : null,
   ].filter(Boolean).join(" · ");
 
   const scriptBlock = input.script.length
@@ -202,33 +217,67 @@ export function composeScriptPrompt(input: ComposeScriptInput): string {
         .join("\n\n")
     : "(chưa có phân cảnh)";
 
-  const captionBlock = input.caption
-    ? [input.caption.text, input.caption.hashtags.join(" ")].filter(Boolean).join("\n")
+  // Reuse the post's verified-data block (drop its built-in header — we number
+  // sections dynamically here).
+  const dataBody = input.nodes?.length
+    ? verifiedDataBlock(input.project ?? { name: input.projectName ?? null }, input.nodes, input.links ?? undefined)
+        .split("\n").slice(1).join("\n")
     : null;
 
-  const checklistBlock = input.checklist?.length ? input.checklist.join("\n") : null;
+  const arc = input.angle?.arc
+    ?? "Hook → bối cảnh → 2–3 ý chính (mỗi ý có dẫn chứng + câu chuyển ý) → chốt đúng lời hứa của hook → CTA.";
 
-  const parts: (string | null)[] = [
+  const sections: { h: string; body: string }[] = [];
+  if (input.angle) {
+    sections.push({
+      h: "GÓC NHÌN CHỦ ĐẠO",
+      body: `${input.angle.label} — ${input.angle.guide}\n→ Cả video CHỈ xoay quanh góc nhìn này; bỏ mọi ý lạc đề.`,
+    });
+  }
+  if (dataBody) {
+    sections.push({ h: "DỮ LIỆU ĐÃ XÁC THỰC — chỉ được dùng dữ kiện trong khối này", body: dataBody });
+  }
+  sections.push({ h: "KỊCH BẢN 2 CỘT (xương sống — viết lại cho mượt, đúng giọng)", body: scriptBlock });
+  sections.push({
+    h: "CẤU TRÚC & MẠCH KỂ",
+    body: [
+      `- Tối đa ${maxPoints} ý chính, mỗi ý một thông điệp rõ — KHÔNG nhảy chủ đề.`,
+      `- Mạch kể: ${arc}`,
+      "- Mỗi ý: nêu ý → 1 dẫn chứng (chỉ lấy số ở khối dữ liệu) → CÂU CHUYỂN Ý sang phần sau (vd: “Không chỉ vậy…”, “Quan trọng hơn…”, “Nhiều người lo… nhưng…”).",
+      "- Mở đầu bằng hook bám đúng góc nhìn; kết bằng chốt đúng lời hứa của hook.",
+      `- Phát triển cho ĐỦ ${durLabel}: đào sâu từng ý (ví dụ, cảm xúc, lợi ích), KHÔNG thêm chủ đề mới chỉ để lấp giờ.`,
+    ].join("\n"),
+  });
+  if (input.caption) {
+    sections.push({ h: "CAPTION & HASHTAG", body: [input.caption.text, input.caption.hashtags.join(" ")].filter(Boolean).join("\n") });
+  }
+  if (input.checklist?.length) {
+    sections.push({ h: "CHECKLIST QUAY", body: input.checklist.join("\n") });
+  }
+  sections.push({
+    h: "QUY TẮC BẮT BUỘC",
+    body: [
+      "- Giữ NGUYÊN 100% con số, mốc thời gian, tên riêng có trong dữ liệu/kịch bản.",
+      "- KHÔNG thêm số liệu/giá/diện tích/tiện ích/pháp lý nào ngoài dữ liệu đã cho.",
+      "- KHÔNG hứa lợi nhuận, KHÔNG cam kết tăng giá.",
+      "- Câu văn liền mạch, có câu chuyển ý; giữ MỘT góc nhìn xuyên suốt.",
+    ].join("\n"),
+  });
+  sections.push({
+    h: "ĐẦU RA",
+    body: [
+      "- Trả về kịch bản hoàn chỉnh: phân cảnh theo mốc thời gian, lời thoại/voiceover, gợi ý hình ảnh & góc quay, chữ overlay, và caption.",
+      "- CHỈ in nội dung; KHÔNG thêm lời dẫn/giải thích; KHÔNG bọc trong dấu ```.",
+    ].join("\n"),
+  });
+
+  const head = [
     "Bạn là biên kịch kiêm đạo diễn video ngắn bất động sản tại Việt Nam.",
-    "Nhiệm vụ: dựa trên KỊCH BẢN dưới đây, hoàn thiện thành kịch bản quay video ngắn hoàn chỉnh. Có thể đưa sang công cụ AI tạo video/sinh nội dung.",
-    "RÀNG BUỘC CỐT LÕI: chỉ dùng dữ kiện có trong kịch bản; không thêm thông tin mới.",
-    "",
-    meta || null,
-    "",
-    "① KỊCH BẢN 2 CỘT (THỜI GIAN · HÌNH · TIẾNG · OVERLAY)",
-    scriptBlock,
-    ...(captionBlock ? ["", "② CAPTION & HASHTAG", captionBlock] : []),
-    ...(checklistBlock ? ["", "③ CHECKLIST QUAY", checklistBlock] : []),
-    "",
-    "④ QUY TẮC BẮT BUỘC",
-    "- Giữ NGUYÊN 100% con số, mốc thời gian, tên riêng có trong kịch bản.",
-    "- KHÔNG thêm số liệu/giá/diện tích/tiện ích/pháp lý nào ngoài kịch bản.",
-    "- KHÔNG hứa lợi nhuận, KHÔNG cam kết tăng giá.",
-    "- Giữ nguyên thông tin liên hệ nếu có.",
-    "",
-    "⑤ ĐẦU RA",
-    "- Trả về kịch bản hoàn chỉnh: phân cảnh theo mốc thời gian, lời thoại/voiceover, gợi ý hình ảnh & góc quay, chữ overlay, và caption.",
-    "- CHỈ in nội dung; KHÔNG thêm lời dẫn/giải thích; KHÔNG bọc trong dấu ```.",
+    "Nhiệm vụ: dựa trên các khối dưới đây, viết kịch bản quay video ngắn HOÀN CHỈNH, liền mạch, đúng một góc nhìn.",
+    "RÀNG BUỘC CỐT LÕI: chỉ dùng dữ kiện có trong các khối dưới; không thêm thông tin mới.",
   ];
-  return parts.filter((l): l is string => l !== null).join("\n");
+  if (meta) head.push("", meta);
+
+  const body = sections.map((s, i) => `${CIRCLED[i] ?? `(${i + 1})`} ${s.h}\n${s.body}`).join("\n\n");
+  return [...head, "", body].join("\n");
 }

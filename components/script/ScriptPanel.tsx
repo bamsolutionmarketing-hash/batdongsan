@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { RECIPES } from "@/lib/script-engine/data/recipes";
 import type { ScriptResult, Platform, Duration } from "@/lib/script-engine/types";
 import { composeScriptPrompt } from "@/lib/engine/promptComposer";
+import { ANGLES, getAngle } from "@/lib/script-engine/data/angles";
 import { generateScriptAction, saveSlotFactsAction, saveMarketFactAction, ingestPerformanceAction } from "@/app/(app)/scripts/_actions";
 
 const PLATFORMS: { v: Platform; label: string }[] = [
@@ -11,7 +12,8 @@ const PLATFORMS: { v: Platform; label: string }[] = [
   { v: "reels", label: "Reels" },
   { v: "shorts", label: "Shorts" },
 ];
-const DURATIONS: Duration[] = [15, 30, 60];
+const DURATIONS: Duration[] = [15, 30, 60, 120, 180];
+const durLabel = (d: Duration) => (d >= 60 && d % 60 === 0 ? `${d / 60}p` : `${d}s`);
 
 const SLOT_LABEL: Record<string, string> = {
   loai_hinh: "Loại hình (căn hộ/nhà phố…)", loai_can: "Loại căn (2PN 68m²…)", dien_tich: "Diện tích (m²)",
@@ -28,25 +30,33 @@ export function ScriptPanel({ projectId, nodeIds, projectName }: { projectId: st
   const [platform, setPlatform] = useState<Platform>("tiktok");
   const [durationS, setDurationS] = useState<Duration>(30);
   const [contentType, setContentType] = useState<string>("CT-01");
+  const [angle, setAngle] = useState<string>("");
   const [attempt, setAttempt] = useState(0);
   const [result, setResult] = useState<ScriptResult | null>(null);
   const [missing, setMissing] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState("");
   const [pending, start] = useTransition();
 
-  const run = (a: number, ct = contentType) =>
+  const run = (a: number, ct = contentType, ang = angle) =>
     start(async () => {
-      const r = await generateScriptAction({ projectId, platform, durationS, contentType: ct, attempt: a, nodeIds });
+      const r = await generateScriptAction({ projectId, platform, durationS, contentType: ct, attempt: a, nodeIds, angle: ang || undefined });
       setResult(r);
       setAttempt(a);
       if (r.status === "MISSING_SLOTS") setMissing(Object.fromEntries((r.missingSlots ?? []).map((k) => [k, ""])));
     });
 
+  // Change angle → refresh cohesion + prompt if a script already exists.
+  const pickAngle = (a: string) => {
+    const next = angle === a ? "" : a;
+    setAngle(next);
+    if (result) run(attempt, contentType, next);
+  };
+
   const fillAndRetry = () =>
     start(async () => {
       const entries = Object.entries(missing).map(([key, value]) => ({ key, value }));
       await saveSlotFactsAction(projectId, entries);
-      const r = await generateScriptAction({ projectId, platform, durationS, contentType, attempt, nodeIds });
+      const r = await generateScriptAction({ projectId, platform, durationS, contentType, attempt, nodeIds, angle: angle || undefined });
       setResult(r);
       if (r.status === "MISSING_SLOTS") setMissing(Object.fromEntries((r.missingSlots ?? []).map((k) => [k, ""])));
     });
@@ -66,7 +76,7 @@ export function ScriptPanel({ projectId, nodeIds, projectName }: { projectId: st
   // the agent may pick fewer/more — the script adapts).
   const recommended = useMemo(() => {
     const r = RECIPES.find((x) => x.id === contentType);
-    const chain = r?.chain[durationS] ?? r?.chain[30] ?? [];
+    const chain = r?.chain[durationS] ?? r?.chain[90] ?? r?.chain[60] ?? r?.chain[30] ?? [];
     return chain.filter((c) => c.type.startsWith("BODY_")).length;
   }, [contentType, durationS]);
 
@@ -76,9 +86,12 @@ export function ScriptPanel({ projectId, nodeIds, projectName }: { projectId: st
 
   // Wrap the whole script into a self-contained AI prompt (for an external
   // generative-AI app), mirroring the post's "Copy kèm prompt AI".
+  // Prefer the server-built prompt (carries góc nhìn + verified data + arc);
+  // fall back to a client wrap if absent.
   const aiPrompt = useMemo(
     () =>
-      result?.status === "OK" && result.script
+      result?.aiPrompt ??
+      (result?.status === "OK" && result.script
         ? composeScriptPrompt({
             platform, durationS,
             contentTypeName: RECIPES.find((r) => r.id === contentType)?.nameVi,
@@ -87,7 +100,7 @@ export function ScriptPanel({ projectId, nodeIds, projectName }: { projectId: st
             caption: result.caption,
             checklist: result.checklist,
           })
-        : "",
+        : ""),
     [result, platform, durationS, contentType, projectName],
   );
 
@@ -115,11 +128,19 @@ export function ScriptPanel({ projectId, nodeIds, projectName }: { projectId: st
             {RECIPES.map((r) => <option key={r.id} value={r.id}>{r.nameVi}</option>)}
           </select>
         </label>
+        <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+          Góc nhìn chủ đạo <span className="text-[11px] normal-case opacity-80">(1 thông điệp xuyên suốt — giúp kịch bản không nhảy chủ đề)</span>
+          <div className="flex flex-wrap gap-1.5">
+            {ANGLES.map((a) => (
+              <button key={a.id} onClick={() => pickAngle(a.id)} className={pill(angle === a.id)} title={a.guide}>{a.short}</button>
+            ))}
+          </div>
+        </div>
         <div className="flex flex-wrap gap-1.5">
           {PLATFORMS.map((p) => <button key={p.v} onClick={() => setPlatform(p.v)} className={pill(platform === p.v)}>{p.label}</button>)}
         </div>
         <div className="flex flex-wrap gap-1.5">
-          {DURATIONS.map((d) => <button key={d} onClick={() => setDurationS(d)} className={pill(durationS === d)}>{d}s</button>)}
+          {DURATIONS.map((d) => <button key={d} onClick={() => setDurationS(d)} className={pill(durationS === d)}>{durLabel(d)}</button>)}
         </div>
       </div>
 
@@ -135,6 +156,36 @@ export function ScriptPanel({ projectId, nodeIds, projectName }: { projectId: st
           </>
         )}
       </div>
+
+      {/* Cohesion (độ liền mạch) + scatter warning */}
+      {result?.cohesion && (
+        <div className="rounded-md border border-border bg-background p-3">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-medium text-foreground">Độ liền mạch</span>
+            <span className={result.cohesion.score >= 70 ? "text-emerald-400" : result.cohesion.score >= 40 ? "text-amber-400" : "text-red-400"}>
+              {result.cohesion.score}/100
+            </span>
+          </div>
+          <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className={`h-full rounded-full ${result.cohesion.score >= 70 ? "bg-emerald-500" : result.cohesion.score >= 40 ? "bg-amber-500" : "bg-red-500"}`}
+              style={{ width: `${result.cohesion.score}%` }}
+            />
+          </div>
+          {!angle && (
+            <p className="mt-1.5 text-xs text-muted-foreground">Chọn 1 góc nhìn ở trên để bám mạch & chấm điểm chính xác hơn.</p>
+          )}
+          {result.cohesion.score < 70 && (
+            <p className="mt-1.5 text-xs text-amber-300">
+              ⚠ Kịch bản dễ rời rạc{angle ? ` so với góc nhìn “${getAngle(angle)?.short}”` : ""}
+              {result.cohesion.offTopic.length ? `: ${result.cohesion.offTopic.length} điểm lệch (${result.cohesion.offTopic.join(", ")})` : ""}.
+              {result.cohesion.suggestedAngleId && angle !== result.cohesion.suggestedAngleId
+                ? ` Gợi ý: đổi góc nhìn sang “${getAngle(result.cohesion.suggestedAngleId)?.short}”, hoặc bỏ bớt điểm lệch / tách thành 2 video.`
+                : " Bỏ bớt điểm lệch hoặc tách thành 2 video để mạch chặt hơn."}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* MISSING SLOTS form */}
       {result?.status === "MISSING_SLOTS" && (

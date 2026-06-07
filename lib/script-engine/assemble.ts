@@ -86,7 +86,11 @@ export function assembleScript(args: AssembleArgs): ScriptResult {
   const { recipe, platform, durationS, agentTone, seed } = args;
   const today = args.today ?? new Date();
   const rotation = args.rotation ?? new Map<string, RotationEntry>();
-  const chain: ChainSlot[] = recipe.chain[durationS] ?? recipe.chain[30] ?? [];
+  // Long formats (120/180s) reuse the longest authored chain as a backbone —
+  // the copy-paste AI prompt expands it to the target duration (≤3 ý, deeper
+  // proof) rather than adding new topics.
+  const chain: ChainSlot[] =
+    recipe.chain[durationS] ?? recipe.chain[90] ?? recipe.chain[60] ?? recipe.chain[30] ?? [];
   const bodyCount = chain.filter((c) => c.type.startsWith("BODY_")).length;
   const slots = withFormatSlots(args.slots, durationS, bodyCount, today);
 

@@ -6,6 +6,8 @@ export const WORD_TOTAL: Record<Duration, [number, number]> = {
   30: [90, 105],
   60: [180, 210],
   90: [270, 300],
+  120: [360, 420],
+  180: [540, 630],
 };
 
 // Planned seconds for a node = rounded midpoint of its [min,max] range.

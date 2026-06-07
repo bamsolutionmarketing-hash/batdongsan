@@ -9,6 +9,8 @@ import { bodyBlocksByNodes } from "@/lib/repo/blocks";
 import { getProjectById } from "@/lib/repo/projects";
 import { blockUsable } from "@/lib/engine/compliance";
 import { substitute as fillVars } from "@/lib/engine/variables";
+import { composeScriptPrompt, type ComposeNode } from "@/lib/engine/promptComposer";
+import { cohesion, getAngle } from "@/lib/script-engine/data/angles";
 import type { Platform, Duration, ScriptResult, Tone } from "@/lib/script-engine/types";
 
 export interface GenerateInput {
@@ -19,6 +21,7 @@ export interface GenerateInput {
   attempt?: number; // regenerate ⇒ +1
   persist?: boolean; // default true
   nodeIds?: string[]; // knowledge-map nodes the agent picked (bias BODY by topic)
+  angle?: string; // chosen góc nhìn (AngleId) — single through-line + cohesion check
 }
 
 // Deterministic index into a pool from a string key.
@@ -95,6 +98,34 @@ export async function generateScript(userId: string, input: GenerateInput): Prom
     if (result.status === "OK") {
       await bumpRotation(userId, [result.meta.hookId, ...result.meta.nodeIds]);
     }
+  }
+
+  // Coherence (đồng nhất) + self-contained AI prompt — built here so the agent
+  // can paste it into any external LLM and get one coherent story (no AI call).
+  if (result.status === "OK" && result.script) {
+    const angleDef = getAngle(input.angle);
+    const coh = cohesion(input.angle, selectedNodes.map((n) => ({ label: n.label, category: n.category })));
+    result.cohesion = { score: coh.score, offTopic: coh.offTopic, angleId: input.angle, suggestedAngleId: coh.suggestedAngleId };
+
+    const promptNodes: ComposeNode[] = selectedNodes.map((n) => ({
+      label: n.label,
+      category: n.category,
+      talkpoint: n.talkpoint,
+      facts: n.facts.map((f) => ({ key: f.key, value: f.value, confidence: f.confidence })),
+    }));
+    result.aiPrompt = composeScriptPrompt({
+      platform: input.platform,
+      durationS: input.durationS,
+      contentTypeName: recipe.nameVi,
+      projectName: project?.name ?? null,
+      script: result.script,
+      caption: result.caption ?? null,
+      checklist: result.checklist ?? null,
+      angle: angleDef ? { label: angleDef.label, guide: angleDef.guide, arc: angleDef.arc } : null,
+      project: { name: project?.name ?? null },
+      nodes: promptNodes.length ? promptNodes : null,
+      maxPoints: 3,
+    });
   }
 
   return result;
