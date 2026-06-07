@@ -7,7 +7,8 @@ insert into developers (id, name, slug, parent_company, credibility) values
   ('00000000-0000-0000-0000-0000000000e1', 'Masterise Homes', 'masterise-homes', 'Masterise Group', 9),
   ('00000000-0000-0000-0000-0000000000e2', 'Keppel Land × Khang Điền', 'keppel-khang-dien', 'Keppel Ltd. / KDH', 9),
   ('00000000-0000-0000-0000-0000000000e3', 'Vinhomes (VHM)', 'vinhomes', 'Vingroup', 10),
-  ('00000000-0000-0000-0000-0000000000e4', 'BLUEMARQ GROUP', 'bluemarq-group', 'Đất Xanh Group (DXG)', 8)
+  ('00000000-0000-0000-0000-0000000000e4', 'BLUEMARQ GROUP', 'bluemarq-group', 'Đất Xanh Group (DXG)', 8),
+  ('00000000-0000-0000-0000-0000000000e5', 'Địa ốc Bcons', 'dia-oc-bcons', 'Bcons Group', 7)
 on conflict (id) do nothing;
 
 -- Projects — both public + demo so signed-out landing + free tier work ---------
@@ -50,5 +51,13 @@ values
    '00000000-0000-0000-0000-0000000000e4',
    'The Privé', 'the-prive',
    'Flagship BLUEMARQ 2025–2026 — tiền thân Gem Riverside', 'P. An Phú, TP. Thủ Đức, TP.HCM', 'selling', null,
-   null, null, 'broker_estimate', false, true)
+   null, null, 'broker_estimate', false, true),
+  -- Bcons Center City (Địa ốc Bcons) — tên pháp lý Khu dân cư Bình An Đông Tây.
+  -- Khởi công 28/6/2025, bàn giao Q4/2027. Giá ~55tr/m² là rumor/sales page (chưa
+  -- niêm yết chính thức) → để khoảng broker_estimate, không khoá số.
+  ('00000000-0000-0000-0000-00000000b005',
+   '00000000-0000-0000-0000-0000000000e5',
+   'Bcons Center City', 'bcons-center-city',
+   'Khởi công 28/6/2025 — bàn giao dự kiến Q4/2027', 'Đường Thống Nhất / D11, P. Đông Hòa, TP.HCM (Dĩ An cũ)', 'selling', null,
+   50000000, 58000000, 'broker_estimate', false, true)
 on conflict (id) do nothing;

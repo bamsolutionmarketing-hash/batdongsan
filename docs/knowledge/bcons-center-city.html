@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bcons Center City Knowledge Map — Bản đồ tri thức tư vấn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --bg-2: #161b22;
+  --bg-3: #1c2128;
+  --panel: #161b22;
+  --border: #30363d;
+  --border-2: #21262d;
+  --text: #e6edf3;
+  --text-2: #8b949e;
+  --text-3: #6e7681;
+  --gold: #d4a544;
+  --gold-2: #e6c068;
+  --blue: #58a6ff;
+  --purple: #a371f7;
+  --green: #3fb950;
+  --red: #f85149;
+  --orange: #f0883e;
+  --pink: #db61a2;
+  --cyan: #39c5cf;
+  --link: #58a6ff;
+  --link-hover: #79c0ff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 48px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  position: relative;
+  z-index: 100;
+}
+.logo {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: .02em;
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 10px var(--gold); }
+.topbar-divider { width: 1px; height: 24px; background: var(--border); }
+
+.search-wrap {
+  flex: 0 1 360px;
+  position: relative;
+}
+.search {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 12px 7px 32px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+.search:focus { outline: none; border-color: var(--gold); }
+.search-icon {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  color: var(--text-3); font-size: 14px;
+}
+
+.topbar-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.topbar-btn:hover { color: var(--text); border-color: var(--text-3); }
+.topbar-btn.active { background: var(--bg-3); color: var(--gold); border-color: var(--gold); }
+
+.topbar-stats {
+  margin-left: auto;
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+.topbar-stat strong { color: var(--text); font-weight: 600; }
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 380px;
+  height: calc(100vh - 48px);
+}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar {
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 12px 8px;
+}
+.sidebar-header {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 8px 8px 4px;
+}
+.category-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-2);
+  user-select: none;
+}
+.category-item:hover { background: var(--bg-3); color: var(--text); }
+.category-item.active { background: var(--bg-3); color: var(--text); }
+.category-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.category-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-3);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.node-list { padding-top: 8px; }
+.node-item {
+  padding: 5px 8px 5px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
+.node-item::before {
+  content: '';
+  position: absolute;
+  left: 12px; top: 50%;
+  transform: translateY(-50%);
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-3);
+}
+.node-item:hover { background: var(--bg-3); color: var(--text); }
+.node-item.active { background: var(--bg-3); color: var(--gold); }
+.node-item.active::before { background: var(--gold); }
+
+/* ── GRAPH ── */
+.graph-wrap {
+  position: relative;
+  background: var(--bg);
+  overflow: hidden;
+  cursor: grab;
+}
+.graph-wrap.dragging { cursor: grabbing; }
+.graph-svg {
+  width: 100%; height: 100%;
+  display: block;
+}
+
+.graph-controls {
+  position: absolute;
+  top: 12px; right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px;
+  z-index: 5;
+}
+.ctrl-btn {
+  width: 28px; height: 28px;
+  background: transparent;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-family: inherit;
+}
+.ctrl-btn:hover { background: var(--bg-3); color: var(--text); }
+
+.graph-legend {
+  position: absolute;
+  bottom: 12px; left: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 11px;
+  z-index: 5;
+  max-width: 200px;
+}
+.legend-title { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+.legend-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; color: var(--text-2); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.graph-instructions {
+  position: absolute;
+  top: 12px; left: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--text-3);
+  z-index: 5;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* SVG node styling */
+.node circle {
+  cursor: pointer;
+  transition: r .15s, stroke-width .15s;
+}
+.node:hover circle {
+  stroke: var(--gold);
+  stroke-width: 2;
+}
+.node.selected circle {
+  stroke: var(--gold);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 8px var(--gold));
+}
+.node.dimmed circle {
+  opacity: 0.2;
+}
+.node text {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 11px;
+  fill: var(--text-2);
+  pointer-events: none;
+  text-anchor: middle;
+  font-weight: 500;
+}
+.node.selected text { fill: var(--gold); font-weight: 600; }
+.node.dimmed text { opacity: 0.2; }
+.node.match text { fill: var(--gold); }
+
+.link {
+  stroke: var(--border);
+  stroke-width: 1;
+  fill: none;
+  pointer-events: none;
+  transition: stroke .15s, stroke-width .15s, opacity .15s;
+}
+.link.highlight {
+  stroke: var(--gold);
+  stroke-width: 2;
+}
+.link.dimmed {
+  opacity: 0.1;
+}
+
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  background: var(--bg-2);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  position: relative;
+}
+.detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-3);
+  padding: 32px;
+  text-align: center;
+}
+.detail-empty-icon { font-size: 32px; margin-bottom: 12px; opacity: .4; }
+.detail-empty-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; color: var(--text-2); }
+.detail-empty-desc { font-size: 12px; line-height: 1.7; max-width: 280px; }
+
+.detail-content {
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.detail-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.detail-cat {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.detail-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  letter-spacing: -.01em;
+}
+.detail-subtitle {
+  font-size: 12px;
+  color: var(--text-3);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.detail-body {
+  padding: 20px 24px;
+  flex: 1;
+  overflow-y: auto;
+}
+.detail-section {
+  margin-bottom: 20px;
+}
+.detail-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.detail-text {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--text);
+}
+.detail-text p { margin-bottom: 10px; }
+.detail-text strong { color: var(--gold-2); font-weight: 600; }
+.detail-text em { color: var(--text-2); font-style: normal; background: var(--bg-3); padding: 1px 6px; border-radius: 3px; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+.detail-text ul { list-style: none; padding: 0; margin: 8px 0; }
+.detail-text li { padding: 4px 0 4px 16px; position: relative; }
+.detail-text li::before { content: '→'; position: absolute; left: 0; color: var(--gold); font-weight: 700; }
+
+.detail-facts {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.fact-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 12.5px;
+  border-bottom: 1px dashed var(--border);
+}
+.fact-row:last-child { border-bottom: none; }
+.fact-label { color: var(--text-3); }
+.fact-value { color: var(--text); font-weight: 500; text-align: right; }
+
+.detail-link-list { display: flex; flex-direction: column; gap: 2px; }
+.detail-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--link);
+  text-decoration: none;
+  transition: background .15s;
+}
+.detail-link:hover { background: var(--bg-3); color: var(--link-hover); }
+.detail-link-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.detail-link-type {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.detail-talkpoint {
+  background: linear-gradient(135deg, rgba(212,165,68,0.08) 0%, rgba(212,165,68,0.02) 100%);
+  border: 1px solid rgba(212,165,68,0.3);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-top: 8px;
+}
+.detail-talkpoint-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.detail-talkpoint-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+.tag-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.detail-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--bg-3);
+  color: var(--text-2);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .02em;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+/* Caveat badge */
+.caveat-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(248,81,73,0.1);
+  border: 1px solid rgba(248,81,73,0.3);
+  color: var(--red);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  margin-bottom: 10px;
+}
+
+.confidence-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(63,185,80,0.1);
+  border: 1px solid rgba(63,185,80,0.3);
+  color: var(--green);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+/* Pulse animation for center node */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 0.3; }
+}
+.pulse-ring {
+  animation: pulse 2.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Mobile responsive */
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 200px 1fr 0; }
+  .detail-panel {
+    position: fixed;
+    right: -380px; top: 48px; bottom: 0;
+    width: 380px;
+    transition: right .25s;
+    z-index: 50;
+  }
+  .detail-panel.open { right: 0; }
+}
+
+@media (max-width: 640px) {
+  .layout { grid-template-columns: 0 1fr 0; }
+  .sidebar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ TOPBAR ═══════ -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    Bcons Center City — Knowledge Map
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input class="search" id="search" placeholder="Tìm khái niệm, dự án, hạ tầng..." autocomplete="off">
+  </div>
+  <button class="topbar-btn" id="btn-reset">↻ Reset</button>
+  <button class="topbar-btn" id="btn-center" title="Trở về node Bcons Center City">⊙ Center</button>
+  <div class="topbar-stats">
+    <div class="topbar-stat"><strong id="stat-nodes">0</strong> nodes</div>
+    <div class="topbar-stat"><strong id="stat-links">0</strong> links</div>
+  </div>
+</div>
+
+<!-- ═══════ LAYOUT ═══════ -->
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <!-- Filled by JS -->
+  </aside>
+
+  <!-- GRAPH -->
+  <main class="graph-wrap" id="graph-wrap">
+    <div class="graph-instructions">
+      ↳ kéo node · cuộn để zoom · click để xem
+    </div>
+    <svg class="graph-svg" id="graph">
+      <g id="graph-g">
+        <g id="links-g"></g>
+        <g id="nodes-g"></g>
+      </g>
+    </svg>
+    <div class="graph-controls">
+      <button class="ctrl-btn" id="zoom-in" title="Zoom in">+</button>
+      <button class="ctrl-btn" id="zoom-out" title="Zoom out">−</button>
+      <button class="ctrl-btn" id="zoom-fit" title="Fit to screen">⊡</button>
+    </div>
+    <div class="graph-legend">
+      <div class="legend-title">Loại nodes</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#d4a544"></div>Dự án</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#58a6ff"></div>Công ty / Đối tác</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#a371f7"></div>Pháp lý & Hành chính</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#e3b341"></div>Sản phẩm & Giá</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#39c5cf"></div>Tiện ích</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#3fb950"></div>Metro / Hub</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#f0883e"></div>Đường / Nút giao</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#db61a2"></div>Khu vực</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#f85149"></div>Bcons khác & Đối thủ</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#8b949e"></div>Rủi ro & Tranh cãi</div>
+    </div>
+  </main>
+
+  <!-- DETAIL PANEL -->
+  <aside class="detail-panel" id="detail-panel">
+    <div class="detail-empty" id="detail-empty">
+      <div class="detail-empty-icon">⌬</div>
+      <div class="detail-empty-title">Chọn một node để xem chi tiết</div>
+      <div class="detail-empty-desc">
+        Click vào một node bất kỳ trong graph hoặc node trong sidebar bên trái để xem thông tin chi tiết, key talking points và các liên kết liên quan.
+      </div>
+    </div>
+    <div class="detail-content" id="detail-content" style="display:none">
+      <!-- Filled by JS -->
+    </div>
+  </aside>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA: NODES & LINKS
+// ═══════════════════════════════════════════════════════════════
+
+const CATEGORIES = {
+  project: { label: 'Dự án', color: '#d4a544', radius: 14 },
+  developer: { label: 'Công ty / Đối tác', color: '#58a6ff', radius: 11 },
+  legal: { label: 'Pháp lý & Hành chính', color: '#a371f7', radius: 11 },
+  product: { label: 'Sản phẩm & Giá', color: '#e3b341', radius: 10 },
+  amenity: { label: 'Tiện ích', color: '#39c5cf', radius: 10 },
+  metro: { label: 'Metro / Hub', color: '#3fb950', radius: 10 },
+  road: { label: 'Đường / Nút giao', color: '#f0883e', radius: 10 },
+  location: { label: 'Khu vực', color: '#db61a2', radius: 10 },
+  comparable: { label: 'Bcons khác & Đối thủ', color: '#f85149', radius: 9 },
+  risk: { label: 'Rủi ro & Tranh cãi', color: '#8b949e', radius: 9 }
+};
+
+const NODES = [
+  // ─── PROJECT (CENTER) ───
+  { id: 'bcc', label: 'Bcons Center City', cat: 'project', sub: 'Tên pháp lý: Khu dân cư Bình An Đông Tây',
+    verify: 'Khung dự án theo Q&A nội bộ + công bố CĐT',
+    facts: [
+      ['Tên thương mại', 'Bcons Center City'],
+      ['Tên pháp lý', 'Khu dân cư Bình An Đông Tây'],
+      ['Chủ đầu tư', 'Công ty CP Địa ốc Bcons'],
+      ['Vị trí', 'Đường Thống Nhất / D11, P. Đông Hòa, TP.HCM (Dĩ An cũ)'],
+      ['Quỹ đất', '~3,2 ha / 32.000 m²'],
+      ['Quy mô', '2 tháp TM 36 tầng (The Twin) + 3 tháp căn hộ 29 tầng'],
+      ['Tổng căn hộ', '~1.940 căn (một số tài liệu ghi >1.800)'],
+      ['Khởi công', '28/6/2025'],
+      ['Bàn giao dự kiến', 'Quý IV/2027'],
+      ['Định vị', 'Khu phức hợp căn hộ – TMDV – office – shophouse']
+    ],
+    desc: '<p><strong>Bcons Center City</strong> là khu phức hợp của Bcons tại Đông Hòa (Dĩ An cũ) — public theo tên pháp lý <strong>Khu dân cư Bình An Đông Tây</strong>. Đây là node trung tâm để đi từ tổng quan → pháp lý → quy hoạch → từng tháp → tiện ích → tài chính → xử lý phản đối.</p><p>Bản map này đã hợp nhất: dữ liệu Q&A nội bộ (5 tháp, tầng hầm lệch tầng, 74 tiện ích, cầu đi bộ, ngân hàng) + lớp research mở rộng (sáp nhập hành chính về TP.HCM, hệ sinh thái công ty Bcons, đối thủ Dĩ An và các nhân tố tranh cãi đang diễn ra).</p>',
+    talkpoint: '"Đừng bán Bcons Center City như một block căn hộ đơn lẻ. Hãy bán như một hệ phức hợp All-in-One: ở, mua sắm, giải trí, học tập, làm việc và khai thác cho thuê trong cùng một cụm."'
+  },
+
+  // ─── COMPANIES ───
+  { id: 'dia-oc-bcons', label: 'Địa ốc Bcons', cat: 'developer',
+    facts: [
+      ['Pháp nhân', 'Công ty Cổ phần Địa ốc Bcons'],
+      ['MST', '0314704166 — GCN cấp 28/10/2017'],
+      ['Trụ sở', '176/1–176/3 Nguyễn Văn Thương, P. Thạnh Mỹ Tây (Bình Thạnh cũ)'],
+      ['Đại diện pháp luật', 'Ông Ngô Lưu Bình (cần đối chiếu ĐKDN mới nhất)'],
+      ['Vốn điều lệ', 'Chưa tìm thấy công khai — cần xác minh']
+    ],
+    desc: '<p>Pháp nhân chủ đầu tư trực tiếp của Khu dân cư Bình An Đông Tây. Khi tư vấn, nên <strong>tách rõ pháp nhân CĐT dự án và thương hiệu Bcons Group</strong> để tránh nói lẫn giữa tập đoàn và pháp nhân ký hợp đồng.</p><p>Lưu ý dữ liệu: người đại diện theo nguồn gần nhất là ông Ngô Lưu Bình (Phó Chủ tịch thường trực Bcons Group) — nguồn cũ ghi ông Lê Như Thạch, có thể đã thay đổi; vốn điều lệ chưa khóa được từ nguồn public.</p>',
+    talkpoint: '"Pháp nhân ký hợp đồng với Anh/Chị là Công ty CP Địa ốc Bcons — em luôn ghi đúng tên này trên mọi giấy tờ, còn Bcons Group là thương hiệu hệ sinh thái đứng sau."'
+  },
+  { id: 'bcons-group', label: 'Bcons Group', cat: 'developer',
+    facts: [
+      ['Hình thành', '2013 — tiền thân Cty TNHH TVTK & QLDA Hồng Ngọc'],
+      ['Hệ sinh thái', 'Thiết kế – thi công – kinh doanh – vận hành – giáo dục'],
+      ['Tệp dự án', 'Bcons City, Garden, Green View, Miền Đông, Suối Tiên, Polaris...'],
+      ['Kế hoạch', 'Đã nộp hồ sơ chuẩn bị IPO'],
+      ['Mục tiêu công bố', 'Doanh thu 1 tỷ USD năm 2026 (tuyên bố CĐT, chưa kiểm chứng)']
+    ],
+    desc: '<p><strong>Bcons Group</strong> phát triển từ một công ty tư vấn thiết kế (2013) thành hệ sinh thái khép kín quanh làng đại học. Lợi thế cốt lõi với phân khúc vừa túi tiền: <strong>kiểm soát chi phí, tiến độ và vận hành sau bàn giao</strong> bằng chính các công ty thành viên.</p><p>Các mục tiêu doanh thu tỷ USD là tuyên bố của CĐT — dùng để kể câu chuyện tham vọng, không dùng làm cam kết.</p>',
+    talkpoint: '"Bcons có lợi thế hệ sinh thái khép kín. Với phân khúc vừa túi tiền, yếu tố quan trọng là kiểm soát chi phí, tiến độ và khả năng vận hành sau bàn giao."'
+  },
+  { id: 'le-nhu-thach', label: 'TS Lê Như Thạch', cat: 'developer',
+    facts: [
+      ['Vai trò', 'Chủ tịch HĐQT Bcons Group'],
+      ['Sinh năm', '1977 — tốt nghiệp ĐH Bách Khoa TP.HCM, từng là giảng viên'],
+      ['Sở hữu', '78,9% Bcons Construction (12/2025)'],
+      ['Chức danh khác', 'Phó CT Hiệp hội Xây dựng Bình Dương; HCMCONS (11/2025)']
+    ],
+    desc: '<p>Người sáng lập và là gương mặt đại diện của Bcons — xuất thân kỹ thuật xây dựng và giảng dạy. Câu chuyện "nhà giáo làm bất động sản cho người trẻ quanh làng đại học" là chất liệu thương hiệu mạnh, nhưng các phát ngôn cá nhân không thay thế được văn bản pháp lý của dự án.</p>'
+  },
+  { id: 'bcons-construction', label: 'Bcons Construction', cat: 'developer', sub: '⚠ Vốn điều lệ biến động mạnh — cần theo dõi',
+    facts: [
+      ['Pháp nhân', 'Cty CP Đầu tư Xây dựng Bcons — MST 0312173537 (6/3/2013)'],
+      ['Vai trò', 'Doanh nghiệp lõi hệ sinh thái; tổng thầu thi công các dự án Bcons'],
+      ['Biến động vốn', '1.349 tỷ (8/2024) → 2,37 tỷ (12/2025)'],
+      ['Thay đổi tên', '12/2025 đổi lại tên gốc Hồng Ngọc (theo CafeF)'],
+      ['Cổ đông 12/2025', 'Lê Như Thạch 78,9% · Nguyễn Thị Lan Anh 10,55% · Nguyễn Thị Ngọc Khuê 10,55%']
+    ],
+    desc: '<p>Doanh nghiệp lõi của hệ sinh thái, đồng thời là đơn vị thi công. Điểm cần theo dõi nghiêm túc: <strong>vốn điều lệ giảm từ 1.349 tỷ về 2,37 tỷ trong 2024–2025</strong> kèm đổi tên pháp nhân — có thể là tái cơ cấu trước IPO, nhưng khi khách hỏi về năng lực tài chính thì không được né.</p>',
+    talkpoint: '"Nếu khách hỏi về biến động vốn: thừa nhận có tái cơ cấu pháp nhân trong hệ sinh thái trước IPO, và chuyển trọng tâm về pháp nhân CĐT dự án + ngân hàng bảo lãnh — đó mới là hai chủ thể bảo vệ quyền lợi người mua."'
+  },
+  { id: 'bcons-members', label: 'Công ty thành viên Bcons', cat: 'developer',
+    facts: [
+      ['Bcons Home', 'Tiếp thị & phân phối (F1 nội bộ)'],
+      ['Bcons Service', 'Vận hành quản lý tòa nhà'],
+      ['Bcons Education', 'Giáo dục — vốn tăng 2 tỷ → 500 tỷ (2023), hệ trường BSchool'],
+      ['Khác', 'Bcons Invest (đầu tư), Bcons Tech (thiết kế)']
+    ],
+    desc: '<p>Chuỗi công ty thành viên giúp Bcons khép kín từ bán hàng đến vận hành. Lưu ý quan trọng: <strong>Bcons Service chính là đơn vị đứng tên hợp đồng vận hành gây tranh cãi tại Bcons Garden (2026)</strong> — sale cần nắm vụ việc này để trả lời chủ động (xem node rủi ro).</p>'
+  },
+  { id: 'foreign-partners', label: 'Đối tác quốc tế', cat: 'developer',
+    facts: [
+      ['A Asset Limited', 'Thái Lan — thuộc Tập đoàn PPSN; hợp tác tháp thuộc KDC Bcons City 12ha'],
+      ['Mercuria', 'SPV Nhật Bản'],
+      ['Ý nghĩa', 'Tín hiệu vốn ngoại vào hệ sinh thái — mức độ tham gia từng dự án cần văn bản']
+    ],
+    desc: '<p>Bcons có hợp tác với đối tác Thái (A Asset/PPSN) và Nhật (Mercuria) ở cấp hệ sinh thái/dự án thành phần. Với Center City, <strong>chưa có công bố đối tác ngoại tham gia trực tiếp</strong> — không suy diễn "vốn Nhật/Thái" cho dự án này khi chưa có văn bản.</p>'
+  },
+  { id: 'ocb-banks', label: 'Ngân hàng & PTTT', cat: 'developer', sub: '⚠ Chưa thấy chứng thư bảo lãnh từng căn — cần bổ sung',
+    facts: [
+      ['Ngân hàng bảo lãnh', 'OCB — ký hợp tác chiến lược tại kick-off 2/12/2025'],
+      ['OCB cho vay', 'Áp dụng tất cả PTTT (theo Q&A)'],
+      ['Ngân hàng tài trợ vay', 'VCB, MB, ACB, TPBank, Public Bank, BIDV'],
+      ['PTTT', 'Theo tiến độ hoặc VTC 50% + vay 50%'],
+      ['Ưu đãi sales page', 'VCB 0% lãi 18 tháng (cần văn bản hiệu lực)'],
+      ['Cần bổ sung', 'Chứng thư bảo lãnh, điều kiện vay, lãi suất sau ưu đãi']
+    ],
+    desc: '<p>OCB là ngân hàng bảo lãnh công bố tại lễ kick-off 2/12/2025; nhiều ngân hàng lớn tham gia tài trợ vay. Tuy nhiên <strong>chưa tìm thấy số chứng thư bảo lãnh cụ thể cho từng người mua</strong> — đây là tài liệu khách có quyền yêu cầu khi ký HĐMB.</p>',
+    talkpoint: '"Đừng nói chung chung \'ngân hàng hỗ trợ\'. Nói rõ: OCB bảo lãnh dự án, VCB/MB/ACB/TPBank/Public Bank/BIDV cho vay, áp dụng PTTT nào — và hẹn gửi chứng thư bảo lãnh khi ký HĐMB."'
+  },
+
+  // ─── LEGAL & ADMIN ───
+  { id: 'legal-name', label: 'KDC Bình An Đông Tây', cat: 'legal',
+    verify: 'Tên pháp lý — anchor dữ liệu',
+    facts: [
+      ['Tên pháp lý', 'Khu dân cư Bình An Đông Tây'],
+      ['Tên thương mại', 'Bcons Center City'],
+      ['Cách dùng', 'Tra hồ sơ pháp lý, GPXD, văn bản đủ điều kiện bán']
+    ],
+    desc: '<p>Tên pháp lý là anchor dữ liệu quan trọng nhất. Tài liệu tư vấn chuyên nghiệp luôn ghi song song: <strong>Bcons Center City</strong> (thương mại) — <strong>Khu dân cư Bình An Đông Tây</strong> (pháp lý).</p>',
+    talkpoint: '"Khi khách hỏi pháp lý, đừng chỉ nói tên thương mại. Hãy đưa tên pháp lý để khách thấy tư vấn có kiểm soát và có thể kiểm tra được."'
+  },
+  { id: 'legal-milestones', label: 'Mốc pháp lý 2024–2025', cat: 'legal', sub: '⚠ Số văn bản từ báo/portal — cần đối chiếu bản gốc',
+    facts: [
+      ['Chấp thuận chủ trương', 'QĐ 2284/QĐ-UBND ngày 2/8/2024 (UBND tỉnh Bình Dương)'],
+      ['Quy hoạch 1/500', 'QĐ 7367/QĐ-UBND ngày 6/12/2024 (UBND TP Dĩ An)'],
+      ['Giấy phép xây dựng', 'Số 3728/GPXD ngày 27/6/2025 (Sở Xây dựng Bình Dương)'],
+      ['Khởi công', '28/6/2025'],
+      ['Nguồn', 'CafeLand + trang dự án — chưa đối chiếu công báo']
+    ],
+    desc: '<p>Chuỗi mốc pháp lý của dự án theo nguồn báo chí/portal. Trình tự 2024–2025 khá nhanh và liền mạch: chủ trương → 1/500 → GPXD → khởi công ngay hôm sau. <strong>Trạng thái: partial</strong> — chỉ nâng lên verified khi có bản scan các quyết định gốc trong data room.</p>',
+    talkpoint: '"Dự án có chuỗi văn bản 2284 → 7367 → GPXD 3728 nối nhau trong chưa đầy một năm. Em sẽ gửi Anh/Chị bản scan từng văn bản — đó là cách kiểm tra nhanh nhất một dự án có pháp lý thật hay chỉ có lời kể."'
+  },
+  { id: 'legal-room', label: 'Bộ pháp lý cần khóa', cat: 'legal', sub: '⚠ Legal room / data room — kiểm soát rủi ro',
+    facts: [
+      ['Pháp lý sales page', 'Có nhắc sổ hồng sở hữu lâu dài'],
+      ['GPXD', 'Nguồn sales từng ghi số — cần bản scan gốc'],
+      ['Văn bản cần có', 'Chấp thuận chủ trương, 1/500, GPXD, bảo lãnh, đủ điều kiện bán'],
+      ['Quy tắc dùng', 'Không quote văn bản nếu chưa có file gốc']
+    ],
+    desc: '<p>Node này không tạo thêm câu chuyện bán hàng — nó kiểm soát rủi ro. Dự án có nhiều sales page sẽ dễ sinh sai lệch nếu đội tư vấn không dùng chung data room. Khuyến nghị: mỗi văn bản có mã tài liệu, ngày cập nhật, người kiểm tra và trạng thái <em>đã có bản gốc / đang chờ / không dùng</em>.</p>',
+    talkpoint: '"Pháp lý là khu vực không được sáng tạo. Có văn bản thì nói. Chưa có văn bản thì ghi rõ \'theo thông tin chủ đầu tư công bố\' và hẹn gửi bản scan."'
+  },
+  { id: 'du-dk-ban', label: 'Văn bản đủ điều kiện bán', cat: 'legal', sub: '⚠ CHƯA tìm thấy — rủi ro cốt lõi giai đoạn booking',
+    facts: [
+      ['Trạng thái', 'Không tìm thấy văn bản đủ điều kiện bán nhà ở HTTTL'],
+      ['Giai đoạn hiện tại', 'Thi công móng + nhận booking/giữ chỗ'],
+      ['Ký HĐMB dự kiến', '~7/2026 (theo kế hoạch CĐT)'],
+      ['Quyền của khách', 'Yêu cầu xem văn bản Sở Xây dựng trước khi xuống tiền lớn']
+    ],
+    desc: '<p><strong>Đây là rủi ro pháp lý cốt lõi nhất ở thời điểm hiện tại:</strong> dự án đang nhận giữ chỗ khi chưa có văn bản đủ điều kiện bán nhà ở hình thành trong tương lai. Booking là thỏa thuận dân sự có thể hoàn lại — không phải HĐMB, và không được mô tả như "đã mở bán chính thức".</p>',
+    talkpoint: '"Hiện dự án nhận giữ chỗ thiện chí; HĐMB chỉ ký khi có văn bản đủ điều kiện bán của Sở Xây dựng (dự kiến 2026). Khoản giữ chỗ hoàn lại được — và Anh/Chị nên yêu cầu xem văn bản này trước khi xuống tiền lớn. Em nói rõ vì đây là quyền của Anh/Chị."'
+  },
+  { id: 'sap-nhap', label: 'Sáp nhập hành chính 1/7/2025', cat: 'legal',
+    verify: 'Khoản 79 NQ 1685/NQ-UBTVQH15 + NQ 202/2025/QH15',
+    facts: [
+      ['Hiệu lực', '1/7/2025'],
+      ['Phường mới', 'Bình An + Bình Thắng + Đông Hòa → phường Đông Hòa, TP.HCM'],
+      ['Quy mô phường', '21,893 km² · 132.056 dân · trụ sở 153 QL1K'],
+      ['Bối cảnh lớn', 'Bình Dương + BR-VT + TP.HCM hợp nhất; TP.HCM mới có 113 phường'],
+      ['Hiệu lực hồ sơ cũ', 'Văn bản cấp thời Bình Dương vẫn còn hiệu lực']
+    ],
+    desc: '<p>Sự kiện hành chính lớn nhất ảnh hưởng đến cách định vị dự án: từ "căn hộ Bình Dương giáp TP.HCM" thành <strong>"căn hộ TP.HCM"</strong> đúng nghĩa pháp lý. Hồ sơ pháp lý gốc cấp dưới thời Bình Dương vẫn hiệu lực, chỉ cập nhật cách ghi địa chỉ trên hợp đồng, hóa đơn, sổ hồng.</p>',
+    talkpoint: '"Việc sáp nhập đã hoàn tất từ 1/7/2025 — dự án nay thuộc TP.HCM, nâng định vị từ BĐS vệ tinh thành nội đô. Toàn bộ pháp lý gốc vẫn hiệu lực, chỉ thay cách ghi địa chỉ."'
+  },
+
+  // ─── PRODUCT ───
+  { id: 'master-5-thap', label: 'Quy hoạch 5 tháp', cat: 'product',
+    verify: 'Khung tháp theo Q&A nội bộ',
+    facts: [
+      ['Cấu trúc', '2 tháp thương mại + 3 tháp căn hộ'],
+      ['The Twin', '2 tòa tháp đôi cao 36 tầng'],
+      ['The Gateway', '29 tầng · 812 căn'],
+      ['The Icon', '29 tầng · 549 căn'],
+      ['The Crown', '29 tầng · 579 căn'],
+      ['Tổng căn', '1.940 căn'],
+      ['Quỹ đất', '3,2 ha / 32.000 m²']
+    ],
+    desc: '<p>Khung masterplan dễ đào tạo: <strong>2 tháp thương mại The Twin + 3 tháp căn hộ Gateway, Icon, Crown</strong>. Đây là khung để sales dẫn khách đi qua toàn bộ dự án theo đúng thứ tự.</p>',
+    talkpoint: '"Cách nhớ nhanh: 2 tháp thương mại The Twin + 3 tháp căn hộ Gateway, Icon, Crown. Đây là khung để dẫn khách qua toàn bộ masterplan."'
+  },
+  { id: 'the-twin', label: 'The Twin', cat: 'product',
+    verify: 'Chi tiết theo Q&A nội bộ',
+    facts: [
+      ['Loại', '2 tòa tháp đôi thương mại'],
+      ['Chiều cao', '36 tầng'],
+      ['Khối đế TTTM', '7 tầng · tổng sàn ~48.000 m²'],
+      ['Rạp chiếu phim', 'Tầng 4–5'],
+      ['Hồ bơi vô cực', 'Tầng 7'],
+      ['Hồ bơi ốc đảo', 'Trước mặt The Twin']
+    ],
+    desc: '<p><strong>The Twin</strong> là cụm tháp đôi thương mại — điểm nhấn nhận diện và trung tâm tiện ích của dự án: khối đế TTTM 7 tầng ~48.000 m² sàn, rạp phim tầng 4–5, hồ bơi vô cực tầng 7 và hồ ốc đảo phía trước.</p>',
+    talkpoint: '"The Twin là node tạo khác biệt. Khi khách hỏi dự án có gì hơn một chung cư thường, hãy dẫn vào 7 tầng TTTM, rạp chiếu phim và hồ bơi vô cực."'
+  },
+  { id: 'the-gateway', label: 'The Gateway', cat: 'product',
+    verify: 'Số căn + hướng view theo Q&A nội bộ',
+    facts: [
+      ['Loại', 'Tháp căn hộ · 29 tầng'],
+      ['Số căn', '812 căn'],
+      ['View Đông Nam', 'Hồ Bình An, KDL Thủy Châu, sông Đồng Nai'],
+      ['View Tây Nam', 'Bcons City, Làng Đại học, Hồ đá, Landmark 81'],
+      ['Layout', '1PN, 2PN, 3PN']
+    ],
+    desc: '<p>Tháp căn hộ có dữ liệu đầy đủ nhất. Công cụ tư vấn mạnh nhất là <strong>câu chuyện hai hướng view</strong>: Đông Nam thiên nhiên mặt nước — Tây Nam đô thị, làng đại học và skyline Landmark 81. Khi hai căn cùng diện tích, hướng nhìn thường là lý do khiến khách xuống tiền.</p>',
+    talkpoint: '"Với The Gateway, đừng chỉ nói số căn. Đông Nam cho khách thích thiên nhiên mặt nước; Tây Nam cho khách thích nhìn đô thị và skyline — chọn hướng theo tính cách khách."'
+  },
+  { id: 'the-icon', label: 'The Icon', cat: 'product',
+    facts: [
+      ['Loại', 'Tháp căn hộ · 29 tầng'],
+      ['Số căn', '549 căn'],
+      ['Cần bổ sung', 'Hướng view, layout chi tiết, số căn mỗi tầng']
+    ],
+    desc: '<p>Một trong ba tháp căn hộ 29 tầng — Q&A xác nhận <strong>549 căn</strong>. Node giữ riêng để khi mở bán theo block, đội sales cập nhật inventory đúng chỗ mà không làm rối toàn map.</p>'
+  },
+  { id: 'the-crown', label: 'The Crown', cat: 'product',
+    facts: [
+      ['Loại', 'Tháp căn hộ · 29 tầng'],
+      ['Số căn', '579 căn'],
+      ['Cần bổ sung', 'Hướng view, layout chi tiết, inventory']
+    ],
+    desc: '<p>Tháp căn hộ 29 tầng với <strong>579 căn</strong> theo Q&A. Tên "Crown" có thể dùng định vị nhóm khách muốn cảm giác cao cấp hơn — nhưng mọi claim phải đi theo dữ liệu thật khi có bảng hàng.</p>'
+  },
+  { id: 'co-cau-can', label: 'Cơ cấu căn 1–3PN', cat: 'product',
+    verify: 'Dải diện tích theo website Bcons official',
+    facts: [
+      ['1PN', '43,59 – 45,48 m²'],
+      ['2PN', '52,48 – 59,15 m²'],
+      ['3PN', '85,83 m²'],
+      ['Tệp khách', 'Người trẻ, gia đình nhỏ, ở thật, đầu tư cho thuê']
+    ],
+    desc: '<p>Dải diện tích công bố chính thức. Quy trình tư vấn đúng: <strong>bắt đầu bằng nhu cầu ở</strong> (độc thân, cặp đôi, gia đình trẻ, cho thuê) rồi mới vào block, tầng, view và chính sách.</p>',
+    talkpoint: '"Bắt đầu bằng nhu cầu ở: độc thân, cặp đôi, gia đình trẻ, hay cho thuê. Sau đó mới vào block, tầng, view và chính sách."'
+  },
+  { id: 'ham-lech-tang', label: 'Tầng hầm lệch tầng', cat: 'product',
+    verify: 'Chi tiết kỹ thuật theo Q&A nội bộ',
+    facts: [
+      ['Cấu trúc', 'Hầm lệch tầng giữa khu TMDV và khu chung cư'],
+      ['Liên thông', 'Hầm B1 khu TMDV giao với hầm B2 khu chung cư'],
+      ['Chiều cao B1', '4 m'],
+      ['Chiều cao B2', '3 m']
+    ],
+    desc: '<p>Chi tiết kỹ thuật đáng giá khi khách hỏi về vận hành, đậu xe và lưu thông giữa khu thương mại với khu căn hộ — cấu trúc hầm lệch tầng khác hẳn hầm phẳng thông thường.</p>'
+  },
+  { id: 'gia-chinh-sach', label: 'Giá & chính sách bán', cat: 'product', sub: '⚠ Time-sensitive — chỉ dùng bảng giá theo ngày hiệu lực',
+    facts: [
+      ['Giá rumor', '~55 triệu/m² (chưa VAT) — chưa phải giá niêm yết chính thức'],
+      ['Căn 2PN tham khảo', '~2,9 tỷ (đã gồm VAT 10%)'],
+      ['Booking sales page', '5% / ~150 triệu chia 2 đợt'],
+      ['Ưu đãi sales page', 'VCB 0% lãi 18 tháng (cần văn bản hiệu lực)'],
+      ['CĐT định vị', 'Thấp hơn mặt bằng Dĩ An–Thủ Đức 65–75 triệu/m²'],
+      ['Quy tắc', 'Luôn mở bảng giá mới nhất: tháp, tầng, view, thông thủy/tim tường']
+    ],
+    desc: '<p>Nhóm dữ liệu nhạy cảm nhất, biến động theo tháng. Giá ~55 triệu/m² là <strong>rumor/sales page</strong>, chưa phải bảng giá ký phát hành. Cảnh báo truyền thông: con số "130–150 triệu sở hữu" là <strong>thanh toán đợt đầu 5%</strong>, không phải giá căn.</p>',
+    talkpoint: '"Con số 130–150 triệu là thanh toán đợt đầu theo tiến độ, không phải giá căn. Tổng giá trị căn 2PN khoảng 2,9 tỷ đã gồm VAT — em luôn báo tổng giá trước để Anh/Chị tính dòng tiền chính xác."'
+  },
+  { id: 'ban-giao', label: 'Bàn giao Q4/2027', cat: 'product', sub: '⚠ Dự kiến — cần ảnh tiến độ theo tháng',
+    facts: [
+      ['Bàn giao dự kiến', 'Quý IV/2027'],
+      ['Khởi công', '28/6/2025 (ngay sau GPXD 27/6/2025)'],
+      ['Nguồn', 'Bcons official + sales page'],
+      ['Cần theo dõi', 'Tiến độ thi công, ảnh site, thông báo CĐT']
+    ],
+    desc: '<p>Mốc bàn giao luôn đi kèm chữ <strong>dự kiến</strong>. Timeline bán hàng tốt nhất là timeline có ảnh tiến độ công trường cập nhật theo tháng — nếu chỉ nói Q4/2027 mà không có ảnh, khách sẽ xem đó là lời hứa.</p>'
+  },
+  { id: 'cho-thue', label: 'Cầu thuê & lợi suất', cat: 'product',
+    facts: [
+      ['Tham chiếu thuê Bcons City', '2PN ~5,5–8,5 triệu/tháng · 1PN ~4,5–6,5 triệu/tháng'],
+      ['Lợi suất gộp ước tính', '~4–5%/năm'],
+      ['Tệp thuê thật', 'Giảng viên, chuyên gia, nhân viên KCN, SV ở ghép ngân sách 5–7 triệu'],
+      ['Lưu ý', 'Không nói "90.000 sinh viên đều là khách thuê căn hộ"']
+    ],
+    desc: '<p>Giá thuê thật tại Bcons City đã bàn giao là tham chiếu trực tiếp cho Center City. Phân tầng tệp thuê cho đúng: sinh viên KTX giá 200 nghìn không phải khách thuê căn hộ — khách thuê thật là <strong>giảng viên, chuyên gia, nhân viên KCN và nhóm SV ở ghép</strong>.</p>',
+    talkpoint: '"Lợi suất gộp quanh 4–5%/năm dựa trên giá thuê thật khu này — em không hứa cao hơn, vì con số thật mới giữ được uy tín khi Anh/Chị nhận nhà và cho thuê thực tế."'
+  },
+
+  // ─── AMENITIES ───
+  { id: 'tien-ich-74', label: '74 tiện ích nội khu', cat: 'amenity',
+    verify: 'Theo Q&A nội bộ',
+    facts: [
+      ['Bcons Center City', '74 tiện ích'],
+      ['Bcons City đối diện', '135 tiện ích'],
+      ['Nhóm tiện ích', 'TTTM, rạp phim, hồ bơi, quảng trường, nhạc nước, trường học, F&B, gym, trẻ em'],
+      ['Kết nối', 'Cầu đi bộ qua Thống Nhất 32m']
+    ],
+    desc: '<p>74 tiện ích nội khu + khả năng tiếp cận 135 tiện ích Bcons City qua cầu đi bộ — đây là node mạnh nhất để nói về <strong>hệ sinh thái</strong> thay vì tiện ích đơn dự án.</p>',
+    talkpoint: '"Đừng kể 74 tiện ích như đọc danh sách. Gom thành 4 cụm: mua sắm, giải trí, nghỉ dưỡng và giáo dục. Khách nhớ cụm giá trị, không nhớ số lượng."'
+  },
+  { id: 'tttm-7-tang', label: 'TTTM 7 tầng', cat: 'amenity',
+    verify: 'Theo Q&A nội bộ',
+    facts: [
+      ['Vị trí', 'Khối đế The Twin'],
+      ['Quy mô', '7 tầng · ~48.000 m² sàn'],
+      ['Chức năng', 'Mua sắm, F&B, giải trí, dịch vụ, rạp phim']
+    ],
+    desc: '<p>Khối thương mại quy mô lớn hiếm có ở phân khúc tầm trung — chuyển câu chuyện từ "căn hộ" sang "khu phức hợp", tăng tính ở thật và thanh khoản cho thuê.</p>'
+  },
+  { id: 'rap-phim', label: 'Rạp chiếu phim', cat: 'amenity',
+    verify: 'Theo Q&A nội bộ',
+    facts: [
+      ['Vị trí', 'Tầng 4–5 The Twin'],
+      ['Điểm mới', 'Lần đầu xuất hiện trong các dự án Bcons'],
+      ['Vai trò sales', 'Điểm giải trí khác biệt, kéo traffic thương mại']
+    ],
+    desc: '<p>Tiện ích lần đầu có trong hệ Bcons — dễ nhớ, dễ kể, có sức gợi hình trong sales script.</p>',
+    talkpoint: '"Một câu ngắn đủ mạnh: Cuối tuần không cần ra khỏi khu — lên The Twin xem phim là xong."'
+  },
+  { id: 'quang-truong', label: 'Công viên quảng trường', cat: 'amenity',
+    verify: 'Theo Q&A nội bộ',
+    facts: [
+      ['Diện tích', 'Lên đến 8.000 m²'],
+      ['Thiết kế', 'Cảnh quan đa tầng'],
+      ['Điểm nhấn', 'Nhạc nước đa sắc']
+    ],
+    desc: '<p>Quảng trường 8.000 m² là không gian cộng đồng — nơi trẻ em chơi, gia đình đi dạo, cư dân tụ họp. Yếu tố làm dự án <strong>có đời sống sau bàn giao</strong>, không chỉ là tiện ích đẹp trong phối cảnh.</p>'
+  },
+  { id: 'ho-boi', label: '2 hồ bơi', cat: 'amenity',
+    verify: 'Theo Q&A nội bộ',
+    facts: [
+      ['Hồ bơi 1', 'Hồ vô cực — tầng 7 The Twin'],
+      ['Hồ bơi 2', 'Hồ ốc đảo — trước mặt The Twin']
+    ],
+    desc: '<p>Hai hồ bơi ở hai lớp không gian — tầng 7 và mặt đất. "Một hồ bơi là tiện ích; hai hồ bơi ở hai cao độ là câu chuyện lifestyle."</p>'
+  },
+  { id: 'cau-di-bo', label: 'Cầu đi bộ Bcons City', cat: 'amenity',
+    verify: 'Theo Q&A nội bộ',
+    facts: [
+      ['Kết nối', 'Bcons Center City ↔ Bcons City'],
+      ['Vượt qua', 'Đường Thống Nhất lộ giới 32m'],
+      ['Ý nghĩa', 'Mở rộng tiện ích dùng chung 74 + 135 tiện ích']
+    ],
+    desc: '<p>Chi tiết nhỏ nhưng sức nặng chiến lược: biến câu chuyện từ "một dự án có 74 tiện ích" thành <strong>"một cụm đô thị Bcons với hệ tiện ích mở rộng"</strong>.</p>',
+    talkpoint: '"Cầu đi bộ là bằng chứng vật lý của hệ sinh thái. Có cầu nghĩa là cư dân không chỉ sống trong một dự án, mà sống trong một cụm Bcons."'
+  },
+
+  // ─── METRO / HUB ───
+  { id: 'metro-1', label: 'Metro Line 1', cat: 'metro',
+    verify: 'Đã vận hành 22/12/2024',
+    facts: [
+      ['Tuyến', 'Bến Thành – Suối Tiên · 19,7 km · 14 ga'],
+      ['Vận hành', '22/12/2024'],
+      ['Ga gần dự án', 'Suối Tiên / Bến xe Miền Đông mới — vài phút BẰNG XE'],
+      ['Tham chiếu', 'Bcons City cách ga Suối Tiên ~1,5 km'],
+      ['Tương lai', 'Metro 1 nối dài (Long Thành / Bình Dương) — định hướng 2026–2030, chưa khởi công']
+    ],
+    desc: '<p>Driver hạ tầng <strong>đã hiện hữu</strong> — không bán như lời hứa. Lưu ý truyền thông: CĐT nói "2 phút tới Metro" — phải nói rõ là <em>vài phút bằng xe máy/ô tô</em>, không phải đi bộ.</p>',
+    talkpoint: '"Metro 1 đã chạy thật mỗi ngày — khác biệt với các câu chuyện hạ tầng còn nằm trên quy hoạch. Nhưng em nói chính xác: ga gần nhất đi xe vài phút, không phải đi bộ."'
+  },
+  { id: 'bxmd', label: 'Bến xe Miền Đông mới', cat: 'metro', sub: '⚠ Số phút di chuyển cần đo theo tuyến thực tế',
+    facts: [
+      ['Vai trò', 'Hub liên vùng khu Đông + kết nối Metro Line 1'],
+      ['Nguồn dự án', 'Bcons official ghi ~10 phút'],
+      ['Cần kiểm tra', 'Thời gian thực tế giờ cao điểm / thấp điểm']
+    ],
+    desc: '<p>Hub liên vùng quan trọng trong câu chuyện kết nối — nhưng các mốc "phút di chuyển" nên đo lại theo tuyến thực thay vì quote cố định.</p>'
+  },
+
+  // ─── ROADS ───
+  { id: 'thong-nhat', label: 'Đường Thống Nhất 32m', cat: 'road',
+    facts: [
+      ['Vai trò', 'Trục định vị khu vực của dự án'],
+      ['Lộ giới', '32 m'],
+      ['Chi tiết Q&A', 'Cầu đi bộ bắc ngang nối sang Bcons City']
+    ],
+    desc: '<p>Trục định vị mạnh của dự án — đại lộ Đông-Tây của khu Dĩ An cũ. Kết hợp với cầu đi bộ, Thống Nhất 32m trở thành "trục xương sống" của cụm Bcons.</p>',
+    talkpoint: '"Đừng chỉ nói gần Bcons City. Hãy nói có kết nối bằng cầu đi bộ qua đường Thống Nhất 32m — đó là bằng chứng hệ sinh thái, không phải lời kể."'
+  },
+  { id: 'd11', label: 'Đường D11', cat: 'road', sub: '⚠ Hiện hữu 7m · quy hoạch 17m — cần bản vẽ',
+    facts: [
+      ['Hiện hữu', '7 m'],
+      ['Quy hoạch mở rộng', '17 m (vài nguồn ghi 21m)'],
+      ['Vai trò', 'Đường tiếp cận trực tiếp của dự án']
+    ],
+    desc: '<p>D11 là trục tiếp cận thực tế; Thống Nhất là trục khu vực — <strong>phải phân biệt hai lớp này</strong> để không làm khách hiểu sai về mặt tiền. Trạng thái partial: cần kiểm tra bản vẽ quy hoạch mở rộng.</p>',
+    talkpoint: '"D11 là câu chuyện tiếp cận thực tế, Thống Nhất là câu chuyện trục khu vực. Em phân biệt rõ để Anh/Chị hình dung đúng hiện trạng hôm nay và quy hoạch ngày mai."'
+  },
+  { id: 'vanh-dai-3', label: 'Vành đai 3', cat: 'road',
+    verify: 'Tiến độ công bố chính thức',
+    facts: [
+      ['Toàn tuyến', '76,3 km · vốn hơn 75.000 tỷ đồng'],
+      ['Kết nối', 'TP.HCM – Bình Dương cũ – Đồng Nai – Long An'],
+      ['Mốc gần dự án', 'Thông xe kỹ thuật đoạn phía Đông ~15 km khoảng 30/6/2026'],
+      ['Mục tiêu', 'Hoàn thành toàn bộ trong năm 2026']
+    ],
+    desc: '<p>Driver kết nối vùng lớn nhất của cửa ngõ Đông. Tư vấn đúng kỳ vọng: <strong>upside vùng, không phải tiện ích nội khu</strong> — và timeline từng đoạn có thể xê dịch.</p>'
+  },
+  { id: 'tan-van', label: 'Nút giao Tân Vạn', cat: 'road',
+    verify: 'Số liệu gói thầu công bố',
+    facts: [
+      ['Gói thầu', 'XL1 · ~1.832 tỷ đồng · dài 2,48 km'],
+      ['Thiết kế', '3 tầng lưu thông · 5 nhánh cầu vượt'],
+      ['Khởi công', '31/5/2024'],
+      ['Tiến độ', '>60% khối lượng (cuối 10/2025)'],
+      ['Thông xe kỹ thuật', 'Khoảng 30/6/2026 cùng đoạn phía Đông VĐ3']
+    ],
+    desc: '<p>Nút giao 3 tầng thuộc Vành đai 3 — điểm nghẽn lịch sử của cụm Tân Vạn/QL1A đang được gỡ. Trong lúc thi công gây kẹt tạm thời; sau 6/2026 là cú nâng hạ tầng trực tiếp cho toàn khu Đông Hòa.</p>',
+    talkpoint: '"Chỗ kẹt xe Anh/Chị ngán nhất ở Tân Vạn chính là nơi đang đổ gần 2.000 tỷ để gỡ — và mốc thông xe kỹ thuật chỉ còn tính bằng tháng."'
+  },
+  { id: 'ql1k-xlhn', label: 'Trục QL1K / QL1A / XLHN', cat: 'road',
+    facts: [
+      ['Các trục', 'QL1K, QL1A, Xa lộ Hà Nội (Võ Nguyên Giáp), DT743, Phạm Văn Đồng'],
+      ['Hiện trạng', 'Ùn tắc giờ cao điểm, nặng hơn khi thi công nút Tân Vạn'],
+      ['Triển vọng', 'Giảm tải khi VĐ3 + nút Tân Vạn thông xe 2026']
+    ],
+    desc: '<p>Mạng trục hiện hữu quanh dự án — vừa là lợi thế kết nối đa hướng, vừa là điểm trừ kẹt xe cần nói thật với khách (xem node rủi ro mật độ).</p>'
+  },
+
+  // ─── LOCATIONS ───
+  { id: 'dong-hoa', label: 'Đông Hòa / Dĩ An cũ', cat: 'location',
+    verify: 'Nhãn hành chính mới theo NQ 1685',
+    facts: [
+      ['Địa chỉ public', 'Đường Thống Nhất, phường Đông Hòa, TP.HCM'],
+      ['Nhãn sales cũ', 'Dĩ An / Bình Dương'],
+      ['Nhãn nên dùng', 'Đông Hòa, TP.HCM — khu Dĩ An cũ'],
+      ['Lợi thế vị trí', 'Sát Thủ Đức, ĐHQG, Metro, Bến xe Miền Đông mới']
+    ],
+    desc: '<p>Trình bày bằng 2 lớp nhãn: hành chính mới là <strong>Đông Hòa, TP.HCM</strong>, ngôn ngữ thị trường quen là <strong>Dĩ An cũ</strong>. Cách ghi song song giúp khách không mất định vị khu vực mà hồ sơ vẫn chuẩn.</p>',
+    talkpoint: '"Nói \'Đông Hòa, TP.HCM — khu Dĩ An cũ\' là cách an toàn nhất: đúng hành chính mới, vẫn giữ được nhận diện thị trường."'
+  },
+  { id: 'lang-dai-hoc', label: 'ĐHQG TP.HCM', cat: 'location',
+    verify: 'Số liệu KTX theo Tuổi Trẻ + ĐHQG',
+    facts: [
+      ['Quy mô', 'Hơn 90.000 sinh viên theo học'],
+      ['KTX lớn nhất VN', '47 tòa · 42,08 ha · 6.695 phòng · phục vụ 28 trường'],
+      ['Năm 2024–2025', '~35.500 SV ở KTX (25.000 cũ + 10.500 tân SV)'],
+      ['Giá KTX', '205.000đ – 2,815 triệu/tháng'],
+      ['Khoảng cách sales claim', '~5 phút (cần đo tuyến thực)']
+    ],
+    desc: '<p>Nguồn cầu ở thật và cầu thuê quan trọng nhất của khu vực. Phân tầng đúng: KTX phục vụ sinh viên ngân sách thấp; <strong>khách thuê căn hộ là giảng viên, chuyên gia trẻ, nhân sự khu công nghệ và nhóm SV ở ghép ngân sách cao hơn</strong>.</p>',
+    talkpoint: '"ĐHQG tạo cầu thuê thật — nhưng phải phân tầng: sinh viên thuê khác, giảng viên thuê khác, chuyên gia trẻ thuê khác. Nói đúng tệp thì lời hứa lợi suất mới đứng vững."'
+  },
+  { id: 'kcn-tien-ich', label: 'KCN & tiện ích khu vực', cat: 'location',
+    facts: [
+      ['Khu công nghiệp', 'Sóng Thần, Linh Trung, VSIP — nguồn cầu nhân sự'],
+      ['Thương mại', 'GO! Dĩ An, Vincom Dĩ An'],
+      ['Y tế', 'Bệnh viện Quốc tế Hoàn Mỹ'],
+      ['Khác', 'KDL Suối Tiên, công viên Dĩ An, trường BSchool nội khu Bcons']
+    ],
+    desc: '<p>Vành đai tiện ích và việc làm hiện hữu quanh dự án — nền của cầu ở thật: công nhân viên KCN, kỹ sư, giảng viên và gia đình trẻ làm việc trong bán kính 15 phút.</p>'
+  },
+
+  // ─── COMPARABLES ───
+  { id: 'bcons-city', label: 'Bcons City', cat: 'comparable', sub: 'Đối diện — benchmark hệ sinh thái quan trọng nhất',
+    facts: [
+      ['Quy mô', 'KDC 12 ha · 5 tháp · ~3.900 căn · 135 tiện ích'],
+      ['Bàn giao', '4 tháp (Topaz, Emerald, Sapphire, Bcons City) 10/2025'],
+      ['Tháp còn lại', 'Green Diamond — dự kiến Q1/2027'],
+      ['Thứ cấp 2PN', '~2,4 – 2,65 tỷ (gồm VAT) · tháp Diamond ~46 triệu/m²'],
+      ['Giá thuê', '2PN ~5,5–8,5 triệu/tháng · 1PN ~4,5–6,5 triệu/tháng'],
+      ['Hợp tác', 'Tháp thuộc KDC có A Asset (Thái Lan) tham gia']
+    ],
+    desc: '<p>Benchmark thực tế nhất cho Center City: cùng CĐT, đối diện qua đường Thống Nhất, <strong>đã có cư dân thật, giá thuê thật và giao dịch thứ cấp thật</strong>. Kết nối bằng cầu đi bộ biến hai dự án thành một cụm 74 + 135 tiện ích.</p>',
+    talkpoint: '"Benchmark tốt nhất của Center City không phải dự án nào xa lạ — chính là Bcons City đối diện: thứ cấp 2,4–2,65 tỷ, thuê 5,5–8,5 triệu. Đó là số thật để Anh/Chị tự định giá Center City."'
+  },
+  { id: 'bcons-garden', label: 'Bcons Garden', cat: 'comparable', sub: '⚠ Đang có tranh chấp vận hành 2026 — xem node rủi ro',
+    facts: [
+      ['Vị trí', '25A Phạm Hữu Lầu, P. Dĩ An'],
+      ['Quy mô', 'Hơn 1.800 căn · 4 tháp'],
+      ['Trạng thái', 'Đã bàn giao, đang vận hành'],
+      ['Vấn đề 2026', 'Tranh chấp quỹ bảo trì & hợp đồng vận hành (cư dân vs BQT)']
+    ],
+    desc: '<p>Dự án Bcons đã bàn giao với hơn 1.800 căn — hiện là <strong>điểm nóng truyền thông 3–5/2026</strong> về quỹ bảo trì và hợp đồng vận hành. Khách tra Google "Bcons" sẽ gặp vụ này đầu tiên, nên sale phải nắm chi tiết tại node rủi ro để chủ động trả lời.</p>'
+  },
+  { id: 'bcons-others', label: 'Các dự án Bcons khác', cat: 'comparable',
+    facts: [
+      ['Bcons Suối Tiên', '653 căn — đã bàn giao'],
+      ['Bcons Miền Đông', '768 căn — đã bàn giao'],
+      ['Khác', 'Green View, Plaza, Bee, Sala, Polaris, Polygon, Solary, Asahi'],
+      ['Vai trò', 'Benchmark giá, hấp thụ, khai thác cho thuê của hệ Bcons']
+    ],
+    desc: '<p>Chuỗi dự án đã bàn giao quanh làng đại học — bằng chứng năng lực triển khai liên tục của Bcons ở phân khúc vừa túi tiền, đồng thời là nguồn dữ liệu thứ cấp/cho thuê để đối chiếu khi tư vấn Center City.</p>'
+  },
+  { id: 'phu-dong', label: 'Phú Đông SkyOne', cat: 'comparable',
+    facts: [
+      ['CĐT', 'Phú Đông Group (Cty Đầu tư Phú Đông 5)'],
+      ['Vị trí', 'DT743C, Tân Đông Hiệp / Dĩ An cũ'],
+      ['Quy mô', '~780 căn · 2 block 30–31 tầng'],
+      ['Pháp lý', 'GPXD 4273/GPXD 30/11/2023 · CT đầu tư 841/QĐ-UBND 24/3/2025'],
+      ['Giá', '~28,6 – 40,2 triệu/m² · bảo lãnh MB Bank'],
+      ['Bàn giao', 'Q2/2026']
+    ],
+    desc: '<p>Đối thủ giá rẻ hơn trong khu — vũ khí của khách khi ép giá ("sao Bcons đắt hơn Phú Đông?"). Trả lời bằng khác biệt sản phẩm: khu phức hợp 5 tháp + TTTM 7 tầng + cụm hệ sinh thái, so với dự án 2 block thuần ở.</p>'
+  },
+  { id: 'picity', label: 'Picity Sky Park', cat: 'comparable',
+    facts: [
+      ['CĐT', 'Pi Group / Cty Khách sạn Đầu tư Kim Sơn'],
+      ['Vị trí', 'QL1A, P. An Bình / Dĩ An cũ'],
+      ['Quy mô', '~1.567 sản phẩm · 3 tháp đến 40 tầng'],
+      ['Pháp lý', 'CT 3009/QĐ-UBND 18/11/2022 · 1/500 QĐ 2341 16/6/2023'],
+      ['Giá', '~40 – 50 triệu/m²'],
+      ['Bàn giao', 'Q4/2026']
+    ],
+    desc: '<p>Đối thủ cùng dải giá sát nhất với Center City (40–50 vs ~55 triệu/m² rumor) — so găng trực tiếp về vị trí tiếp cận, tiện ích khối đế và uy tín bàn giao.</p>'
+  },
+  { id: 'tt-avio', label: 'TT AVIO', cat: 'comparable',
+    facts: [
+      ['CĐT', 'TT Capital × Cosmos Initia (Nhật) — qua Cty CP Đầu tư Phúc Lộc Khang'],
+      ['Vị trí', 'DT743C, Dĩ An cũ'],
+      ['Giá', 'Từ ~1,1 tỷ/căn · PTTT ~9 triệu/tháng'],
+      ['Tiến độ', 'Ký HĐMB dự kiến Q3/2026']
+    ],
+    desc: '<p>Đối thủ chơi bài "chuẩn Nhật + thanh toán nhẹ" — hút tệp khách trẻ lần đầu mua nhà. Phản công bằng quy mô phức hợp và hệ tiện ích cụm Bcons mà dự án đơn lẻ không có.</p>'
+  },
+  { id: 'la-pura', label: 'La Pura', cat: 'comparable',
+    facts: [
+      ['CĐT', 'Phát Đạt (PDR) — tên cũ Astral City'],
+      ['Vị trí', 'QL13, Thuận An / P. Bình Hòa'],
+      ['Quy mô', '8 block 40 tầng · ~6.000 căn'],
+      ['Pháp lý', 'GPXD 3817/GPXD · đủ ĐK huy động vốn 24/7/2023'],
+      ['Giá', '~39,5 – 72,7 triệu/m²'],
+      ['Bàn giao', '2026–2028']
+    ],
+    desc: '<p>Nguồn cung lớn phía trục QL13 (Bình Dương cũ) — cạnh tranh hút khách đầu tư diện rộng. Dải giá trải dài 39,5–72,7 triệu/m² cho thấy mặt bằng "TP.HCM mới" đang định hình lại toàn khu.</p>'
+  },
+  { id: 'di-an-market', label: 'Mặt bằng giá Dĩ An/Đông Hòa', cat: 'comparable',
+    facts: [
+      ['Sơ cấp phổ biến', '~33 – 55 triệu/m² (2024–2026)'],
+      ['Center City rumor', '~55 triệu/m² (chưa VAT)'],
+      ['CĐT so sánh', 'Dĩ An – Thủ Đức lân cận 65 – 75 triệu/m²'],
+      ['Giá thuê khu vực', '2PN ~5,5 – 9 triệu/tháng']
+    ],
+    desc: '<p>Khung định vị giá: Center City rumor nằm ở <strong>đỉnh dải giá Dĩ An cũ</strong> nhưng dưới mặt bằng Thủ Đức lân cận. Câu chuyện "mua TP.HCM giá Dĩ An" chỉ đứng vững nếu chứng minh được khác biệt sản phẩm phức hợp.</p>'
+  },
+
+  // ─── RISK & CONTROVERSY ───
+  { id: 'risk-garden-2026', label: 'Tranh chấp Bcons Garden 2026', cat: 'risk', sub: '⚠ Đang diễn tiến — nguồn: loạt bài Phụ Nữ Online 3–5/2026',
+    verify: 'Sự kiện có thật theo báo chí chính thống',
+    facts: [
+      ['Diễn biến', 'Cư dân treo băng rôn, ký đơn 22/3/2026 đòi hội nghị bất thường'],
+      ['Quỹ bảo trì', 'Gốc 44,48 tỷ gửi MBBank lãi 0,2%/năm (kỳ hạn 1 tuần, từ 23/2/2022)'],
+      ['Lãi đến 10/4/2026', '~348,7 triệu — cư dân cho là thấp bất thường'],
+      ['HĐ vận hành 11/2/2026', 'BQT ký với Bcons Service: 50% doanh thu sở hữu chung + tự thu-chi giữ xe'],
+      ['Phí quản lý', '7.000đ/m² — chưa thông qua hội nghị cư dân'],
+      ['Diễn biến chính quyền', 'Họp 21/4/2026: BQT có 30 ngày khắc phục, sau đó lấy tín nhiệm online'],
+      ['Bản chất', 'Tranh chấp cư dân ↔ Ban Quản trị (do cư dân bầu), chưa có kết luận cơ quan chức năng']
+    ],
+    desc: '<p>Vụ việc khách dễ gặp nhất khi Google "Bcons": tranh chấp tại Bcons Garden về quỹ bảo trì 44,48 tỷ và hợp đồng vận hành ký với Bcons Service. <strong>Bản chất pháp lý: mâu thuẫn giữa cư dân và Ban Quản trị</strong> — nhưng vì đơn vị vận hành thuộc hệ Bcons nên uy tín thương hiệu bị ảnh hưởng trực tiếp.</p><p>Quy tắc: không né, không đổ lỗi cư dân, không bịa kết luận khi vụ việc chưa kết thúc.</p>',
+    talkpoint: '"Vụ Bcons Garden chủ yếu là tranh chấp giữa cư dân và Ban Quản trị do chính cư dân bầu, về quỹ bảo trì và doanh thu khai thác — không phải lỗi kết cấu xây dựng. Bài học thật cho Anh/Chị: tham gia đầy đủ hội nghị nhà chung cư và yêu cầu minh bạch sao kê quỹ bảo trì ngay từ đầu."'
+  },
+  { id: 'risk-booking', label: 'Booking trước đủ ĐK bán', cat: 'risk', sub: '⚠ Rủi ro pháp lý số 1 ở giai đoạn hiện tại',
+    facts: [
+      ['Hiện trạng', 'Nhận giữ chỗ khi chưa thấy văn bản đủ điều kiện bán'],
+      ['Tính chất booking', 'Thỏa thuận dân sự, hoàn lại được — KHÔNG phải HĐMB'],
+      ['Mốc chuyển trạng thái', 'Văn bản Sở Xây dựng + ký HĐMB (~7/2026)'],
+      ['Hành vi cấm', 'Mô tả booking như "đã mở bán chính thức"']
+    ],
+    desc: '<p>Mọi dự án nhận booking sớm đều mang rủi ro này — khác biệt nằm ở cách nói. Sale nói thẳng tính chất pháp lý của giữ chỗ sẽ giữ được cả khách lẫn uy tín khi dự án chuyển sang giai đoạn HĐMB.</p>'
+  },
+  { id: 'risk-density', label: 'Mật độ cụm Bcons & hạ tầng', cat: 'risk',
+    facts: [
+      ['Quy mô cụm', 'Bcons City ~3.900 + Center City ~1.940 + Garden >1.800 căn + nhiều dự án khác'],
+      ['Áp lực', 'Giao thông Thống Nhất/QL1K, trường học, y tế khu Đông Hòa'],
+      ['Mật độ XD Center City', 'CĐT công bố dưới 40%'],
+      ['Đối trọng', 'VĐ3 + nút Tân Vạn thông xe 2026 kỳ vọng giải tỏa']
+    ],
+    desc: '<p>Mật độ dân cư cụm Bcons quanh làng đại học là <strong>thực tế phải thừa nhận</strong>, không tô hồng. Đối trọng là chuỗi hạ tầng 2026; nhưng nếu khách ưu tiên không gian thưa, thấp tầng — đây là điểm cần nói thẳng để lọc đúng tệp.</p>',
+    talkpoint: '"Mật độ cụm này cao là thật — bù lại là hệ tiện ích cụm và hạ tầng 2026. Nếu Anh/Chị ưu tiên thưa vắng, em sẽ nói thật đây không phải lựa chọn phù hợp; còn nếu ưu tiên tiện ích và cho thuê thì mật độ chính là dòng khách thuê."'
+  },
+  { id: 'risk-pricing-comms', label: 'Truyền thông giá & khoảng cách', cat: 'risk',
+    facts: [
+      ['"130–150 triệu sở hữu"', 'Là thanh toán đợt đầu 5%, KHÔNG phải giá căn'],
+      ['"2 phút tới Metro"', 'Là vài phút BẰNG XE, không phải đi bộ'],
+      ['"5 phút tới ĐHQG"', 'Sales claim — cần đo tuyến thực'],
+      ['Quy tắc', 'Luôn nói tổng giá trị căn + phương tiện di chuyển cụ thể']
+    ],
+    desc: '<p>Hai chiêu truyền thông dễ gây hiểu lầm nhất của phân khúc này: con số thanh toán đợt đầu bị đọc thành giá căn, và số phút di chuyển bị hiểu thành đi bộ. Sale chỉnh lại ngay từ đầu sẽ tránh được khiếu nại về sau.</p>'
+  },
+  { id: 'risk-data', label: 'Rủi ro dữ liệu', cat: 'risk', sub: 'Watch — kỷ luật quote số liệu',
+    facts: [
+      ['Nguyên tắc', 'Không quote số chưa khóa: diện tích, giá, phút di chuyển, pháp lý, lãi vay'],
+      ['Số căn', 'Dao động 1.800–1.940 tùy tài liệu — dùng theo Q&A: 1.940'],
+      ['Nhiều sales page', 'Dễ sinh sai lệch — bắt buộc dùng chung data room'],
+      ['Trạng thái chuẩn', 'Đã có bản gốc / đang chờ / không dùng']
+    ],
+    desc: '<p>Bản map càng nhiều dữ liệu nội bộ càng cần kỷ luật cao. Mỗi con số đi vào tư vấn phải có nguồn, ngày cập nhật và trạng thái — vì khách phân khúc này so sánh rất kỹ giữa các sales page.</p>'
+  },
+  { id: 'qa-10', label: '10 câu Q&A đào tạo', cat: 'risk',
+    verify: 'Playbook training nội bộ',
+    facts: [
+      ['Q1', 'Tổng quan: D11 7m→17m, The Twin, Gateway, Icon, Crown'],
+      ['Q2', 'Tầng hầm lệch tầng: B1 4m, B2 3m'],
+      ['Q3', 'View The Gateway: Đông Nam / Tây Nam'],
+      ['Q4', 'Rạp chiếu phim tầng 4–5 The Twin'],
+      ['Q5', '74 tiện ích + Bcons City 135 + cầu đi bộ'],
+      ['Q6', 'TTTM The Twin 7 tầng ~48.000 m²'],
+      ['Q7', 'Quảng trường 8.000 m², nhạc nước'],
+      ['Q8', 'OCB bảo lãnh; VCB/MB/ACB/TPBank/Public/BIDV cho vay'],
+      ['Q9', '2 hồ bơi: vô cực T7 + ốc đảo'],
+      ['Q10', 'Chủ đầu tư: Công ty CP Địa ốc Bcons']
+    ],
+    desc: '<p>Mini game đào tạo 15 phút trước buổi tư vấn — đúng thứ tự: tổng quan → kỹ thuật → view → tiện ích → tài chính → chủ đầu tư. Sale trả lời được 10 câu này là nắm xong phần khung sản phẩm.</p>',
+    talkpoint: '"Sale nào trả lời trôi chảy 10 câu này trong 15 phút là đủ khung để ra trận — phần còn lại là bảng giá hiệu lực và kịch bản xử lý phản đối ở các node rủi ro."'
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════
+// LINKS
+// ═══════════════════════════════════════════════════════════════
+const LINKS = [
+  // Center → core
+  ['bcc', 'dia-oc-bcons', 'chủ đầu tư'],
+  ['bcc', 'legal-name', 'tên pháp lý'],
+  ['bcc', 'legal-milestones', 'mốc pháp lý'],
+  ['bcc', 'du-dk-ban', 'điều kiện bán'],
+  ['bcc', 'master-5-thap', 'quy hoạch'],
+  ['bcc', 'co-cau-can', 'cơ cấu căn'],
+  ['bcc', 'gia-chinh-sach', 'giá bán'],
+  ['bcc', 'ban-giao', 'timeline'],
+  ['bcc', 'cho-thue', 'khai thác thuê'],
+  ['bcc', 'tien-ich-74', 'tiện ích'],
+  ['bcc', 'cau-di-bo', 'kết nối cụm'],
+  ['bcc', 'thong-nhat', 'trục khu vực'],
+  ['bcc', 'd11', 'tiếp cận'],
+  ['bcc', 'dong-hoa', 'tại'],
+  ['bcc', 'lang-dai-hoc', '~5 phút (claim)'],
+  ['bcc', 'ocb-banks', 'tài chính'],
+  ['bcc', 'risk-data', 'kỷ luật dữ liệu'],
+  ['bcc', 'qa-10', 'đào tạo sale'],
+
+  // Companies
+  ['dia-oc-bcons', 'bcons-group', 'thuộc hệ sinh thái'],
+  ['bcons-group', 'le-nhu-thach', 'chủ tịch'],
+  ['bcons-group', 'bcons-construction', 'doanh nghiệp lõi'],
+  ['bcons-group', 'bcons-members', 'công ty thành viên'],
+  ['bcons-group', 'foreign-partners', 'hợp tác'],
+  ['bcons-construction', 'bcc', 'tổng thầu thi công'],
+  ['bcons-members', 'risk-garden-2026', 'Bcons Service liên quan'],
+  ['bcons-members', 'bcons-city', 'vận hành'],
+
+  // Legal chain
+  ['legal-milestones', 'du-dk-ban', 'bước kế tiếp'],
+  ['legal-room', 'legal-milestones', 'lưu bản gốc'],
+  ['legal-room', 'du-dk-ban', 'theo dõi'],
+  ['legal-room', 'risk-data', 'cùng kỷ luật'],
+  ['bcc', 'legal-room', 'data room'],
+  ['sap-nhap', 'dong-hoa', 'lập phường mới'],
+  ['bcc', 'sap-nhap', 'đổi định vị'],
+  ['risk-booking', 'du-dk-ban', 'gắn với'],
+
+  // Product chain
+  ['master-5-thap', 'the-twin', 'gồm'],
+  ['master-5-thap', 'the-gateway', 'gồm'],
+  ['master-5-thap', 'the-icon', 'gồm'],
+  ['master-5-thap', 'the-crown', 'gồm'],
+  ['master-5-thap', 'ham-lech-tang', 'kỹ thuật'],
+  ['the-twin', 'tttm-7-tang', 'khối đế'],
+  ['the-twin', 'rap-phim', 'tầng 4–5'],
+  ['the-twin', 'ho-boi', 'tầng 7 + mặt đất'],
+  ['gia-chinh-sach', 'ocb-banks', 'đi cùng PTTT'],
+  ['gia-chinh-sach', 'di-an-market', 'định vị giá'],
+  ['gia-chinh-sach', 'risk-pricing-comms', 'rủi ro truyền thông'],
+  ['cho-thue', 'lang-dai-hoc', 'nguồn cầu'],
+  ['cho-thue', 'bcons-city', 'tham chiếu thuê'],
+  ['cho-thue', 'kcn-tien-ich', 'cầu nhân sự'],
+
+  // Amenity chain
+  ['tien-ich-74', 'tttm-7-tang', 'gồm'],
+  ['tien-ich-74', 'quang-truong', 'gồm'],
+  ['tien-ich-74', 'cau-di-bo', 'mở rộng qua'],
+  ['cau-di-bo', 'bcons-city', 'nối sang'],
+  ['cau-di-bo', 'thong-nhat', 'bắc ngang'],
+
+  // Infra
+  ['metro-1', 'bxmd', 'có ga tại'],
+  ['bcc', 'metro-1', 'vài phút bằng xe'],
+  ['vanh-dai-3', 'tan-van', 'gồm nút giao'],
+  ['tan-van', 'ql1k-xlhn', 'giao trục'],
+  ['vanh-dai-3', 'dong-hoa', 'đi qua khu vực'],
+  ['risk-density', 'tan-van', 'kẹt tạm khi thi công'],
+  ['metro-1', 'lang-dai-hoc', 'phục vụ'],
+
+  // Location
+  ['lang-dai-hoc', 'dong-hoa', 'tại'],
+  ['kcn-tien-ich', 'dong-hoa', 'quanh'],
+  ['di-an-market', 'dong-hoa', 'mặt bằng giá'],
+
+  // Comparables
+  ['bcons-city', 'bcons-group', 'của'],
+  ['bcons-garden', 'bcons-group', 'của'],
+  ['bcons-others', 'bcons-group', 'của'],
+  ['bcons-garden', 'risk-garden-2026', 'tranh chấp'],
+  ['bcons-city', 'foreign-partners', 'A Asset tham gia'],
+  ['phu-dong', 'di-an-market', 'định hình giá'],
+  ['picity', 'di-an-market', 'định hình giá'],
+  ['tt-avio', 'di-an-market', 'định hình giá'],
+  ['la-pura', 'di-an-market', 'định hình giá'],
+  ['bcc', 'bcons-city', 'đối diện · cùng cụm'],
+
+  // Risk cross-links
+  ['risk-density', 'bcons-city', 'cộng dồn quy mô'],
+  ['risk-density', 'bcc', 'cộng dồn quy mô'],
+  ['risk-pricing-comms', 'metro-1', 'claim "2 phút"'],
+  ['qa-10', 'master-5-thap', 'khung training'],
+];
+
+// ═══════════════════════════════════════════════════════════════
+// GRAPH RENDERING
+// ═══════════════════════════════════════════════════════════════
+
+const SVG = document.getElementById('graph');
+const GROUP = document.getElementById('graph-g');
+const LINKS_G = document.getElementById('links-g');
+const NODES_G = document.getElementById('nodes-g');
+
+let WIDTH = 0, HEIGHT = 0;
+let transform = { x: 0, y: 0, k: 1 };
+let selectedNode = null;
+let hoveredNode = null;
+let activeCategories = new Set(Object.keys(CATEGORIES));
+let searchQuery = '';
+
+// Build node map
+const nodeMap = {};
+NODES.forEach(n => {
+  n.x = Math.random() * 800 - 400;
+  n.y = Math.random() * 600 - 300;
+  n.vx = 0; n.vy = 0;
+  n.pinned = false;
+  nodeMap[n.id] = n;
+});
+
+// Center node positioning
+nodeMap.bcc.x = 0;
+nodeMap.bcc.y = 0;
+nodeMap.bcc.pinned = true;
+
+// Build link list with refs
+const linkData = LINKS.map(([s, t, label]) => ({
+  source: nodeMap[s],
+  target: nodeMap[t],
+  label: label || ''
+})).filter(l => l.source && l.target);
+
+// Build adjacency
+const adj = {};
+NODES.forEach(n => { adj[n.id] = { in: [], out: [] }; });
+linkData.forEach(l => {
+  adj[l.source.id].out.push({ node: l.target, label: l.label });
+  adj[l.target.id].in.push({ node: l.source, label: l.label });
+});
+
+// Stats
+document.getElementById('stat-nodes').textContent = NODES.length;
+document.getElementById('stat-links').textContent = linkData.length;
+
+// ─── FORCE SIMULATION ───
+function simulate() {
+  const REPEL = 4500;
+  const SPRING = 0.012;
+  const LINK_DIST = 110;
+  const CENTER = 0.003;
+  const DAMP = 0.78;
+
+  for (let i = 0; i < NODES.length; i++) {
+    for (let j = i + 1; j < NODES.length; j++) {
+      const a = NODES[i], b = NODES[j];
+      let dx = b.x - a.x, dy = b.y - a.y;
+      let d2 = dx*dx + dy*dy;
+      if (d2 < 1) d2 = 1;
+      const d = Math.sqrt(d2);
+      const force = REPEL / d2;
+      const fx = force * dx / d;
+      const fy = force * dy / d;
+      if (!a.pinned) { a.vx -= fx; a.vy -= fy; }
+      if (!b.pinned) { b.vx += fx; b.vy += fy; }
+    }
+  }
+
+  linkData.forEach(l => {
+    const dx = l.target.x - l.source.x;
+    const dy = l.target.y - l.source.y;
+    const d = Math.sqrt(dx*dx + dy*dy) || 1;
+    const force = (d - LINK_DIST) * SPRING;
+    const fx = force * dx / d;
+    const fy = force * dy / d;
+    if (!l.source.pinned) { l.source.vx += fx; l.source.vy += fy; }
+    if (!l.target.pinned) { l.target.vx -= fx; l.target.vy -= fy; }
+  });
+
+  NODES.forEach(n => {
+    if (!n.pinned) {
+      n.vx += -n.x * CENTER;
+      n.vy += -n.y * CENTER;
+      n.vx *= DAMP;
+      n.vy *= DAMP;
+      n.x += n.vx;
+      n.y += n.vy;
+    }
+  });
+}
+
+// ─── RENDER ───
+function renderLinks() {
+  LINKS_G.innerHTML = '';
+  linkData.forEach((l, i) => {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', l.source.x);
+    line.setAttribute('y1', l.source.y);
+    line.setAttribute('x2', l.target.x);
+    line.setAttribute('y2', l.target.y);
+    line.classList.add('link');
+    line.dataset.source = l.source.id;
+    line.dataset.target = l.target.id;
+    l._el = line;
+    LINKS_G.appendChild(line);
+  });
+}
+
+function renderNodes() {
+  NODES_G.innerHTML = '';
+  NODES.forEach(n => {
+    const cat = CATEGORIES[n.cat];
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.classList.add('node');
+    g.dataset.id = n.id;
+    g.setAttribute('transform', `translate(${n.x}, ${n.y})`);
+
+    if (n.id === 'bcc') {
+      const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      ring.setAttribute('r', cat.radius + 8);
+      ring.setAttribute('fill', 'none');
+      ring.setAttribute('stroke', cat.color);
+      ring.setAttribute('stroke-width', 1);
+      ring.setAttribute('opacity', 0.4);
+      ring.classList.add('pulse-ring');
+      g.appendChild(ring);
+    }
+
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('r', cat.radius);
+    c.setAttribute('fill', cat.color);
+    c.setAttribute('stroke', '#0d1117');
+    c.setAttribute('stroke-width', 1.5);
+    g.appendChild(c);
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('y', cat.radius + 14);
+    text.textContent = n.label;
+    g.appendChild(text);
+
+    g.addEventListener('mousedown', (e) => startNodeDrag(e, n, g));
+    g.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectNode(n.id);
+    });
+    n._el = g;
+    NODES_G.appendChild(g);
+  });
+}
+
+function updatePositions() {
+  linkData.forEach(l => {
+    if (l._el) {
+      l._el.setAttribute('x1', l.source.x);
+      l._el.setAttribute('y1', l.source.y);
+      l._el.setAttribute('x2', l.target.x);
+      l._el.setAttribute('y2', l.target.y);
+    }
+  });
+  NODES.forEach(n => {
+    if (n._el) n._el.setAttribute('transform', `translate(${n.x}, ${n.y})`);
+  });
+  applyTransform();
+}
+
+function applyTransform() {
+  GROUP.setAttribute('transform', `translate(${transform.x + WIDTH/2}, ${transform.y + HEIGHT/2}) scale(${transform.k})`);
+}
+
+// ─── INTERACTIONS ───
+function startNodeDrag(e, n, el) {
+  e.preventDefault();
+  e.stopPropagation();
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const origX = n.x;
+  const origY = n.y;
+  n.pinned = true;
+  let didDrag = false;
+
+  function move(ev) {
+    const dx = (ev.clientX - startX) / transform.k;
+    const dy = (ev.clientY - startY) / transform.k;
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) didDrag = true;
+    n.x = origX + dx;
+    n.y = origY + dy;
+    n.vx = 0; n.vy = 0;
+  }
+  function up() {
+    document.removeEventListener('mousemove', move);
+    document.removeEventListener('mouseup', up);
+    if (n.id !== 'bcc' && !didDrag) {
+      n.pinned = false;
+    }
+  }
+  document.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', up);
+}
+
+// Pan & zoom
+let panState = null;
+SVG.addEventListener('mousedown', (e) => {
+  if (e.target.closest('.node')) return;
+  panState = { startX: e.clientX - transform.x, startY: e.clientY - transform.y };
+  document.getElementById('graph-wrap').classList.add('dragging');
+});
+document.addEventListener('mousemove', (e) => {
+  if (panState) {
+    transform.x = e.clientX - panState.startX;
+    transform.y = e.clientY - panState.startY;
+    applyTransform();
+  }
+});
+document.addEventListener('mouseup', () => {
+  panState = null;
+  document.getElementById('graph-wrap').classList.remove('dragging');
+});
+
+SVG.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = -e.deltaY * 0.001;
+  const newK = Math.max(0.3, Math.min(2.5, transform.k + delta));
+  transform.k = newK;
+  applyTransform();
+}, { passive: false });
+
+document.getElementById('zoom-in').onclick = () => { transform.k = Math.min(2.5, transform.k * 1.2); applyTransform(); };
+document.getElementById('zoom-out').onclick = () => { transform.k = Math.max(0.3, transform.k / 1.2); applyTransform(); };
+document.getElementById('zoom-fit').onclick = () => { transform = { x: 0, y: 0, k: 1 }; applyTransform(); };
+
+document.getElementById('btn-center').onclick = () => {
+  selectNode('bcc');
+  transform = { x: 0, y: 0, k: 1 };
+  applyTransform();
+};
+
+document.getElementById('btn-reset').onclick = () => {
+  NODES.forEach(n => {
+    if (n.id !== 'bcc') {
+      n.x = Math.random() * 800 - 400;
+      n.y = Math.random() * 600 - 300;
+      n.vx = 0; n.vy = 0;
+      n.pinned = false;
+    }
+  });
+  transform = { x: 0, y: 0, k: 1 };
+  applyTransform();
+};
+
+// ─── SELECT & DETAIL ───
+function selectNode(id) {
+  selectedNode = id;
+  document.querySelectorAll('.node').forEach(el => el.classList.remove('selected', 'dimmed'));
+  document.querySelectorAll('.link').forEach(el => el.classList.remove('highlight', 'dimmed'));
+  
+  const connected = new Set([id]);
+  linkData.forEach(l => {
+    if (l.source.id === id) connected.add(l.target.id);
+    if (l.target.id === id) connected.add(l.source.id);
+  });
+  
+  NODES.forEach(n => {
+    if (n._el) {
+      if (n.id === id) n._el.classList.add('selected');
+      else if (!connected.has(n.id)) n._el.classList.add('dimmed');
+    }
+  });
+  
+  linkData.forEach(l => {
+    if (l._el) {
+      if (l.source.id === id || l.target.id === id) l._el.classList.add('highlight');
+      else l._el.classList.add('dimmed');
+    }
+  });
+  
+  document.querySelectorAll('.node-item').forEach(el => el.classList.toggle('active', el.dataset.id === id));
+  renderDetail(id);
+}
+
+function renderDetail(id) {
+  const n = nodeMap[id];
+  if (!n) return;
+  const cat = CATEGORIES[n.cat];
+  const empty = document.getElementById('detail-empty');
+  const content = document.getElementById('detail-content');
+  empty.style.display = 'none';
+  content.style.display = 'flex';
+
+  const caveatBadge = (n.sub && (n.sub.includes('⚠') || n.sub.includes('thoái'))) 
+    ? `<div class="caveat-badge">${n.sub}</div>` 
+    : '';
+  const verifyBadge = n.verify ? `<div class="confidence-badge">✓ ${n.verify}</div>` : '';
+
+  let html = `
+    <div class="detail-header">
+      <div class="detail-cat" style="background:${cat.color}22;color:${cat.color}">${cat.label}</div>
+      <div class="detail-title">${n.label}</div>
+      ${n.sub && !caveatBadge ? `<div class="detail-subtitle">${n.sub}</div>` : ''}
+      ${caveatBadge}${verifyBadge}
+    </div>
+    <div class="detail-body">
+  `;
+
+  if (n.facts && n.facts.length) {
+    html += `<div class="detail-section">
+      <div class="detail-section-title">Thông số cốt lõi</div>
+      <div class="detail-facts">${n.facts.map(([k, v]) => 
+        `<div class="fact-row"><div class="fact-label">${k}</div><div class="fact-value">${v}</div></div>`
+      ).join('')}</div>
+    </div>`;
+  }
+
+  if (n.desc) {
+    html += `<div class="detail-section">
+      <div class="detail-section-title">Mô tả</div>
+      <div class="detail-text">${n.desc}</div>
+    </div>`;
+  }
+
+  if (n.talkpoint) {
+    html += `<div class="detail-section">
+      <div class="detail-talkpoint">
+        <div class="detail-talkpoint-label">★ Key talking point cho sale</div>
+        <div class="detail-talkpoint-text">${n.talkpoint}</div>
+      </div>
+    </div>`;
+  }
+
+  const out = adj[id].out;
+  const incoming = adj[id].in;
+  
+  if (out.length) {
+    html += `<div class="detail-section">
+      <div class="detail-section-title">Liên kết tới (${out.length})</div>
+      <div class="detail-link-list">${out.map(({ node, label }) => 
+        `<a class="detail-link" onclick="selectNode('${node.id}')"><span class="detail-link-dot" style="background:${CATEGORIES[node.cat].color}"></span>${node.label}<span class="detail-link-type">${label}</span></a>`
+      ).join('')}</div>
+    </div>`;
+  }
+
+  if (incoming.length) {
+    html += `<div class="detail-section">
+      <div class="detail-section-title">Backlinks — Được nhắc bởi (${incoming.length})</div>
+      <div class="detail-link-list">${incoming.map(({ node, label }) => 
+        `<a class="detail-link" onclick="selectNode('${node.id}')"><span class="detail-link-dot" style="background:${CATEGORIES[node.cat].color}"></span>${node.label}<span class="detail-link-type">${label}</span></a>`
+      ).join('')}</div>
+    </div>`;
+  }
+
+  html += `</div>`;
+  content.innerHTML = html;
+
+  if (window.innerWidth <= 1024) {
+    document.getElementById('detail-panel').classList.add('open');
+  }
+}
+
+// ─── SIDEBAR ───
+function buildSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  let html = `<div class="sidebar-header">Danh mục</div>`;
+  
+  // Categories
+  Object.entries(CATEGORIES).forEach(([key, c]) => {
+    const count = NODES.filter(n => n.cat === key).length;
+    html += `<div class="category-item active" data-cat="${key}">
+      <div class="category-dot" style="background:${c.color}"></div>
+      <span>${c.label}</span>
+      <span class="category-count">${count}</span>
+    </div>`;
+  });
+  
+  html += `<div class="sidebar-header" style="margin-top:16px">Tất cả nodes</div>`;
+  html += `<div class="node-list">`;
+  
+  // Group nodes by category
+  Object.entries(CATEGORIES).forEach(([key, c]) => {
+    const ns = NODES.filter(n => n.cat === key);
+    ns.forEach(n => {
+      html += `<div class="node-item" data-id="${n.id}" data-cat="${key}" title="${n.label}">${n.label}</div>`;
+    });
+  });
+  
+  html += `</div>`;
+  sidebar.innerHTML = html;
+  
+  // Wire events
+  sidebar.querySelectorAll('.node-item').forEach(el => {
+    el.addEventListener('click', () => selectNode(el.dataset.id));
+  });
+  sidebar.querySelectorAll('.category-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const cat = el.dataset.cat;
+      if (activeCategories.has(cat)) {
+        activeCategories.delete(cat);
+        el.classList.remove('active');
+      } else {
+        activeCategories.add(cat);
+        el.classList.add('active');
+      }
+      applyFilters();
+    });
+  });
+}
+
+function applyFilters() {
+  NODES.forEach(n => {
+    if (!n._el) return;
+    const inCategory = activeCategories.has(n.cat);
+    const matchSearch = !searchQuery || n.label.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                       (n.sub && n.sub.toLowerCase().includes(searchQuery.toLowerCase()));
+    if (inCategory && matchSearch) {
+      n._el.style.display = '';
+      n._el.classList.toggle('match', !!searchQuery && matchSearch);
+    } else {
+      n._el.style.display = 'none';
+    }
+  });
+  linkData.forEach(l => {
+    if (!l._el) return;
+    const sVisible = activeCategories.has(l.source.cat);
+    const tVisible = activeCategories.has(l.target.cat);
+    l._el.style.display = (sVisible && tVisible) ? '' : 'none';
+  });
+  document.querySelectorAll('.node-item').forEach(el => {
+    const id = el.dataset.id;
+    const n = nodeMap[id];
+    const inCategory = activeCategories.has(n.cat);
+    const matchSearch = !searchQuery || n.label.toLowerCase().includes(searchQuery.toLowerCase());
+    el.style.display = (inCategory && matchSearch) ? '' : 'none';
+  });
+}
+
+document.getElementById('search').addEventListener('input', (e) => {
+  searchQuery = e.target.value.trim();
+  applyFilters();
+});
+
+// ─── ANIMATION LOOP ───
+function resize() {
+  const wrap = document.getElementById('graph-wrap');
+  WIDTH = wrap.clientWidth;
+  HEIGHT = wrap.clientHeight;
+  SVG.setAttribute('viewBox', `0 0 ${WIDTH} ${HEIGHT}`);
+  applyTransform();
+}
+window.addEventListener('resize', resize);
+
+let frame = 0;
+function tick() {
+  if (frame < 400) {
+    simulate();
+    frame++;
+  }
+  updatePositions();
+  requestAnimationFrame(tick);
+}
+
+// ─── INIT ───
+buildSidebar();
+renderLinks();
+renderNodes();
+resize();
+tick();
+
+// Auto-select Gladia after a brief settle
+setTimeout(() => selectNode('bcc'), 600);
+</script>
+
+</body>
+</html>
