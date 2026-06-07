@@ -1265,7 +1265,7 @@ export const HOOK_BANK: HookTemplate[] = [
     id: "HK-MIR-02",
     family: "MIR",
     text: "Đây — chính là khoảnh khắc đáng nhất của cái nghề này.",
-    onscreen: "",
+    onscreen: "Khoảnh khắc trao nhà",
     visual: "Đang trao chìa khoá cho khách",
     duration: [2, 4],
     words: [8, 14],

@@ -66,7 +66,7 @@ export const NODE_BANK: NodeTemplate[] = [
   { id: "PAY-02", type: "PAYOFF", text: "Chốt: nếu là tiền của tôi, tôi chọn {{lua_chon}} — vì {{ly_do_1cau}}.", onscreen: "Chốt", visual: "Nhìn thẳng cam, gật dứt khoát", duration: [3, 5], words: [12, 18], deliversTag: "verdict" },
   { id: "PAY-03", type: "PAYOFF", text: "Câu trả lời: {{dap_an}}. Gọn vậy thôi.", onscreen: "Đáp án", visual: "Nhìn thẳng cam, gật nhẹ", duration: [3, 5], words: [8, 14], deliversTag: "answer" },
   { id: "PAY-04", type: "PAYOFF", text: "Từ {{trang_thai_truoc}} thành {{trang_thai_sau}} — trong đúng {{khoang_tg}}.", onscreen: "Trước → Sau", visual: "Before/after dứt khoát", duration: [3, 5], words: [10, 16], deliversTag: "transformation" },
-  { id: "PAY-05", type: "PAYOFF", text: "Và số {{vi_tri}} — {{lua_chon_tot_nhat}} — giờ thì bạn hiểu vì sao rồi đó.", onscreen: "#1", visual: "Chốt vị trí top của danh sách", duration: [3, 5], words: [10, 16], deliversTag: "list_complete" },
+  { id: "PAY-05", type: "PAYOFF", text: "Và vị trí số 1 — {{lua_chon_tot_nhat}} — giờ thì bạn hiểu vì sao rồi đó.", onscreen: "#1", visual: "Chốt vị trí top của danh sách", duration: [3, 5], words: [10, 16], deliversTag: "list_complete" },
   { id: "PAY-06", type: "PAYOFF", text: "Nhưng thứ đáng giá nhất lại không nằm trong những gì tôi vừa kể — mà là {{twist}}.", onscreen: "Twist", visual: "Hạ giọng, tiết lộ cú twist cuối", duration: [3, 5], words: [12, 18], deliversTag: "proof" },
   { id: "PAY-07", type: "PAYOFF", text: "Và đó là cảm giác mỗi ngày khi bạn sống ở đây.", onscreen: "Cảm giác sống", visual: "Cảnh sống chậm, ánh sáng đẹp", duration: [3, 5], words: [8, 14], deliversTag: "experience" },
 

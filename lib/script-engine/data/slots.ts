@@ -106,6 +106,65 @@ const CONTENT_FALLBACK: Record<string, string> = {
   y_chinh: "ý chính",
   dien_giai: "phần giải thích",
   tac_dong: "tác động thực tế",
+  // ── CTX ─────────────────────────────────────────────────────────────────
+  hau_qua: "không hề nhỏ",
+  loi_hua: "điều quan trọng nhất",
+  nhu_cau: "một lựa chọn rõ ràng",
+  boi_canh_ngan: "thị trường đang nhiều biến động",
+  tinh_huong_ngan: "gặp đúng tình huống này",
+  // ── BODY_POINT (đứng đầu câu) ─────────────────────────────────────────────
+  vi_sao_quan_trong: "Đây là điều tạo nên khác biệt",
+  // ── BODY_DATA ─────────────────────────────────────────────────────────────
+  con_so: "Con số đáng chú ý",
+  chu_the: "mặt bằng giá",
+  xu_huong: "thay đổi",
+  ty_le: "một mức đáng kể",
+  phep_tinh_ngan: "tính nhanh vài bước",
+  ket_qua: "kết quả rõ rệt",
+  // ── BODY_STORY ────────────────────────────────────────────────────────────
+  chan_dung_ngan: "một người mua ở thực",
+  tro_ngai: "rất phân vân",
+  hanh_dong: "cùng rà lại thật kỹ",
+  su_kien_1: "một cột mốc đáng nhớ",
+  su_kien_2: "một thay đổi rõ rệt",
+  bai_hoc: "một quyết định đúng lúc",
+  y_kien_so_dong: "hãy chờ thêm đã",
+  // ── BODY_DEMO ─────────────────────────────────────────────────────────────
+  khu_vuc_can: "không gian này",
+  diem_nhan: "chi tiết nổi bật",
+  chi_tiet_cam_quan: "Tận mắt mới thấy rõ",
+  kich_thuoc: "diện tích thoáng",
+  huong: "hướng đẹp",
+  diem_check: "những chi tiết hoàn thiện",
+  vi_tri: "vị trí này",
+  vat_lieu_hoan_thien: "vật liệu hoàn thiện",
+  danh_gia_ngan: "rất đáng tiền",
+  // ── BODY_COMPARE ──────────────────────────────────────────────────────────
+  tieu_chi: "quan trọng",
+  ben_a: "phương án A",
+  ben_b: "phương án B",
+  diem_a: "lợi thế riêng",
+  diem_b: "ưu điểm khác",
+  thu_de_thay: "thứ nhìn thấy ngay",
+  thu_quyet_dinh: "yếu tố quyết định",
+  uu_tien_1: "an toàn dòng tiền",
+  uu_tien_2: "tiềm năng dài hạn",
+  // ── BODY_OBJECTION ────────────────────────────────────────────────────────
+  ngo_nhan: "chuyện này khó xảy ra",
+  su_that: "ngược lại hoàn toàn",
+  phan_doi_thuong_gap: "Giá vậy là cao quá",
+  nhuoc_diem_thua_nhan: "vẫn có điểm chưa ưng",
+  loi_ich_bu_dap: "phần giá trị lớn hơn",
+  rui_ro_tuong_tuong: "điều ai cũng lo",
+  rui_ro_that: "điều ít người để ý",
+  // ── PROOF ─────────────────────────────────────────────────────────────────
+  ket_qua_khach: "đã chốt được căn ưng ý",
+  so_du_an_ban_giao: "nhiều",
+  // ── CTA ───────────────────────────────────────────────────────────────────
+  phan_tiep: "sau",
+  noi_dung_phan_sau: "điều thú vị tiếp theo",
+  lua_chon_a: "phương án A",
+  lua_chon_b: "phương án B",
 };
 
 export function contentFallback(key: string): string | undefined {
