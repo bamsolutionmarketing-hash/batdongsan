@@ -6,7 +6,8 @@
 insert into developers (id, name, slug, parent_company, credibility) values
   ('00000000-0000-0000-0000-0000000000e1', 'Masterise Homes', 'masterise-homes', 'Masterise Group', 9),
   ('00000000-0000-0000-0000-0000000000e2', 'Keppel Land × Khang Điền', 'keppel-khang-dien', 'Keppel Ltd. / KDH', 9),
-  ('00000000-0000-0000-0000-0000000000e3', 'Vinhomes (VHM)', 'vinhomes', 'Vingroup', 10)
+  ('00000000-0000-0000-0000-0000000000e3', 'Vinhomes (VHM)', 'vinhomes', 'Vingroup', 10),
+  ('00000000-0000-0000-0000-0000000000e4', 'BLUEMARQ GROUP', 'bluemarq-group', 'Đất Xanh Group (DXG)', 8)
 on conflict (id) do nothing;
 
 -- Projects — both public + demo so signed-out landing + free tier work ---------
@@ -42,5 +43,12 @@ values
    '00000000-0000-0000-0000-0000000000e3',
    'Vinhomes Green Paradise', 'vinhomes-green-paradise',
    'Khởi công 19/4/2025 — phân khu Vịnh Tiên mở bán đầu', 'Xã Cần Giờ, TP.HCM', 'selling', null,
+   null, null, 'broker_estimate', false, true),
+  -- The Privé (BLUEMARQ/Đất Xanh) — flagship 2025–2026, tiền thân Gem Riverside.
+  -- Căn hộ ven sông An Phú, TP Thủ Đức. Giá chưa khoá → null.
+  ('00000000-0000-0000-0000-00000000b004',
+   '00000000-0000-0000-0000-0000000000e4',
+   'The Privé', 'the-prive',
+   'Flagship BLUEMARQ 2025–2026 — tiền thân Gem Riverside', 'P. An Phú, TP. Thủ Đức, TP.HCM', 'selling', null,
    null, null, 'broker_estimate', false, true)
 on conflict (id) do nothing;
