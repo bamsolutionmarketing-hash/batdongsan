@@ -1,11 +1,15 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { amortize, affordability, schedule, rental } from "@/lib/finance/calc";
-import { explainAmort, explainAfford, explainSchedule, explainRental, type Explained } from "@/lib/finance/explain";
+import { amortize, schedule, rental } from "@/lib/finance/calc";
+import { explainAmort, explainSchedule, explainRental, type Explained } from "@/lib/finance/explain";
 import { compactVnd, vnd, pct } from "@/lib/finance/format";
 import { DISCLAIMER } from "@/lib/finance/disclaimer";
-import { RATE_PRESETS, SCHEDULE_PRESETS } from "@/lib/finance/presets";
+import { RATE_PRESETS, SCHEDULE_PRESETS, BANK_POLICIES } from "@/lib/finance/presets";
+import {
+  assessCustomer, explainAssessSale, explainAssessCustomer,
+  type CustomerProfile, type IncomeLine, type DebtLine, type CreditCard, type BankPolicy, type Band,
+} from "@/lib/finance/assess";
 import type { AmortMethod, Installment, ReportTable } from "@/lib/finance/types";
 import { CountUp, Donut, BalanceChart, Gauge, MiniBars, type BalancePoint, type BarItem } from "./charts";
 
@@ -19,7 +23,7 @@ export interface BrandInfo {
 type Tab = "loan" | "afford" | "schedule" | "rental";
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "loan", label: "Trả góp", icon: "🏦" },
-  { id: "afford", label: "Khả năng vay", icon: "💪" },
+  { id: "afford", label: "Năng lực KH", icon: "💪" },
   { id: "schedule", label: "Lịch tiến độ", icon: "📅" },
   { id: "rental", label: "Cho thuê", icon: "🔑" },
 ];
@@ -45,7 +49,7 @@ export function CalculatorPanel({ brand }: { brand: BrandInfo | null }) {
         ))}
       </div>
       {tab === "loan" && <LoanTab brand={brand} />}
-      {tab === "afford" && <AffordTab brand={brand} />}
+      {tab === "afford" && <CustomerFitTab brand={brand} />}
       {tab === "schedule" && <ScheduleTab brand={brand} />}
       {tab === "rental" && <RentalTab brand={brand} />}
     </div>
@@ -304,49 +308,262 @@ function LoanTab({ brand }: { brand: BrandInfo | null }) {
   );
 }
 
-// ── Khả năng vay ──────────────────────────────────────────────────────────────
-function AffordTab({ brand }: { brand: BrandInfo | null }) {
-  const [income, setIncome] = useState("40000000");
-  const [debt, setDebt] = useState("0");
-  const [dti, setDti] = useState("50");
-  const [rate, setRate] = useState("11");
-  const [years, setYears] = useState("20");
+// ── Năng lực khách hàng (2 chế độ: Sale nội bộ ↔ Khách) ────────────────────────
+const VERDICT_NEUTRAL: Record<Band, string> = { khoe: "Tốt", can_bien: "Cận biên", chua_du: "Cần thu xếp" };
+
+function CustomerFitTab({ brand }: { brand: BrandInfo | null }) {
+  const [mode, setMode] = useState<"sale" | "customer">("sale");
+  const [advanced, setAdvanced] = useState(false);
+
+  // hồ sơ khách
+  const [incomes, setIncomes] = useState<IncomeLine[]>([{ label: "Lương", amount: 40_000_000, proven: true, variable: false }]);
+  const [coIncome, setCoIncome] = useState("0");
+  const [dependents, setDependents] = useState("0");
+  const [livingOverride, setLivingOverride] = useState(""); // "" = tự ước theo người phụ thuộc
+  const [debts, setDebts] = useState<DebtLine[]>([]);
+  const [cards, setCards] = useState<CreditCard[]>([]);
+  const [age, setAge] = useState("35");
   const [down, setDown] = useState("30");
+  const [target, setTarget] = useState(""); // giá căn nhắm (tùy chọn)
 
-  const input = { monthlyIncome: num(income), existingDebt: num(debt), dtiPercent: Number(dti) || 0, annualRate: Number(rate) || 0, termMonths: (num(years) || 0) * 12, downPaymentPercent: Number(down) || 0 };
-  const result = useMemo(() => affordability(input), [income, debt, dti, rate, years, down]); // eslint-disable-line react-hooks/exhaustive-deps
-  const ex = explainAfford(input, result);
+  // chính sách ngân hàng
+  const [presetId, setPresetId] = useState(BANK_POLICIES[0].id);
+  const [dsr, setDsr] = useState("60");
+  const [ltv, setLtv] = useState("70");
+  const [rate, setRate] = useState("11");
+  const [maxAge, setMaxAge] = useState("70");
+  const [termYears, setTermYears] = useState("20");
 
-  // áp lực trả nợ thực tế / thu nhập (gồm nợ cũ + khoản mới)
-  const pressure = input.monthlyIncome > 0 ? ((input.existingDebt + result.maxMonthlyPayment) / input.monthlyIncome) * 100 : 0;
-  const metrics: Metric[] = [
-    { label: "Vay tối đa", value: result.maxLoan, format: compactVnd },
-    { label: "Mua được giá tối đa", value: result.maxPropertyPrice, format: compactVnd },
-    { label: "Trả nợ thêm/tháng", value: result.maxMonthlyPayment, format: compactVnd },
-    { label: "Vốn tự có cần", value: result.requiredDownPayment, format: compactVnd },
+  const applyPolicy = (id: string) => {
+    const p = BANK_POLICIES.find((x) => x.id === id); if (!p) return;
+    setPresetId(id); setDsr(String(p.dsrCap)); setLtv(String(p.ltvCap));
+    setRate(String(p.annualRate)); setMaxAge(String(p.maxAge)); setTermYears(String(Math.round(p.maxTermMonths / 12)));
+  };
+
+  // income line helpers
+  const setIncome = (i: number, patch: Partial<IncomeLine>) => setIncomes((xs) => xs.map((x, idx) => (idx === i ? { ...x, ...patch } : x)));
+  const addIncome = () => setIncomes((xs) => [...xs, { label: "Nguồn khác", amount: 0, proven: true, variable: false }]);
+  const delIncome = (i: number) => setIncomes((xs) => xs.filter((_, idx) => idx !== i));
+
+  const policy: BankPolicy = {
+    id: presetId, name: BANK_POLICIES.find((x) => x.id === presetId)?.name ?? "Tuỳ chỉnh",
+    dsrCap: Number(dsr) || 0, ltvCap: Number(ltv) || 0, maxAge: num(maxAge) || 70,
+    annualRate: Number(rate) || 0, maxTermMonths: (num(termYears) || 0) * 12,
+  };
+  const profile: CustomerProfile = {
+    incomes, coBorrowerIncome: num(coIncome), dependents: num(dependents),
+    livingCostOverride: livingOverride.trim() === "" ? null : num(livingOverride),
+    debts, creditCards: cards, age: num(age) || 0, downPaymentPercent: Number(down) || 0,
+  };
+  const targetPrice = target.trim() === "" ? null : num(target);
+
+  const pKey = JSON.stringify(profile);
+  const polKey = JSON.stringify(policy);
+  const result = useMemo(() => assessCustomer({ profile, policy, targetPrice }), [pKey, polKey, targetPrice]); // eslint-disable-line react-hooks/exhaustive-deps
+  const scenarios = useMemo(
+    () => [15, 20, 25].map((y) => ({ y, r: assessCustomer({ profile, policy: { ...policy, maxTermMonths: y * 12 }, targetPrice }) })),
+    [pKey, polKey, targetPrice], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  const dsrShown = result.target
+    ? result.target.dsrAtTarget
+    : result.qualifiedIncome > 0 ? ((result.existingObligations + result.maxMonthlyPayment) / result.qualifiedIncome) * 100 : 0;
+  const payPct = result.target && result.qualifiedIncome > 0 ? (result.target.monthlyPayment / result.qualifiedIncome) * 100 : 0;
+
+  const ex = mode === "sale" ? explainAssessSale(result) : explainAssessCustomer(result, null);
+
+  const metrics: Metric[] = mode === "sale"
+    ? [
+        { label: "Vay tối đa", value: result.maxLoan, format: compactVnd },
+        { label: "Mua tới giá", value: result.maxPropertyPrice, format: compactVnd },
+        { label: result.target ? "Trả khoản căn này" : "Trả thêm/tháng", value: result.target ? result.target.monthlyPayment : result.maxMonthlyPayment, format: compactVnd },
+        { label: result.target ? "DSR tại căn" : "DSR hiện tại", value: result.target ? result.target.dsrAtTarget : result.dsrCurrent, format: (n) => pct(n) },
+      ]
+    : result.target
+      ? [
+          { label: "Trả góp/tháng", value: result.target.monthlyPayment, format: compactVnd },
+          { label: "% thu nhập", value: payPct, format: (n) => pct(n) },
+          { label: "Vốn tự có cần", value: result.target.requiredDown, format: compactVnd },
+          { label: "Vay ngân hàng", value: result.target.requiredLoan, format: compactVnd },
+        ]
+      : [
+          { label: "Mua được tới", value: result.maxPropertyPrice, format: compactVnd },
+          { label: "Trả góp/tháng", value: result.maxMonthlyPayment, format: compactVnd },
+          { label: "Vay được", value: result.maxLoan, format: compactVnd },
+          { label: "Vốn tự có", value: Number(down) || 0, format: (n) => pct(n) },
+        ];
+
+  const obBars: BarItem[] = [
+    { label: "Thu nhập tính được", value: result.qualifiedIncome, display: compactVnd(result.qualifiedIncome), color: "#34d399" },
+    { label: "Chi phí sống", value: result.livingCost, display: compactVnd(result.livingCost), color: "#94a3b8" },
+    { label: "Nợ hiện có", value: result.existingObligations, display: compactVnd(result.existingObligations), color: "#f0883e" },
+    { label: result.target ? "Khoản vay căn này" : "Khả năng trả thêm", value: result.target ? result.target.monthlyPayment : result.maxMonthlyPayment, display: compactVnd(result.target ? result.target.monthlyPayment : result.maxMonthlyPayment), color: "#38bdf8" },
   ];
+  const affordBars: BarItem[] = result.target
+    ? [
+        { label: "Vay cần", value: result.target.requiredLoan, display: compactVnd(result.target.requiredLoan), color: result.target.affordable ? "#34d399" : "#f87171" },
+        { label: "Vay được (tối đa)", value: result.maxLoan, display: compactVnd(result.maxLoan), color: "#38bdf8" },
+      ]
+    : [];
+
   const chart = (
-    <div className="flex w-full flex-col items-center">
-      <div className="w-full max-w-[260px]"><Gauge percent={pressure} label="Trả nợ / thu nhập" /></div>
-      <div className="text-[10px] text-slate-400">Xanh: an toàn (≤40%) · Vàng: cân nhắc · Đỏ: căng (&gt;55%)</div>
+    <div className="flex w-full flex-col items-center gap-3">
+      <div className="w-full max-w-[260px]"><Gauge percent={dsrShown} label={`DSR ${result.target ? "tại căn" : "khi vay tối đa"}`} /></div>
+      <div className="text-[10px] text-slate-400">Xanh: thoải mái · Vàng: cận biên · Đỏ: căng (vượt trần {pct(policy.dsrCap)})</div>
+      <div className="w-full px-1"><MiniBars items={obBars} /></div>
+      {affordBars.length > 0 && (
+        <div className="w-full px-1">
+          <div className="mb-1 text-[11px] text-slate-300">Vay cần vs. vay được</div>
+          <MiniBars items={affordBars} />
+        </div>
+      )}
     </div>
   );
 
+  const tables: ReportTable[] = [
+    {
+      heading: "So sánh kịch bản kỳ hạn",
+      head: ["Kỳ hạn", "Trả/tháng", "Vay tối đa", "Mua tới giá", "Đánh giá"],
+      rows: scenarios.map(({ y, r }) => [
+        `${y} năm`,
+        compactVnd(r.target ? r.target.monthlyPayment : r.maxMonthlyPayment),
+        compactVnd(r.maxLoan), compactVnd(r.maxPropertyPrice), VERDICT_NEUTRAL[r.verdict],
+      ]),
+    },
+  ];
+
+  const title = mode === "sale" ? "Đánh giá năng lực khách" : ex.title;
+  const subtitle = result.target ? `Căn nhắm ${compactVnd(result.target.price)} • ${policy.name}` : `Thu nhập ${compactVnd(result.qualifiedIncome)}/tháng`;
+
   return (
     <div className="flex flex-col gap-4">
+      {/* chế độ + mức nhập */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="inline-flex rounded-lg border border-border p-0.5 text-sm">
+          {(["sale", "customer"] as const).map((m) => (
+            <button key={m} onClick={() => setMode(m)} className={`rounded-md px-3 py-1.5 transition ${mode === m ? "bg-sky-500 text-white" : "text-muted-foreground hover:bg-muted"}`}>
+              {m === "sale" ? "🕵️ Bản sale" : "🏡 Bản gửi khách"}
+            </button>
+          ))}
+        </div>
+        <button onClick={() => setAdvanced((a) => !a)} className="text-sm text-sky-500 hover:underline">{advanced ? "− Thu gọn" : "+ Nâng cao"}</button>
+      </div>
+      {mode === "sale"
+        ? <p className="-mt-2 text-xs text-amber-500/90">Bản đánh giá nội bộ — dùng để lọc &amp; lái sản phẩm, không đưa khách xem.</p>
+        : <p className="-mt-2 text-xs text-emerald-500/90">Bản tích cực để gửi khách — luôn nêu lộ trình sở hữu, kèm miễn trừ &amp; lưu ý CIC.</p>}
+
       <div className="flex flex-col gap-3 rounded-xl border border-border p-4">
-        <Field label="Thu nhập/tháng" value={income} onChange={setIncome} suffix="đ" hint={compactVnd(num(income))} />
-        <Field label="Đang trả nợ/tháng" value={debt} onChange={setDebt} suffix="đ" hint={compactVnd(num(debt))} />
+        {/* preset ngân hàng */}
+        <div className="flex flex-wrap gap-1.5">
+          {BANK_POLICIES.map((p) => (
+            <button key={p.id} onClick={() => applyPolicy(p.id)} className={`rounded-full border px-3 py-1 text-xs ${presetId === p.id ? "border-sky-500 bg-sky-500/10 text-sky-500" : "border-border hover:bg-muted"}`}>{p.name}</button>
+          ))}
+        </div>
+
+        {/* thu nhập */}
+        {!advanced ? (
+          <Field label="Thu nhập/tháng (chứng minh được)" value={String(incomes[0]?.amount ?? 0)} onChange={(v) => setIncome(0, { amount: num(v) })} suffix="đ" hint={compactVnd(incomes[0]?.amount ?? 0)} />
+        ) : (
+          <div className="flex flex-col gap-2">
+            <span className="text-sm text-muted-foreground">Các nguồn thu nhập</span>
+            {incomes.map((it, i) => (
+              <div key={i} className="flex flex-col gap-1.5 rounded-lg border border-border p-2">
+                <div className="flex items-center gap-2">
+                  <input value={it.label} onChange={(e) => setIncome(i, { label: e.target.value })} className="min-w-0 flex-1 rounded-lg border border-border bg-background px-2 py-1.5 text-sm outline-none focus:border-sky-500" />
+                  <input inputMode="numeric" value={String(it.amount)} onChange={(e) => setIncome(i, { amount: num(e.target.value) })} className="w-32 rounded-lg border border-border bg-background px-2 py-1.5 text-right text-sm outline-none focus:border-sky-500" />
+                  <span className="text-xs text-muted-foreground">đ</span>
+                  {incomes.length > 1 && <button onClick={() => delIncome(i)} className="text-muted-foreground hover:text-red-500" aria-label="Xoá">✕</button>}
+                </div>
+                <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                  <label className="flex items-center gap-1"><input type="checkbox" checked={it.proven} onChange={(e) => setIncome(i, { proven: e.target.checked })} />Chứng minh được</label>
+                  <label className="flex items-center gap-1"><input type="checkbox" checked={it.variable} onChange={(e) => setIncome(i, { variable: e.target.checked })} />Biến động (×70%)</label>
+                </div>
+              </div>
+            ))}
+            <button onClick={addIncome} className="self-start text-sm text-sky-500 hover:underline">+ Thêm nguồn</button>
+            <Field label="Thu nhập người đồng vay/tháng" value={coIncome} onChange={setCoIncome} suffix="đ" hint={compactVnd(num(coIncome))} />
+          </div>
+        )}
+
+        {/* nợ — nhanh: tổng; nâng cao: liệt kê + thẻ */}
+        {!advanced ? (
+          <Field label="Đang trả nợ/tháng" value={String(debts[0]?.monthly ?? 0)} onChange={(v) => setDebts(num(v) > 0 ? [{ label: "Nợ hiện tại", monthly: num(v) }] : [])} suffix="đ" hint={compactVnd(debts[0]?.monthly ?? 0)} />
+        ) : (
+          <div className="flex flex-col gap-2">
+            <span className="text-sm text-muted-foreground">Khoản nợ đang trả</span>
+            {debts.map((d, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <input value={d.label} onChange={(e) => setDebts((xs) => xs.map((x, idx) => idx === i ? { ...x, label: e.target.value } : x))} className="min-w-0 flex-1 rounded-lg border border-border bg-background px-2 py-1.5 text-sm outline-none focus:border-sky-500" />
+                <input inputMode="numeric" value={String(d.monthly)} onChange={(e) => setDebts((xs) => xs.map((x, idx) => idx === i ? { ...x, monthly: num(e.target.value) } : x))} className="w-32 rounded-lg border border-border bg-background px-2 py-1.5 text-right text-sm outline-none focus:border-sky-500" />
+                <span className="text-xs text-muted-foreground">đ/th</span>
+                <button onClick={() => setDebts((xs) => xs.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-red-500" aria-label="Xoá">✕</button>
+              </div>
+            ))}
+            <button onClick={() => setDebts((xs) => [...xs, { label: "Khoản nợ", monthly: 0 }])} className="self-start text-sm text-sky-500 hover:underline">+ Thêm khoản nợ</button>
+            <span className="mt-1 text-sm text-muted-foreground">Thẻ tín dụng (tính 5% hạn mức/tháng)</span>
+            {cards.map((c, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <input value={c.label} onChange={(e) => setCards((xs) => xs.map((x, idx) => idx === i ? { ...x, label: e.target.value } : x))} className="min-w-0 flex-1 rounded-lg border border-border bg-background px-2 py-1.5 text-sm outline-none focus:border-sky-500" />
+                <input inputMode="numeric" value={String(c.limit)} onChange={(e) => setCards((xs) => xs.map((x, idx) => idx === i ? { ...x, limit: num(e.target.value) } : x))} className="w-32 rounded-lg border border-border bg-background px-2 py-1.5 text-right text-sm outline-none focus:border-sky-500" />
+                <span className="text-xs text-muted-foreground">hạn mức</span>
+                <button onClick={() => setCards((xs) => xs.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-red-500" aria-label="Xoá">✕</button>
+              </div>
+            ))}
+            <button onClick={() => setCards((xs) => [...xs, { label: "Thẻ tín dụng", limit: 0 }])} className="self-start text-sm text-sky-500 hover:underline">+ Thêm thẻ</button>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Tỉ lệ trả nợ tối đa" value={dti} onChange={setDti} suffix="%" hint="NH thường 50–70%" />
+          <Field label="Tuổi người vay" value={age} onChange={setAge} suffix="tuổi" hint={`Kỳ hạn ≤ ${Math.max(0, (num(maxAge) || 70) - (num(age) || 0))} năm`} />
           <Field label="Vốn tự có" value={down} onChange={setDown} suffix="%" />
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Lãi suất dự kiến" value={rate} onChange={setRate} suffix="%/năm" />
-          <Field label="Kỳ hạn" value={years} onChange={setYears} suffix="năm" />
-        </div>
+        <Field label="Giá căn đang nhắm (tùy chọn)" value={target} onChange={setTarget} suffix="đ" hint={targetPrice ? compactVnd(targetPrice) : "Để trống = chỉ tính khả năng tối đa"} />
+
+        {advanced && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Số người phụ thuộc" value={dependents} onChange={setDependents} suffix="người" hint={`Chi phí sống ≈ ${compactVnd(result.livingCost)}`} />
+              <Field label="Chi phí sống/tháng (ghi đè)" value={livingOverride} onChange={setLivingOverride} suffix="đ" hint="Để trống = tự ước" />
+            </div>
+            <div className="rounded-lg border border-border/60 p-3">
+              <div className="mb-2 text-xs font-medium text-muted-foreground">Chính sách ngân hàng</div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <Field label="Trần DSR" value={dsr} onChange={setDsr} suffix="%" />
+                <Field label="Trần LTV" value={ltv} onChange={setLtv} suffix="%" />
+                <Field label="Lãi suất" value={rate} onChange={setRate} suffix="%/năm" />
+                <Field label="Kỳ hạn" value={termYears} onChange={setTermYears} suffix="năm" />
+                <Field label="Tuổi tối đa" value={maxAge} onChange={setMaxAge} suffix="tuổi" />
+              </div>
+            </div>
+          </>
+        )}
       </div>
-      <ResultCard brand={brand} title="Khả năng vay & ngân sách" subtitle={`Thu nhập ${compactVnd(num(income))}/tháng`} chart={chart} metrics={metrics} ex={ex} tables={[]} />
+
+      <ResultCard brand={brand} title={title} subtitle={subtitle} chart={chart} metrics={metrics} ex={ex} tables={tables} />
+
+      {/* so sánh kịch bản — trên màn hình */}
+      <div className="rounded-xl border border-border p-4">
+        <div className="mb-2 text-sm font-semibold">So sánh kịch bản kỳ hạn</div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-xs text-muted-foreground">
+              <th className="py-1 pr-2">Kỳ hạn</th><th className="py-1 pr-2 text-right">Trả/tháng</th><th className="py-1 pr-2 text-right">Vay tối đa</th><th className="py-1 pr-2 text-right">Mua tới giá</th><th className="py-1 text-right">Đánh giá</th>
+            </tr></thead>
+            <tbody>
+              {scenarios.map(({ y, r }) => (
+                <tr key={y} className="border-t border-border/60">
+                  <td className="py-1.5 pr-2">{y} năm</td>
+                  <td className="py-1.5 pr-2 text-right">{compactVnd(r.target ? r.target.monthlyPayment : r.maxMonthlyPayment)}</td>
+                  <td className="py-1.5 pr-2 text-right">{compactVnd(r.maxLoan)}</td>
+                  <td className="py-1.5 pr-2 text-right">{compactVnd(r.maxPropertyPrice)}</td>
+                  <td className={`py-1.5 text-right font-medium ${r.verdict === "khoe" ? "text-emerald-500" : r.verdict === "can_bien" ? "text-amber-500" : "text-red-500"}`}>{VERDICT_NEUTRAL[r.verdict]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-2 text-[10px] text-muted-foreground">Kỳ hạn thực tế bị giới hạn bởi tuổi (tuổi + kỳ hạn ≤ {num(maxAge) || 70}).</p>
+      </div>
     </div>
   );
 }
