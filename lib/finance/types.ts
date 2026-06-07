@@ -97,3 +97,18 @@ export interface RentalResult {
   grossYieldPercent: number; // tỉ suất cho thuê gộp tham khảo = thuê*12/giá
   positive: boolean; // dòng tiền dương?
 }
+
+// ── PDF report (client-safe types; renderer lives in report.ts server-only) ──
+export interface ReportTable {
+  heading: string;
+  head: string[]; // column headers
+  rows: string[][]; // cell text (col0 left-aligned, rest right-aligned)
+}
+
+export interface ReportPayload {
+  title: string;
+  subtitle?: string | null;
+  bullets: string[]; // plain-language explanation
+  summary: { label: string; value: string }[]; // key figures
+  tables: ReportTable[];
+}

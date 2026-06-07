@@ -6,9 +6,9 @@ import { explainAmort, explainAfford, explainSchedule, explainRental, type Expla
 import { compactVnd, vnd, pct } from "@/lib/finance/format";
 import { DISCLAIMER } from "@/lib/finance/disclaimer";
 import { RATE_PRESETS, SCHEDULE_PRESETS } from "@/lib/finance/presets";
-import type { AmortMethod, Installment } from "@/lib/finance/types";
+import type { AmortMethod, Installment, ReportPayload } from "@/lib/finance/types";
 import type { FinanceCard, CardRow } from "@/lib/finance/card";
-import { financeCardAction } from "@/app/(app)/calculator/_actions";
+import { financeCardAction, financeReportAction } from "@/app/(app)/calculator/_actions";
 
 type Tab = "loan" | "afford" | "schedule" | "rental";
 
@@ -82,7 +82,17 @@ function Field({
   );
 }
 
-function ResultCard({ ex, table, card }: { ex: Explained; table?: React.ReactNode; card: FinanceCard }) {
+function ResultCard({
+  ex,
+  table,
+  card,
+  report,
+}: {
+  ex: Explained;
+  table?: React.ReactNode;
+  card: FinanceCard;
+  report: ReportPayload;
+}) {
   return (
     <section className="flex flex-col gap-3 rounded-xl border border-border bg-muted/30 p-4">
       <h2 className="font-semibold">{ex.title}</h2>
@@ -95,16 +105,17 @@ function ResultCard({ ex, table, card }: { ex: Explained; table?: React.ReactNod
         ))}
       </ul>
       {table}
-      <ShareRow copyText={ex.copyText} card={card} />
+      <ShareRow copyText={ex.copyText} card={card} report={report} />
       <p className="text-[11px] leading-snug text-muted-foreground">{DISCLAIMER}</p>
     </section>
   );
 }
 
-function ShareRow({ copyText, card }: { copyText: string; card: FinanceCard }) {
+function ShareRow({ copyText, card, report }: { copyText: string; card: FinanceCard; report: ReportPayload }) {
   const [copied, setCopied] = useState(false);
   const [img, setImg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   const copy = async () => {
@@ -126,6 +137,19 @@ function ShareRow({ copyText, card }: { copyText: string; card: FinanceCard }) {
     else setErr(res.error ?? "Tạo ảnh thất bại.");
   };
 
+  const makePdf = async () => {
+    setPdfBusy(true);
+    setErr(null);
+    const res = await financeReportAction(report);
+    setPdfBusy(false);
+    if (res.ok && res.dataUrl) {
+      const a = document.createElement("a");
+      a.href = res.dataUrl;
+      a.download = "bao-cao-tai-chinh.pdf";
+      a.click();
+    } else setErr(res.error ?? "Tạo PDF thất bại.");
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap gap-2">
@@ -138,9 +162,16 @@ function ShareRow({ copyText, card }: { copyText: string; card: FinanceCard }) {
         <button
           onClick={makeImage}
           disabled={busy}
+          className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-60"
+        >
+          {busy ? "Đang tạo…" : "🖼️ Tạo ảnh"}
+        </button>
+        <button
+          onClick={makePdf}
+          disabled={pdfBusy}
           className="rounded-lg bg-sky-500 px-3 py-1.5 text-sm text-white hover:bg-sky-600 disabled:opacity-60"
         >
-          {busy ? "Đang tạo…" : "🖼️ Tạo ảnh gửi khách"}
+          {pdfBusy ? "Đang tạo…" : "📄 Xuất PDF cho khách"}
         </button>
       </div>
       {err && <p className="text-xs text-amber-500">{err}</p>}
@@ -227,6 +258,34 @@ function LoanTab() {
   // Yearly snapshot (dư nợ + trả/tháng cuối mỗi năm) — compact for mobile.
   const yearly = result.rows.filter((r) => r.month % 12 === 0).slice(0, 6);
 
+  const report: ReportPayload = {
+    title: ex.title,
+    subtitle: card.subtitle,
+    bullets: ex.lines,
+    summary: card.rows,
+    tables: [
+      {
+        heading: "Tổng quan theo năm",
+        head: ["Năm", "Trả/tháng", "Lãi/tháng", "Dư nợ cuối năm"],
+        rows: result.rows
+          .filter((r) => r.month % 12 === 0)
+          .map((r) => [String(r.month / 12), compactVnd(r.payment), compactVnd(r.interest), compactVnd(r.balance)]),
+      },
+      {
+        heading: "Chi tiết từng tháng",
+        head: ["Tháng", "Lãi suất", "Trả/tháng", "Lãi", "Gốc", "Dư nợ"],
+        rows: result.rows.map((r) => [
+          String(r.month),
+          pct(r.rate),
+          compactVnd(r.payment),
+          compactVnd(r.interest),
+          compactVnd(r.principal),
+          compactVnd(r.balance),
+        ]),
+      },
+    ],
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 rounded-xl border border-border p-4">
@@ -274,6 +333,7 @@ function LoanTab() {
       <ResultCard
         ex={ex}
         card={card}
+        report={report}
         table={
           yearly.length > 0 ? (
             <div className="overflow-x-auto">
@@ -334,6 +394,8 @@ function AffordTab() {
     ]),
   };
 
+  const report: ReportPayload = { title: ex.title, subtitle: card.subtitle, bullets: ex.lines, summary: card.rows, tables: [] };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 rounded-xl border border-border p-4">
@@ -348,7 +410,7 @@ function AffordTab() {
           <Field label="Kỳ hạn" value={years} onChange={setYears} suffix="năm" />
         </div>
       </div>
-      <ResultCard ex={ex} card={card} />
+      <ResultCard ex={ex} card={card} report={report} />
     </div>
   );
 }
@@ -374,6 +436,27 @@ function ScheduleTab() {
     title: "Lịch thanh toán",
     subtitle: `Giá ${compactVnd(num(price))}`,
     rows: cardRows(result.rows.slice(0, 6).map((r) => ({ label: `${r.label} (${pct(r.percent)})`, value: vnd(r.amount) }))),
+  };
+
+  const report: ReportPayload = {
+    title: ex.title,
+    subtitle: card.subtitle,
+    bullets: ex.lines,
+    summary: card.rows,
+    tables: [
+      {
+        heading: "Lịch thanh toán theo tiến độ",
+        head: ["Đợt", "%", "Số tiền", "Luỹ kế", "Còn lại", "Mốc"],
+        rows: result.rows.map((r) => [
+          r.label,
+          String(r.percent),
+          compactVnd(r.amount),
+          compactVnd(r.cumulative),
+          compactVnd(r.remaining),
+          r.due ?? "",
+        ]),
+      },
+    ],
   };
 
   return (
@@ -418,6 +501,7 @@ function ScheduleTab() {
       <ResultCard
         ex={ex}
         card={card}
+        report={report}
         table={
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
@@ -476,6 +560,8 @@ function RentalTab() {
     ]),
   };
 
+  const report: ReportPayload = { title: ex.title, subtitle: card.subtitle, bullets: ex.lines, summary: card.rows, tables: [] };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 rounded-xl border border-border p-4">
@@ -489,7 +575,7 @@ function RentalTab() {
           <Field label="Chi phí/tháng" value={costs} onChange={setCosts} suffix="đ" hint={compactVnd(num(costs))} />
         </div>
       </div>
-      <ResultCard ex={ex} card={card} />
+      <ResultCard ex={ex} card={card} report={report} />
     </div>
   );
 }
