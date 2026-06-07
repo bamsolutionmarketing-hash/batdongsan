@@ -11,6 +11,7 @@ import {
   type CustomerProfile, type IncomeLine, type DebtLine, type CreditCard, type BankPolicy, type Band,
 } from "@/lib/finance/assess";
 import { inferDiscovery, explainDiscovery, QUESTIONS, GROUPS, type DiscoveryResult } from "@/lib/finance/discovery";
+import { scoreLead, type Tier } from "@/lib/finance/lead";
 import type { AmortMethod, Installment, ReportTable } from "@/lib/finance/types";
 import { CountUp, Donut, BalanceChart, Gauge, MiniBars, type BalancePoint, type BarItem } from "./charts";
 
@@ -323,11 +324,13 @@ function PhaseToggle({ phase, setPhase }: { phase: "discover" | "assess"; setPha
 }
 
 const TRI_BADGE: Record<string, string> = { thap: "bg-red-500/15 text-red-400", vua: "bg-amber-500/15 text-amber-400", cao: "bg-emerald-500/15 text-emerald-400" };
+const TIER_COLOR: Record<Tier, string> = { nong: "#10b981", am: "#f59e0b", nguoi: "#64748b" };
 
 // Bộ câu hỏi gián tiếp — sale hỏi tự nhiên, tick đáp án; phần "đọc vị" CHỈ SALE THẤY.
 function DiscoveryPanel({ onApply }: { onApply: (r: DiscoveryResult) => void }) {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const result = useMemo(() => inferDiscovery(answers), [answers]);
+  const lead = useMemo(() => scoreLead({ discovery: result }), [result]);
   const ex = explainDiscovery(result);
   const [showWhy, setShowWhy] = useState(false);
   const fmtTr = (n: number) => `${Math.round(n / 1_000_000)}tr`;
@@ -365,10 +368,36 @@ function DiscoveryPanel({ onApply }: { onApply: (r: DiscoveryResult) => void }) 
           <div className="text-sm font-semibold">🔎 Chân dung khách <span className="text-[11px] font-normal text-muted-foreground">(chỉ sale thấy)</span></div>
           {result.incomeBand && <span className={`rounded-full px-2 py-0.5 text-[11px] ${TRI_BADGE[result.confidence]}`}>tin cậy {result.confidence === "thap" ? "thấp" : result.confidence === "vua" ? "vừa" : "cao"}</span>}
         </div>
-        {result.incomeBand ? (
+        {result.answered > 0 ? (
           <>
+            {/* MỨC TIỀM NĂNG (lead score) */}
+            <div className="rounded-xl border border-border bg-muted/30 p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-extrabold" style={{ color: TIER_COLOR[lead.tier] }}>{lead.score}</span>
+                  <span className="text-xs text-muted-foreground">/100 tiềm năng</span>
+                </div>
+                <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: TIER_COLOR[lead.tier] + "22", color: TIER_COLOR[lead.tier] }}>{lead.tierLabel}</span>
+              </div>
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted">
+                <div className="h-full rounded-full transition-all" style={{ width: `${lead.score}%`, background: TIER_COLOR[lead.tier] }} />
+              </div>
+              {!lead.reliable && <p className="mt-1 text-[11px] text-amber-500">Mới đủ ít dữ kiện — hỏi thêm để chấm chính xác hơn.</p>}
+              <div className="mt-2 flex flex-col gap-1">
+                {lead.dimensions.map((dm) => (
+                  <div key={dm.key} className="flex items-center gap-2">
+                    <span className="w-20 shrink-0 text-[11px] text-muted-foreground">{dm.label}</span>
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                      <div className="h-full rounded-full" style={{ width: `${dm.score}%`, background: dm.score >= 70 ? "#34d399" : dm.score >= 45 ? "#fbbf24" : "#f87171" }} />
+                    </div>
+                    <span className="w-7 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground">{dm.score}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <Stat label="Thu nhập ước tính" value={`${fmtTr(result.incomeBand.low)}–${fmtTr(result.incomeBand.high)}`} />
+              <Stat label="Thu nhập ước tính" value={result.incomeBand ? `${fmtTr(result.incomeBand.low)}–${fmtTr(result.incomeBand.high)}` : "—"} />
               <Stat label="Cấp bậc" value={result.jobLabel ?? "—"} />
               <Stat label="Nhu cầu" value={result.rooms ? `${result.rooms}PN` : "—"} />
               <Stat label="Mục tiêu" value={result.intent === "o_thuc" ? "Ở thực" : result.intent === "cho_thue" ? "Cho thuê" : result.intent === "dau_tu" ? "Đầu tư" : "—"} />
@@ -376,6 +405,15 @@ function DiscoveryPanel({ onApply }: { onApply: (r: DiscoveryResult) => void }) 
             <ul className="flex flex-col gap-1 text-sm">
               {ex.lines.map((l, i) => <li key={i} className="flex gap-2"><span className="text-sky-500">›</span><span>{l}</span></li>)}
             </ul>
+
+            {/* Việc nên làm tiếp */}
+            <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-3">
+              <div className="text-xs font-semibold text-sky-600 dark:text-sky-400">🎯 Việc nên làm</div>
+              <ul className="mt-1 flex flex-col gap-1 text-sm">
+                {lead.nextActions.map((a, i) => <li key={i} className="flex gap-2"><span className="text-sky-500">→</span><span>{a}</span></li>)}
+              </ul>
+            </div>
+
             {result.notes.length > 0 && (
               <div>
                 <button onClick={() => setShowWhy((s) => !s)} className="text-xs text-sky-500 hover:underline">{showWhy ? "− Ẩn lý do đọc vị" : `+ Vì sao đọc vậy (${result.notes.length})`}</button>
@@ -384,7 +422,7 @@ function DiscoveryPanel({ onApply }: { onApply: (r: DiscoveryResult) => void }) 
             )}
           </>
         ) : (
-          <p className="text-sm text-muted-foreground">Tick vài câu trả lời để hệ thống dựng chân dung tài chính khách.</p>
+          <p className="text-sm text-muted-foreground">Tick vài câu trả lời để hệ thống dựng chân dung & chấm mức tiềm năng của khách.</p>
         )}
         <button onClick={() => onApply(result)} disabled={result.answered === 0}
           className="self-start rounded-lg bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-600 disabled:opacity-50">
