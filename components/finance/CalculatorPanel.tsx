@@ -533,6 +533,7 @@ function CustomerFitTab({ brand }: { brand: BrandInfo | null }) {
   // (cash-heavy → đánh dấu biến động để engine chiết khấu 70%).
   const applyDiscovery = (r: DiscoveryResult) => {
     if (r.handoff.income > 0) setIncomes([{ label: "Thu nhập ước tính (khám phá)", amount: r.handoff.income, proven: true, variable: !r.proven }]);
+    setCoIncome(String(r.handoff.coBorrowerIncome));
     setDependents(String(r.handoff.dependents));
     setDown(String(r.handoff.downPaymentPercent));
     if (r.handoff.targetPrice) setTarget(String(r.handoff.targetPrice));

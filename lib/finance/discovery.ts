@@ -15,6 +15,7 @@ export interface Signal {
   incomeMin?: number; // VND/tháng — đóng góp ước tính dải thu nhập
   incomeMax?: number;
   weight?: number; // trọng số tín hiệu thu nhập (mặc định 1)
+  coBorrower?: number; // ước thu nhập người đồng vay (vợ/chồng) — VND/tháng
   jobLevel?: JobLevel;
   rooms?: 1 | 2 | 3;
   dependents?: number;
@@ -199,6 +200,146 @@ export const QUESTIONS: DiscoveryQuestion[] = [
       { label: "Trên 5 tỷ", signal: { note: "Ngân sách >5 tỷ → phân khúc cao.", incomeMin: 80 * M, incomeMax: 200 * M, weight: 0.6 } },
     ],
   },
+
+  // ── GIA ĐÌNH & NHU CẦU (mở rộng) ──
+  {
+    id: "que_quan", group: "gia_dinh",
+    ask: "“Anh/chị là người ở đây hay từ tỉnh lên lập nghiệp ạ?”",
+    reads: "Gốc địa phương → có nhà/đất sẵn, dễ hỗ trợ vốn; từ tỉnh lên → cầu an cư cao.",
+    options: [
+      { label: "Người địa phương", signal: { downHint: 35, note: "Dân địa phương → thường có sẵn nhà/đất, dễ xoay vốn." } },
+      { label: "Từ tỉnh lên, đang thuê", signal: { intent: "o_thuc", urgency: "vua", downHint: 20, note: "Từ tỉnh lên ở thuê → khát an cư, vốn mỏng hơn." } },
+      { label: "Từ tỉnh, đã ổn định", signal: { downHint: 30, note: "Từ tỉnh nhưng đã ổn định → tích luỹ được." } },
+    ],
+  },
+  {
+    id: "vo_chong_lam", group: "gia_dinh",
+    ask: "“Hai vợ chồng cùng đi làm hay một người ở nhà chăm con ạ?”",
+    reads: "Thu nhập kép → cộng người đồng vay, hồ sơ vay khoẻ hơn nhiều.",
+    options: [
+      { label: "Cả hai cùng đi làm", signal: { coBorrower: 22 * M, decision: "vo_chong", note: "Thu nhập kép → cộng đồng vay, khả năng vay tăng mạnh." } },
+      { label: "Một người ở nhà chăm con", signal: { decision: "vo_chong", dsrRisk: "vua", note: "Một nguồn thu nuôi cả nhà → cân nhắc DSR kỹ." } },
+      { label: "Độc thân tự lo", signal: { decision: "mot_minh", note: "Độc thân → một nguồn thu, quyết nhanh." } },
+    ],
+  },
+
+  // ── CÔNG VIỆC & CẤP BẬC (mở rộng) ──
+  {
+    id: "vo_chong_nghe", group: "cong_viec",
+    ask: "“Anh/chị nhà mình công việc bên nào ạ?”",
+    reads: "Nghề của vợ/chồng → ước thu nhập người đồng vay.",
+    options: [
+      { label: "Cùng đi làm công ty", signal: { coBorrower: 22 * M, decision: "vo_chong", note: "Vợ/chồng làm công ty → đồng vay chứng minh được ~20tr." } },
+      { label: "Vợ/chồng kinh doanh", signal: { coBorrower: 30 * M, decision: "vo_chong", note: "Vợ/chồng kinh doanh → đồng vay khá nhưng phần lớn tiền mặt." } },
+      { label: "Mình là thu nhập chính", signal: { note: "Một trụ cột thu nhập → tập trung hồ sơ người vay chính." } },
+    ],
+  },
+  {
+    id: "tra_luong", group: "cong_viec",
+    ask: "“Công ty trả lương qua chuyển khoản hết hay có phần tiền mặt ạ?”",
+    reads: "Cách trả lương → khả năng chứng minh thu nhập khi vay.",
+    options: [
+      { label: "Chuyển khoản toàn bộ", signal: { proven: true, note: "Lương qua bank 100% → hồ sơ vay rất đẹp." } },
+      { label: "Một phần tiền mặt", signal: { proven: false, note: "Một phần tiền mặt → thu nhập thực cao hơn bảng lương, cần sao kê bổ trợ." } },
+      { label: "Chủ yếu tiền mặt", signal: { proven: false, note: "Chủ yếu tiền mặt → khó chứng minh, ưu tiên CM dòng tiền/tài sản." } },
+    ],
+  },
+  {
+    id: "bao_hiem", group: "cong_viec",
+    ask: "“Công ty đóng bảo hiểm trên lương thực hay lương cơ bản ạ?”",
+    reads: "Đóng BHXH trên lương thực → bảng lương phản ánh đúng thu nhập (vay tốt).",
+    options: [
+      { label: "Trên lương thực", signal: { proven: true, note: "BHXH trên lương thực → bảng lương đủ mạnh để vay." } },
+      { label: "Trên lương cơ bản", signal: { note: "BHXH lương cơ bản → thu nhập thực cao hơn giấy tờ, cần phụ lục/thưởng." } },
+      { label: "Không rõ / không có", signal: { dsrRisk: "vua", note: "Không rõ BHXH → kiểm tra kỹ hồ sơ chứng minh thu nhập." } },
+    ],
+  },
+  {
+    id: "thu_nhap_them", group: "cong_viec",
+    ask: "“Ngoài lương, anh/chị có nguồn thu thêm nào không — cho thuê, kinh doanh phụ chẳng hạn?”",
+    reads: "Thu nhập ngoài lương → nâng khả năng trả nợ + dấu hiệu nhà đầu tư.",
+    options: [
+      { label: "Chỉ có lương", signal: { note: "Chỉ lương → tính theo bảng lương là chính." } },
+      { label: "Có cho thuê BĐS", signal: { incomeMin: 10 * M, incomeMax: 30 * M, weight: 0.5, intent: "dau_tu", note: "Có BĐS cho thuê → đã là nhà đầu tư, có dòng tiền thêm." } },
+      { label: "Kinh doanh / bán hàng thêm", signal: { incomeMin: 10 * M, incomeMax: 40 * M, weight: 0.5, proven: false, note: "Kinh doanh thêm → thu nhập tăng nhưng phần lớn tiền mặt." } },
+    ],
+  },
+
+  // ── TÀI SẢN & LỐI SỐNG (mở rộng) ──
+  {
+    id: "du_lich", group: "tai_san",
+    ask: "“Gia đình hay đi du lịch trong nước hay thi thoảng đi nước ngoài ạ?”",
+    reads: "Tần suất & điểm đến du lịch là proxy thu nhập khả dụng.",
+    options: [
+      { label: "Chủ yếu trong nước", signal: { incomeMin: 15 * M, incomeMax: 40 * M, weight: 0.4, note: "Du lịch trong nước → chi tiêu vừa phải." } },
+      { label: "Nước ngoài 1–2 lần/năm", signal: { incomeMin: 40 * M, incomeMax: 90 * M, weight: 0.5, note: "Đi nước ngoài đều → thu nhập khá." } },
+      { label: "Thường xuyên nước ngoài", signal: { incomeMin: 80 * M, incomeMax: 200 * M, weight: 0.6, note: "Du lịch nước ngoài thường xuyên → thu nhập cao." } },
+    ],
+  },
+  {
+    id: "tich_luy", group: "tai_san",
+    ask: "“Anh/chị có hay để dành vàng, sổ tiết kiệm hay đầu tư gì không ạ?”",
+    reads: "Kênh tích luỹ → ước vốn tự có sẵn có.",
+    options: [
+      { label: "Chủ yếu gửi tiết kiệm", signal: { downHint: 40, note: "Có tiết kiệm → vốn tự có sẵn, an toàn." } },
+      { label: "Vàng / chứng khoán / BĐS", signal: { downHint: 45, note: "Tài sản đa dạng → vốn dày, có thể quy đổi nhanh." } },
+      { label: "Chưa tích luỹ nhiều", signal: { downHint: 20, dsrRisk: "vua", note: "Vốn mỏng → cần kéo kỳ hạn / chọn căn vừa tầm." } },
+    ],
+  },
+  {
+    id: "cuoi_tuan", group: "tai_san",
+    ask: "“Cuối tuần nhà mình hay đưa các cháu đi đâu chơi ạ?”",
+    reads: "Thói quen giải trí cuối tuần là proxy mức sống.",
+    options: [
+      { label: "Quanh nhà / quán xá bình dân", signal: { incomeMin: 12 * M, incomeMax: 30 * M, weight: 0.4, note: "Giải trí bình dân → ngân sách vừa." } },
+      { label: "TTTM / khu vui chơi", signal: { incomeMin: 25 * M, incomeMax: 60 * M, weight: 0.4, note: "Hay đi TTTM → mức sống khá." } },
+      { label: "Golf / resort / club", signal: { incomeMin: 70 * M, incomeMax: 180 * M, weight: 0.6, note: "Golf/resort → nhóm thu nhập cao." } },
+    ],
+  },
+
+  // ── MỤC TIÊU & TÀI CHÍNH (mở rộng) ──
+  {
+    id: "nguon_tien", group: "muc_tieu",
+    ask: "“Tiền mua chủ yếu từ tích luỹ, bán tài sản khác hay người nhà phụ thêm ạ?”",
+    reads: "Nguồn tiền → mức vốn tự có & ai cùng quyết định.",
+    options: [
+      { label: "Tích luỹ sẵn", signal: { downHint: 50, dsrRisk: "thap", note: "Vốn tự có sẵn → linh hoạt, ít phụ thuộc vay." } },
+      { label: "Bán tài sản khác", signal: { downHint: 60, note: "Bán tài sản để mua → vốn lớn, lưu ý thời điểm thanh khoản." } },
+      { label: "Người nhà hỗ trợ", signal: { downHint: 40, decision: "gia_dinh", note: "Người nhà phụ vốn → cả gia đình cùng quyết." } },
+      { label: "Chủ yếu vay ngân hàng", signal: { downHint: 25, dsrRisk: "vua", note: "Dựa nhiều vào vay → xét kỹ DSR & dòng tiền trả." } },
+    ],
+  },
+  {
+    id: "giai_doan", group: "muc_tieu",
+    ask: "“Anh/chị đã đi xem vài dự án rồi hay mới bắt đầu tìm ạ?”",
+    reads: "Giai đoạn mua → độ nóng & mức sẵn sàng chốt.",
+    options: [
+      { label: "Mới bắt đầu tìm hiểu", signal: { urgency: "thap", note: "Mới tìm → nuôi dưỡng, cung cấp thông tin." } },
+      { label: "Đã xem vài nơi, đang so sánh", signal: { urgency: "vua", note: "Đang so sánh → khách nóng, cần điểm khác biệt rõ." } },
+      { label: "Đã chốt khu vực, chọn căn", signal: { urgency: "cao", note: "Đã khoanh vùng → sẵn sàng xuống tiền, đẩy chốt." } },
+    ],
+  },
+  {
+    id: "uu_tien", group: "muc_tieu",
+    ask: "“Anh/chị quan tâm nhất điều gì: giá, vị trí, pháp lý hay tiềm năng tăng giá ạ?”",
+    reads: "Ưu tiên hàng đầu → chân dung tâm lý & hướng chốt.",
+    options: [
+      { label: "Giá / thanh toán nhẹ", signal: { note: "Nhạy giá → nhấn chính sách thanh toán, ưu đãi." } },
+      { label: "Vị trí & môi trường sống", signal: { intent: "o_thuc", note: "Coi trọng nơi ở → nhấn tiện ích, trường, cộng đồng." } },
+      { label: "Pháp lý an toàn", signal: { note: "Thận trọng pháp lý → minh bạch hồ sơ, không nói quá." } },
+      { label: "Tăng giá / cho thuê", signal: { intent: "dau_tu", note: "Tư duy đầu tư → nhấn hạ tầng, thanh khoản, lợi suất." } },
+    ],
+  },
+  {
+    id: "linh_hoat_ns", group: "muc_tieu",
+    ask: "“Nếu có căn ưng mà nhỉnh hơn ngân sách một chút thì anh/chị tính sao ạ?”",
+    reads: "Độ co giãn ngân sách → còn headroom để upsell hay không.",
+    options: [
+      { label: "Giữ đúng ngân sách", signal: { note: "Kỷ luật ngân sách → giữ trong tầm, không ép upsell." } },
+      { label: "Có thể nới nếu xứng đáng", signal: { note: "Còn headroom → có thể giới thiệu căn nhỉnh hơn." } },
+      { label: "Tuỳ chính sách thanh toán", signal: { note: "Co giãn theo dòng tiền → mạnh ở PTTT/giãn tiến độ." } },
+    ],
+  },
 ];
 
 // target-price hint (VND) for the budget question, parallel to its options
@@ -231,10 +372,11 @@ export interface DiscoveryResult {
   dsrRisk: Tri | null;
   downHint: number | null;
   proven: boolean; // thu nhập chủ yếu chứng minh được?
+  coBorrower: number; // thu nhập người đồng vay ước tính (VND/tháng)
   targetPrice: number | null;
   notes: string[]; // "đọc vị" cho sale
   // prefill cho engine đánh giá
-  handoff: { income: number; dependents: number; downPaymentPercent: number; targetPrice: number | null };
+  handoff: { income: number; coBorrowerIncome: number; dependents: number; downPaymentPercent: number; targetPrice: number | null };
 }
 
 // answers: { [questionId]: optionIndex }
@@ -307,7 +449,9 @@ export function inferDiscovery(answers: Record<string, number>): DiscoveryResult
   const budgetIdx = answers["ngan_sach"];
   const targetPrice = budgetIdx != null ? BUDGET_TARGET[budgetIdx] ?? null : null;
 
-  const proven = provenTotal === 0 ? true : provenVotes >= provenTotal / 2;
+  const coBorrower = pickMax(picks, (s) => s.coBorrower) ?? 0;
+  // Lean conservative: any cash signal in a tie tips "khó chứng minh".
+  const proven = provenTotal === 0 ? true : provenVotes > provenTotal / 2;
 
   // sale-facing reasoning notes (dedup, in question order)
   const notes = picks.map((p) => p.opt.signal.note).filter((x): x is string => !!x);
@@ -319,9 +463,9 @@ export function inferDiscovery(answers: Record<string, number>): DiscoveryResult
     answered: picks.length,
     incomeBand, incomeMid, confidence,
     jobLevel, jobLabel: jobLevel ? JOB_LABEL[jobLevel] : null,
-    rooms, dependents, intent, urgency, decision, dsrRisk, downHint, proven, targetPrice,
+    rooms, dependents, intent, urgency, decision, dsrRisk, downHint, proven, coBorrower, targetPrice,
     notes,
-    handoff: { income: incomeMid ?? 0, dependents, downPaymentPercent, targetPrice },
+    handoff: { income: incomeMid ?? 0, coBorrowerIncome: coBorrower, dependents, downPaymentPercent, targetPrice },
   };
 }
 
@@ -356,6 +500,7 @@ export function explainDiscovery(r: DiscoveryResult): { headline: string; lines:
   const lines: string[] = [];
   if (r.incomeBand) lines.push(`Thu nhập ước tính: ${fmtTr(r.incomeBand.low)}–${fmtTr(r.incomeBand.high)}/tháng (tin cậy ${TRI_LABEL[r.confidence]}).`);
   if (r.jobLabel) lines.push(`Cấp bậc nghề nghiệp: ${r.jobLabel}${r.proven ? "" : " — thu nhập phần lớn tiền mặt, khó chứng minh"}.`);
+  if (r.coBorrower > 0) lines.push(`Có người đồng vay (~${fmtTr(r.coBorrower)}/tháng) → cộng vào khả năng vay.`);
   if (r.rooms) lines.push(`Nhu cầu: ~${r.rooms}PN${r.dependents ? `, ${r.dependents} người phụ thuộc` : ""}${r.intent ? `, ${INTENT_LABEL[r.intent]}` : ""}.`);
   if (r.decision) lines.push(`Người quyết định: ${DECISION_LABEL[r.decision]}.`);
   if (r.urgency) lines.push(`Độ gấp: ${TRI_LABEL[r.urgency]}.`);

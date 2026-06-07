@@ -99,6 +99,35 @@ describe("handoff + explain", () => {
     expect(r.answered).toBe(0);
     expect(r.incomeBand).toBeNull();
     expect(r.handoff.downPaymentPercent).toBe(30);
+    expect(r.handoff.coBorrowerIncome).toBe(0);
     expect(explainDiscovery(r).headline).toMatch(/Chưa có/);
+  });
+});
+
+describe("expanded signals", () => {
+  it("dual-income answer adds a co-borrower to the handoff + explain", () => {
+    const r = inferDiscovery({ vo_chong_lam: opt("vo_chong_lam", "Cả hai") });
+    expect(r.coBorrower).toBeGreaterThan(0);
+    expect(r.handoff.coBorrowerIncome).toBe(r.coBorrower);
+    expect(r.decision).toBe("vo_chong");
+    expect(explainDiscovery(r).lines.join(" ")).toMatch(/đồng vay/);
+  });
+
+  it("source-of-funds and buying-stage refine capital & urgency", () => {
+    const r = inferDiscovery({
+      nguon_tien: opt("nguon_tien", "Tích luỹ sẵn"),
+      giai_doan: opt("giai_doan", "chọn căn"),
+    });
+    expect(r.handoff.downPaymentPercent).toBe(50);
+    expect(r.urgency).toBe("cao");
+  });
+
+  it("cash-payroll signals flip proven to false (haircut applies downstream)", () => {
+    const r = inferDiscovery({
+      nganh_nghe: opt("nganh_nghe", "Nhân viên"), // proven true
+      tra_luong: opt("tra_luong", "Chủ yếu tiền mặt"), // proven false
+      bao_hiem: opt("bao_hiem", "cơ bản"),
+    });
+    expect(r.proven).toBe(false);
   });
 });
