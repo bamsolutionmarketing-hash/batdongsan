@@ -61,3 +61,7 @@ values
    'Khởi công 28/6/2025 — bàn giao dự kiến Q4/2027', 'Đường Thống Nhất / D11, P. Đông Hòa, TP.HCM (Dĩ An cũ)', 'selling', null,
    50000000, 58000000, 'broker_estimate', false, true)
 on conflict (id) do nothing;
+
+-- Toạ độ pin bản đồ (xấp xỉ — trục Thống Nhất, P. Đông Hòa, cạnh Bcons City).
+update projects set lat = 10.8901, lng = 106.7805
+  where id = '00000000-0000-0000-0000-00000000b005' and lat is null;
