@@ -10,6 +10,7 @@ import {
   assessCustomer, explainAssessSale, explainAssessCustomer,
   type CustomerProfile, type IncomeLine, type DebtLine, type CreditCard, type BankPolicy, type Band,
 } from "@/lib/finance/assess";
+import { inferDiscovery, explainDiscovery, QUESTIONS, GROUPS, type DiscoveryResult } from "@/lib/finance/discovery";
 import type { AmortMethod, Installment, ReportTable } from "@/lib/finance/types";
 import { CountUp, Donut, BalanceChart, Gauge, MiniBars, type BalancePoint, type BarItem } from "./charts";
 
@@ -311,7 +312,100 @@ function LoanTab({ brand }: { brand: BrandInfo | null }) {
 // ── Năng lực khách hàng (2 chế độ: Sale nội bộ ↔ Khách) ────────────────────────
 const VERDICT_NEUTRAL: Record<Band, string> = { khoe: "Tốt", can_bien: "Cận biên", chua_du: "Cần thu xếp" };
 
+function PhaseToggle({ phase, setPhase }: { phase: "discover" | "assess"; setPhase: (p: "discover" | "assess") => void }) {
+  return (
+    <div className="inline-flex self-start rounded-lg border border-border p-0.5 text-sm">
+      {([["discover", "🕵️ Khám phá khách"], ["assess", "📊 Đánh giá vay"]] as const).map(([id, label]) => (
+        <button key={id} onClick={() => setPhase(id)} className={`rounded-md px-3 py-1.5 transition ${phase === id ? "bg-sky-500 text-white" : "text-muted-foreground hover:bg-muted"}`}>{label}</button>
+      ))}
+    </div>
+  );
+}
+
+const TRI_BADGE: Record<string, string> = { thap: "bg-red-500/15 text-red-400", vua: "bg-amber-500/15 text-amber-400", cao: "bg-emerald-500/15 text-emerald-400" };
+
+// Bộ câu hỏi gián tiếp — sale hỏi tự nhiên, tick đáp án; phần "đọc vị" CHỈ SALE THẤY.
+function DiscoveryPanel({ onApply }: { onApply: (r: DiscoveryResult) => void }) {
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const result = useMemo(() => inferDiscovery(answers), [answers]);
+  const ex = explainDiscovery(result);
+  const [showWhy, setShowWhy] = useState(false);
+  const fmtTr = (n: number) => `${Math.round(n / 1_000_000)}tr`;
+
+  const toggle = (qid: string, i: number) =>
+    setAnswers((a) => { const next = { ...a }; if (next[qid] === i) delete next[qid]; else next[qid] = i; return next; });
+
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-xs text-amber-500/90">Hỏi khách tự nhiên trong lúc trò chuyện rồi tick đáp án — hệ thống tự đọc vị tài chính. Phần suy đoán chỉ sale thấy, không đưa khách.</p>
+
+      {GROUPS.map((g) => (
+        <div key={g.id} className="flex flex-col gap-3 rounded-xl border border-border p-4">
+          <div className="text-sm font-semibold">{g.icon} {g.label}</div>
+          {QUESTIONS.filter((q) => q.group === g.id).map((q) => (
+            <div key={q.id} className="flex flex-col gap-1">
+              <div className="text-sm">{q.ask}</div>
+              <div className="text-[11px] italic text-muted-foreground">↳ {q.reads}</div>
+              <div className="mt-1 flex flex-wrap gap-1.5">
+                {q.options.map((o, i) => (
+                  <button key={i} onClick={() => toggle(q.id, i)}
+                    className={`rounded-full border px-3 py-1 text-xs transition ${answers[q.id] === i ? "border-sky-500 bg-sky-500/10 text-sky-500" : "border-border hover:bg-muted"}`}>
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
+
+      {/* CHÂN DUNG — chỉ sale */}
+      <div className="sticky bottom-2 flex flex-col gap-3 rounded-2xl border border-sky-500/30 bg-background/95 p-4 shadow-lg backdrop-blur">
+        <div className="flex items-center justify-between">
+          <div className="text-sm font-semibold">🔎 Chân dung khách <span className="text-[11px] font-normal text-muted-foreground">(chỉ sale thấy)</span></div>
+          {result.incomeBand && <span className={`rounded-full px-2 py-0.5 text-[11px] ${TRI_BADGE[result.confidence]}`}>tin cậy {result.confidence === "thap" ? "thấp" : result.confidence === "vua" ? "vừa" : "cao"}</span>}
+        </div>
+        {result.incomeBand ? (
+          <>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <Stat label="Thu nhập ước tính" value={`${fmtTr(result.incomeBand.low)}–${fmtTr(result.incomeBand.high)}`} />
+              <Stat label="Cấp bậc" value={result.jobLabel ?? "—"} />
+              <Stat label="Nhu cầu" value={result.rooms ? `${result.rooms}PN` : "—"} />
+              <Stat label="Mục tiêu" value={result.intent === "o_thuc" ? "Ở thực" : result.intent === "cho_thue" ? "Cho thuê" : result.intent === "dau_tu" ? "Đầu tư" : "—"} />
+            </div>
+            <ul className="flex flex-col gap-1 text-sm">
+              {ex.lines.map((l, i) => <li key={i} className="flex gap-2"><span className="text-sky-500">›</span><span>{l}</span></li>)}
+            </ul>
+            {result.notes.length > 0 && (
+              <div>
+                <button onClick={() => setShowWhy((s) => !s)} className="text-xs text-sky-500 hover:underline">{showWhy ? "− Ẩn lý do đọc vị" : `+ Vì sao đọc vậy (${result.notes.length})`}</button>
+                {showWhy && <ul className="mt-1 flex flex-col gap-1 text-xs text-muted-foreground">{result.notes.map((n, i) => <li key={i}>• {n}</li>)}</ul>}
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground">Tick vài câu trả lời để hệ thống dựng chân dung tài chính khách.</p>
+        )}
+        <button onClick={() => onApply(result)} disabled={result.answered === 0}
+          className="self-start rounded-lg bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-600 disabled:opacity-50">
+          → Dùng để đánh giá vay
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-muted/40 px-3 py-2">
+      <div className="text-[11px] text-muted-foreground">{label}</div>
+      <div className="text-sm font-semibold">{value}</div>
+    </div>
+  );
+}
+
 function CustomerFitTab({ brand }: { brand: BrandInfo | null }) {
+  const [phase, setPhase] = useState<"discover" | "assess">("discover");
   const [mode, setMode] = useState<"sale" | "customer">("sale");
   const [advanced, setAdvanced] = useState(false);
 
@@ -435,8 +529,28 @@ function CustomerFitTab({ brand }: { brand: BrandInfo | null }) {
   const title = mode === "sale" ? "Đánh giá năng lực khách" : ex.title;
   const subtitle = result.target ? `Căn nhắm ${compactVnd(result.target.price)} • ${policy.name}` : `Thu nhập ${compactVnd(result.qualifiedIncome)}/tháng`;
 
+  // Đổ kết quả "khám phá" sang form đánh giá: thu nhập ước tính tính là 1 nguồn
+  // (cash-heavy → đánh dấu biến động để engine chiết khấu 70%).
+  const applyDiscovery = (r: DiscoveryResult) => {
+    if (r.handoff.income > 0) setIncomes([{ label: "Thu nhập ước tính (khám phá)", amount: r.handoff.income, proven: true, variable: !r.proven }]);
+    setDependents(String(r.handoff.dependents));
+    setDown(String(r.handoff.downPaymentPercent));
+    if (r.handoff.targetPrice) setTarget(String(r.handoff.targetPrice));
+    setAdvanced(true); setMode("sale"); setPhase("assess");
+  };
+
+  if (phase === "discover") {
+    return (
+      <div className="flex flex-col gap-4">
+        <PhaseToggle phase={phase} setPhase={setPhase} />
+        <DiscoveryPanel onApply={applyDiscovery} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
+      <PhaseToggle phase={phase} setPhase={setPhase} />
       {/* chế độ + mức nhập */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="inline-flex rounded-lg border border-border p-0.5 text-sm">
