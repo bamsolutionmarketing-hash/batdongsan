@@ -35,5 +35,12 @@ values
    '00000000-0000-0000-0000-0000000000e1',
    'The Global City', 'the-global-city',
    'Đại đô thị 117,4 ha — downtown khu Đông', 'Đỗ Xuân Hợp, P. Bình Trưng, TP.HCM', 'selling', null,
+   null, null, 'broker_estimate', false, true),
+  -- Vinhomes Green Paradise (Cần Giờ) — siêu đô thị lấn biển 2.870 ha; khởi công
+  -- 19/4/2025. Vinhomes CHƯA công bố giá chính thức (toàn bộ là rumor) → price null.
+  ('00000000-0000-0000-0000-00000000b003',
+   '00000000-0000-0000-0000-0000000000e3',
+   'Vinhomes Green Paradise', 'vinhomes-green-paradise',
+   'Khởi công 19/4/2025 — phân khu Vịnh Tiên mở bán đầu', 'Xã Cần Giờ, TP.HCM', 'selling', null,
    null, null, 'broker_estimate', false, true)
 on conflict (id) do nothing;
