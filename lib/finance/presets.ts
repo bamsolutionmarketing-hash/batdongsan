@@ -3,6 +3,15 @@
 // SHAPES — agent picks one then edits the actual numbers to match the real offer.
 
 import type { AmortMethod, Installment } from "./types";
+import type { BankPolicy } from "./assess";
+
+// Lending-policy presets. Bank-agnostic on purpose (we never assert a specific
+// bank's live DSR/LTV) — these are common SHAPES the agent picks then edits.
+export const BANK_POLICIES: BankPolicy[] = [
+  { id: "standard", name: "Phổ thông (DSR 60 · LTV 70)", dsrCap: 60, ltvCap: 70, maxAge: 70, annualRate: 11, maxTermMonths: 300 },
+  { id: "conservative", name: "Thận trọng (DSR 50 · LTV 60)", dsrCap: 50, ltvCap: 60, maxAge: 65, annualRate: 11.5, maxTermMonths: 240 },
+  { id: "aggressive", name: "Nới (DSR 70 · LTV 80)", dsrCap: 70, ltvCap: 80, maxAge: 70, annualRate: 10.5, maxTermMonths: 360 },
+];
 
 export interface RatePreset {
   id: string;
