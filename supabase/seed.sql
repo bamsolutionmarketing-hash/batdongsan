@@ -8,7 +8,8 @@ insert into developers (id, name, slug, parent_company, credibility) values
   ('00000000-0000-0000-0000-0000000000e2', 'Keppel Land × Khang Điền', 'keppel-khang-dien', 'Keppel Ltd. / KDH', 9),
   ('00000000-0000-0000-0000-0000000000e3', 'Vinhomes (VHM)', 'vinhomes', 'Vingroup', 10),
   ('00000000-0000-0000-0000-0000000000e4', 'BLUEMARQ GROUP', 'bluemarq-group', 'Đất Xanh Group (DXG)', 8),
-  ('00000000-0000-0000-0000-0000000000e5', 'Địa ốc Bcons', 'dia-oc-bcons', 'Bcons Group', 7)
+  ('00000000-0000-0000-0000-0000000000e5', 'Địa ốc Bcons', 'dia-oc-bcons', 'Bcons Group', 7),
+  ('00000000-0000-0000-0000-0000000000e6', 'Gamuda Land', 'gamuda-land', 'Gamuda Berhad (Malaysia)', 9)
 on conflict (id) do nothing;
 
 -- Projects — both public + demo so signed-out landing + free tier work ---------
@@ -59,9 +60,19 @@ values
    '00000000-0000-0000-0000-0000000000e5',
    'Bcons Center City', 'bcons-center-city',
    'Khởi công 28/6/2025 — bàn giao dự kiến Q4/2027', 'Đường Thống Nhất / D11, P. Đông Hòa, TP.HCM (Dĩ An cũ)', 'selling', null,
-   50000000, 58000000, 'broker_estimate', false, true)
+   50000000, 58000000, 'broker_estimate', false, true),
+  -- Eaton Park (Gamuda Land · pháp nhân CTCP BĐS Tâm Lực) — căn hộ hạng sang
+  -- 3,76 ha mặt tiền Mai Chí Thọ, An Phú. Giá sơ cấp ~125–185tr/m² (GĐ3 rumor).
+  ('00000000-0000-0000-0000-00000000b006',
+   '00000000-0000-0000-0000-0000000000e6',
+   'Eaton Park', 'eaton-park',
+   'Đang bán GĐ3 (A3/A4) — bàn giao dự kiến 2027', 'Đại lộ Mai Chí Thọ, P. An Phú, TP. Thủ Đức, TP.HCM', 'selling', null,
+   125000000, 185000000, 'broker_estimate', false, true)
 on conflict (id) do nothing;
 
 -- Toạ độ pin bản đồ (xấp xỉ — trục Thống Nhất, P. Đông Hòa, cạnh Bcons City).
 update projects set lat = 10.8901, lng = 106.7805
   where id = '00000000-0000-0000-0000-00000000b005' and lat is null;
+-- Eaton Park (xấp xỉ — mặt tiền Mai Chí Thọ gần nút giao An Phú / Rạch Chiếc).
+update projects set lat = 10.7875, lng = 106.7560
+  where id = '00000000-0000-0000-0000-00000000b006' and lat is null;

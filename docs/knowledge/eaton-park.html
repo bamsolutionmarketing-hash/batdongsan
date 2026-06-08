@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eaton Park — Investment Knowledge Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08120c;
+  --bg-2: #0c1811;
+  --bg-3: #112019;
+  --panel: #0c1811;
+  --border: #25382d;
+  --border-2: #182a20;
+  --text: #e9f3ec;
+  --text-2: #93b0a0;
+  --text-3: #647d6e;
+  --gold: #c9a14a;
+  --gold-2: #e6c87f;
+  --blue: #5ab0e0;
+  --purple: #b388f0;
+  --green: #46c97e;
+  --orange: #f0934a;
+  --softgold: #e3c068;
+  --cyan: #3fc8c4;
+  --teal: #4fc97a;
+  --pink: #e070a8;
+  --red: #ec6f6f;
+  --link: #6fc89a;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.65;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 52px;
+  background: linear-gradient(90deg, #0a140d 0%, #102a1c 100%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 14px;
+  position: relative; z-index: 120;
+}
+.logo { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
+.logo-mark {
+  width: 24px; height: 24px; flex-shrink: 0; border-radius: 4px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-2) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 12px; color: #08120c;
+}
+.logo-text { font-weight: 700; font-size: 13.5px; color: var(--gold-2); letter-spacing: .04em; }
+.logo-sub { color: var(--text-3); font-weight: 400; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
+.topbar-divider { width: 1px; height: 26px; background: var(--border); flex-shrink: 0; }
+.search-wrap { position: relative; flex-shrink: 1; min-width: 120px; }
+.search {
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 7px;
+  color: var(--text); font-family: inherit; font-size: 12.5px;
+  padding: 6px 12px 6px 30px; width: 230px; max-width: 100%;
+  transition: border-color .2s;
+}
+.search:focus { outline: none; border-color: var(--gold); }
+.search::placeholder { color: var(--text-3); }
+.search-ic { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--text-3); pointer-events: none; }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  border: 1px solid var(--border); background: transparent; color: var(--text-2);
+  font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: .02em;
+  padding: 4px 11px; border-radius: 999px; cursor: pointer; white-space: nowrap;
+  display: flex; align-items: center; gap: 6px; transition: all .18s;
+}
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--text-3)); }
+.chip:hover { border-color: var(--c, var(--gold)); color: var(--text); }
+.chip.on { background: color-mix(in srgb, var(--c) 16%, transparent); border-color: var(--c); color: var(--text); }
+.chip:focus-visible, .search:focus-visible, .btn360:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.btn360 {
+  flex-shrink: 0; display: flex; align-items: center; gap: 7px;
+  background: linear-gradient(135deg, var(--gold) 0%, #a8842f 100%);
+  color: #08120c; border: none; border-radius: 7px; cursor: pointer;
+  font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: .03em;
+  padding: 7px 14px; transition: transform .15s, box-shadow .2s;
+  text-decoration: none;
+}
+.btn360:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,161,74,.35); }
+
+/* ── STAGE ── */
+.stage { position: relative; height: calc(100% - 52px); }
+canvas { display: block; cursor: grab; }
+canvas.dragging { cursor: grabbing; }
+
+/* ── LEGEND ── */
+.legend {
+  position: absolute; left: 14px; bottom: 14px; z-index: 60;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 13px; font-size: 11px; color: var(--text-2);
+  max-width: 240px;
+}
+.legend .lg-title { font-weight: 700; color: var(--text); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 7px; }
+.legend .lg-row { display: flex; align-items: center; gap: 7px; margin: 3px 0; }
+.legend .lg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.legend .lg-hint { margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--border-2); color: var(--text-3); font-size: 10.5px; line-height: 1.5; }
+
+/* ── TOOLTIP ── */
+.tip {
+  position: absolute; z-index: 80; pointer-events: none;
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 11px; font-size: 12px; max-width: 250px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  opacity: 0; transition: opacity .12s; transform: translate(-50%, calc(-100% - 14px));
+}
+.tip.show { opacity: 1; }
+.tip b { color: var(--gold-2); display: block; font-size: 12.5px; }
+.tip span { color: var(--text-2); font-size: 11px; }
+
+/* ── PANEL ── */
+.panel {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 480px; max-width: 100%;
+  background: var(--panel); border-left: 1px solid var(--border);
+  z-index: 100; display: flex; flex-direction: column;
+  transform: translateX(102%); transition: transform .28s cubic-bezier(.22,.8,.3,1);
+  box-shadow: -16px 0 48px rgba(0,0,0,.45);
+}
+.panel.open { transform: translateX(0); }
+.panel-head {
+  padding: 18px 20px 14px; border-bottom: 1px solid var(--border-2);
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.panel-head .ph-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; box-shadow: 0 0 12px var(--c); background: var(--c); }
+.panel-head h2 { font-size: 17.5px; font-weight: 700; line-height: 1.35; flex: 1; }
+.panel-head .ph-cluster { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); margin-top: 3px; }
+.panel-close {
+  background: var(--bg-3); border: 1px solid var(--border); color: var(--text-2);
+  width: 30px; height: 30px; border-radius: 7px; cursor: pointer; flex-shrink: 0;
+  font-size: 15px; line-height: 1; transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.panel-close:hover { color: var(--text); border-color: var(--gold); }
+.panel-body { flex: 1; overflow-y: auto; padding: 18px 20px 28px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.panel-body::-webkit-scrollbar { width: 8px; }
+.panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* panel content typography */
+.panel-body p { margin: 0 0 11px; color: var(--text-2); font-size: 13.5px; }
+.panel-body p b, .panel-body li b { color: var(--text); font-weight: 600; }
+.panel-body h4 {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--gold-2); margin: 18px 0 8px; padding-top: 14px; border-top: 1px solid var(--border-2);
+}
+.panel-body h4:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.panel-body ul { margin: 0 0 12px 16px; color: var(--text-2); font-size: 13.5px; }
+.panel-body li { margin: 4px 0; }
+.kv { display: grid; grid-template-columns: 132px 1fr; gap: 6px 12px; margin: 0 0 12px; font-size: 13px; }
+.kv .k { color: var(--text-3); font-weight: 500; }
+.kv .v { color: var(--text); font-weight: 500; }
+.tbl { width: 100%; border-collapse: collapse; margin: 4px 0 14px; font-size: 12.5px; }
+.tbl th { text-align: left; color: var(--text-3); font-weight: 600; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.tbl td { padding: 7px 8px; border-bottom: 1px solid var(--border-2); color: var(--text-2); vertical-align: top; }
+.tbl td:first-child { color: var(--text); font-weight: 500; }
+.tbl .num { font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.badge {
+  display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  padding: 2px 8px; border-radius: 999px; margin: 0 6px 6px 0; text-transform: uppercase;
+}
+.b-cdt { background: rgba(70,201,126,.14); color: #74d79a; border: 1px solid rgba(70,201,126,.35); }
+.b-press { background: rgba(90,176,224,.14); color: #8ccaef; border: 1px solid rgba(90,176,224,.35); }
+.b-mkt { background: rgba(240,147,74,.13); color: #f4b07a; border: 1px solid rgba(240,147,74,.35); }
+.b-risk { background: rgba(236,111,111,.13); color: #f29393; border: 1px solid rgba(236,111,111,.4); }
+.note {
+  background: color-mix(in srgb, var(--gold) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  border-left: 3px solid var(--gold);
+  border-radius: 8px; padding: 10px 13px; margin: 4px 0 14px;
+  font-size: 12.5px; color: var(--text-2);
+}
+.note.warn { background: rgba(236,111,111,.08); border-color: rgba(236,111,111,.4); border-left-color: var(--red); }
+.note b { color: var(--text); }
+.rel { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-2); }
+.rel-title { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+.rel-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rel-chip {
+  border: 1px solid var(--border); background: var(--bg-3); color: var(--text-2);
+  font-family: inherit; font-size: 11.5px; font-weight: 500;
+  padding: 4px 11px; border-radius: 999px; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; transition: all .15s;
+}
+.rel-chip .dot { width: 6px; height: 6px; border-radius: 50%; }
+.rel-chip:hover { border-color: var(--gold); color: var(--text); }
+
+/* ── INTRO OVERLAY ── */
+.intro {
+  position: absolute; left: 14px; top: 14px; z-index: 60; max-width: 330px;
+  background: color-mix(in srgb, var(--panel) 90%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+}
+.intro h1 { font-size: 15px; font-weight: 800; letter-spacing: .02em; color: var(--gold-2); }
+.intro .sub { font-size: 11px; color: var(--text-3); letter-spacing: .1em; text-transform: uppercase; margin: 1px 0 8px; }
+.intro p { font-size: 12px; color: var(--text-2); line-height: 1.55; }
+.intro .upd { margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-3); }
+
+@media (max-width: 720px) {
+  .logo-sub, .intro, .topbar-divider { display: none; }
+  .search { width: 130px; }
+  .panel { width: 100%; }
+  .legend { max-width: 180px; font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel { transition: none; }
+  .tip { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">E</div>
+    <div>
+      <div class="logo-text">EATON PARK</div>
+      <div class="logo-sub">Investment Knowledge Map · 06/2026</div>
+    </div>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="search-wrap">
+    <svg class="search-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input class="search" id="search" type="text" placeholder="Tìm node… (Enter để mở)" aria-label="Tìm kiếm node">
+  </div>
+  <div class="chips" id="chips"></div>
+  <a class="btn360" href="https://gamudaland.com.vn" target="_blank" rel="noopener" aria-label="Trang chủ Gamuda Land, mở tab mới">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20 15.3 15.3 0 0 1 0-20z"/></svg>
+    GAMUDA LAND
+  </a>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="cv"></canvas>
+  <div class="intro" id="intro">
+    <h1>Bản đồ tri thức đầu tư</h1>
+    <div class="sub">Căn hộ hạng sang ~3,76 ha · Gamuda Land</div>
+    <p>Toàn cảnh Eaton Park cho nhà đầu tư: pháp lý, 6 tháp, giá &amp; chính sách bán hàng, hạ tầng, thị trường cạnh tranh và phân tích rủi ro – cơ hội. Click node để xem chi tiết.</p>
+    <div class="upd">Dữ liệu tổng hợp đến 06/2026 · Phân biệt nguồn CĐT/báo chí vs môi giới · Đối chiếu HĐMB trước khi gửi khách</div>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="tip" id="tip"></div>
+
+  <aside class="panel" id="panel" role="dialog" aria-modal="false" aria-label="Chi tiết node">
+    <div class="panel-head">
+      <div class="ph-dot" id="pDot"></div>
+      <h2 id="pTitle">—<span class="ph-cluster" id="pCluster"></span></h2>
+      <button class="panel-close" id="pClose" aria-label="Đóng panel">✕</button>
+    </div>
+    <div class="panel-body" id="pBody"></div>
+  </aside>
+</div>
+
+<script>
+const CLUSTERS = {
+  core: { label: 'Trung tâm',             color: '#c9a14a' },
+  tq:   { label: 'Tổng quan',             color: '#5ab0e0' },
+  cdt:  { label: 'Chủ đầu tư Gamuda',     color: '#b388f0' },
+  pl:   { label: 'Pháp lý',               color: '#46c97e' },
+  pk:   { label: 'Phân khu & Sản phẩm',   color: '#f0934a' },
+  ti:   { label: 'Tiện ích nội khu',      color: '#3fc8c4' },
+  ht:   { label: 'Hạ tầng kết nối',       color: '#4fc97a' },
+  cs:   { label: 'Giá & Chính sách',      color: '#e070a8' },
+  tt:   { label: 'Thị trường & Cạnh tranh', color: '#ec6f6f' },
+  dt:   { label: 'Phân tích đầu tư',      color: '#f0a93e' }
+};
+const NODES = [];
+function N(id, cluster, label, sub, r, html){ NODES.push({id, cluster, label, sub, r, html}); }
+
+/* ════════ CORE ════════ */
+N('eaton','core','Eaton Park','Căn hộ hạng sang ~3,76 ha · Mai Chí Thọ, An Phú', 30, `
+<h4>Định danh dự án</h4>
+<div class="kv">
+<div class="k">Tên thương mại</div><div class="v">Eaton Park (tên pháp lý: Khu nhà ở Tâm Lực)</div>
+<div class="k">Vị trí</div><div class="v">Mặt tiền đại lộ Mai Chí Thọ, P. An Phú, TP. Thủ Đức (Q.2 cũ)</div>
+<div class="k">Quy mô</div><div class="v">~3,76 ha (pháp lý 37.699,2 m²; Gamuda công bố 9,1 acre)</div>
+<div class="k">Quy mô sản phẩm</div><div class="v">6 tháp (A1–A6) · 1.968 căn hộ + 12 penthouse + 51 shop đế + 21 shophouse</div>
+<div class="k">Số tầng</div><div class="v">29–39 tầng · mật độ xây dựng ~40%</div>
+<div class="k">Pháp nhân CĐT</div><div class="v">CTCP Bất động sản Tâm Lực</div>
+<div class="k">Nhà phát triển</div><div class="v">Gamuda Land (Gamuda Berhad, Malaysia)</div>
+<div class="k">Khởi công</div><div class="v">Động thổ 8/12/2023 · hầm A5/A6 từ 26/3/2024</div>
+<div class="k">Bàn giao</div><div class="v">A5/A6 dự kiến Q1–Q3/2027 · các tháp còn lại Q4/2027</div>
+</div>
+<p><b>Câu chuyện đầu tư trong 3 dòng:</b> quỹ đất hạng sang khan hiếm mặt tiền Mai Chí Thọ, do CĐT ngoại Gamuda phát triển, pháp lý hoàn chỉnh (đã có sổ đất + GPXD), tiến độ thực — đón đúng sóng hạ tầng nút giao An Phú & Metro 1 vào giai đoạn bàn giao 2027.</p>
+<div class="note">Bản đồ tổng hợp từ công bố CĐT, báo chí và dữ liệu thị trường đến <b>06/2026</b>. Mỗi node gắn nhãn nguồn: <span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span><span class="badge b-mkt">Môi giới/Thị trường</span><span class="badge b-risk">Rủi ro</span></div>
+`);
+
+/* ════════ TỔNG QUAN ════════ */
+N('tq-vitri','tq','Vị trí Mai Chí Thọ','Đại lộ 10 làn · cách CBD 6,5km · kề Thủ Thiêm', 15, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span>
+<h4>Tọa độ & ranh giới</h4>
+<p>Cổng chính mặt tiền <b>đại lộ Mai Chí Thọ</b> (lộ giới 70m, 10 làn xe). Phía Bắc giáp đường vào Khu liên hợp TDTT Rạch Chiếc; phía Đông & Nam giáp rạch Bà Dạt (tạo mặt nước nội khu). Cách CBD Quận 1 <b>6,5 km</b>.</p>
+<h4>Kết nối</h4>
+<ul>
+<li>~5 phút tới Thảo Điền & bán đảo Thủ Thiêm</li>
+<li>~10–15 phút tới Quận 1 qua hầm Thủ Thiêm</li>
+<li>~3 phút tới ga Metro Rạch Chiếc (tuyến số 1)</li>
+<li>~30 phút tới sân bay Long Thành (khi vận hành)</li>
+</ul>
+<p>Lân cận: Estella Heights, Imperia, Lexington (đối diện), và <b>The Global City</b> (Masterise). Đây là một trong số ít quỹ đất mới còn lại trên trục Mai Chí Thọ.</p>
+`);
+
+N('tq-quymo','tq','Quy mô 3,76 ha','6 tháp · mật độ ~40% · cơ cấu sản phẩm', 14, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">The Edge Malaysia</span>
+<div class="kv">
+<div class="k">Diện tích đất</div><div class="v">~3,76 ha (pháp lý 37.699,2 m²)</div>
+<div class="k">Mật độ xây dựng</div><div class="v">~40% — thấp cho căn hộ hạng sang</div>
+<div class="k">Tổng tháp</div><div class="v">6 (A1–A6), 29–39 tầng</div>
+<div class="k">Căn hộ</div><div class="v">1.968 căn</div>
+<div class="k">Penthouse</div><div class="v">12 căn</div>
+<div class="k">Shop khối đế</div><div class="v">51 shop (tầng 1–2)</div>
+<div class="k">Shophouse</div><div class="v">21 căn mặt tiền</div>
+</div>
+<p>Theo công bố quốc tế của Gamuda (The Edge Malaysia, 12/12/2024): khu đất 9,1 acre với cơ cấu trên. Một số nguồn môi giới nêu "~2.052 sản phẩm" — con số gộp ước tính, cần đối chiếu bảng hàng.</p>
+<div class="note warn">Hai hệ số liệu cùng tồn tại: 3,76 ha (37.699,2 m²) theo văn bản pháp lý vs 9,1 acre (~3,68 ha) theo công bố Gamuda. Dùng số trong HĐMB/bảng hàng chính thức khi tư vấn.</div>
+`);
+
+N('tq-thietke','tq','Thiết kế Biophilic','AG INGO Studio (Singapore) · EDGE green', 13, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Kiến trúc phong cách <b>Biophilic</b> (gắn kết con người – thiên nhiên), cảm hứng tháp cao tầng Singapore với góc bo cong mềm mại. Đơn vị thiết kế kiến trúc: <b>AG INGO Design Studio (Singapore)</b>.</p>
+<h4>Đặc điểm thiết kế bán được</h4>
+<ul>
+<li>2 tháp <b>Alpine & Forest đạt chứng nhận công trình xanh EDGE</b> (IFC – World Bank).</li>
+<li>Trần cao sàn-tới-sàn tới 3,5m; sảnh đôi cao 8,9m; kính Triple Low-E cách nhiệt.</li>
+<li>100% căn <b>không "cửa đối cửa"</b>, mỗi căn chỉ 1 tường chung — riêng tư & phong thủy tốt.</li>
+</ul>
+<div class="note">Câu chuyện xanh + Singapore-style là điểm khác biệt định tính giúp giải thích premium giá so với các dự án cũ cùng khu.</div>
+`);
+
+N('tq-tongthau','tq','Tổng thầu & chất lượng','Unicons (Coteccons) · chuẩn GQUAS', 12, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-mkt">Môi giới</span>
+<p>Phần hầm/móng giai đoạn đầu do <b>Unicons (thuộc Coteccons Group)</b> và <b>Fountech</b> thi công. Một số nguồn nêu phần thân có sự tham gia của Coteccons và Hòa Bình — cần xác minh hợp đồng từng gói thầu.</p>
+<p>Áp dụng hệ tiêu chuẩn chất lượng <b>GQUAS</b> của Gamuda (chấm điểm hoàn thiện theo chuẩn quốc tế) — công cụ marketing về độ tin cậy bàn giao của CĐT ngoại.</p>
+`);
+
+N('tq-phankhu2','tq','Cấu trúc 2 phân khu','PK1 (A1–A4) · PK2 (A5–A6)', 12, `
+<span class="badge b-cdt">CĐT/Môi giới</span>
+<table class="tbl">
+<tr><th>Phân khu</th><th>Tháp</th><th>Quy mô</th></tr>
+<tr><td>Phân khu 1</td><td>A1 Alpine, A2 Forest, A3 Cove, A4 Lagoon</td><td class="num">~1.307 căn · 37 shop đế · 15 shophouse · 2 hầm</td></tr>
+<tr><td>Phân khu 2</td><td>A5 Grove, A6 Strait</td><td class="num">673 căn · 15 shop đế · 5 shophouse · 2 hầm</td></tr>
+</table>
+<p>Hai phân khu có hầm thông nhau trong từng cụm. Mở bán theo 3 giai đoạn: GĐ1 = A5/A6, GĐ2 = A1/A2, GĐ3 = A3/A4 (xem cụm Giá & Chính sách).</p>
+`);
+
+N('tq-giaithuong','tq','Giải thưởng','PropertyGuru 2024 · 6 hạng mục', 12, `
+<span class="badge b-press">Báo chí</span>
+<p>Tại <b>Vietnam Property Awards 2024</b> (PropertyGuru, trao 15/11/2024), Eaton Park đoạt <b>6 hạng mục</b>:</p>
+<ul>
+<li>Best Lifestyle Condo Development</li>
+<li>Best Luxury Condo Development (HCMC)</li>
+<li>Best Condo Architectural & Landscape Design</li>
+<li>Best Waterfront Development</li>
+<li>Best Pet-Friendly Development</li>
+</ul>
+<p>Gamuda Land nhận tổng 13 giải, gồm "Nhà phát triển của thập kỷ". Giải thưởng là điểm cộng thương hiệu khi tư vấn, dù không thay thế thẩm định pháp lý/giá.</p>
+`);
+
+/* ════════ CHỦ ĐẦU TƯ GAMUDA ════════ */
+N('cdt-gamuda','cdt','Gamuda Land','Mảng BĐS của Gamuda Berhad (Malaysia)', 16, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span>
+<p><b>Gamuda Land</b> là mảng phát triển BĐS của <b>Gamuda Berhad</b> — tập đoàn kỹ thuật – hạ tầng – BĐS niêm yết Bursa Malaysia (thành lập 1976; mảng Land tiền thân lập 1995). Thế mạnh gốc là <b>nhà thầu hạ tầng</b> (metro, đường cao tốc) — lợi thế thi công khác biệt so với CĐT thuần BĐS.</p>
+<h4>Quy mô tại Việt Nam</h4>
+<p>Vào VN từ 2007. Theo Chủ tịch HĐTV Gamuda Land VN <b>Angus Liew</b> (10/2025): danh mục <b>8 dự án, tổng vốn 5 tỷ USD, dự kiến rót thêm 6 tỷ USD</b>; Việt Nam đóng góp ~45% mục tiêu doanh số toàn cầu của tập đoàn.</p>
+`);
+
+N('cdt-vietnam','cdt','Danh mục Gamuda tại VN','Gamuda City · Celadon · Elysian · Artisan…', 13, `
+<span class="badge b-press">Báo chí</span>
+<table class="tbl">
+<tr><th>Dự án</th><th>Ghi chú</th></tr>
+<tr><td>Gamuda City (Hà Nội)</td><td>KĐT ~274 ha, Hoàng Mai</td></tr>
+<tr><td>Celadon City (TP.HCM)</td><td>KĐT 82 ha, Tân Phú</td></tr>
+<tr><td>Eaton Park (TP.HCM)</td><td>Hạng sang, An Phú — dự án này</td></tr>
+<tr><td>Elysian (TP.HCM)</td><td>Thủ Đức, ~3,4 ha · mua ~300 triệu USD (2023)</td></tr>
+<tr><td>Artisan Park (Bình Dương)</td><td>5,6 ha/349 căn · mua 53,88 triệu USD</td></tr>
+<tr><td>The Meadow / Springville</td><td>Bình Chánh / Nhơn Trạch</td></tr>
+</table>
+<p>Chiến lược thâu tóm quỹ đất sạch + triển khai nhanh. Bề dày KĐT lớn (Gamuda City, Celadon) là minh chứng năng lực vận hành dài hạn; tuy nhiên Eaton Park là <b>dự án hạng sang đầu tiên</b> của Gamuda tại lõi khu Đông.</p>
+`);
+
+N('cdt-taichinh','cdt','Sức khỏe tài chính','FY2025 doanh thu kỷ lục RM16,4 tỷ', 13, `
+<span class="badge b-press">Báo chí (The Star)</span>
+<div class="kv">
+<div class="k">Doanh thu FY2025</div><div class="v">RM16,4 tỷ (kỷ lục) · LN ròng đạt mốc RM1 tỷ lần đầu</div>
+<div class="k">Orderbook xây dựng</div><div class="v">~RM38 tỷ</div>
+<div class="k">Gamuda Land FY2025</div><div class="v">Doanh số RM4,1 tỷ</div>
+<div class="k">Q1 FY2026</div><div class="v">LN ròng tập đoàn +5% → RM215,13 triệu</div>
+<div class="k">Doanh số Land Q1</div><div class="v">RM846 triệu (+34% YoY), 54% từ nước ngoài</div>
+</div>
+<p>Tài chính tập đoàn mẹ lành mạnh và tăng trưởng — yếu tố giảm rủi ro "CĐT hụt vốn giữa chừng", điểm cộng lớn so với một số chủ đầu tư nội gặp khó dòng tiền giai đoạn 2022–2024.</p>
+`);
+
+N('cdt-qtp','cdt','Chiến lược QTP','Quick Turnaround · vòng đời 5 năm', 12, `
+<span class="badge b-press">Báo chí</span>
+<p>Gamuda theo mô hình <b>QTP (Quick Turnaround Project)</b>: mua quỹ đất sạch, triển khai – bán – bàn giao trong vòng đời ~5 năm, tối ưu IRR. Đến Q1 FY2025 đang chạy <b>12 QTP</b> tại VN, Anh, Úc với doanh số ~RM6,9 tỷ.</p>
+<div class="note">Hàm ý đầu tư 2 chiều: (+) tốc độ triển khai nhanh, ít rủi ro "treo dự án"; (–) CĐT bán nhanh – thoát nhanh, nên dịch vụ hậu mãi/vận hành dài hạn cần theo dõi (khác mô hình CĐT giữ vận hành KĐT chục năm).</div>
+`);
+
+N('cdt-banhang','cdt','Kết quả bán hàng','Q1 FY2026: bán 95% · GDV RM3,3 tỷ', 13, `
+<span class="badge b-press">Gamuda Bhd · The Star 10/12/2025</span>
+<p>Theo công bố Gamuda Berhad (Q1 FY2026, kết thúc 31/10/2025): <b>Eaton Park đã bán 95%, GDV RM3,3 tỷ</b>. Cùng Elysian (bán hết, RM1 tỷ) và Springville (95%, RM300 triệu), 3 dự án VN đóng góp doanh số ~RM4,6 tỷ. Việt Nam được tập đoàn gọi là "thị trường ngôi sao".</p>
+<div class="note">Tỷ lệ hấp thụ 95% là tín hiệu cầu thực mạnh — nhưng cũng có nghĩa <b>giỏ hàng sơ cấp gần cạn</b>; nhà đầu tư vào lúc này phần lớn mua thứ cấp/chuyển nhượng với giá đã cao hơn GĐ1.</div>
+`);
+
+/* ════════ PHÁP LÝ ════════ */
+N('pl-nguongoc','pl','Nguồn gốc & thương vụ M&A','Gamuda mua Tâm Lực 315,8 triệu USD (2023)', 15, `
+<span class="badge b-press">Báo Dân trí · Báo chí</span>
+<p>Dự án tiền thân do <b>Công ty Điền Phúc Thành</b> (từng có tên thương mại The Riverdale), sau chuyển sang <b>CTCP Bất động sản Tâm Lực</b> (ĐKKD 0314020818, lập 20/9/2016).</p>
+<h4>Thương vụ Gamuda mua lại (giữa 2023)</h4>
+<div class="kv">
+<div class="k">Bên bán</div><div class="v">3 cá nhân: Nguyễn Hồng Giang (50%), Nguyễn Văn Việt (46%), Đặng Thị Dung (4%)</div>
+<div class="k">Tỷ lệ mua</div><div class="v">100% cổ phần Tâm Lực</div>
+<div class="k">Giá trị</div><div class="v">315,8 triệu USD (~7.300 tỷ đồng)</div>
+<div class="k">Cơ cấu</div><div class="v">Đặt cọc 1.000 tỷ trước · trả nốt ~6.300 tỷ khi hoàn tất</div>
+<div class="k">Động thổ</div><div class="v">8/12/2023</div>
+</div>
+<p>Là một trong những thương vụ M&A bất động sản lớn nhất Việt Nam năm 2023. Tổng mức đầu tư phát triển dự kiến ~1,1 tỷ USD.</p>
+`);
+
+N('pl-timeline','pl','Mốc pháp lý 2021–2023','Chủ trương → 1/500 → giao đất → GPXD', 14, `
+<span class="badge b-press">Báo chí</span><span class="badge b-cdt">CĐT</span>
+<table class="tbl">
+<tr><th>Thời điểm</th><th>Văn bản / Sự kiện</th></tr>
+<tr><td class="num">25/01/2021</td><td>QĐ chủ trương đầu tư 292/QĐ-UBND</td></tr>
+<tr><td class="num">24/02/2021</td><td>Giấy chứng nhận đầu tư</td></tr>
+<tr><td class="num">14/12/2021</td><td><b>QĐ 4192/QĐ-UBND</b> phê duyệt quy hoạch 1/500</td></tr>
+<tr><td class="num">12/01/2022</td><td><b>QĐ 149/QĐ-UBND</b> giao đất / chuyển mục đích sử dụng đất</td></tr>
+<tr><td class="num">04/2022</td><td>Báo cáo đánh giá tác động môi trường (ĐTM)</td></tr>
+<tr><td class="num">28/10/2022</td><td><b>Giấy chứng nhận QSDĐ</b> được ký</td></tr>
+<tr><td class="num">17/02/2023</td><td><b>GPXD số 07/GPXD</b></td></tr>
+</table>
+<p>Điểm mạnh: chuỗi pháp lý <b>hoàn chỉnh và liên tục</b>, đất đã có sổ trước khi Gamuda triển khai — nền pháp lý chắc hiếm có ở phân khúc hạng sang khu Đông.</p>
+`);
+
+N('pl-gpxd','pl','GPXD & sổ đất','07/GPXD (17/2/2023) · GCN QSDĐ (28/10/2022)', 14, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span>
+<div class="kv">
+<div class="k">Giấy phép xây dựng</div><div class="v">Số 07/GPXD ngày 17/02/2023</div>
+<div class="k">GCN QSDĐ</div><div class="v">Ký 28/10/2022</div>
+<div class="k">Tổng mức đầu tư duyệt</div><div class="v">3.983 tỷ đồng (phát triển thương mại ~1,1 tỷ USD)</div>
+<div class="k">Điều kiện bán</div><div class="v">Đã đủ điều kiện ký HĐMB & chuyển nhượng</div>
+</div>
+<div class="note warn"><b>Nguyên tắc thẩm định:</b> trước khi cọc, yêu cầu xem bản gốc GPXD 07/GPXD, GCN QSDĐ, và <b>văn bản đủ điều kiện bán nhà ở hình thành trong tương lai</b> của Sở Xây dựng cho đúng tháp định mua + chứng thư bảo lãnh ngân hàng.</div>
+`);
+
+N('pl-sohuu','pl','Hình thức sở hữu','Lâu dài (VN) · 50 năm (NN) · shophouse 2072', 12, `
+<span class="badge b-cdt">CĐT công bố</span>
+<div class="kv">
+<div class="k">Căn hộ — người Việt</div><div class="v">Sở hữu lâu dài</div>
+<div class="k">Căn hộ — người nước ngoài</div><div class="v">50 năm (theo luật, room ngoại 30%/tháp)</div>
+<div class="k">Shophouse / khối đế</div><div class="v">Theo thời hạn đất — đến 12/01/2072</div>
+</div>
+<p>Căn hộ sở hữu lâu dài cho người Việt là lợi thế giữ giá dài hạn. Lưu ý phân biệt thời hạn shophouse (đất đến 2072) khi tư vấn khách mua khối thương mại để đầu tư.</p>
+`);
+
+N('pl-nganhang','pl','Ngân hàng đồng hành','6 ngân hàng · bảo lãnh & cho vay', 12, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p><b>6 ngân hàng</b> tài trợ/cho vay người mua tại Eaton Park:</p>
+<ul>
+<li>Vietcombank, BIDV, VietinBank (nhóm quốc doanh)</li>
+<li>OCB (nội)</li>
+<li><b>Hong Leong Bank, Public Bank</b> (Malaysia — đồng hương Gamuda)</li>
+</ul>
+<div class="note">Sự tham gia của ngân hàng Malaysia là điểm thuận cho khách nước ngoài/Việt kiều. Khi ký HĐMB: kiểm tra chứng thư bảo lãnh nghĩa vụ tài chính của CĐT ghi đúng mã căn + căn đã giải chấp khỏi khoản vay dự án.</div>
+`);
+
+N('pl-luuy','pl','Lưu ý thẩm định','Tin đồn môi giới cần xác minh · rủi ro ra sổ', 14, `
+<span class="badge b-risk">Rủi ro</span><span class="badge b-mkt">Cần xác minh</span>
+<h4>Các tuyên bố CHƯA được CĐT/báo chí uy tín xác nhận</h4>
+<ul>
+<li><b>Thương hiệu khách sạn 5 sao (Hilton…) quản lý Cove/Lagoon</b> — chỉ là thông tin môi giới; nguồn chính thức (VIR) chỉ nêu "dịch vụ quản gia 5 sao".</li>
+<li><b>Giá GĐ3 185–220 triệu/m²</b> — tin đồn môi giới; báo chí uy tín không công bố giá m² chính thức (mức 7.000 USD/m² là phân tích của CGS International).</li>
+<li><b>Cam kết tăng giá "x2, x3", lợi suất 7–12%/năm</b> — kỳ vọng tiếp thị, dự án chưa bàn giao nên chưa có lịch sử giá kiểm chứng.</li>
+<li><b>Lễ cất nóc toàn tháp A5/A6</b> — chưa thấy trên báo chí uy tín đến đầu 2026 (chỉ có cất nóc khối đế/shophouse, nguồn môi giới).</li>
+</ul>
+<h4>Rủi ro tiến độ ra sổ</h4>
+<p>Một số nguồn nêu lo ngại "vài dự án Gamuda từng chậm ra sổ" — cần theo dõi thực tế khi nhận bàn giao; yêu cầu cam kết tiến độ cấp sổ trong HĐMB.</p>
+<div class="note warn">Quy tắc bán hàng có đạo đức: tách bạch rõ <b>thông tin chính thức</b> (pháp lý, quy mô, ngân hàng) khỏi <b>tin đồn</b> (giá m², thương hiệu vận hành, cam kết sinh lời). Không khẳng định điều CĐT chưa công bố.</div>
+`);
+
+N('pl-checklist','pl','Checklist trước cọc','6 bước due diligence cho người mua', 13, `
+<span class="badge b-mkt">Khuyến nghị</span>
+<ul>
+<li><b>1.</b> Bản gốc <b>GPXD 07/GPXD</b> + <b>GCN QSDĐ (28/10/2022)</b>.</li>
+<li><b>2.</b> <b>Văn bản đủ điều kiện bán</b> nhà ở hình thành trong tương lai cho đúng tháp định mua.</li>
+<li><b>3.</b> <b>Chứng thư bảo lãnh ngân hàng</b> cho nghĩa vụ bàn giao, ghi đúng mã căn.</li>
+<li><b>4.</b> Xác nhận căn <b>đã giải chấp</b> khỏi khoản vay dự án của CĐT.</li>
+<li><b>5.</b> Đối chiếu <b>tiến độ thanh toán</b> với trần luật: ≤70% trước bàn giao, ≤95% trước khi cấp sổ.</li>
+<li><b>6.</b> Đọc kỹ điều khoản <b>phạt chậm bàn giao / chậm ra sổ</b> và cơ chế thoát trong HĐMB.</li>
+</ul>
+<div class="note">Khoản đầu tư 6–20+ tỷ xứng đáng phí luật sư rà HĐMB độc lập. Ký đúng pháp nhân (CTCP BĐS Tâm Lực) — cảnh giác yêu cầu chuyển tiền vào tài khoản trung gian.</div>
+`);
+
+/* ════════ PHÂN KHU & SẢN PHẨM ════════ */
+N('pk-a5a6','pk','A5 Grove & A6 Strait','GĐ1 · đã lên tầng cao · bàn giao sớm nhất', 16, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-mkt">Môi giới</span>
+<div class="kv">
+<div class="k">Vai trò</div><div class="v">Phân khu 2 · mở bán Giai đoạn 1 (5/2024)</div>
+<div class="k">Quy mô</div><div class="v">673 căn · A5 ~39 tầng, A6 ~37 tầng</div>
+<div class="k">Tiến độ</div><div class="v">Khởi công hầm 26/3/2024 · cuối 2025 đã lên ~tầng 33</div>
+<div class="k">Bàn giao</div><div class="v">Dự kiến Q1–Q3/2027 (sớm nhất dự án)</div>
+</div>
+<p>Là 2 tháp <b>vào ở sớm nhất</b> — phù hợp khách cần nhận nhà nhanh hoặc muốn rút ngắn thời gian "chôn vốn" trước dòng tiền cho thuê. Giá GĐ1 thấp nhất trong 3 đợt (~125 triệu/m²) nên biên tăng giá thứ cấp đã tích lũy tốt nhất.</p>
+`);
+
+N('pk-a1a2','pk','A1 Alpine & A2 Forest','GĐ2 · đạt chứng nhận xanh EDGE', 15, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-mkt">Môi giới</span>
+<div class="kv">
+<div class="k">Vai trò</div><div class="v">Phân khu 1 · mở bán Giai đoạn 2 (cuối 2024)</div>
+<div class="k">Quy mô</div><div class="v">A1 ~36 tầng/~342 căn · A2 ~29 tầng/~280 căn</div>
+<div class="k">Điểm nhấn</div><div class="v">Cả 2 tháp đạt chứng nhận công trình xanh EDGE (IFC)</div>
+<div class="k">Tiến độ</div><div class="v">8/2025 đã lên ~tầng 17–18</div>
+<div class="k">Giá GĐ2</div><div class="v">~142 triệu/m² · 1PN từ ~8 tỷ</div>
+</div>
+<p>Tháp Alpine & Forest mang câu chuyện "xanh" mạnh nhất (EDGE) — điểm cộng với khách quan tâm vận hành tiết kiệm năng lượng & tiêu chuẩn quốc tế.</p>
+`);
+
+N('pk-a3a4','pk','A3 Cove & A4 Lagoon','GĐ3 · "tinh hoa" cuối · view sông Rạch Chiếc', 16, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span>
+<div class="kv">
+<div class="k">Vai trò</div><div class="v">Phân khu 1 · mở bán Giai đoạn 3 (10/2025)</div>
+<div class="k">Quy mô</div><div class="v">A3 ~37 tầng/~343 căn · A4 ~37 tầng/~342 căn</div>
+<div class="k">Vị trí</div><div class="v">2 tháp cuối, view sông/rạch Bà Dạt đẹp nhất</div>
+<div class="k">Ra mắt</div><div class="v">Nhà mẫu 16–17/8/2025 · "Eaton Park Summit" 26/8/2025</div>
+<div class="k">Giá GĐ3</div><div class="v">~7.000 USD/m² (CGS Intl) · hấp thụ ~90–95%</div>
+<div class="k">Tiến độ</div><div class="v">8/2025 mới ~tầng 5 → bàn giao muộn nhất (~Q4/2027)</div>
+</div>
+<p>Được CĐT định vị là "mảnh ghép tinh hoa" cuối cùng; vị trí & view đẹp nhất nên giá cao nhất 3 giai đoạn. Booking GĐ3 vượt >3 lần giỏ hàng (VIR, 31/10/2025).</p>
+<div class="note">Phù hợp khách tích sản/ở thật ưu tiên view & vị trí; với nhà đầu tư "lướt", biên lợi nhuận hẹp hơn GĐ1 vì vào ở mặt bằng giá cao + bàn giao muộn nhất.</div>
+`);
+
+N('pk-loaicang','pk','Loại căn hộ','1–3PN · penthouse · tỷ trọng', 13, `
+<span class="badge b-cdt">CĐT/Môi giới</span>
+<table class="tbl">
+<tr><th>Loại</th><th>Diện tích (tim tường)</th><th>Tỷ trọng</th></tr>
+<tr><td>1PN</td><td class="num">~50–59 m² (TT ~46–49)</td><td class="num">~31%</td></tr>
+<tr><td>2PN</td><td class="num">~70–80 m²</td><td class="num">~59%</td></tr>
+<tr><td>3PN</td><td class="num">~104–108 m² (TT ~93–96)</td><td class="num">~9%</td></tr>
+<tr><td>Penthouse</td><td class="num">~195–255 m² (bàn giao thô)</td><td class="num">~0,5%</td></tr>
+</table>
+<p>Cơ cấu nghiêng mạnh về 2PN (~59%) — sản phẩm "xương sống" cho cả ở thật và cho thuê. 1PN (~31%) là sản phẩm thanh khoản cho thuê tốt nhất hướng chuyên gia.</p>
+<div class="note warn">Luôn phân biệt <b>diện tích tim tường</b> (tính giá) và <b>thông thủy</b> (sử dụng thực) khi so sánh đơn giá giữa các dự án — chênh lệch ~8–12%.</div>
+`);
+
+N('pk-shophouse','pk','Shophouse & khối đế','21 shophouse + 51 shop · phố thương mại', 12, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-mkt">Môi giới</span>
+<div class="kv">
+<div class="k">Shophouse mặt tiền</div><div class="v">21 căn · 85,6–176 m² (nhà phố TM)</div>
+<div class="k">Shop khối đế</div><div class="v">51 shop · 48,6–417,8 m² (tầng 1–2)</div>
+<div class="k">Sở hữu</div><div class="v">Theo thời hạn đất đến 12/01/2072</div>
+<div class="k">Giá thứ cấp</div><div class="v">~57–112 tỷ/căn (môi giới, T5/2026)</div>
+</div>
+<p>Khối thương mại khai thác dòng tiền từ ~2.000 căn hộ nội khu + cư dân khu vực An Phú. Rủi ro: lấp đầy thương mại cần thời gian sau bàn giao; giá trị lớn nên thanh khoản hẹp hơn căn hộ.</p>
+`);
+
+N('pk-bangiao','pk','Tiêu chuẩn bàn giao','Full nội thất · Bosch, Grohe, Daikin', 13, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Bàn giao <b>full nội thất liền tường cao cấp</b>:</p>
+<ul>
+<li><b>Bếp:</b> Bosch / Franke / Smeg / Kuppersbusch · đá Quartz (Vicostone/Phú Tài)</li>
+<li><b>Thiết bị vệ sinh:</b> Grohe / Duravit / Geberit / Kohler / Hansgrohe</li>
+<li><b>Điều hòa:</b> âm trần Daikin / Toshiba / Mitsubishi</li>
+<li><b>Khác:</b> khóa Yale, điện Schneider, tủ Woodlands/An Cường; 3PN có bồn tắm nằm</li>
+</ul>
+<div class="note">Bàn giao full giảm chi phí & thời gian hoàn thiện cho khách đầu tư cho thuê — có thể cho thuê ngay sau nhận nhà. Định lượng giá trị nội thất khi so sánh đơn giá với dự án bàn giao thô.</div>
+`);
+
+N('pk-tiendo','pk','Tiến độ xây dựng','Cập nhật theo tháp · bàn giao 2027', 13, `
+<span class="badge b-mkt">Môi giới/CĐT</span>
+<table class="tbl">
+<tr><th>Mốc</th><th>Tình trạng</th></tr>
+<tr><td>26/03/2024</td><td>Khởi công hầm A5/A6 (Unicons)</td></tr>
+<tr><td>~12/2024</td><td>Cất nóc khối đế/shophouse (nguồn môi giới)</td></tr>
+<tr><td>08/2025</td><td>A5/A6 ~tầng 27 · A1/A2 ~tầng 17–18 · A3/A4 ~tầng 5</td></tr>
+<tr><td>Cuối 2025</td><td>A5/A6 ~tầng 33</td></tr>
+<tr><td>Q1–Q3/2027</td><td>Bàn giao A5/A6 (dự kiến)</td></tr>
+<tr><td>Q4/2027</td><td>Bàn giao các tháp còn lại (dự kiến)</td></tr>
+</table>
+<div class="note warn">Mốc bàn giao là dự kiến. A3/A4 khởi công muộn nên bàn giao sau — khách mua GĐ3 cần tính thời gian chôn vốn dài hơn. Theo dõi tiến độ thực qua ảnh công trường định kỳ.</div>
+`);
+
+N('pk-thietkecan','pk','Đặc điểm căn hộ','Không cửa đối cửa · trần cao 3,5m', 11, `
+<span class="badge b-cdt">CĐT công bố</span>
+<ul>
+<li>~9–10 căn/sàn, <b>5 thang máy</b> + thang thoát hiểm.</li>
+<li><b>100% căn không "cửa đối cửa"</b>, mỗi căn chỉ 1 tường chung — riêng tư & hợp phong thủy.</li>
+<li>Trần cao sàn-tới-sàn tới <b>3,5m</b>; kính Triple Low-E; thang máy tốc độ 2,5–3 m/s.</li>
+<li>Bảo mật Face ID / QR tại sảnh & hầm.</li>
+</ul>
+<p>Bố cục mật độ căn/sàn thấp và không cửa đối cửa là điểm bán định tính được khách Việt coi trọng (riêng tư, phong thủy) — khác biệt so với chung cư mật độ cao.</p>
+`);
+
+/* ════════ TIỆN ÍCH NỘI KHU ════════ */
+N('ti-onsen','ti','Onsen & Ice-Sauna','Điểm nhấn lần đầu tại căn hộ TP.HCM', 15, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Điểm nhấn tiện ích "độc nhất": <b>hồ khoáng nóng Onsen ngoài trời</b> và <b>phòng xông hơi tuyết (ice-sauna)</b> — được quảng bá là lần đầu xuất hiện tại một dự án căn hộ TP.HCM.</p>
+<div class="note">Đây là "USP" tiện ích mạnh khi tư vấn — trải nghiệm wellness chuẩn resort hiếm có ở căn hộ nội đô, hỗ trợ định vị hạng sang và thu hút khách thuê cao cấp.</div>
+`);
+
+N('ti-hoboi','ti','Hệ hồ bơi','Vô cực · liên hoàn · jacuzzi · sky pool', 13, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Hệ hồ bơi đa tầng: hồ bơi <b>vô cực, liên hoàn, jacuzzi, hồ trẻ em</b> và <b>hồ bơi tầng thượng (sky pool)</b> với view sông & thành phố. Cảnh quan nước gắn rạch Bà Dạt tạo không gian xanh – nước đặc trưng Biophilic.</p>
+`);
+
+N('ti-theduc','ti','Thể dục thể thao','Gym · golf 3D · sân đa năng', 12, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Hệ thể chất: gym, yoga, <b>phòng golf 3D</b>, sân thể thao đa năng (bóng rổ, cầu lông, tennis). Đáp ứng nhu cầu vận động của tệp cư dân trẻ thu nhập cao — nhóm khách thuê tiềm năng.</p>
+`);
+
+N('ti-congvien','ti','Công viên & ven sông','Đường chạy ~1km · pet park >300m²', 13, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Mảng xanh – mặt nước: công viên ven sông & rạch, <b>đường chạy/đạp xe ~1km</b>, vườn BBQ, vườn nhiệt đới, và <b>công viên thú cưng >300 m²</b> (đoạt giải Best Pet-Friendly Development 2024).</p>
+<div class="note">Yếu tố pet-friendly + ven sông là điểm cộng với tệp gia đình trẻ & người nước ngoài — phân khúc thuê dài hạn ổn định.</div>
+`);
+
+N('ti-treem','ti','Khu trẻ em & giáo dục','Legend Art · Marvel House', 12, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Khu nghệ thuật & giáo dục trẻ em hợp tác <b>Legend Art</b> và <b>Marvel House</b>; sân chơi trẻ em trong nhà/ngoài trời. Tiện ích hướng gia đình giúp giữ chân cư dân ở thật, nâng chất lượng cộng đồng & giá thuê dài hạn.</p>
+`);
+
+N('ti-clubhouse','ti','Clubhouse & coworking','Lounge · billiards · studio sáng tạo', 12, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Tiện ích lifestyle: clubhouse, Residence Lounge & Billiards / Cigar lounge, <b>không gian coworking</b> và <b>studio sáng tạo nội dung</b> — bắt trend làm việc linh hoạt & creator economy của tệp cư dân trẻ. Tổng cộng dự án có <b>hơn 100 tiện ích</b>.</p>
+`);
+
+/* ════════ HẠ TẦNG KẾT NỐI ════════ */
+N('ht-nutgiao','ht','Nút giao An Phú','3.408 tỷ · 3 tầng · cách ~450m', 16, `
+<span class="badge b-press">Báo chí</span>
+<p>Nút giao khác mức <b>3 tầng An Phú</b> (vốn 3.408 tỷ) cách Eaton Park <b>~450m</b> — chất xúc tác hạ tầng quan trọng nhất với dự án.</p>
+<table class="tbl">
+<tr><th>Hạng mục</th><th>Mốc thông xe</th></tr>
+<tr><td>Hầm HC1-01</td><td class="num">30/6/2025</td></tr>
+<tr><td>Cầu vượt N2</td><td class="num">31/12/2025</td></tr>
+<tr><td>Hầm HC1-02 (dài nhất)</td><td class="num">02/02/2026</td></tr>
+<tr><td>Nhánh N3</td><td class="num">30/4/2026</td></tr>
+<tr><td>N4 / N1.1 / N1.3</td><td class="num">30/6/2026</td></tr>
+<tr><td>N1.2</td><td class="num">~10/2026 (chờ mặt bằng)</td></tr>
+</table>
+<p>Theo Giám đốc Ban Giao thông TP.HCM <b>Nguyễn Anh Minh</b>: công trình "có thể giảm ùn tắc tới 80%" cửa ngõ phía Đông. N1.2 chờ bàn giao >22.000 m² mặt bằng đường Lương Định Của trong Q1/2026.</p>
+<div class="note warn">Trong giai đoạn chưa hoàn tất toàn nút (đến ~10/2026), khu vực vẫn còn ùn tắc cục bộ — yếu tố trải nghiệm ngắn hạn cần nói thật với khách ở.</div>
+`);
+
+N('ht-metro','ht','Metro số 1','Đã vận hành 12/2024 · ga Rạch Chiếc ~3 phút', 13, `
+<span class="badge b-press">Báo chí</span>
+<p><b>Metro số 1</b> (Bến Thành – Suối Tiên) đã <b>vận hành thương mại từ 12/2024</b>. Ga <b>Rạch Chiếc</b> cách dự án ~3 phút di chuyển — kết nối nhanh về trung tâm & Thủ Đức.</p>
+<div class="note">Khác với nhiều dự án khu Đông, Eaton Park có lợi thế metro tương đối gần (ga Rạch Chiếc) — điểm cộng cho khách thuê là chuyên gia/nhân viên văn phòng không dùng ô tô.</div>
+`);
+
+N('ht-maichitho','ht','Đại lộ Mai Chí Thọ','70m · 10 làn · hầm Thủ Thiêm', 12, `
+<span class="badge b-press">Báo chí</span>
+<p>Mặt tiền <b>đại lộ Mai Chí Thọ</b> (lộ giới 70m, 10 làn) — trục Đông–Tây huyết mạch nối hầm Thủ Thiêm vào Quận 1 (~10–15 phút) và đi cao tốc Long Thành về phía Đông. Đây là "địa chỉ" giao thông đắt giá: mặt tiền đại lộ chính + hiển thị thương hiệu.</p>
+`);
+
+N('ht-caotoc','ht','Cao tốc & sân bay Long Thành','Mở rộng 8 làn · sân bay vận hành 2026', 13, `
+<span class="badge b-press">Báo chí</span>
+<p>Cao tốc <b>TP.HCM – Long Thành – Dầu Giây</b> đang mở rộng từ 4 → <b>8 làn</b> (dự kiến hoàn thành cuối 2026). <b>Sân bay Long Thành</b> giai đoạn 1 dự kiến vận hành giữa/cuối 2026 — Eaton Park nằm trên trục kết nối trực tiếp về sân bay.</p>
+<div class="note">Sóng hạ tầng sân bay là động lực giá trị dài hạn cho toàn khu Đông; Eaton Park hưởng lợi nhờ vị trí đầu trục Mai Chí Thọ – cao tốc.</div>
+`);
+
+N('ht-vanhdai','ht','Vành đai & cầu kết nối','VĐ2/VĐ3 · Liên Phường · cầu Thủ Thiêm', 12, `
+<span class="badge b-press">Báo chí</span>
+<p>Mạng lưới bổ trợ: <b>Vành đai 2</b> (đang khép kín), <b>Vành đai 3</b> (hoàn thành giữa 2026), đường <b>Liên Phường</b>, hệ thống <b>cầu Thủ Thiêm</b> — cùng tạo lưới giao thông đa hướng giảm phụ thuộc một trục, tăng giá trị kết nối vùng cho khu An Phú – Thủ Thiêm.</p>
+`);
+
+N('ht-tacdong','ht','"Điểm rơi" hạ tầng 2026–2027','Hạ tầng hoàn thiện trùng giai đoạn bàn giao', 14, `
+<span class="badge b-mkt">Phân tích</span>
+<table class="tbl">
+<tr><th>Mốc</th><th>Thời điểm kỳ vọng</th></tr>
+<tr><td>Hầm HC1-02 nút giao An Phú</td><td class="num">02/2026</td></tr>
+<tr><td>Nút giao An Phú hoàn tất toàn bộ</td><td class="num">~10/2026</td></tr>
+<tr><td>Vành đai 3 hoàn thành</td><td class="num">Giữa 2026</td></tr>
+<tr><td>Sân bay Long Thành GĐ1</td><td class="num">Giữa–cuối 2026</td></tr>
+<tr><td>Cao tốc Long Thành mở rộng 8 làn</td><td class="num">Cuối 2026</td></tr>
+<tr><td>Eaton Park bàn giao</td><td class="num">2027</td></tr>
+</table>
+<p><b>Luận điểm thời điểm:</b> người mua hiện vào <b>trước</b> khi cụm hạ tầng hoàn thiện; bàn giao 2027 rơi sau khi nút giao & sân bay vận hành — cấu trúc thời gian thuận cho tăng giá, <b>với điều kiện các mốc không trượt dài</b>.</p>
+<div class="note warn">Hạ tầng VN thường trượt 6–18 tháng. Kịch bản cơ sở nên giả định trượt nhẹ; chỉ kịch bản xấu (trượt đồng loạt >18 tháng) mới phá vỡ luận điểm.</div>
+`);
+
+/* ════════ GIÁ & CHÍNH SÁCH ════════ */
+N('cs-lotrinhgia','cs','Lộ trình giá sơ cấp','5.300 → 6.000 → 7.000 USD/m² (CGS Intl)', 16, `
+<span class="badge b-press">CGS International 11/2025</span>
+<table class="tbl">
+<tr><th>Giai đoạn</th><th>Tháp</th><th>Giá sơ cấp</th></tr>
+<tr><td>GĐ1 (5/2024)</td><td>A5 Grove, A6 Strait</td><td class="num">~5.300 USD/m² (~125 tr)</td></tr>
+<tr><td>GĐ2 (cuối 2024)</td><td>A1 Alpine, A2 Forest</td><td class="num">~6.000 USD/m² (~142 tr)</td></tr>
+<tr><td>GĐ3 (10/2025)</td><td>A3 Cove, A4 Lagoon</td><td class="num">~7.000 USD/m²</td></tr>
+</table>
+<p>Theo khảo sát thực địa của <b>CGS International</b> (4–5/11/2025), giá sơ cấp tăng đều qua 3 đợt, GĐ cuối hấp thụ ~95%. Đây là nguồn phân tích độc lập đáng tin hơn con số đồn của môi giới.</p>
+<div class="note warn">Mức tăng ~32% từ GĐ1→GĐ3 phản ánh cả tăng giá thị trường lẫn vị trí tháp đẹp hơn. Giá m² chính thức GĐ3 không được CĐT/báo chí công bố công khai; các mức 185–220 tr/m² là tin đồn môi giới.</div>
+`);
+
+N('cs-gd1','cs','Giá GĐ1 (A5/A6)','1PN ~6–7 tỷ · 2PN ~8,6–9,4 tỷ', 13, `
+<span class="badge b-mkt">Môi giới/Báo chí</span>
+<div class="kv">
+<div class="k">Đơn giá</div><div class="v">~125 triệu/m²</div>
+<div class="k">1PN</div><div class="v">~6,1–7 tỷ</div>
+<div class="k">2PN</div><div class="v">~8,6–9,4 tỷ</div>
+<div class="k">3PN</div><div class="v">từ ~13 tỷ</div>
+<div class="k">Hấp thụ</div><div class="v">>90%</div>
+</div>
+<p>GĐ1 là mặt bằng giá thấp nhất — khách vào sớm đã tích lũy biên tăng giá tốt nhất. Hiện chủ yếu giao dịch thứ cấp/chuyển nhượng với 2 tháp này.</p>
+`);
+
+N('cs-gd3','cs','Mở bán GĐ3 (A3/A4)','10/2025 · booking >3x giỏ hàng', 13, `
+<span class="badge b-press">VIR · CafeF · Báo Đầu tư</span>
+<p>Gamuda khởi động GĐ3 bằng sự kiện <b>"Eaton Park Summit"</b> (26/8/2025 tại GEM Center, >1.200 nhân sự/28 đại lý), ra mắt tháp Lagoon "mảnh ghép tinh hoa" cuối. Mở bán chính thức 10/2025: bán ~90% trong vài giờ, <b>booking vượt >3 lần giỏ hàng</b> (VIR 31/10/2025).</p>
+<div class="note">Lực cầu GĐ3 rất mạnh dù giá cao nhất — tín hiệu thị trường tin vào dự án. Nhưng đây cũng là giai đoạn giá đỉnh + bàn giao muộn nhất, biên "lướt sóng" hẹp.</div>
+`);
+
+N('cs-thucap','cs','Giá thứ cấp (T5/2026)','All-in qua môi giới — tham khảo', 12, `
+<span class="badge b-mkt">Môi giới — tham khảo</span>
+<table class="tbl">
+<tr><th>Loại</th><th>Giá all-in (môi giới)</th></tr>
+<tr><td>1PN</td><td class="num">~6,5–9,1 tỷ</td></tr>
+<tr><td>2PN</td><td class="num">~9,3–12,5 tỷ</td></tr>
+<tr><td>3PN</td><td class="num">~15,5–20 tỷ</td></tr>
+<tr><td>Shophouse khối đế</td><td class="num">~57–112 tỷ</td></tr>
+</table>
+<div class="note warn">Đây là <b>giá rao all-in qua môi giới</b>, không phải giá khớp xác thực. Khi phân tích lợi nhuận dùng giá giao dịch thực + trừ phí chuyển nhượng/thuế. Thứ cấp đã cao hơn sơ cấp GĐ1 — biên lợi nhuận người vào sau mỏng hơn.</div>
+`);
+
+N('cs-thanhtoan','cs','Chính sách thanh toán','Giãn ~30% đến nhận nhà · vay 70–80%', 15, `
+<span class="badge b-cdt">CĐT công bố (*)</span><span class="badge b-mkt">Môi giới</span>
+<h4>Các phương án (dự kiến)</h4>
+<table class="tbl">
+<tr><th>Phương án</th><th>Cấu trúc</th><th>Ưu đãi</th></tr>
+<tr><td>Tiến độ chuẩn (giãn)</td><td>5–10% ký HĐMB → đóng giãn mỗi 6 tháng tới ~30% đến nhận nhà (2027)</td><td class="num">CK 2–5%</td></tr>
+<tr><td>Thanh toán nhanh</td><td>Dồn tới ~70% sớm</td><td class="num">CK ~12%</td></tr>
+<tr><td>Vay ngân hàng</td><td>Hỗ trợ vay 70–80%</td><td class="num">Ân hạn gốc 24 tháng · HTLS tới 3 năm</td></tr>
+</table>
+<h4>Phí quản lý</h4>
+<p>Căn hộ ~<b>29.000đ/m²/tháng</b>; shophouse ~<b>35.000đ/m²/tháng</b>.</p>
+<div class="note warn">(*) Chính sách dự kiến, áp dụng theo từng thời điểm CĐT ban hành — đối chiếu bảng chính sách chính thức tại ngày giao dịch. Lịch thanh toán giãn (~30% đến nhận nhà) là lợi thế đòn bẩy vốn thấp.</div>
+`);
+
+N('cs-yield','cs','Tỷ suất cho thuê','Thực tế ~4–6%/năm · khan cung hỗ trợ', 14, `
+<span class="badge b-mkt">Môi giới</span><span class="badge b-press">Savills</span>
+<p>Nguồn môi giới nêu kỳ vọng cho thuê khu Quận 2 ~<b>4–6%/năm</b> (một số nêu 7–12% — thiếu cơ sở, không nên dùng) và tăng giá ~8–12%/năm.</p>
+<h4>Bối cảnh cung – cầu hỗ trợ</h4>
+<p>Theo dữ liệu Savills (chia sẻ tại khảo sát CGS, 11/2025): TP.HCM chỉ có ~<b>9.000 căn hộ mở bán mới trong 9 tháng đầu 2025</b> — thấp hơn nhiều so với nhu cầu ước tính ~<b>50.000 căn/năm</b>. Khan cung là lực đỡ giá trung hạn.</p>
+<div class="note warn">Định vị đầu tư đúng: lợi nhuận Eaton Park đến chủ yếu từ <b>tăng giá vốn</b>, không phải dòng tiền thuê. Yield ~4–6% (thực tế) không nên kỳ vọng theo con số 7–12% của môi giới.</div>
+`);
+
+/* ════════ THỊ TRƯỜNG & CẠNH TRANH ════════ */
+N('tt-bicanh','tt','Bối cảnh thị trường HCM','CBRE/Savills 2025 · cao cấp dẫn dắt · khan cung', 14, `
+<span class="badge b-press">CBRE · Savills</span>
+<ul>
+<li>Giá sơ cấp căn hộ TP.HCM tăng ~8% so 2024 (Savills Q3/2025); thứ cấp khu Đông tăng mạnh (Thủ Thiêm/Nam Rạch Chiếc 18–27%/năm; Thảo Điền/An Phú 13–19%/năm — Dat Xanh Services).</li>
+<li><b>Khan cung mới:</b> ~9.000 căn mở bán 9T/2025 so với nhu cầu ~50.000 căn/năm (Savills).</li>
+<li>Phân khúc cao cấp/hạng sang dẫn dắt nguồn cung & hấp thụ (~91% nhóm cao cấp).</li>
+</ul>
+<p>Kết luận khung: Eaton Park bán đúng vùng giá cao cấp trong thị trường khan cung — lực đỡ tốt, nhưng mặt bằng giá chung đã cao nên biên an toàn mỏng hơn chu kỳ trước.</p>
+`);
+
+N('tt-globalcity','tt','vs The Global City','Đối trọng trực tiếp · Masterise 117ha', 15, `
+<span class="badge b-mkt">Thị trường</span>
+<div class="kv">
+<div class="k">Quy mô</div><div class="v">TGC 117 ha (đại đô thị) vs Eaton 3,76 ha (boutique hạng sang)</div>
+<div class="k">Giá căn hộ</div><div class="v">TGC ~120–150 tr/m² vs Eaton ~125–165 tr/m²</div>
+<div class="k">Vị trí</div><div class="v">Cùng An Phú; TGC sâu hơn (Đỗ Xuân Hợp), Eaton mặt tiền Mai Chí Thọ kề Thủ Thiêm</div>
+</div>
+<h4>Đối đầu khi khách phân vân</h4>
+<ul>
+<li><b>TGC thắng:</b> hệ tiện ích đại đô thị tự chủ (mall 123.000m², kênh nhạc nước, trường quốc tế), "downtown mới".</li>
+<li><b>Eaton thắng:</b> quy mô nhỏ riêng tư, mặt tiền đại lộ chính + gần Thủ Thiêm/metro hơn, CĐT ngoại, bàn giao full nội thất, pháp lý gọn.</li>
+</ul>
+<div class="note">Khách ưu tiên "thành phố trong thành phố" & cộng đồng lớn → TGC. Khách ưu tiên căn hộ hạng sang riêng tư, vị trí đắc địa mặt tiền, thương hiệu ngoại → Eaton Park.</div>
+`);
+
+N('tt-thuthiem','tt','vs Thủ Thiêm hạng sang','Empire · Metropole · cao hơn Eaton', 13, `
+<span class="badge b-mkt">Thị trường</span>
+<table class="tbl">
+<tr><th>Dự án</th><th>Giá tham khảo</th></tr>
+<tr><td>Empire City</td><td class="num">~183–283 tr/m² (tăng ~42%/năm)</td></tr>
+<tr><td>The Metropole Thủ Thiêm</td><td class="num">~170–400 tr/m²</td></tr>
+<tr><td>The OpusK / Zeit River / The River</td><td class="num">Định vị siêu sang Thủ Thiêm</td></tr>
+</table>
+<p>Thủ Thiêm là "trần giá" khu Đông, cao hơn Eaton Park đáng kể. Khoảng cách giá Eaton (125–165) ↔ Thủ Thiêm (180–400) tạo <b>dư địa kể chuyện</b>: Eaton là hạng sang "cận lõi" với giá vào hợp lý hơn, hưởng spillover khi Thủ Thiêm hoàn thiện.</p>
+`);
+
+N('tt-cu','tt','vs Dự án cũ Thảo Điền/An Phú','Masteri Thảo Điền · Estella · Vista', 12, `
+<span class="badge b-mkt">Thị trường</span>
+<table class="tbl">
+<tr><th>Dự án (đã bàn giao)</th><th>Giá thứ cấp</th></tr>
+<tr><td>Masteri Thảo Điền</td><td class="num">~80–110 tr/m²</td></tr>
+<tr><td>Estella Heights</td><td class="num">~85–120 tr/m²</td></tr>
+<tr><td>The Vista</td><td class="num">~65–85 tr/m²</td></tr>
+</table>
+<p>Dự án cũ rẻ hơn nhưng đã qua sử dụng, thiết kế/tiện ích lỗi thời và <b>không còn nguồn cung mới mặt tiền Mai Chí Thọ</b>. Eaton Park là hàng sơ cấp hạng sang đầu tiên tại An Phú sau nhiều năm — premium giá phản ánh tính mới + khan hiếm.</p>
+`);
+
+N('tt-dinhvi','tt','Định vị & SWOT','Lợi thế / điểm yếu Eaton Park', 14, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>Lợi thế (Strengths)</h4>
+<ul>
+<li>Quỹ đất hiếm mặt tiền Mai Chí Thọ, kề Thủ Thiêm & gần metro</li>
+<li>CĐT ngoại Gamuda, tài chính mạnh, pháp lý hoàn chỉnh</li>
+<li>Tiện ích vượt trội (Onsen, ice-sauna, 100+ tiện ích), bàn giao full nội thất</li>
+<li>Thương hiệu xanh EDGE + giải PropertyGuru</li>
+</ul>
+<h4>Điểm yếu / Thách thức (Weaknesses)</h4>
+<ul>
+<li>Thương hiệu Gamuda ở phân khúc <b>hạng sang còn mới</b> với khách VN (KĐT Celadon/Gamuda City là trung cấp)</li>
+<li>Khu vực chưa có cộng đồng cư dân & tiện ích ngoại khu hiện hữu (khác Thảo Điền)</li>
+<li>Giá vào đã cao → dư địa lướt sóng hẹp; mô hình QTP bán nhanh – thoát nhanh</li>
+</ul>
+`);
+
+N('tt-thanhkhoan','tt','Thanh khoản & tăng giá','Căn nhỏ thoát nhanh · biên lướt hẹp dần', 12, `
+<span class="badge b-mkt">Thị trường</span>
+<p>Quy luật thanh khoản nội khu:</p>
+<ul>
+<li><b>1PN/2PN</b> (6–12 tỷ): tệp mua & thuê lớn nhất, thanh khoản tốt nhất.</li>
+<li><b>3PN/penthouse</b> (15–25 tỷ+): tệp hẹp hơn, thiên về tích sản/ở thật.</li>
+<li><b>Shophouse</b> (57–112 tỷ): siêu hẹp — tài sản giữ, phụ thuộc lấp đầy thương mại.</li>
+</ul>
+<p>Thứ cấp đã ghi nhận tăng so GĐ1, nhưng càng vào sau (GĐ3, thứ cấp) <b>biên lợi nhuận lướt càng mỏng</b>. Nhà đầu tư cần thanh khoản nên chọn 1–2PN vị trí/view khác biệt.</p>
+`);
+
+/* ════════ PHÂN TÍCH ĐẦU TƯ ════════ */
+N('dt-thesis','dt','Luận điểm đầu tư','5 trụ cột của investment thesis', 16, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>1 · Quỹ đất hạng sang khan hiếm</h4>
+<p>Mặt tiền Mai Chí Thọ, không còn dự án mới cùng trục; hàng sơ cấp hạng sang đầu tiên tại An Phú sau nhiều năm.</p>
+<h4>2 · Pháp lý hoàn chỉnh</h4>
+<p>Đã có GCN QSDĐ (10/2022) + GPXD (2/2023) — giảm rủi ro pháp lý so với nhiều dự án khu Đông.</p>
+<h4>3 · Sóng hạ tầng đúng nhịp</h4>
+<p>Nút giao An Phú, Metro 1, sân bay Long Thành, mở rộng cao tốc hội tụ quanh giai đoạn bàn giao 2027.</p>
+<h4>4 · CĐT ngoại tài chính mạnh</h4>
+<p>Gamuda FY2025 doanh thu kỷ lục RM16,4 tỷ — giảm rủi ro hụt vốn/treo dự án.</p>
+<h4>5 · Khan cung + đòn bẩy vốn thấp</h4>
+<p>TP.HCM thiếu cung (9.000 vs 50.000 căn/năm); chính sách giãn ~30% đến nhận nhà.</p>
+<div class="note">Thesis đứng vững khi: hạ tầng không trượt dài + Gamuda giữ tiến độ/chất lượng + thị trường cao cấp không gãy thanh khoản.</div>
+`);
+
+N('dt-dongtien','dt','Dòng tiền (mô phỏng)','Vốn ~30% đến nhận nhà · dồn khi bàn giao', 15, `
+<span class="badge b-mkt">Phân tích minh họa</span>
+<p>Ví dụ căn 2PN ~10,5 tỷ, phương án thanh toán giãn:</p>
+<table class="tbl">
+<tr><th>Giai đoạn</th><th>Người mua chi</th><th>Ghi chú</th></tr>
+<tr><td>Ký HĐMB → đến nhận nhà (2027)</td><td class="num">~30% (~3,15 tỷ)</td><td>Đóng giãn mỗi 6 tháng</td></tr>
+<tr><td>Khi bàn giao 2027</td><td class="num">Phần lớn còn lại</td><td>Hoặc giải ngân vay 70–80%</td></tr>
+<tr><td>Sau ân hạn gốc 24 tháng</td><td class="num">Gốc + lãi đầy đủ</td><td>Lãi thả nổi ~13,5%/năm (biểu tham khảo môi giới)</td></tr>
+</table>
+<p><b>Đặc điểm:</b> vốn bỏ ra đến nhận nhà thấp (~30%) — phù hợp khách có dòng tiền tương lai hoặc kế hoạch bán trước bàn giao. Nếu dùng đòn bẩy, gánh nặng lãi dồn về sau ân hạn.</p>
+<div class="note warn">Yield thực tế ~4–6% có thể không đủ bù lãi vay ~13,5% sau ân hạn. Kế hoạch thoát phải định trước: bán quanh bàn giao 2027 khi hạ tầng cộng hưởng, hoặc có nguồn trả nợ độc lập.</div>
+`);
+
+N('dt-ruiro','dt','Bản đồ rủi ro','Pháp lý · tiến độ · thanh khoản · lãi suất · cung', 15, `
+<span class="badge b-risk">Rủi ro</span>
+<table class="tbl">
+<tr><th>Rủi ro</th><th>Nội dung</th><th>Giảm thiểu</th></tr>
+<tr><td>Pháp lý / ra sổ</td><td>Pháp lý gốc sạch; lo ngại "vài dự án Gamuda chậm ra sổ"</td><td>Checklist 6 bước · cam kết tiến độ sổ trong HĐMB</td></tr>
+<tr><td>Tiến độ & chất lượng</td><td>Dự án hạng sang đầu tiên của Gamuda ở khu Đông; A3/A4 bàn giao muộn</td><td>Theo dõi ảnh công trường · chuẩn GQUAS</td></tr>
+<tr><td>Giá vào cao</td><td>Biên lướt sóng hẹp, nhất là GĐ3/thứ cấp</td><td>Định vị trung–dài hạn, không lướt</td></tr>
+<tr><td>Lãi suất sau ưu đãi</td><td>Thả nổi ~13,5% sau ân hạn 24 tháng</td><td>Trả bớt gốc · kế hoạch thoát trước</td></tr>
+<tr><td>Yield thấp</td><td>~4–6% thực tế, thấp hơn quảng cáo</td><td>Định vị capital-gain, không "thuê nuôi nợ"</td></tr>
+<tr><td>Nguồn cung khu Đông</td><td>TGC, Thủ Thiêm, các dự án Gamuda khác cạnh tranh cho thuê</td><td>Chọn căn khác biệt (view sông, layout hiếm)</td></tr>
+</table>
+`);
+
+N('dt-khuyennghi','dt','Chọn theo mục tiêu','Khung khuyến nghị hành động', 15, `
+<span class="badge b-mkt">Khuyến nghị</span>
+<table class="tbl">
+<tr><th>Mục tiêu</th><th>Lựa chọn</th><th>Điều kiện kích hoạt</th></tr>
+<tr><td>Ở / tích sản dài hạn</td><td>2PN hoặc 3PN góc view sông (A4 Lagoon, A3 Cove, A5 Grove)</td><td>Chọn PA thanh toán nhanh hưởng CK ~12% nếu sẵn vốn</td></tr>
+<tr><td>Đầu tư cho thuê</td><td>1PN/2PN diện tích nhỏ, gần metro/Thủ Thiêm</td><td>Tính yield thực ~4–6%, không kỳ vọng 7–12%</td></tr>
+<tr><td>Nhận nhà sớm</td><td>A5 Grove / A6 Strait (GĐ1)</td><td>Bàn giao Q1–Q3/2027, rút ngắn thời gian chôn vốn</td></tr>
+<tr><td>Lướt sóng</td><td>Thận trọng</td><td>Chỉ căn vị trí hiếm mua từ giỏ CĐT có CK; tránh GĐ3 giá đỉnh</td></tr>
+<tr><td>Khai thác thương mại</td><td>Shophouse/khối đế mặt tiền</td><td>Chấp nhận thời gian lấp đầy & thanh khoản hẹp</td></tr>
+</table>
+<div class="note">Nguyên tắc chung: căn "có câu chuyện riêng" (view sông, tầng đẹp, layout hiếm) bảo vệ giá tốt nhất khi nguồn cung khu Đông bung hàng.</div>
+`);
+
+N('dt-trigger','dt','Tín hiệu Mua / Thận trọng','Benchmark cập nhật quyết định', 13, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>Tín hiệu MUA mạnh hơn</h4>
+<ul>
+<li>Nút giao An Phú hoàn tất đúng các mốc 2026 (hầm HC1-02 đã thông 2/2026)</li>
+<li>Sân bay Long Thành GĐ1 vận hành giữa–cuối 2026</li>
+<li>Gamuda bàn giao A5/A6 đúng hạn 2027 & ra sổ suôn sẻ</li>
+<li>Thị trường khan cung tiếp diễn (cung mới < 1/5 nhu cầu)</li>
+</ul>
+<h4>Tín hiệu THẬN TRỌNG</h4>
+<ul>
+<li>Lãi suất vay tăng mạnh sau ưu đãi</li>
+<li>Nguồn cung khu Đông bung nhanh (TGC, Thủ Thiêm) làm chững giá/giảm yield</li>
+<li>Tiến độ bàn giao/ra sổ chậm so cam kết</li>
+<li>Chính sách CK/HTLS bị rút ngắn ở các đợt sau</li>
+</ul>
+`);
+
+N('dt-kh','dt','Chân dung khách mua','Gia đình trẻ · chuyên gia · NĐT trung–dài hạn', 12, `
+<span class="badge b-mkt">Phân tích</span>
+<p>Tệp khách Eaton Park:</p>
+<ul>
+<li><b>Gia đình trẻ thu nhập cao</b> mua để ở — coi trọng tiện ích wellness, pet-friendly, riêng tư.</li>
+<li><b>Chuyên gia nước ngoài / Việt kiều</b> — thuận với ngân hàng Malaysia, thương hiệu ngoại, gần Thảo Điền/Thủ Thiêm.</li>
+<li><b>Nhà đầu tư trung–dài hạn</b> ưu tiên pháp lý sạch & thương hiệu CĐT, kỳ vọng capital-gain theo sóng hạ tầng.</li>
+</ul>
+<div class="note">Ứng dụng tư vấn: chốt khách ở thật bằng trải nghiệm (Onsen, view sông, full nội thất, gần metro); chốt nhà đầu tư bằng chính tệp khách thuê tương lai — chuyên gia làm việc tại Thủ Thiêm/Thảo Điền. Khách "lướt" nên được tư vấn thận trọng vì giá vào đã cao.</div>
+`);
+
+/* ════════ LINKS ════════ */
+const LINKS = [
+['eaton','tq-vitri'],['eaton','tq-quymo'],['eaton','tq-thietke'],['eaton','tq-tongthau'],['eaton','tq-phankhu2'],['eaton','tq-giaithuong'],
+['eaton','cdt-gamuda'],['cdt-gamuda','cdt-vietnam'],['cdt-gamuda','cdt-taichinh'],['cdt-gamuda','cdt-qtp'],['cdt-gamuda','cdt-banhang'],['cdt-taichinh','cdt-banhang'],
+['eaton','pl-timeline'],['pl-timeline','pl-nguongoc'],['pl-timeline','pl-gpxd'],['pl-gpxd','pl-sohuu'],['pl-gpxd','pl-nganhang'],['pl-timeline','pl-luuy'],['pl-luuy','pl-checklist'],['cdt-gamuda','pl-nguongoc'],
+['eaton','pk-a5a6'],['eaton','pk-a1a2'],['eaton','pk-a3a4'],['tq-phankhu2','pk-a5a6'],['tq-phankhu2','pk-a1a2'],['tq-phankhu2','pk-a3a4'],
+['pk-a5a6','pk-loaicang'],['pk-loaicang','pk-bangiao'],['pk-a3a4','pk-tiendo'],['pk-a5a6','pk-tiendo'],['eaton','pk-shophouse'],['pk-loaicang','pk-thietkecan'],['tq-thietke','pk-thietkecan'],['tq-thietke','pk-a1a2'],
+['eaton','ti-onsen'],['ti-onsen','ti-hoboi'],['ti-hoboi','ti-theduc'],['eaton','ti-congvien'],['ti-congvien','ti-treem'],['ti-theduc','ti-clubhouse'],['eaton','ti-clubhouse'],
+['eaton','ht-nutgiao'],['eaton','ht-metro'],['eaton','ht-maichitho'],['ht-maichitho','tq-vitri'],['ht-nutgiao','ht-tacdong'],['ht-metro','ht-tacdong'],['ht-caotoc','ht-tacdong'],['ht-caotoc','ht-maichitho'],['eaton','ht-vanhdai'],['ht-vanhdai','ht-tacdong'],
+['eaton','cs-lotrinhgia'],['cs-lotrinhgia','cs-gd1'],['cs-lotrinhgia','cs-gd3'],['cs-gd1','pk-a5a6'],['cs-gd3','pk-a3a4'],['cs-lotrinhgia','cs-thucap'],['cs-lotrinhgia','cs-thanhtoan'],['cs-thanhtoan','cs-yield'],['cs-yield','tt-bicanh'],
+['eaton','tt-bicanh'],['tt-bicanh','tt-globalcity'],['tt-bicanh','tt-thuthiem'],['tt-bicanh','tt-cu'],['tt-globalcity','tt-dinhvi'],['tt-thuthiem','tt-dinhvi'],['tt-dinhvi','tt-thanhkhoan'],['cs-thucap','tt-thanhkhoan'],
+['eaton','dt-thesis'],['dt-thesis','dt-dongtien'],['dt-thesis','dt-ruiro'],['dt-thesis','dt-khuyennghi'],['dt-thesis','dt-trigger'],['cs-thanhtoan','dt-dongtien'],['cs-yield','dt-dongtien'],['cs-yield','dt-ruiro'],['pl-luuy','dt-ruiro'],['ht-tacdong','dt-thesis'],['ht-tacdong','dt-trigger'],['cs-yield','dt-ruiro'],['dt-khuyennghi','pk-a3a4'],['dt-khuyennghi','pk-a5a6'],['dt-khuyennghi','pk-shophouse'],['dt-kh','ti-onsen'],['dt-kh','ht-metro'],['tt-dinhvi','dt-thesis'],['tt-thanhkhoan','dt-khuyennghi'],['cdt-banhang','cs-gd3']
+];
+/* ════════ ENGINE ════════ */
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const stage = document.getElementById('stage');
+const tip = document.getElementById('tip');
+const panel = document.getElementById('panel');
+const intro = document.getElementById('intro');
+let W=0, H=0, DPR = Math.min(window.devicePixelRatio||1, 2);
+let cam = { x:0, y:0, z:1 };
+let hoverN = null, selN = null, dragN = null, panning = false;
+let px=0, py=0, moved=false;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const byId = {}; NODES.forEach(n=>byId[n.id]=n);
+const NB = {}; NODES.forEach(n=>NB[n.id]=new Set());
+LINKS.forEach(([a,b])=>{ if(byId[a]&&byId[b]){ NB[a].add(b); NB[b].add(a);} });
+
+/* cluster anchors in a ring */
+const order = ['tq','cdt','pl','pk','cs','ti','ht','tt','dt'];
+const anchors = {};
+function layoutInit(){
+  const R = Math.min(W,H)*0.62 + 160;
+  order.forEach((c,i)=>{
+    const a = -Math.PI/2 + i*(Math.PI*2/order.length);
+    anchors[c] = { x: Math.cos(a)*R, y: Math.sin(a)*R };
+  });
+  anchors.core = {x:0,y:0};
+  NODES.forEach(n=>{
+    const A = anchors[n.cluster];
+    n.x = A.x + (Math.random()-0.5)*180;
+    n.y = A.y + (Math.random()-0.5)*180;
+    n.vx=0; n.vy=0;
+  });
+  byId.tgc.x=0; byId.tgc.y=0;
+}
+
+/* simple force sim */
+let alpha = 1;
+function tick(){
+  if(alpha < 0.004) return;
+  alpha *= 0.985;
+  const rep = 5200;
+  for(let i=0;i<NODES.length;i++){
+    const a = NODES[i];
+    for(let j=i+1;j<NODES.length;j++){
+      const b = NODES[j];
+      let dx=a.x-b.x, dy=a.y-b.y;
+      let d2 = dx*dx+dy*dy + 0.01;
+      if(d2 > 360000) continue;
+      const d = Math.sqrt(d2);
+      const f = rep / d2 * alpha;
+      const fx = dx/d*f, fy = dy/d*f;
+      a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+    }
+  }
+  LINKS.forEach(([ia,ib])=>{
+    const a=byId[ia], b=byId[ib]; if(!a||!b) return;
+    let dx=b.x-a.x, dy=b.y-a.y;
+    const d = Math.sqrt(dx*dx+dy*dy)+0.01;
+    const ideal = (a.cluster===b.cluster)?150: (ia==='tgc'||ib==='tgc')?330:240;
+    const f = (d-ideal)*0.012*alpha*6;
+    const fx=dx/d*f, fy=dy/d*f;
+    a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+  });
+  NODES.forEach(n=>{
+    const A = anchors[n.cluster] || anchors.core;
+    n.vx += (A.x-n.x)*0.0035*alpha*6;
+    n.vy += (A.y-n.y)*0.0035*alpha*6;
+    n.vx += (0-n.x)*0.0006;
+    n.vy += (0-n.y)*0.0006;
+    if(n!==dragN){
+      n.vx*=0.86; n.vy*=0.86;
+      n.x+=n.vx; n.y+=n.vy;
+    }
+  });
+}
+
+/* render */
+function world2scr(x,y){ return [ (x-cam.x)*cam.z + W/2, (y-cam.y)*cam.z + H/2 ]; }
+function scr2world(x,y){ return [ (x-W/2)/cam.z + cam.x, (y-H/2)/cam.z + cam.y ]; }
+
+let visible = new Set(Object.keys(CLUSTERS));
+let searchHits = null;
+
+function draw(){
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.clearRect(0,0,W,H);
+  /* background dots */
+  ctx.save();
+  const g = ctx.createRadialGradient(W/2,H/2,80, W/2,H/2, Math.max(W,H)*0.75);
+  g.addColorStop(0,'rgba(212,168,83,0.045)');
+  g.addColorStop(1,'rgba(10,16,32,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  ctx.restore();
+
+  const focus = hoverN || selN;
+  const focusSet = focus ? new Set([focus.id, ...NB[focus.id]]) : null;
+
+  /* edges */
+  LINKS.forEach(([ia,ib])=>{
+    const a=byId[ia], b=byId[ib]; if(!a||!b) return;
+    if(!visible.has(a.cluster)||!visible.has(b.cluster)) return;
+    const [x1,y1]=world2scr(a.x,a.y), [x2,y2]=world2scr(b.x,b.y);
+    const hot = focusSet && focusSet.has(ia) && focusSet.has(ib) && (ia===focus.id||ib===focus.id);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+    if(hot){ ctx.strokeStyle = CLUSTERS[focus.cluster].color + 'aa'; ctx.lineWidth=1.6; }
+    else { ctx.strokeStyle = 'rgba(120,140,190,'+(focusSet?0.07:0.16)+')'; ctx.lineWidth=1; }
+    ctx.stroke();
+  });
+
+  /* nodes */
+  NODES.forEach(n=>{
+    if(!visible.has(n.cluster)) return;
+    const [x,y]=world2scr(n.x,n.y);
+    if(x<-80||y<-80||x>W+80||y>H+80) return;
+    const col = CLUSTERS[n.cluster].color;
+    const r = n.r * (0.7+0.3*Math.min(cam.z,1.4));
+    const dim = (focusSet && !focusSet.has(n.id)) || (searchHits && !searchHits.has(n.id));
+    ctx.globalAlpha = dim ? 0.16 : 1;
+    /* glow */
+    if(!dim && (n===hoverN || n===selN || n.id==='tgc')){
+      ctx.beginPath(); ctx.arc(x,y,r+7,0,Math.PI*2);
+      ctx.fillStyle = col+'2e'; ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    const rg = ctx.createRadialGradient(x-r*0.3,y-r*0.35,r*0.15,x,y,r);
+    rg.addColorStop(0, lighten(col, 0.45));
+    rg.addColorStop(1, col);
+    ctx.fillStyle = rg; ctx.fill();
+    ctx.lineWidth = (n===selN)?2.4:1.2;
+    ctx.strokeStyle = (n===selN)? '#fff' : 'rgba(10,16,32,.55)';
+    ctx.stroke();
+    /* label */
+    const showLabel = cam.z > 0.42 || n===hoverN || n===selN || n.id==='tgc' || n.r>=15;
+    if(showLabel){
+      ctx.font = (n.id==='tgc'? '700 13px' : '600 11px') + " 'Be Vietnam Pro', sans-serif";
+      ctx.textAlign='center';
+      ctx.fillStyle = dim? 'rgba(233,238,248,.25)' : 'rgba(233,238,248,.95)';
+      ctx.shadowColor='rgba(0,0,0,.8)'; ctx.shadowBlur=4;
+      ctx.fillText(n.label, x, y + r + 14);
+      ctx.shadowBlur=0;
+    }
+    ctx.globalAlpha = 1;
+  });
+}
+function lighten(hex, amt){
+  const c = parseInt(hex.slice(1),16);
+  let r=(c>>16)&255, g=(c>>8)&255, b=c&255;
+  r=Math.min(255, r+255*amt|0); g=Math.min(255, g+255*amt|0); b=Math.min(255, b+255*amt|0);
+  return 'rgb('+r+','+g+','+b+')';
+}
+
+function loop(){ tick(); draw(); requestAnimationFrame(loop); }
+
+/* resize */
+function resize(){
+  W = stage.clientWidth; H = stage.clientHeight;
+  cv.width = W*DPR; cv.height = H*DPR;
+  cv.style.width = W+'px'; cv.style.height = H+'px';
+}
+window.addEventListener('resize', ()=>{ resize(); });
+
+/* hit test */
+function nodeAt(mx,my){
+  const [wx,wy] = scr2world(mx,my);
+  for(let i=NODES.length-1;i>=0;i--){
+    const n=NODES[i];
+    if(!visible.has(n.cluster)) continue;
+    const dx=wx-n.x, dy=wy-n.y;
+    const rr=(n.r+6)/Math.min(cam.z,1)* (cam.z<1?1:1);
+    if(dx*dx+dy*dy < (n.r+8)*(n.r+8)) return n;
+  }
+  return null;
+}
+
+/* pointer events */
+cv.addEventListener('pointerdown', e=>{
+  cv.setPointerCapture(e.pointerId);
+  moved=false; px=e.clientX; py=e.clientY;
+  const rect=cv.getBoundingClientRect();
+  const n = nodeAt(e.clientX-rect.left, e.clientY-rect.top);
+  if(n){ dragN=n; } else { panning=true; cv.classList.add('dragging'); }
+});
+cv.addEventListener('pointermove', e=>{
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  if(dragN){
+    const [wx,wy]=scr2world(mx,my);
+    dragN.x=wx; dragN.y=wy; dragN.vx=0; dragN.vy=0;
+    alpha=Math.max(alpha,0.08); moved=true;
+  } else if(panning){
+    cam.x -= (e.clientX-px)/cam.z; cam.y -= (e.clientY-py)/cam.z;
+    px=e.clientX; py=e.clientY; moved=true;
+  } else {
+    const n = nodeAt(mx,my);
+    if(n!==hoverN){
+      hoverN=n;
+      cv.style.cursor = n? 'pointer':'grab';
+      if(n){
+        tip.innerHTML = '<b>'+n.label+'</b><span>'+(n.sub||'')+'</span>';
+        tip.classList.add('show');
+      } else tip.classList.remove('show');
+    }
+    if(n){
+      const [x,y]=world2scr(n.x,n.y);
+      tip.style.left=x+'px'; tip.style.top=(y - n.r*0.9)+'px';
+    }
+  }
+});
+window.addEventListener('pointerup', e=>{
+  if(dragN && !moved) openNode(dragN);
+  dragN=null; panning=false; cv.classList.remove('dragging');
+});
+cv.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  const [wx,wy]=scr2world(mx,my);
+  const f = Math.exp(-e.deltaY*0.0011);
+  cam.z = Math.min(2.6, Math.max(0.22, cam.z*f));
+  const [nx,ny]=scr2world(mx,my);
+  cam.x += wx-nx; cam.y += wy-ny;
+},{passive:false});
+
+/* panel */
+const pDot=document.getElementById('pDot'), pTitle=document.getElementById('pTitle'),
+      pCluster=document.getElementById('pCluster'), pBody=document.getElementById('pBody');
+function openNode(n){
+  selN = n;
+  const col = CLUSTERS[n.cluster].color;
+  pDot.style.setProperty('--c', col);
+  pTitle.childNodes[0].nodeValue = n.label;
+  pCluster.textContent = CLUSTERS[n.cluster].label + (n.sub? ' · '+n.sub:'');
+  let rel = '';
+  const nbs = [...NB[n.id]].map(id=>byId[id]).filter(Boolean);
+  if(nbs.length){
+    rel = '<div class="rel"><div class="rel-title">Node liên quan</div><div class="rel-chips">' +
+      nbs.map(m=>'<button class="rel-chip" data-id="'+m.id+'"><span class="dot" style="background:'+CLUSTERS[m.cluster].color+'"></span>'+m.label+'</button>').join('') +
+      '</div></div>';
+  }
+  pBody.innerHTML = n.html + rel;
+  pBody.scrollTop = 0;
+  pBody.querySelectorAll('.rel-chip').forEach(b=>{
+    b.addEventListener('click', ()=>{ const m=byId[b.dataset.id]; if(m){ focusNode(m); openNode(m);} });
+  });
+  panel.classList.add('open');
+  if(window.innerWidth>720) intro.style.display='none';
+}
+function focusNode(n){
+  if(reduceMotion){ cam.x=n.x; cam.y=n.y; return; }
+  const sx=cam.x, sy=cam.y, tz=Math.max(cam.z,0.85), sz=cam.z;
+  const t0=performance.now();
+  function anim(t){
+    const k=Math.min(1,(t-t0)/420), e=1-Math.pow(1-k,3);
+    cam.x=sx+(n.x-sx)*e; cam.y=sy+(n.y-sy)*e; cam.z=sz+(tz-sz)*e;
+    if(k<1) requestAnimationFrame(anim);
+  }
+  requestAnimationFrame(anim);
+}
+document.getElementById('pClose').addEventListener('click', ()=>{ panel.classList.remove('open'); selN=null; });
+window.addEventListener('keydown', e=>{ if(e.key==='Escape'){ panel.classList.remove('open'); selN=null; } });
+
+/* chips */
+const chipsEl = document.getElementById('chips');
+Object.entries(CLUSTERS).forEach(([key,c])=>{
+  if(key==='core') return;
+  const b=document.createElement('button');
+  b.className='chip on'; b.style.setProperty('--c', c.color);
+  b.innerHTML='<span class="dot"></span>'+c.label;
+  b.setAttribute('aria-pressed','true');
+  b.addEventListener('click', ()=>{
+    if(visible.has(key)){ visible.delete(key); b.classList.remove('on'); b.setAttribute('aria-pressed','false'); }
+    else { visible.add(key); b.classList.add('on'); b.setAttribute('aria-pressed','true'); }
+  });
+  chipsEl.appendChild(b);
+});
+
+/* legend */
+const lg = document.getElementById('legend');
+lg.innerHTML = '<div class="lg-title">Chú giải</div>' +
+  Object.entries(CLUSTERS).filter(([k])=>k!=='core').map(([k,c])=>
+    '<div class="lg-row"><span class="lg-dot" style="background:'+c.color+'"></span>'+c.label+'</div>').join('') +
+  '<div class="lg-hint">Kéo nền: di chuyển · Lăn chuột: zoom · Click node: chi tiết · Chip trên cùng: lọc nhóm</div>';
+
+/* search */
+const searchEl = document.getElementById('search');
+searchEl.addEventListener('input', ()=>{
+  const q = searchEl.value.trim().toLowerCase();
+  if(!q){ searchHits=null; return; }
+  searchHits = new Set(NODES.filter(n=>
+    (n.label+' '+(n.sub||'')+' '+n.html).toLowerCase().includes(q)
+  ).map(n=>n.id));
+});
+searchEl.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && searchHits && searchHits.size){
+    const n = byId[[...searchHits][0]];
+    focusNode(n); openNode(n);
+  }
+});
+
+/* boot */
+resize();
+layoutInit();
+cam.z = Math.min(W,H) > 760 ? 0.55 : 0.4;
+for(let i=0;i<260;i++) tick();
+alpha = 0.25;
+loop();
+setTimeout(()=>{ const n=byId['tgc']; }, 300);
+</script>
+</body>
+</html>
