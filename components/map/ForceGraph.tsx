@@ -86,7 +86,21 @@ export function ForceGraph({
   alwaysLabels = false,
 }: ForceGraphProps) {
   const fgRef = useRef<any>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const [hoverId, setHoverId] = useState<string | null>(null);
+  // Measure the container so we can hand react-force-graph EXPLICIT width/height.
+  // Without this it samples the parent once at mount — which is 0×0 on mobile/PWA
+  // (dynamic import settles before layout), leaving a blank canvas.
+  const [dims, setDims] = useState({ w: 0, h: 0 });
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const update = () => setDims({ w: el.clientWidth, h: el.clientHeight });
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const pickedSet = useMemo(() => new Set(selectedIds ?? []), [selectedIds]);
 
   // Clone so the lib can mutate node positions without touching our state.
@@ -117,7 +131,7 @@ export function ForceGraph({
   useEffect(() => {
     const t = setTimeout(fit, 300);
     return () => clearTimeout(t);
-  }, [graph, fit]);
+  }, [graph, fit, dims.w, dims.h]);
 
   // Is this node "active" (full-strength) given search + focus state?
   const nodeActive = useCallback(
@@ -130,9 +144,12 @@ export function ForceGraph({
   );
 
   return (
-    <div className="relative h-[60vh] min-h-[380px] w-full overflow-hidden rounded-lg border border-border bg-card sm:h-[560px]">
+    <div ref={wrapRef} className="relative h-[70vh] min-h-[420px] w-full touch-none overflow-hidden rounded-lg border border-border bg-card sm:h-[560px]">
+      {dims.w > 0 && dims.h > 0 && (
       <ForceGraph2D
         ref={fgRef}
+        width={dims.w}
+        height={dims.h}
         graphData={graph}
         nodeId="id"
         nodeVal="val"
@@ -210,6 +227,7 @@ export function ForceGraph({
           ctx.fill();
         }}
       />
+      )}
 
       {legend.length > 0 && <Legend items={legend} />}
     </div>
