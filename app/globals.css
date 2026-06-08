@@ -60,8 +60,20 @@
   html {
     scroll-behavior: smooth;
     font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overscroll-behavior: none;
   }
-  body { @apply bg-background text-foreground antialiased; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    /* Native-app feel: no rubber-band bounce, no double-tap zoom, no tap flash. */
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* Long-press shouldn't select app chrome; inputs stay selectable. */
+  nav, header, button { -webkit-user-select: none; user-select: none; }
+  input, textarea, [contenteditable] { -webkit-user-select: text; user-select: text; }
   ::selection { @apply bg-foreground/15; }
   :focus-visible { @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background; }
 }
