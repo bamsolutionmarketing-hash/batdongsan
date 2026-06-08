@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sarene Residence — Investment Knowledge Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0c0f;
+  --bg-2: #101217;
+  --bg-3: #15181f;
+  --panel: #101217;
+  --border: #2a2d36;
+  --border-2: #1c1f27;
+  --text: #eef0f4;
+  --text-2: #9aa2b0;
+  --text-3: #6a7280;
+  --gold: #cfa86b;
+  --gold-2: #e6cf9e;
+  --blue: #5aa9e6;
+  --purple: #b18cf0;
+  --green: #4fc08a;
+  --orange: #e0975a;
+  --softgold: #e8b84e;
+  --cyan: #3fc4c4;
+  --teal: #5cc47a;
+  --pink: #e07ba6;
+  --red: #ec7070;
+  --link: #6cc3a0;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.65;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 52px;
+  background: linear-gradient(90deg, #0c0d10 0%, #1a1710 100%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 14px;
+  position: relative; z-index: 120;
+}
+.logo { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
+.logo-mark {
+  width: 24px; height: 24px; flex-shrink: 0; border-radius: 4px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-2) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 12px; color: #0b0c0f;
+}
+.logo-text { font-weight: 700; font-size: 13px; color: var(--gold-2); letter-spacing: .05em; }
+.logo-sub { color: var(--text-3); font-weight: 400; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase; }
+.topbar-divider { width: 1px; height: 26px; background: var(--border); flex-shrink: 0; }
+.search-wrap { position: relative; flex-shrink: 1; min-width: 120px; }
+.search {
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 7px;
+  color: var(--text); font-family: inherit; font-size: 12.5px;
+  padding: 6px 12px 6px 30px; width: 230px; max-width: 100%;
+  transition: border-color .2s;
+}
+.search:focus { outline: none; border-color: var(--gold); }
+.search::placeholder { color: var(--text-3); }
+.search-ic { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--text-3); pointer-events: none; }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  border: 1px solid var(--border); background: transparent; color: var(--text-2);
+  font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: .02em;
+  padding: 4px 11px; border-radius: 999px; cursor: pointer; white-space: nowrap;
+  display: flex; align-items: center; gap: 6px; transition: all .18s;
+}
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--text-3)); }
+.chip:hover { border-color: var(--c, var(--gold)); color: var(--text); }
+.chip.on { background: color-mix(in srgb, var(--c) 16%, transparent); border-color: var(--c); color: var(--text); }
+.chip:focus-visible, .search:focus-visible, .btn360:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.btn360 {
+  flex-shrink: 0; display: flex; align-items: center; gap: 7px;
+  background: linear-gradient(135deg, var(--gold) 0%, #a8854a 100%);
+  color: #0b0c0f; border: none; border-radius: 7px; cursor: pointer;
+  font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: .03em;
+  padding: 7px 14px; transition: transform .15s, box-shadow .2s;
+  text-decoration: none;
+}
+.btn360:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(207,168,107,.35); }
+
+/* ── STAGE ── */
+.stage { position: relative; height: calc(100% - 52px); }
+canvas { display: block; cursor: grab; }
+canvas.dragging { cursor: grabbing; }
+
+/* ── LEGEND ── */
+.legend {
+  position: absolute; left: 14px; bottom: 14px; z-index: 60;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 13px; font-size: 11px; color: var(--text-2);
+  max-width: 240px;
+}
+.legend .lg-title { font-weight: 700; color: var(--text); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 7px; }
+.legend .lg-row { display: flex; align-items: center; gap: 7px; margin: 3px 0; }
+.legend .lg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.legend .lg-hint { margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--border-2); color: var(--text-3); font-size: 10.5px; line-height: 1.5; }
+
+/* ── TOOLTIP ── */
+.tip {
+  position: absolute; z-index: 80; pointer-events: none;
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 11px; font-size: 12px; max-width: 250px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  opacity: 0; transition: opacity .12s; transform: translate(-50%, calc(-100% - 14px));
+}
+.tip.show { opacity: 1; }
+.tip b { color: var(--gold-2); display: block; font-size: 12.5px; }
+.tip span { color: var(--text-2); font-size: 11px; }
+
+/* ── PANEL ── */
+.panel {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 480px; max-width: 100%;
+  background: var(--panel); border-left: 1px solid var(--border);
+  z-index: 100; display: flex; flex-direction: column;
+  transform: translateX(102%); transition: transform .28s cubic-bezier(.22,.8,.3,1);
+  box-shadow: -16px 0 48px rgba(0,0,0,.5);
+}
+.panel.open { transform: translateX(0); }
+.panel-head {
+  padding: 18px 20px 14px; border-bottom: 1px solid var(--border-2);
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.panel-head .ph-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; box-shadow: 0 0 12px var(--c); background: var(--c); }
+.panel-head h2 { font-size: 17.5px; font-weight: 700; line-height: 1.35; flex: 1; }
+.panel-head .ph-cluster { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); margin-top: 3px; }
+.panel-close {
+  background: var(--bg-3); border: 1px solid var(--border); color: var(--text-2);
+  width: 30px; height: 30px; border-radius: 7px; cursor: pointer; flex-shrink: 0;
+  font-size: 15px; line-height: 1; transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.panel-close:hover { color: var(--text); border-color: var(--gold); }
+.panel-body { flex: 1; overflow-y: auto; padding: 18px 20px 28px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.panel-body::-webkit-scrollbar { width: 8px; }
+.panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* panel content typography */
+.panel-body p { margin: 0 0 11px; color: var(--text-2); font-size: 13.5px; }
+.panel-body p b, .panel-body li b { color: var(--text); font-weight: 600; }
+.panel-body h4 {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--gold-2); margin: 18px 0 8px; padding-top: 14px; border-top: 1px solid var(--border-2);
+}
+.panel-body h4:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.panel-body ul { margin: 0 0 12px 16px; color: var(--text-2); font-size: 13.5px; }
+.panel-body li { margin: 4px 0; }
+.kv { display: grid; grid-template-columns: 134px 1fr; gap: 6px 12px; margin: 0 0 12px; font-size: 13px; }
+.kv .k { color: var(--text-3); font-weight: 500; }
+.kv .v { color: var(--text); font-weight: 500; }
+.tbl { width: 100%; border-collapse: collapse; margin: 4px 0 14px; font-size: 12.5px; }
+.tbl th { text-align: left; color: var(--text-3); font-weight: 600; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.tbl td { padding: 7px 8px; border-bottom: 1px solid var(--border-2); color: var(--text-2); vertical-align: top; }
+.tbl td:first-child { color: var(--text); font-weight: 500; }
+.tbl .num { font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.badge {
+  display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  padding: 2px 8px; border-radius: 999px; margin: 0 6px 6px 0; text-transform: uppercase;
+}
+.b-cdt { background: rgba(79,192,138,.14); color: #79d3a6; border: 1px solid rgba(79,192,138,.35); }
+.b-press { background: rgba(90,169,230,.14); color: #8fc6ef; border: 1px solid rgba(90,169,230,.35); }
+.b-mkt { background: rgba(224,151,90,.13); color: #ecb084; border: 1px solid rgba(224,151,90,.35); }
+.b-risk { background: rgba(236,112,112,.13); color: #f29494; border: 1px solid rgba(236,112,112,.4); }
+.note {
+  background: color-mix(in srgb, var(--gold) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  border-left: 3px solid var(--gold);
+  border-radius: 8px; padding: 10px 13px; margin: 4px 0 14px;
+  font-size: 12.5px; color: var(--text-2);
+}
+.note.warn { background: rgba(236,112,112,.08); border-color: rgba(236,112,112,.4); border-left-color: var(--red); }
+.note b { color: var(--text); }
+.rel { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-2); }
+.rel-title { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+.rel-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rel-chip {
+  border: 1px solid var(--border); background: var(--bg-3); color: var(--text-2);
+  font-family: inherit; font-size: 11.5px; font-weight: 500;
+  padding: 4px 11px; border-radius: 999px; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; transition: all .15s;
+}
+.rel-chip .dot { width: 6px; height: 6px; border-radius: 50%; }
+.rel-chip:hover { border-color: var(--gold); color: var(--text); }
+
+/* ── INTRO OVERLAY ── */
+.intro {
+  position: absolute; left: 14px; top: 14px; z-index: 60; max-width: 334px;
+  background: color-mix(in srgb, var(--panel) 90%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+}
+.intro h1 { font-size: 15px; font-weight: 800; letter-spacing: .02em; color: var(--gold-2); }
+.intro .sub { font-size: 11px; color: var(--text-3); letter-spacing: .1em; text-transform: uppercase; margin: 1px 0 8px; }
+.intro p { font-size: 12px; color: var(--text-2); line-height: 1.55; }
+.intro .upd { margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-3); }
+
+@media (max-width: 720px) {
+  .logo-sub, .intro, .topbar-divider { display: none; }
+  .search { width: 130px; }
+  .panel { width: 100%; }
+  .legend { max-width: 180px; font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel { transition: none; }
+  .tip { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">S</div>
+    <div>
+      <div class="logo-text">SARENE RESIDENCE</div>
+      <div class="logo-sub">Investment Knowledge Map · 06/2026</div>
+    </div>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="search-wrap">
+    <svg class="search-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input class="search" id="search" type="text" placeholder="Tìm node… (Enter để mở)" aria-label="Tìm kiếm node">
+  </div>
+  <div class="chips" id="chips"></div>
+  <a class="btn360" href="https://sarene-residence.vn/" target="_blank" rel="noopener" aria-label="Trang chính thức dự án, mở tab mới">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20 15.3 15.3 0 0 1 0-20z"/></svg>
+    TRANG CĐT
+  </a>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="cv"></canvas>
+  <div class="intro" id="intro">
+    <h1>Bản đồ tri thức đầu tư</h1>
+    <div class="sub">Căn hộ hạng sang · Đại Quang Minh · Sala</div>
+    <p>Toàn cảnh Sarene Residence (Lô 6.8 Bắc Sala, Thủ Thiêm): vị trí lõi, hệ sinh thái Sala 105ha, chủ đầu tư THADICO, giá &amp; thị trường siêu sang, pháp lý và phân tích đầu tư. Click node để xem chi tiết.</p>
+    <div class="upd">Dữ liệu đến 06/2026 · Phân biệt nguồn CĐT vs môi giới · Lưu ý giá & số căn cần xác minh (xem node riêng)</div>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="tip" id="tip"></div>
+
+  <aside class="panel" id="panel" role="dialog" aria-modal="false" aria-label="Chi tiết node">
+    <div class="panel-head">
+      <div class="ph-dot" id="pDot"></div>
+      <h2 id="pTitle">—<span class="ph-cluster" id="pCluster"></span></h2>
+      <button class="panel-close" id="pClose" aria-label="Đóng panel">✕</button>
+    </div>
+    <div class="panel-body" id="pBody"></div>
+  </aside>
+</div>
+
+<script>
+const CLUSTERS = {
+  core: { label: 'Trung tâm',             color: '#cfa86b' },
+  tq:   { label: 'Tổng quan',             color: '#5aa9e6' },
+  cdt:  { label: 'Chủ đầu tư',            color: '#b18cf0' },
+  pl:   { label: 'Pháp lý',               color: '#4fc08a' },
+  pk:   { label: 'Sản phẩm',              color: '#e0975a' },
+  ti:   { label: 'Tiện ích & Hệ sinh thái', color: '#3fc4c4' },
+  ht:   { label: 'Hạ tầng kết nối',       color: '#5cc47a' },
+  cs:   { label: 'Giá & Thị trường',      color: '#e07ba6' },
+  tt:   { label: 'Cạnh tranh',            color: '#ec7070' },
+  dt:   { label: 'Phân tích đầu tư',      color: '#e8b84e' }
+};
+const NODES = [];
+function N(id, cluster, label, sub, r, html){ NODES.push({id, cluster, label, sub, r, html}); }
+
+/* ════════ CORE ════════ */
+N('sarene','core','Sarene Residence','Căn hộ hạng sang · Lô 6.8 Bắc Sala, Thủ Thiêm', 30, `
+<h4>Định danh dự án</h4>
+<div class="kv">
+<div class="k">Tên đầy đủ</div><div class="v">Sarene Residence & Commercial Complex</div>
+<div class="k">Vị trí</div><div class="v">Lô 6.8, phân khu Bắc Sala, KĐT Sala, Thủ Thiêm · MT Đại lộ Mai Chí Thọ, P. An Khánh, TP. Thủ Đức</div>
+<div class="k">Quy mô đất</div><div class="v">~1,63 ha (16.319 m²)</div>
+<div class="k">Kết cấu</div><div class="v">2 tầng hầm + 3 tầng đế thương mại + tháp căn hộ 21 tầng</div>
+<div class="k">Số căn (cần xác minh)</div><div class="v">~560 căn hạng sang (có nguồn nêu ~1.200)</div>
+<div class="k">Loại căn</div><div class="v">1PN–3PN · 50–120 m²</div>
+<div class="k">Chủ đầu tư</div><div class="v">CTCP Đầu tư Địa ốc Đại Quang Minh (THADICO – THACO)</div>
+<div class="k">Phân phối & vận hành</div><div class="v">Thiso (thành viên Thaco)</div>
+<div class="k">Khởi công</div><div class="v">13/01/2026</div>
+<div class="k">Mở bán</div><div class="v">Dự kiến tháng 6/2026</div>
+<div class="k">Bàn giao</div><div class="v">Dự kiến tháng 11/2027</div>
+</div>
+<p><b>Câu chuyện đầu tư trong 3 dòng:</b> dự án căn hộ <b>đầu tiên ở Sala sau gần 10 năm</b>, do chính chủ đầu tư khu đô thị Sala (THADICO/THACO) phát triển — thừa hưởng ngay hệ sinh thái 105ha hiện hữu tại lõi Thủ Thiêm. Đây là quỹ đất "kim cương" khan hiếm; lợi nhuận chủ yếu đến từ vị thế khan hiếm và tăng giá vốn, không phải dòng tiền thuê.</p>
+<div class="note">Bản đồ tổng hợp từ công bố CĐT/báo chí và dữ liệu thị trường đến <b>06/2026</b>. Nhãn nguồn: <span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span><span class="badge b-mkt">Môi giới/Thị trường</span><span class="badge b-risk">Rủi ro/Lưu ý</span></div>
+`);
+
+/* ════════ TỔNG QUAN ════════ */
+N('tq-vitri','tq','Vị trí Lô 6.8 Bắc Sala','MT Mai Chí Thọ · 5 phút về Quận 1', 15, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span>
+<h4>Tọa độ "kim cương"</h4>
+<p>Dự án nằm trên <b>Lô 6.8</b>, mặt tiền <b>Đại lộ Mai Chí Thọ</b> — trục xương sống Thủ Thiêm, phân khu phía Bắc của KĐT Sala (P. An Khánh, TP. Thủ Đức).</p>
+<ul>
+<li>~5 phút qua <b>cầu Ba Son</b> hoặc <b>hầm Thủ Thiêm</b> về trung tâm Quận 1</li>
+<li>Gần Metro số 2 và cao tốc Long Thành – Dầu Giây → kết nối sân bay Long Thành & Đông Nam Bộ</li>
+<li>Liền kề công viên bờ sông, lâm viên Sala, trung tâm tài chính Thủ Thiêm tương lai</li>
+</ul>
+<div class="note">Giá trị vị trí của Sarene nằm ở <b>"địa chỉ lõi + hệ sinh thái hiện hữu"</b>, không phải hứa hẹn tương lai — đây là điểm khác biệt cốt lõi so với các dự án sơ khai ngoài lõi.</div>
+`);
+
+N('tq-quymo','tq','Quy mô & cấu trúc','1,63 ha · tháp 21 tầng · ~560 căn', 15, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-risk">Số căn cần xác minh</span>
+<div class="kv">
+<div class="k">Diện tích đất</div><div class="v">~1,63 ha (16.319 m²)</div>
+<div class="k">Kết cấu</div><div class="v">2 hầm + 3 tầng đế TM + tháp căn hộ 21 tầng</div>
+<div class="k">Số căn</div><div class="v">~560 căn (hạng sang, giới hạn)</div>
+<div class="k">Loại căn</div><div class="v">1PN–3PN · 50–120 m²</div>
+</div>
+<p>Cấu trúc "khối đế thương mại + tháp ở" tạo mô hình phức hợp residence + commercial. Số căn ~560 phù hợp định vị "giới hạn/hạng sang".</p>
+<div class="note warn">Một số trang nêu <b>~1.200 căn</b> hoặc <b>4 tháp 24–25 tầng</b> — KHÔNG khớp cấu trúc "1 tháp 21 tầng" phổ biến nhất. Xem node "Cảnh báo mâu thuẫn số liệu" trước khi dùng con số với khách.</div>
+`);
+
+N('tq-mauthuan','tq','Cảnh báo mâu thuẫn số liệu','560 vs 1.200 căn · 1 tháp vs 4 tháp', 14, `
+<span class="badge b-risk">Lưu ý quan trọng</span>
+<p>Nhiều con số quy mô đang lưu hành cho Sarene (dự án mới khởi công 1/2026, chưa có bảng hàng chính thức):</p>
+<table class="tbl">
+<tr><th>Hạng mục</th><th>Các con số ghi nhận</th></tr>
+<tr><td>Số tháp / tầng</td><td class="num">1 tháp 21 tầng (phổ biến) · vs 4 tháp 24–25 tầng (1 nguồn)</td></tr>
+<tr><td>Số căn</td><td class="num">~560 (giới hạn) · vs ~480–560 · vs ~1.200</td></tr>
+<tr><td>Diện tích</td><td class="num">~1,63 ha = 16.319 m² (nhất quán)</td></tr>
+</table>
+<div class="note warn"><b>Quy tắc bán hàng:</b> chỉ con số diện tích (1,63 ha) là nhất quán. Số tháp/tầng/căn <b>phải chờ bảng hàng & hồ sơ pháp lý chính thức</b>. Không cam kết "1.200 căn" hay "4 tháp" khi tư vấn — rủi ro sai lệch cao. Đối chiếu HĐMB.</div>
+`);
+
+N('tq-thietke','tq','Thiết kế & nhà thầu','Ong & Ong · Artelia · Central', 13, `
+<span class="badge b-mkt">Môi giới · cần xác minh</span>
+<p>Theo nguồn thị trường, đội ngũ phát triển gồm các tên tuổi quốc tế:</p>
+<ul>
+<li><b>Tư vấn thiết kế:</b> Ong & Ong (Singapore) — kiến trúc hiện đại, tối ưu công năng</li>
+<li><b>Quản lý & giám sát:</b> Artelia (Pháp) — tiêu chuẩn an toàn & chất lượng thi công</li>
+<li><b>Tổng thầu:</b> Central Construction</li>
+</ul>
+<p>Định hướng thiết kế: hạng sang, không gian sống sinh thái, tiện ích nội khu khép kín tiêu chuẩn quốc tế.</p>
+<div class="note warn">Danh sách đối tác thiết kế/thầu do nguồn môi giới nêu — nên xác nhận lại từ công bố chính thức CĐT/Thiso khi mở bán.</div>
+`);
+
+N('tq-sala','tq','Hệ sinh thái Sala 105ha','"Mảnh ghép cuối" của Bắc Sala', 16, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Điểm bán mạnh nhất của Sarene: sở hữu căn hộ tại đây = <b>thừa hưởng ngay hệ sinh thái 105ha Sala đã hiện hữu</b> — mảng xanh, công viên bờ sông, lâm viên, cộng đồng cư dân tinh hoa sẵn có.</p>
+<p>Sarene được định vị là <b>"mảnh ghép hoàn hảo"</b> khép kín bức tranh đô thị sinh thái Sala — phân khu Bắc Sala vốn được xem là "lá phổi xanh" của bán đảo Thủ Thiêm.</p>
+<div class="note">Đây là lý do Sarene không nên bán như "dự án đơn lẻ": câu chuyện đúng là <b>tiếp nối hệ sinh thái Sala hiện hữu</b> — yếu tố giảm rủi ro "đô thị trên giấy" mà nhiều dự án Thủ Thiêm khác còn đang hoàn thiện.</div>
+`);
+
+N('tq-dinhvi','tq','Định vị phân khúc','Siêu sang lõi Thủ Thiêm · đầu tiên sau ~10 năm', 14, `
+<span class="badge b-cdt">CĐT · Báo chí</span>
+<p>Sarene định vị <b>căn hộ hạng sang/siêu sang tại lõi Thủ Thiêm</b>; là <b>dự án căn hộ đầu tiên tại KĐT Sala sau gần 10 năm</b> — đánh dấu sự "tái khởi động" của Đại Quang Minh sau giai đoạn tập trung hoàn thiện hạ tầng.</p>
+<div class="note">Bối cảnh thị trường 2026 là giai đoạn "thanh lọc": khách mua giá trị hiện hữu (hạ tầng, pháp lý, uy tín CĐT) thay vì lời hứa tương lai. Sarene hợp khẩu vị này nhờ Sala đã thành hình. <b>Không bán bằng kỳ vọng tăng giá phi thực tế</b> dù là phân khúc đỉnh.</div>
+`);
+
+/* ════════ CHỦ ĐẦU TƯ ════════ */
+N('cdt-dqm','cdt','Đại Quang Minh (THADICO)','Thành lập 2011 · vốn 14.520 tỷ · Trần Bá Dương', 16, `
+<span class="badge b-press">Báo chí</span>
+<p><b>CTCP Đầu tư Địa ốc Đại Quang Minh (THADICO)</b> — thành viên Tập đoàn THACO. Thành lập <b>22/03/2011</b>, trụ sở số 10 Mai Chí Thọ, An Khánh. Chủ tịch HĐQT <b>ông Trần Bá Dương</b> (Chủ tịch THACO).</p>
+<div class="kv">
+<div class="k">Vốn điều lệ</div><div class="v">Tăng từ 10.920 tỷ → 14.520 tỷ đồng (21/01/2025)</div>
+<div class="k">Lĩnh vực</div><div class="v">BĐS cao cấp + hạ tầng giao thông + khu công nghiệp</div>
+<div class="k">Dự án lõi</div><div class="v">KĐT Sala (Thủ Thiêm) · tổng vốn ~2,2 tỷ USD</div>
+</div>
+<p>Là CĐT gắn liền với toàn bộ quá trình hình thành KĐT Sala — năng lực tài chính mạnh, tầm nhìn dài hạn. Sarene là dự án do <b>chính "chủ nhà" của Sala</b> phát triển.</p>
+`);
+
+N('cdt-thaco','cdt','Hệ sinh thái THACO','Tập đoàn đa ngành của Trần Bá Dương', 13, `
+<span class="badge b-press">Báo chí</span>
+<p><b>THACO (Trường Hải)</b> là tập đoàn đa ngành (ô tô, nông nghiệp, cơ khí, logistics, BĐS) — hậu thuẫn tài chính cho THADICO. Hệ sinh thái liên quan: <b>Thiso</b> (bán lẻ – Thiso Mall, Emart), KCN Thaco Chu Lai...</p>
+<div class="note">Sức mạnh tập đoàn mẹ THACO là "bảo chứng mềm" về năng lực hoàn thành — quan trọng với một dự án siêu sang đòi hỏi chuẩn vận hành cao và vốn lớn. THACO đứng ra bảo lãnh trái phiếu cho THADICO (xem node Tài chính).</div>
+`);
+
+N('cdt-track','cdt','Track record tại Sala','Sarimi · Sadora · Saroma — tăng giá mạnh', 15, `
+<span class="badge b-press">Báo chí</span>
+<p>Giai đoạn 2015–2024, doanh thu BĐS của Đại Quang Minh chủ yếu từ các phân khu Sala đã bàn giao:</p>
+<ul>
+<li>Căn hộ <b>Sarimi, Sarica, Sarina (Condo C1), Sadora (Lô 6.9)</b></li>
+<li>Biệt thự <b>Saroma</b>, nhà phố <b>Saritown / Nguyễn Cơ Thạch</b>, shophouse khu II</li>
+</ul>
+<p>Đánh giá thị trường: tiến độ bàn giao <b>đúng hạn/sớm hơn</b>, chất lượng đúng phối cảnh, được ví "Singapore thu nhỏ". Giá thứ cấp các phân khu Sala đã <b>tăng mạnh</b> so mở bán (xem node giá Sarimi/Sarica).</p>
+<div class="note">Track record này là luận điểm bán hàng mạnh: Sarene do chính CĐT có lịch sử giao đúng hạn + tăng giá tại cùng khu phát triển → giảm rủi ro tiến độ/chất lượng.</div>
+`);
+
+N('cdt-hatang','cdt','Vai trò hạ tầng Thủ Thiêm','4 cầu & đại lộ vòng cung (BT)', 14, `
+<span class="badge b-press">Báo chí</span>
+<p>THADICO là nhà đầu tư <b>4 tuyến đường chính + đại lộ vòng cung</b> và <b>cầu Ba Son (Thủ Thiêm 2)</b> trong Thủ Thiêm theo hợp đồng BT (đổi đất lấy hạ tầng) — đây là cách công ty có quỹ đất Sala.</p>
+<div class="note warn"><b>Lưu ý cân bằng:</b> ông Trần Bá Dương từng công khai "nhận trách nhiệm, lỗi của mình" vì THACO mới hoàn thành <b>một phần</b> các dự án kết nối giao thông Thủ Thiêm và KĐT Sala, cam kết đẩy mạnh trong thời gian tới. Tức năng lực hạ tầng mạnh nhưng tiến độ một số hạng mục từng chậm — yếu tố cần theo dõi.</div>
+`);
+
+N('cdt-taichinh','cdt','Tài chính & trái phiếu','Lần đầu phát hành 1/2026 · Thaco bảo lãnh', 13, `
+<span class="badge b-press">Báo chí (Vietstock 1/2026)</span>
+<p>Tháng 1/2026, Đại Quang Minh <b>lần đầu huy động trái phiếu</b>, được <b>Thaco bảo lãnh thanh toán</b>. Giai đoạn 2025–2028, công ty dự kiến ~<b>81% doanh thu đến từ các dự án trong Sala</b> (gồm Sarene).</p>
+<div class="note warn">Hàm ý 2 chiều: (+) Thaco bảo lãnh tăng độ tin cậy thanh toán; (–) việc lần đầu dùng đòn bẩy trái phiếu + doanh thu tập trung gần như toàn bộ vào Sala là điểm cần theo dõi về sức khỏe tài chính & rủi ro tập trung. Với khách mua, sức khỏe CĐT vẫn là biến số khi mua nhà hình thành trong tương lai.</div>
+`);
+
+/* ════════ PHÁP LÝ ════════ */
+N('pl-quyhoach','pl','Quy hoạch & chủ trương','QĐ 3165/2012 · 6 QĐ điều chỉnh 2025', 15, `
+<span class="badge b-press">Báo chí</span><span class="badge b-cdt">CĐT</span>
+<ul>
+<li>Lô 6.8 nằm trong đồ án điều chỉnh cục bộ <b>quy hoạch phân khu 1/2.000</b> theo <b>Quyết định 3165/QĐ-UBND ngày 19/6/2012</b>.</li>
+<li>Tháng 7/2025: THADICO <b>nhận 6 quyết định điều chỉnh chủ trương đầu tư</b> tại KĐT Sala (sau khi TP. Thủ Đức công bố 9 đồ án phân khu 1/2.000) — pháp lý quy hoạch Sala được khơi thông.</li>
+</ul>
+<div class="note">Sala là khu đô thị đã hình thành, pháp lý quy hoạch tổng thể rõ ràng — nền tảng tốt hơn nhiều dự án Thủ Thiêm "sơ khai". Tuy nhiên pháp lý <b>cấp dự án Sarene</b> (đủ điều kiện bán) cần xác minh riêng (xem node Hiện trạng).</div>
+`);
+
+N('pl-hientrang','pl','Hiện trạng pháp lý bán hàng','Khởi công 1/2026 · mở bán 6/2026 — xác minh', 15, `
+<span class="badge b-risk">Lưu ý quan trọng</span><span class="badge b-cdt">CĐT</span>
+<p>Dự án <b>khởi công 13/01/2026</b>, dự kiến <b>mở bán tháng 6/2026</b>. Ở thời điểm mở bán sớm, cần xác minh dự án đã có <b>văn bản đủ điều kiện bán nhà ở hình thành trong tương lai</b> của Sở Xây dựng hay chưa.</p>
+<div class="note warn"><b>Điểm thẩm định #1.</b> Giá hiện đang là "rumor 200–250 triệu/m²" — chưa phải bảng giá chính thức. Trước khi xuống tiền lớn, yêu cầu: GPXD, văn bản đủ điều kiện bán, và bảng giá chính thức từ CĐT/Thiso. Giai đoạn "giữ chỗ" nên đảm bảo hoàn lại 100%.</div>
+`);
+
+N('pl-sohuu','pl','Hình thức sở hữu','Căn hộ — lâu dài / 50 năm (xác nhận)', 11, `
+<span class="badge b-cdt">Dự kiến</span>
+<p>Là căn hộ chung cư hạng sang để ở; thông lệ: <b>sổ hồng lâu dài</b> cho người Việt, <b>50 năm</b> cho người nước ngoài (room ngoại tối đa 30%/tòa). Phần thương mại khối đế theo thời hạn đất.</p>
+<div class="note">Chi tiết sở hữu, phần chung/riêng, room ngoại cần xác nhận trong HĐMB & GCN của dự án khi mở bán. Phân khúc siêu sang Thủ Thiêm thường có tỷ lệ khách nước ngoài/Việt kiều cao → lưu ý room 30%.</div>
+`);
+
+N('pl-thiso','pl','Phân phối & vận hành: Thiso','Thành viên Thaco · bảo lãnh NH cần kiểm tra', 12, `
+<span class="badge b-press">Báo chí</span>
+<p><b>CTCP Thương mại Dịch vụ Quốc tế Thiso</b> (thành viên Thaco) là đơn vị phân phối & vận hành dự án — đồng thời là đơn vị vận hành bán lẻ Sala (Thiso Mall, Emart). Việc cùng "nhà Thaco" vận hành tạo tính đồng bộ thương mại – cư dân.</p>
+<div class="note warn">Khi ký HĐMB: kiểm tra <b>chứng thư bảo lãnh ngân hàng</b> cho nghĩa vụ bàn giao của CĐT (ghi đúng mã căn) và tình trạng giải chấp căn. Thiso là đơn vị phân phối/vận hành, không thay thế nghĩa vụ pháp lý của chủ đầu tư.</div>
+`);
+
+N('pl-checklist','pl','Checklist trước cọc','6 bước — chú ý mở bán sớm', 13, `
+<span class="badge b-mkt">Khuyến nghị</span>
+<ul>
+<li><b>1.</b> Quyết định chủ trương đầu tư + quy hoạch 1/500/1/2.000 của Lô 6.8.</li>
+<li><b>2.</b> <b>Giấy phép xây dựng</b> dự án (đã khởi công 1/2026).</li>
+<li><b>3.</b> <b>Văn bản đủ điều kiện bán</b> nhà ở hình thành trong tương lai — nếu CHƯA có, chỉ "giữ chỗ" hoàn lại.</li>
+<li><b>4.</b> <b>Bảng giá chính thức</b> từ CĐT/Thiso (không dùng giá rumor để quyết định).</li>
+<li><b>5.</b> <b>Chứng thư bảo lãnh ngân hàng</b> ghi đúng mã căn + căn đã giải chấp.</li>
+<li><b>6.</b> Tiến độ thanh toán theo trần luật: ≤70% trước bàn giao (11/2027), ≤95% trước khi cấp sổ.</li>
+</ul>
+<div class="note">Với suất đầu tư hàng chục tỷ ở phân khúc siêu sang, phí luật sư rà HĐMB độc lập là khoản nhỏ nhưng cần thiết. Làm rõ điều khoản phạt chậm bàn giao/ra sổ.</div>
+`);
+
+/* ════════ SẢN PHẨM ════════ */
+N('pk-cancho','pk','Căn hộ & cơ cấu','~560 căn · 1–3PN · 50–120 m²', 15, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-risk">Số căn cần xác minh</span>
+<div class="kv">
+<div class="k">Số căn</div><div class="v">~560 căn (hạng sang, giới hạn) — cần xác minh</div>
+<div class="k">Loại căn</div><div class="v">1PN, 2PN, 3PN</div>
+<div class="k">Diện tích</div><div class="v">50–120 m²</div>
+<div class="k">Tháp</div><div class="v">1 tòa 21 tầng (trên 3 tầng đế)</div>
+</div>
+<p>Dải diện tích 50–120 m² phủ từ căn 1PN nhỏ tới 3PN lớn — linh hoạt cho cả người mua ở và tích sản. "Giới hạn ~560 căn" củng cố tính khan hiếm của sản phẩm lõi Sala.</p>
+<div class="note warn">Một số nguồn nêu 2–4PN hoặc tới 1.200 căn — chờ rổ hàng chính thức. Khi tư vấn dùng dải "1–3PN, 50–120 m²" theo công bố CĐT.</div>
+`);
+
+N('pk-loaihinh','pk','Phân khúc sản phẩm','Hạng sang/siêu sang · giới hạn', 12, `
+<span class="badge b-cdt">CĐT định vị</span>
+<p>Định vị <b>hạng sang đến siêu sang</b>: thiết kế quốc tế, không gian sinh thái, tiện ích nội khu khép kín tiêu chuẩn cao. Sản phẩm "giới hạn" tại lõi Sala — nhắm tệp khách tinh hoa coi trọng địa chỉ & cộng đồng cư dân.</p>
+<div class="note">Khác biệt then chốt: Sarene bán "vị trí + hệ sinh thái hiện hữu" hơn là số lượng tiện ích — giá trị nằm ở sự khan hiếm của quỹ đất lõi Sala, không tái tạo được.</div>
+`);
+
+N('pk-bangiao','pk','Tiêu chuẩn bàn giao','Chưa công bố · kỳ vọng hạng sang', 11, `
+<span class="badge b-mkt">Chưa công bố</span>
+<p>CĐT chưa công bố chi tiết tiêu chuẩn bàn giao cho Sarene. Tham chiếu các phân khu Sala trước (Sarimi/Sadora) và phân khúc siêu sang Thủ Thiêm: kỳ vọng bàn giao <b>hoàn thiện cao cấp/nội thất liền tường thương hiệu quốc tế</b>.</p>
+<div class="note warn">Chờ công bố chính thức về bộ tiêu chuẩn bàn giao (thương hiệu thiết bị, mức hoàn thiện) khi mở bán — yếu tố ảnh hưởng trực tiếp định giá so với đối thủ Thủ Thiêm.</div>
+`);
+
+N('pk-tiendo','pk','Tiến độ & bàn giao','Khởi công 1/2026 → bàn giao 11/2027', 13, `
+<span class="badge b-cdt">CĐT công bố</span>
+<table class="tbl">
+<tr><th>Mốc</th><th>Thời điểm</th></tr>
+<tr><td>Khởi công</td><td class="num">13/01/2026</td></tr>
+<tr><td>Mở bán chính thức</td><td class="num">Dự kiến 6/2026</td></tr>
+<tr><td>Bàn giao</td><td class="num">Dự kiến 11/2027</td></tr>
+</table>
+<p>Chu kỳ xây dựng ~22 tháng từ khởi công đến bàn giao — khá nhanh cho 1 tháp 21 tầng, phù hợp năng lực tổng thầu & cam kết của THADICO.</p>
+<div class="note warn">Mốc 11/2027 là dự kiến. Với lịch sử THADICO từng chậm một số hạng mục hạ tầng, nên theo dõi tiến độ thực; song phần thân tháp căn hộ thường được kiểm soát tốt hơn hạ tầng diện rộng.</div>
+`);
+
+N('pk-thuongmai','pk','Khối đế thương mại','3 tầng phố thương mại cao cấp', 12, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Dự án là tổ hợp <b>Residence & Commercial</b>: <b>3 tầng khối đế thương mại</b> tạo phố thương mại cao cấp ngay mặt tiền Mai Chí Thọ, bổ trợ hệ bán lẻ Sala (Thiso Mall/Emart).</p>
+<div class="note">Khối thương mại khai thác dòng khách cư dân Sala + lưu lượng đại lộ Mai Chí Thọ. Với nhà đầu tư, sàn thương mại lõi Thủ Thiêm là tài sản hiếm nhưng giá trị lớn → thanh khoản hẹp; phù hợp tích sản dài hạn.</p>
+`);
+
+/* ════════ TIỆN ÍCH & HỆ SINH THÁI ════════ */
+N('ti-sala105','ti','Hệ sinh thái Sala 105ha','Công viên bờ sông · lâm viên · cộng đồng', 16, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Cư dân Sarene thừa hưởng ngay <b>105ha hệ sinh thái Sala hiện hữu</b>: mảng xanh ngút ngàn, công viên bờ sông Sài Gòn, lâm viên, cùng cộng đồng cư dân tinh hoa đã định hình.</p>
+<div class="note">Đây là tiện ích "không tái tạo được" và là điểm bán mạnh nhất: thay vì chờ tiện ích hình thành (như dự án mới ngoài lõi), Sarene có ngay hệ sinh thái đô thị hoàn chỉnh từ ngày nhận nhà.</div>
+`);
+
+N('ti-noikhu','ti','Tiện ích nội khu','Khép kín · đang cập nhật', 12, `
+<span class="badge b-cdt">Đang cập nhật</span>
+<p>Hệ tiện ích nội khu khép kín tiêu chuẩn hạng sang (hồ bơi, gym, lounge, không gian xanh nội khu…) — <b>CĐT đang cập nhật chi tiết</b>. Mô hình residence khép kín đảm bảo riêng tư & an ninh cho cư dân.</p>
+<div class="note warn">Chi tiết tiện ích nội khu chưa công bố đầy đủ — chờ tài liệu chính thức khi mở bán (6/2026) để tư vấn chính xác.</div>
+`);
+
+N('ti-thiso','ti','Thiso Mall & bán lẻ','TTTM Sala · Emart (hệ Thaco)', 13, `
+<span class="badge b-press">Báo chí</span>
+<p>Khu Sala có hệ bán lẻ do <b>Thiso</b> (hệ Thaco) vận hành — <b>Thiso Mall, đại siêu thị Emart</b>. Sarene nằm trong cùng hệ sinh thái thương mại này, cư dân tiếp cận mua sắm – giải trí hiện hữu.</p>
+<div class="note">Việc cùng "nhà Thaco" phát triển bán lẻ + dự án ở tạo sự đồng bộ thương mại – cư dân, hỗ trợ giá trị khối đế thương mại của chính Sarene.</div>
+`);
+
+N('ti-giaoduc-yte','ti','Giáo dục & y tế Sala','Trường quốc tế · bệnh viện', 12, `
+<span class="badge b-press">Báo chí</span>
+<p>Hệ tiện ích xã hội Sala (theo quy hoạch/hiện hữu): <b>trường quốc tế (Việt Úc), bệnh viện quốc tế</b>, nhà văn hóa/clubhouse, trung tâm thể thao. Cư dân Sarene tiếp cận các tiện ích này trong cùng khu đô thị.</p>
+<div class="note">Hệ giáo dục – y tế chuẩn quốc tế trong bán kính đi bộ/ngắn là yếu tố giữ chân cư dân tinh hoa ở thật & hỗ trợ giá thuê dài hạn cho phân khúc cao cấp.</div>
+`);
+
+N('ti-caocap','ti','Tiện ích đẳng cấp khu vực','Bến du thuyền · khách sạn 5 sao', 11, `
+<span class="badge b-press">Báo chí</span>
+<p>Khu vực Sala/Thủ Thiêm quy hoạch các tiện ích biểu tượng: <b>bến du thuyền</b>, khách sạn 5 sao, khu nghỉ dưỡng sinh thái, công viên cảnh quan ven sông — nâng tầm trải nghiệm sống lõi Thủ Thiêm.</p>
+<div class="note warn">Một số tiện ích đẳng cấp là theo quy hoạch/khu vực, không phải tiện ích riêng trong ranh Sarene — khi tư vấn phân biệt rõ "tiện ích nội khu" vs "tiện ích khu đô thị/khu vực".</div>
+`);
+
+/* ════════ HẠ TẦNG KẾT NỐI ════════ */
+N('ht-maichitho','ht','Đại lộ Mai Chí Thọ','Trục xương sống Thủ Thiêm', 14, `
+<span class="badge b-press">Báo chí</span>
+<p>Sarene sở hữu mặt tiền <b>Đại lộ Mai Chí Thọ</b> — trục Đông–Tây xương sống kết nối toàn khu Đông với trung tâm TP.HCM, xuyên qua hầm Thủ Thiêm về Quận 1 và nối cao tốc Long Thành về phía Đông.</p>
+<div class="note">"Địa chỉ mặt tiền đại lộ chính" tại lõi Thủ Thiêm là tài sản hạ tầng đắt giá: vừa kết nối nhanh, vừa hiển thị thương hiệu cho khối thương mại.</div>
+`);
+
+N('ht-cau','ht','Cầu Ba Son & hầm Thủ Thiêm','~5 phút về Quận 1', 14, `
+<span class="badge b-press">Báo chí</span>
+<p>Kết nối lõi Quận 1 cực nhanh: <b>~5 phút qua cầu Ba Son (Thủ Thiêm 2)</b> hoặc <b>hầm Thủ Thiêm</b>. Các cầu Thủ Thiêm 1/3/4 và mạng cầu Thủ Thiêm bổ trợ kết nối đa hướng.</p>
+<div class="note">Đáng chú ý: cầu Ba Son và đại lộ vòng cung do chính THADICO đầu tư (BT) — CĐT của Sarene cũng là người làm hạ tầng kết nối khu vực, tạo lợi thế đồng bộ.</div>
+`);
+
+N('ht-cbd','ht','Trung tâm tài chính Thủ Thiêm','CBD mới của TP.HCM', 14, `
+<span class="badge b-press">Báo chí</span>
+<p>Thủ Thiêm được quy hoạch thành <b>trung tâm tài chính – hành chính – thương mại mới</b> của TP.HCM (CBD mới), với các tháp văn phòng, trung tâm hội nghị, quảng trường trung tâm. Sarene nằm ở lõi khu vực này.</p>
+<div class="note">Luận điểm dài hạn: khi CBD Thủ Thiêm hình thành đầy đủ, nguồn cầu ở & thuê từ giới tài chính/chuyên gia cao cấp tăng — hỗ trợ giá trị căn hộ lõi như Sarene.</div>
+`);
+
+N('ht-metro','ht','Metro 2 · cao tốc · sân bay','Kết nối vùng & Long Thành', 13, `
+<span class="badge b-press">Báo chí</span>
+<p>Hạ tầng vùng quanh dự án: gần <b>tuyến Metro số 2</b> (quy hoạch qua Thủ Thiêm) và <b>cao tốc TP.HCM – Long Thành – Dầu Giây</b> → kết nối <b>sân bay Long Thành</b> (vận hành ~cuối 2026) và các tỉnh Đông Nam Bộ.</p>
+<div class="note">Lưu ý trung thực: Metro số 2 còn ở giai đoạn triển khai dài hạn — lợi ích metro là gián tiếp/tương lai. Lợi thế kết nối hiện hữu mạnh nhất của Sarene là cầu Ba Son/hầm + Mai Chí Thọ.</div>
+`);
+
+N('ht-tod','ht','Mô hình TOD lõi Thủ Thiêm','Đô thị gắn giao thông công cộng', 12, `
+<span class="badge b-mkt">Phân tích</span>
+<p>Khu vực hưởng lợi từ mô hình <b>TOD (Transit-Oriented Development)</b> — phát triển đô thị gắn kết giao thông công cộng. Các khu kết nối trực tiếp trục Mai Chí Thọ + lõi Thủ Thiêm nắm lợi thế tuyệt đối về giá trị dài hạn.</p>
+`);
+
+N('ht-tacdong','ht','"Điểm rơi": Thủ Thiêm hoàn thiện','Hạ tầng + CBD cộng hưởng giá', 14, `
+<span class="badge b-mkt">Phân tích</span>
+<p>Các lớp giá trị cộng hưởng quanh Sarene:</p>
+<ul>
+<li>Hệ sinh thái Sala 105ha <b>đã hiện hữu</b> (de-risk)</li>
+<li>Cầu Ba Son + hầm Thủ Thiêm + Mai Chí Thọ <b>đã vận hành</b></li>
+<li>CBD tài chính Thủ Thiêm đang hình thành (trung hạn)</li>
+<li>Sân bay Long Thành (~cuối 2026), cao tốc mở rộng</li>
+</ul>
+<div class="note">Khác phần lớn dự án "đón sóng hạ tầng tương lai", Sarene chủ yếu <b>đã hưởng hạ tầng hiện hữu</b> — giá đã phản ánh phần lớn lợi thế này (mặt bằng Sala 200–260 tr/m²). Dư địa tăng đến từ việc CBD Thủ Thiêm hoàn thiện thêm.</div>
+`);
+
+/* ════════ GIÁ & THỊ TRƯỜNG ════════ */
+N('cs-gia','cs','Giá bán','Rumor 200–250 tr/m² · chưa chính thức', 16, `
+<span class="badge b-risk">Chưa công bố</span><span class="badge b-mkt">Benchmark</span>
+<p>Giá Sarene <b>chưa được CĐT công bố chính thức</b> (mở bán dự kiến 6/2026). Mức <b>rumor 200–250 triệu/m²</b> đang lưu hành — khớp với mặt bằng các phân khu Sala hiện hữu.</p>
+<table class="tbl">
+<tr><th>Tham chiếu (Sala/lõi Thủ Thiêm)</th><th>Giá</th></tr>
+<tr><td>Sarica / Sarimi Sala (thứ cấp, 5/2026)</td><td class="num">200–260 triệu/m²</td></tr>
+<tr><td>Sarene (rumor)</td><td class="num">~200–250 triệu/m²</td></tr>
+</table>
+<p>Với căn 50–120 m², tổng giá ước tính <b>~10 tỷ tới 30 tỷ+/căn</b> — phân khúc siêu sang, vốn vào rất lớn.</p>
+<div class="note warn">ƯỚC LƯỢNG theo benchmark, KHÔNG phải giá chính thức. Tuyệt đối không cam kết con số cụ thể; chờ bảng giá CĐT/Thiso khi mở bán.</div>
+`);
+
+N('cs-benchmark','cs','So sánh giá Thủ Thiêm','Empire · Metropole · Lotte · Sala', 14, `
+<span class="badge b-press">VnExpress/Vietstock 5/2026</span>
+<table class="tbl">
+<tr><th>Dự án</th><th>Giá (triệu/m²)</th></tr>
+<tr><td>Empire City (Linden/Tilia/Cove/Narra)</td><td class="num">210–500</td></tr>
+<tr><td>The Metropole Thủ Thiêm</td><td class="num">~170–440</td></tr>
+<tr><td>Lotte Eco Smart City (dự đoán)</td><td class="num">≥300</td></tr>
+<tr><td>Sala (Sarimi/Sarica thứ cấp)</td><td class="num">200–260</td></tr>
+<tr><td>Eaton Park / Lumiere / TGC (ngoài lõi)</td><td class="num">120–210</td></tr>
+</table>
+<p>Sarene (rumor ~200–250) định vị trong nhóm lõi Thủ Thiêm, <b>thấp hơn Empire/Metropole đỉnh</b> nhưng cao hơn hẳn các dự án ngoài lõi (Eaton/TGC). Khoảng cách giá ngoài-lõi (120–210) ↔ lõi (200–500) cho thấy "phần bù vị trí lõi".</p>
+`);
+
+N('cs-thanhtoan','cs','Chính sách thanh toán','Chưa công bố · kỳ vọng giãn tiến độ', 12, `
+<span class="badge b-mkt">Chưa công bố</span>
+<p>Chính sách bán hàng Sarene chưa công bố. Tham chiếu phân khúc cao cấp Thủ Thiêm (vd Empire City): <b>đặt chỗ hoàn lại → ký HĐMB ~10% → đóng giãn mỗi 6 tháng → ~45–50% khi nhận nhà</b>, thường có hỗ trợ vay & ân hạn.</p>
+<div class="note warn">Chờ chính sách chính thức từ CĐT/Thiso khi mở bán (6/2026). Với giá trị căn rất lớn, cấu trúc thanh toán & đòn bẩy ảnh hưởng mạnh đến dòng tiền — xem node Phân tích đầu tư.</div>
+`);
+
+N('cs-yield','cs','Tỷ suất cho thuê','Siêu sang ~2–3% · lợi nhuận từ tăng giá', 14, `
+<span class="badge b-mkt">Thị trường</span>
+<p>Phân khúc siêu sang lõi Thủ Thiêm có <b>tỷ suất cho thuê thấp</b> (~2–3%/năm) do giá vốn rất cao — dù giá thuê tuyệt đối lớn. Lợi nhuận đến chủ yếu từ <b>tăng giá vốn (capital gain)</b>, không phải dòng tiền thuê.</p>
+<div class="note warn">Định vị đầu tư đúng: Sarene là sản phẩm <b>tích sản & tăng giá theo sự khan hiếm</b>, không phải "mua để cho thuê lấy dòng tiền". Yield ~2–3% không đủ bù lãi vay → hạn chế dùng đòn bẩy cao.</div>
+`);
+
+N('cs-thitruong','cs','Bối cảnh thị trường Thủ Thiêm','+30%/năm · +84%/2 năm · khan cung', 15, `
+<span class="badge b-press">Batdongsan · Avison Young</span>
+<ul>
+<li>Mặt bằng giá căn hộ Thủ Thiêm tăng bình quân <b>~30%</b> trong 1 năm; <b>+84%</b> so 2 năm trước; <b>gấp 3,3 lần</b> so 5 năm trước (Batdongsan, 5/2026).</li>
+<li>Sarica/Sarimi Sala tăng <b>40–80%</b> so 2024–2025.</li>
+<li>Động lực: <b>khan hiếm nguồn cung</b> — quỹ đất ven sông & lõi Thủ Thiêm gần như đã phân bổ hết cho các CĐT lớn (Avison Young – ông David Jackson).</li>
+</ul>
+<div class="note">Sarene là một trong số rất ít dự án mới còn lại ở lõi → hưởng trực tiếp luận điểm khan cung. Tuy nhiên mức tăng quá khứ (40–84%) thuộc chu kỳ đặc biệt; kỳ vọng hợp lý nên thấp hơn cho giai đoạn tới.</div>
+`);
+
+/* ════════ CẠNH TRANH ════════ */
+N('tt-empire','tt','Empire City','Đại dự án lõi Thủ Thiêm · Keppel & cộng sự', 14, `
+<span class="badge b-mkt">Thị trường</span>
+<div class="kv">
+<div class="k">Quy mô</div><div class="v">~14,5 ha · 11 phân khu 25–88 tầng · ~3.787 căn</div>
+<div class="k">Giá</div><div class="v">~210–500 triệu/m² (Cove cao nhất)</div>
+<div class="k">Bàn giao toàn KĐT</div><div class="v">dự kiến Q1/2028</div>
+</div>
+<p>Đối thủ trực tiếp nặng ký nhất ở lõi Thủ Thiêm. So với Sarene: Empire quy mô lớn hơn nhiều, có tháp biểu tượng 88 tầng & bờ sông; Sarene nhỏ gọn hơn, nằm trong <b>hệ sinh thái Sala đã hoàn thiện</b> và giá vào (rumor 200–250) <b>mềm hơn</b> phân khúc đỉnh Empire.</p>
+`);
+
+N('tt-metropole','tt','The Metropole Thủ Thiêm','SonKim Land · siêu sang', 13, `
+<span class="badge b-mkt">Thị trường</span>
+<p><b>The Metropole Thủ Thiêm</b> (SonKim Land) — biểu tượng siêu sang Thủ Thiêm, giá ~<b>170–440 triệu/m²</b>, các giai đoạn sau lập đỉnh giá khu vực. Đã bàn giao nhiều giai đoạn, cộng đồng cư dân cao cấp định hình.</p>
+<div class="note">Metropole là "thước đo trần giá" siêu sang. Sarene định vị thấp hơn về giá nhưng bù lại bằng <b>hệ sinh thái Sala 105ha</b> và uy tín chính chủ Sala — câu chuyện khác biệt khi khách so sánh.</div>
+`);
+
+N('tt-lotte','tt','Lotte Eco Smart City','Đại dự án · dự đoán ≥300 tr/m²', 12, `
+<span class="badge b-mkt">Thị trường</span>
+<p><b>Lotte Eco Smart City</b> (Lotte) — một trong 4 đại dự án Thủ Thiêm, phức hợp TTTM – văn phòng – căn hộ quy mô lớn. Dù chưa triển khai bán căn hộ rộng rãi, thị trường dự đoán giá <b>không dưới 300 triệu/m²</b>.</p>
+<div class="note">Khi Lotte Eco Smart City vận hành sẽ tăng sức nặng thương mại – văn phòng cho lõi Thủ Thiêm, gián tiếp nâng giá trị khu vực (bao gồm Sala/Sarene), nhưng cũng bổ sung nguồn cung cao cấp cạnh tranh.</div>
+`);
+
+N('tt-sala-noi','tt','Nội bộ Sala (Sarimi/Sarica)','Benchmark tăng giá +40–80%', 14, `
+<span class="badge b-press">Thị trường</span>
+<p>Các phân khu Sala hiện hữu là "đối thủ" thứ cấp đồng thời là <b>benchmark giá & tăng giá</b> cho Sarene:</p>
+<ul>
+<li><b>Sarimi, Sarica, Sadora</b>: thứ cấp 200–260 triệu/m², tăng <b>40–80%</b> so 2024–2025.</li>
+<li>Khách muốn vào Sala có thể chọn căn thứ cấp (vào ở ngay) vs Sarene (mới, chờ bàn giao 11/2027).</li>
+</ul>
+<div class="note">Lợi thế Sarene so với hàng thứ cấp Sala: căn mới 100%, thiết kế cập nhật, chính sách thanh toán giãn từ CĐT. Bất lợi: giá sơ cấp mới thường cao hơn căn cũ + phải chờ bàn giao.</div>
+`);
+
+N('tt-ngoailoi','tt','Dự án ngoài lõi','Eaton · TGC · Lumiere: 120–210 tr/m²', 12, `
+<span class="badge b-mkt">Thị trường</span>
+<p>Nhóm dự án cao cấp ngoài lõi Thủ Thiêm (cùng khu Đông): <b>Eaton Park, The Global City, Lumiere Riverside, Estella Heights</b> — giá ~<b>120–210 triệu/m²</b>, tạo khoảng cách rõ rệt so với lõi Thủ Thiêm.</p>
+<div class="note">Đây là nhóm "thay thế giá mềm hơn" cho khách không nhất thiết cần địa chỉ lõi Thủ Thiêm. Lập luận giữ khách của Sarene: phần bù giá là để có "địa chỉ lõi Sala + hệ sinh thái hiện hữu" — chỉ thuyết phục với tệp khách coi trọng vị thế.</div>
+`);
+
+N('tt-dinhvi','tt','Định vị & SWOT','Lợi thế / điểm yếu Sarene', 14, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>Lợi thế (Strengths)</h4>
+<ul>
+<li>Quỹ đất "kim cương" hiếm tại lõi Sala — dự án căn hộ đầu tiên sau ~10 năm</li>
+<li>Chính chủ Sala (THADICO/THACO) phát triển — track record tăng giá + giao đúng hạn</li>
+<li>Hệ sinh thái Sala 105ha <b>hiện hữu</b> (de-risk) + kết nối Q1 ~5 phút</li>
+<li>Giá vào (rumor ~200–250) mềm hơn Empire/Metropole đỉnh</li>
+</ul>
+<h4>Điểm yếu / Thách thức (Weaknesses)</h4>
+<ul>
+<li>Giá rumor chưa chính thức; số căn/số tháp mâu thuẫn</li>
+<li>Yield thấp (~2–3%), vốn vào rất lớn → kén khách, thanh khoản hẹp</li>
+<li>THADICO lịch sử chậm một số hạng mục hạ tầng; vừa lần đầu phát hành trái phiếu</li>
+<li>Cạnh tranh đỉnh (Empire/Metropole/Lotte) + hàng thứ cấp Sala</li>
+</ul>
+`);
+
+/* ════════ PHÂN TÍCH ĐẦU TƯ ════════ */
+N('dt-thesis','dt','Luận điểm đầu tư','4 trụ cột — khan hiếm & tích sản lõi', 16, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>1 · Khan hiếm tuyệt đối lõi Sala</h4>
+<p>Dự án căn hộ đầu tiên ở Sala sau ~10 năm; quỹ đất ven sông/lõi Thủ Thiêm gần như đã hết (Avison Young).</p>
+<h4>2 · Chính chủ Sala phát triển</h4>
+<p>THADICO/THACO có track record tăng giá (Sarimi/Sarica +40–80%) + giao đúng hạn tại cùng khu.</p>
+<h4>3 · Hệ sinh thái hiện hữu (de-risk)</h4>
+<p>Thừa hưởng ngay 105ha Sala + kết nối Q1 ~5 phút — không phải "đô thị trên giấy".</p>
+<h4>4 · Phần bù vị trí lõi</h4>
+<p>Giá vào mềm hơn Empire/Metropole đỉnh, dư địa thu hẹp khoảng cách khi CBD Thủ Thiêm hoàn thiện.</p>
+<div class="note">Đây là khoản đầu tư <b>tích sản & tăng giá theo khan hiếm</b>, KHÔNG phải dòng tiền cho thuê. Thesis đứng vững khi: giá chính thức hợp lý + THADICO giữ tiến độ + Thủ Thiêm tiếp tục khan cung.</div>
+`);
+
+N('dt-dongtien','dt','Dòng tiền (mô phỏng)','Vốn lớn · yield thấp → capital gain', 15, `
+<span class="badge b-mkt">Phân tích minh họa</span>
+<p>Ví dụ căn 2PN ~80 m² × ~220 tr/m² ≈ <b>17,6 tỷ</b> (ước lượng):</p>
+<table class="tbl">
+<tr><th>Yếu tố</th><th>Ước tính</th></tr>
+<tr><td>Tổng giá căn</td><td class="num">~17–18 tỷ</td></tr>
+<tr><td>Vốn đến nhận nhà (giãn ~50%)</td><td class="num">~8–9 tỷ (đến 11/2027)</td></tr>
+<tr><td>Giá thuê kỳ vọng</td><td class="num">~35–55 triệu/tháng</td></tr>
+<tr><td>Yield</td><td class="num">~2–3%/năm</td></tr>
+</table>
+<p><b>Đặc điểm:</b> vốn vào rất lớn; yield ~2–3% <b>không đủ bù lãi vay</b> (~8–10%). Lợi nhuận kỳ vọng đến từ tăng giá vốn theo khan hiếm + CBD hoàn thiện.</p>
+<div class="note warn">Mô phỏng dựa trên giá rumor. Hạn chế dùng đòn bẩy cao; phù hợp dòng vốn nhàn rỗi/tích sản. Cập nhật khi có giá & chính sách chính thức.</div>
+`);
+
+N('dt-ruiro','dt','Bản đồ rủi ro','Giá rumor · số liệu · yield · CĐT', 15, `
+<span class="badge b-risk">Rủi ro</span>
+<table class="tbl">
+<tr><th>Rủi ro</th><th>Nội dung</th><th>Giảm thiểu</th></tr>
+<tr><td>Giá chưa chính thức</td><td>Rumor 200–250 tr/m², dễ lệch khi mở bán</td><td>Chờ bảng giá CĐT; không cam kết số với khách</td></tr>
+<tr><td>Mâu thuẫn số liệu</td><td>560 vs 1.200 căn; 1 vs 4 tháp</td><td>Chỉ dùng số nhất quán (1,63ha) + HĐMB</td></tr>
+<tr><td>Pháp lý bán hàng</td><td>Mở bán sớm 6/2026 sau khởi công</td><td>Xác minh VB đủ điều kiện bán · giữ chỗ hoàn lại</td></tr>
+<tr><td>Yield thấp & vốn lớn</td><td>~2–3%, kén khách, thanh khoản hẹp</td><td>Định vị tích sản, không cho thuê lấy dòng tiền</td></tr>
+<tr><td>CĐT</td><td>Lịch sử chậm hạ tầng; lần đầu phát hành trái phiếu</td><td>Theo dõi tiến độ thực · Thaco bảo lãnh là điểm cộng</td></tr>
+<tr><td>Cạnh tranh đỉnh</td><td>Empire/Metropole/Lotte + thứ cấp Sala</td><td>Chọn căn vị trí/view khác biệt; vào giá hợp lý</td></tr>
+</table>
+`);
+
+N('dt-khuyennghi','dt','Khuyến nghị theo mục tiêu','Ai nên mua — và mua thế nào', 15, `
+<span class="badge b-mkt">Khuyến nghị</span>
+<table class="tbl">
+<tr><th>Mục tiêu</th><th>Phù hợp?</th><th>Lưu ý</th></tr>
+<tr><td>Ở thực (giới tinh hoa, gần Q1)</td><td>Tốt</td><td>Thừa hưởng hệ sinh thái Sala; chọn căn view sông/lâm viên</td></tr>
+<tr><td>Tích sản dài hạn / giữ tài sản</td><td>Tốt nhất</td><td>Khan hiếm lõi Sala; dùng vốn nhàn rỗi, ít/không đòn bẩy</td></tr>
+<tr><td>Đầu tư cho thuê lấy dòng tiền</td><td>Hạn chế</td><td>Yield chỉ ~2–3%, không bù lãi vay</td></tr>
+<tr><td>Lướt sóng</td><td>Cân nhắc kỹ</td><td>Vốn lớn, thanh khoản hẹp; chỉ với căn vị trí hiếm mua giá GĐ1</td></tr>
+</table>
+<div class="note">Nguyên tắc: Sarene là sản phẩm <b>vị thế & tích sản</b>. Tư vấn trung thực về giá chưa chính thức, yield thấp và mâu thuẫn số liệu giúp giữ uy tín với tệp khách cao cấp (vốn rất kỹ tính về thông tin).</div>
+`);
+
+N('dt-trigger','dt','Tín hiệu Mua / Thận trọng','Benchmark cập nhật quyết định', 13, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>Tín hiệu MUA mạnh hơn</h4>
+<ul>
+<li>CĐT công bố <b>bảng giá chính thức hợp lý</b> (≤ mặt bằng Sala ~200–260) + VB đủ điều kiện bán</li>
+<li>Làm rõ số căn/số tháp & tiêu chuẩn bàn giao hạng sang</li>
+<li>CBD tài chính Thủ Thiêm & các tiện ích biểu tượng triển khai đúng tiến độ</li>
+<li>Thị trường Thủ Thiêm tiếp tục khan cung, thanh khoản tốt</li>
+</ul>
+<h4>Tín hiệu THẬN TRỌNG</h4>
+<ul>
+<li>Giá mở bán vượt xa mặt bằng Sala mà chưa tương xứng tiện ích</li>
+<li>Tiến độ THADICO chậm (lịch sử hạ tầng) hoặc rủi ro tài chính/trái phiếu</li>
+<li>Nguồn cung siêu sang Thủ Thiêm bung mạnh (Lotte, Empire mới) làm chững giá</li>
+<li>Pháp lý bán hàng/HĐMB chưa rõ ràng tại thời điểm mở bán</li>
+</ul>
+`);
+
+N('dt-kh','dt','Chân dung khách mua','Giới tinh hoa · tích sản · không lướt', 12, `
+<span class="badge b-mkt">Phân tích</span>
+<p>Tệp khách Sarene:</p>
+<ul>
+<li><b>Giới tinh hoa / doanh nhân thành đạt</b> coi trọng địa chỉ lõi Thủ Thiêm & cộng đồng cư dân Sala.</li>
+<li><b>Nhà đầu tư tích sản dài hạn</b> — giữ tài sản khan hiếm, kỳ vọng tăng giá vốn (không phụ thuộc dòng thuê).</li>
+<li><b>Khách nước ngoài / Việt kiều</b> (lưu ý room ngoại 30%) ưa "địa chỉ + thương hiệu CĐT".</li>
+</ul>
+<div class="note">Ứng dụng tư vấn: chốt khách bằng <b>vị thế khan hiếm + hệ sinh thái Sala hiện hữu + uy tín chính chủ Sala</b>, không bằng dòng tiền cho thuê hay kỳ vọng tăng giá phi thực tế. Tệp khách này kiểm tra thông tin rất kỹ — minh bạch về điểm "cần xác minh" là lợi thế.</div>
+`);
+
+/* ════════ LINKS ════════ */
+const LINKS = [
+['sarene','tq-vitri'],['sarene','tq-quymo'],['sarene','tq-mauthuan'],['sarene','tq-thietke'],['sarene','tq-sala'],['sarene','tq-dinhvi'],
+['tq-quymo','tq-mauthuan'],['tq-vitri','tq-sala'],['tq-sala','tq-dinhvi'],
+['sarene','cdt-dqm'],['cdt-dqm','cdt-thaco'],['cdt-dqm','cdt-track'],['cdt-dqm','cdt-hatang'],['cdt-dqm','cdt-taichinh'],['cdt-thaco','cdt-taichinh'],['cdt-track','tq-sala'],
+['sarene','pl-quyhoach'],['pl-quyhoach','pl-hientrang'],['pl-hientrang','pl-sohuu'],['pl-hientrang','pl-thiso'],['pl-hientrang','pl-checklist'],['cdt-dqm','pl-quyhoach'],['pl-thiso','cdt-thaco'],
+['sarene','pk-cancho'],['pk-cancho','pk-loaihinh'],['pk-cancho','pk-bangiao'],['pk-cancho','pk-tiendo'],['sarene','pk-thuongmai'],['pk-cancho','tq-mauthuan'],['cdt-track','pk-tiendo'],
+['sarene','ti-sala105'],['ti-sala105','tq-sala'],['ti-sala105','ti-noikhu'],['ti-noikhu','ti-caocap'],['sarene','ti-thiso'],['ti-thiso','pl-thiso'],['ti-sala105','ti-giaoduc-yte'],['pk-thuongmai','ti-thiso'],
+['sarene','ht-maichitho'],['ht-maichitho','ht-cau'],['ht-cau','cdt-hatang'],['sarene','ht-cbd'],['ht-cbd','ht-tacdong'],['ht-maichitho','ht-tod'],['ht-tod','ht-cbd'],['ht-metro','ht-tacdong'],['ht-cau','tq-vitri'],['ht-cbd','ht-metro'],
+['sarene','cs-gia'],['cs-gia','cs-benchmark'],['cs-gia','cs-thanhtoan'],['cs-gia','cs-yield'],['cs-benchmark','cs-thitruong'],['cs-thitruong','tq-dinhvi'],['cs-gia','tt-sala-noi'],['cs-thitruong','ht-tacdong'],
+['sarene','tt-empire'],['cs-benchmark','tt-empire'],['cs-benchmark','tt-metropole'],['cs-benchmark','tt-lotte'],['cs-benchmark','tt-ngoailoi'],['tt-sala-noi','cdt-track'],['tt-empire','tt-dinhvi'],['tt-metropole','tt-dinhvi'],['tt-sala-noi','tt-dinhvi'],
+['sarene','dt-thesis'],['dt-thesis','dt-dongtien'],['dt-thesis','dt-ruiro'],['dt-thesis','dt-khuyennghi'],['dt-thesis','dt-trigger'],['cs-yield','dt-dongtien'],['cs-gia','dt-dongtien'],['cs-yield','dt-ruiro'],['pl-hientrang','dt-ruiro'],['tq-mauthuan','dt-ruiro'],['cdt-hatang','dt-ruiro'],['cs-thitruong','dt-thesis'],['tq-sala','dt-thesis'],['cdt-track','dt-thesis'],['dt-khuyennghi','pk-cancho'],['dt-kh','tq-sala'],['dt-kh','cs-yield'],['tt-dinhvi','dt-thesis'],['pl-checklist','dt-khuyennghi'],['dt-trigger','cs-gia'],['dt-trigger','pl-hientrang']
+];
+/* ════════ ENGINE ════════ */
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const stage = document.getElementById('stage');
+const tip = document.getElementById('tip');
+const panel = document.getElementById('panel');
+const intro = document.getElementById('intro');
+let W=0, H=0, DPR = Math.min(window.devicePixelRatio||1, 2);
+let cam = { x:0, y:0, z:1 };
+let hoverN = null, selN = null, dragN = null, panning = false;
+let px=0, py=0, moved=false;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const byId = {}; NODES.forEach(n=>byId[n.id]=n);
+const NB = {}; NODES.forEach(n=>NB[n.id]=new Set());
+LINKS.forEach(([a,b])=>{ if(byId[a]&&byId[b]){ NB[a].add(b); NB[b].add(a);} });
+
+/* cluster anchors in a ring */
+const order = ['tq','cdt','pl','pk','cs','ti','ht','tt','dt'];
+const anchors = {};
+function layoutInit(){
+  const R = Math.min(W,H)*0.62 + 160;
+  order.forEach((c,i)=>{
+    const a = -Math.PI/2 + i*(Math.PI*2/order.length);
+    anchors[c] = { x: Math.cos(a)*R, y: Math.sin(a)*R };
+  });
+  anchors.core = {x:0,y:0};
+  NODES.forEach(n=>{
+    const A = anchors[n.cluster];
+    n.x = A.x + (Math.random()-0.5)*180;
+    n.y = A.y + (Math.random()-0.5)*180;
+    n.vx=0; n.vy=0;
+  });
+  byId.tgc.x=0; byId.tgc.y=0;
+}
+
+/* simple force sim */
+let alpha = 1;
+function tick(){
+  if(alpha < 0.004) return;
+  alpha *= 0.985;
+  const rep = 5200;
+  for(let i=0;i<NODES.length;i++){
+    const a = NODES[i];
+    for(let j=i+1;j<NODES.length;j++){
+      const b = NODES[j];
+      let dx=a.x-b.x, dy=a.y-b.y;
+      let d2 = dx*dx+dy*dy + 0.01;
+      if(d2 > 360000) continue;
+      const d = Math.sqrt(d2);
+      const f = rep / d2 * alpha;
+      const fx = dx/d*f, fy = dy/d*f;
+      a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+    }
+  }
+  LINKS.forEach(([ia,ib])=>{
+    const a=byId[ia], b=byId[ib]; if(!a||!b) return;
+    let dx=b.x-a.x, dy=b.y-a.y;
+    const d = Math.sqrt(dx*dx+dy*dy)+0.01;
+    const ideal = (a.cluster===b.cluster)?150: (ia==='tgc'||ib==='tgc')?330:240;
+    const f = (d-ideal)*0.012*alpha*6;
+    const fx=dx/d*f, fy=dy/d*f;
+    a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+  });
+  NODES.forEach(n=>{
+    const A = anchors[n.cluster] || anchors.core;
+    n.vx += (A.x-n.x)*0.0035*alpha*6;
+    n.vy += (A.y-n.y)*0.0035*alpha*6;
+    n.vx += (0-n.x)*0.0006;
+    n.vy += (0-n.y)*0.0006;
+    if(n!==dragN){
+      n.vx*=0.86; n.vy*=0.86;
+      n.x+=n.vx; n.y+=n.vy;
+    }
+  });
+}
+
+/* render */
+function world2scr(x,y){ return [ (x-cam.x)*cam.z + W/2, (y-cam.y)*cam.z + H/2 ]; }
+function scr2world(x,y){ return [ (x-W/2)/cam.z + cam.x, (y-H/2)/cam.z + cam.y ]; }
+
+let visible = new Set(Object.keys(CLUSTERS));
+let searchHits = null;
+
+function draw(){
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.clearRect(0,0,W,H);
+  /* background dots */
+  ctx.save();
+  const g = ctx.createRadialGradient(W/2,H/2,80, W/2,H/2, Math.max(W,H)*0.75);
+  g.addColorStop(0,'rgba(212,168,83,0.045)');
+  g.addColorStop(1,'rgba(10,16,32,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  ctx.restore();
+
+  const focus = hoverN || selN;
+  const focusSet = focus ? new Set([focus.id, ...NB[focus.id]]) : null;
+
+  /* edges */
+  LINKS.forEach(([ia,ib])=>{
+    const a=byId[ia], b=byId[ib]; if(!a||!b) return;
+    if(!visible.has(a.cluster)||!visible.has(b.cluster)) return;
+    const [x1,y1]=world2scr(a.x,a.y), [x2,y2]=world2scr(b.x,b.y);
+    const hot = focusSet && focusSet.has(ia) && focusSet.has(ib) && (ia===focus.id||ib===focus.id);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+    if(hot){ ctx.strokeStyle = CLUSTERS[focus.cluster].color + 'aa'; ctx.lineWidth=1.6; }
+    else { ctx.strokeStyle = 'rgba(120,140,190,'+(focusSet?0.07:0.16)+')'; ctx.lineWidth=1; }
+    ctx.stroke();
+  });
+
+  /* nodes */
+  NODES.forEach(n=>{
+    if(!visible.has(n.cluster)) return;
+    const [x,y]=world2scr(n.x,n.y);
+    if(x<-80||y<-80||x>W+80||y>H+80) return;
+    const col = CLUSTERS[n.cluster].color;
+    const r = n.r * (0.7+0.3*Math.min(cam.z,1.4));
+    const dim = (focusSet && !focusSet.has(n.id)) || (searchHits && !searchHits.has(n.id));
+    ctx.globalAlpha = dim ? 0.16 : 1;
+    /* glow */
+    if(!dim && (n===hoverN || n===selN || n.id==='tgc')){
+      ctx.beginPath(); ctx.arc(x,y,r+7,0,Math.PI*2);
+      ctx.fillStyle = col+'2e'; ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    const rg = ctx.createRadialGradient(x-r*0.3,y-r*0.35,r*0.15,x,y,r);
+    rg.addColorStop(0, lighten(col, 0.45));
+    rg.addColorStop(1, col);
+    ctx.fillStyle = rg; ctx.fill();
+    ctx.lineWidth = (n===selN)?2.4:1.2;
+    ctx.strokeStyle = (n===selN)? '#fff' : 'rgba(10,16,32,.55)';
+    ctx.stroke();
+    /* label */
+    const showLabel = cam.z > 0.42 || n===hoverN || n===selN || n.id==='tgc' || n.r>=15;
+    if(showLabel){
+      ctx.font = (n.id==='tgc'? '700 13px' : '600 11px') + " 'Be Vietnam Pro', sans-serif";
+      ctx.textAlign='center';
+      ctx.fillStyle = dim? 'rgba(233,238,248,.25)' : 'rgba(233,238,248,.95)';
+      ctx.shadowColor='rgba(0,0,0,.8)'; ctx.shadowBlur=4;
+      ctx.fillText(n.label, x, y + r + 14);
+      ctx.shadowBlur=0;
+    }
+    ctx.globalAlpha = 1;
+  });
+}
+function lighten(hex, amt){
+  const c = parseInt(hex.slice(1),16);
+  let r=(c>>16)&255, g=(c>>8)&255, b=c&255;
+  r=Math.min(255, r+255*amt|0); g=Math.min(255, g+255*amt|0); b=Math.min(255, b+255*amt|0);
+  return 'rgb('+r+','+g+','+b+')';
+}
+
+function loop(){ tick(); draw(); requestAnimationFrame(loop); }
+
+/* resize */
+function resize(){
+  W = stage.clientWidth; H = stage.clientHeight;
+  cv.width = W*DPR; cv.height = H*DPR;
+  cv.style.width = W+'px'; cv.style.height = H+'px';
+}
+window.addEventListener('resize', ()=>{ resize(); });
+
+/* hit test */
+function nodeAt(mx,my){
+  const [wx,wy] = scr2world(mx,my);
+  for(let i=NODES.length-1;i>=0;i--){
+    const n=NODES[i];
+    if(!visible.has(n.cluster)) continue;
+    const dx=wx-n.x, dy=wy-n.y;
+    const rr=(n.r+6)/Math.min(cam.z,1)* (cam.z<1?1:1);
+    if(dx*dx+dy*dy < (n.r+8)*(n.r+8)) return n;
+  }
+  return null;
+}
+
+/* pointer events */
+cv.addEventListener('pointerdown', e=>{
+  cv.setPointerCapture(e.pointerId);
+  moved=false; px=e.clientX; py=e.clientY;
+  const rect=cv.getBoundingClientRect();
+  const n = nodeAt(e.clientX-rect.left, e.clientY-rect.top);
+  if(n){ dragN=n; } else { panning=true; cv.classList.add('dragging'); }
+});
+cv.addEventListener('pointermove', e=>{
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  if(dragN){
+    const [wx,wy]=scr2world(mx,my);
+    dragN.x=wx; dragN.y=wy; dragN.vx=0; dragN.vy=0;
+    alpha=Math.max(alpha,0.08); moved=true;
+  } else if(panning){
+    cam.x -= (e.clientX-px)/cam.z; cam.y -= (e.clientY-py)/cam.z;
+    px=e.clientX; py=e.clientY; moved=true;
+  } else {
+    const n = nodeAt(mx,my);
+    if(n!==hoverN){
+      hoverN=n;
+      cv.style.cursor = n? 'pointer':'grab';
+      if(n){
+        tip.innerHTML = '<b>'+n.label+'</b><span>'+(n.sub||'')+'</span>';
+        tip.classList.add('show');
+      } else tip.classList.remove('show');
+    }
+    if(n){
+      const [x,y]=world2scr(n.x,n.y);
+      tip.style.left=x+'px'; tip.style.top=(y - n.r*0.9)+'px';
+    }
+  }
+});
+window.addEventListener('pointerup', e=>{
+  if(dragN && !moved) openNode(dragN);
+  dragN=null; panning=false; cv.classList.remove('dragging');
+});
+cv.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  const [wx,wy]=scr2world(mx,my);
+  const f = Math.exp(-e.deltaY*0.0011);
+  cam.z = Math.min(2.6, Math.max(0.22, cam.z*f));
+  const [nx,ny]=scr2world(mx,my);
+  cam.x += wx-nx; cam.y += wy-ny;
+},{passive:false});
+
+/* panel */
+const pDot=document.getElementById('pDot'), pTitle=document.getElementById('pTitle'),
+      pCluster=document.getElementById('pCluster'), pBody=document.getElementById('pBody');
+function openNode(n){
+  selN = n;
+  const col = CLUSTERS[n.cluster].color;
+  pDot.style.setProperty('--c', col);
+  pTitle.childNodes[0].nodeValue = n.label;
+  pCluster.textContent = CLUSTERS[n.cluster].label + (n.sub? ' · '+n.sub:'');
+  let rel = '';
+  const nbs = [...NB[n.id]].map(id=>byId[id]).filter(Boolean);
+  if(nbs.length){
+    rel = '<div class="rel"><div class="rel-title">Node liên quan</div><div class="rel-chips">' +
+      nbs.map(m=>'<button class="rel-chip" data-id="'+m.id+'"><span class="dot" style="background:'+CLUSTERS[m.cluster].color+'"></span>'+m.label+'</button>').join('') +
+      '</div></div>';
+  }
+  pBody.innerHTML = n.html + rel;
+  pBody.scrollTop = 0;
+  pBody.querySelectorAll('.rel-chip').forEach(b=>{
+    b.addEventListener('click', ()=>{ const m=byId[b.dataset.id]; if(m){ focusNode(m); openNode(m);} });
+  });
+  panel.classList.add('open');
+  if(window.innerWidth>720) intro.style.display='none';
+}
+function focusNode(n){
+  if(reduceMotion){ cam.x=n.x; cam.y=n.y; return; }
+  const sx=cam.x, sy=cam.y, tz=Math.max(cam.z,0.85), sz=cam.z;
+  const t0=performance.now();
+  function anim(t){
+    const k=Math.min(1,(t-t0)/420), e=1-Math.pow(1-k,3);
+    cam.x=sx+(n.x-sx)*e; cam.y=sy+(n.y-sy)*e; cam.z=sz+(tz-sz)*e;
+    if(k<1) requestAnimationFrame(anim);
+  }
+  requestAnimationFrame(anim);
+}
+document.getElementById('pClose').addEventListener('click', ()=>{ panel.classList.remove('open'); selN=null; });
+window.addEventListener('keydown', e=>{ if(e.key==='Escape'){ panel.classList.remove('open'); selN=null; } });
+
+/* chips */
+const chipsEl = document.getElementById('chips');
+Object.entries(CLUSTERS).forEach(([key,c])=>{
+  if(key==='core') return;
+  const b=document.createElement('button');
+  b.className='chip on'; b.style.setProperty('--c', c.color);
+  b.innerHTML='<span class="dot"></span>'+c.label;
+  b.setAttribute('aria-pressed','true');
+  b.addEventListener('click', ()=>{
+    if(visible.has(key)){ visible.delete(key); b.classList.remove('on'); b.setAttribute('aria-pressed','false'); }
+    else { visible.add(key); b.classList.add('on'); b.setAttribute('aria-pressed','true'); }
+  });
+  chipsEl.appendChild(b);
+});
+
+/* legend */
+const lg = document.getElementById('legend');
+lg.innerHTML = '<div class="lg-title">Chú giải</div>' +
+  Object.entries(CLUSTERS).filter(([k])=>k!=='core').map(([k,c])=>
+    '<div class="lg-row"><span class="lg-dot" style="background:'+c.color+'"></span>'+c.label+'</div>').join('') +
+  '<div class="lg-hint">Kéo nền: di chuyển · Lăn chuột: zoom · Click node: chi tiết · Chip trên cùng: lọc nhóm</div>';
+
+/* search */
+const searchEl = document.getElementById('search');
+searchEl.addEventListener('input', ()=>{
+  const q = searchEl.value.trim().toLowerCase();
+  if(!q){ searchHits=null; return; }
+  searchHits = new Set(NODES.filter(n=>
+    (n.label+' '+(n.sub||'')+' '+n.html).toLowerCase().includes(q)
+  ).map(n=>n.id));
+});
+searchEl.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && searchHits && searchHits.size){
+    const n = byId[[...searchHits][0]];
+    focusNode(n); openNode(n);
+  }
+});
+
+/* boot */
+resize();
+layoutInit();
+cam.z = Math.min(W,H) > 760 ? 0.55 : 0.4;
+for(let i=0;i<260;i++) tick();
+alpha = 0.25;
+loop();
+setTimeout(()=>{ const n=byId['tgc']; }, 300);
+</script>
+</body>
+</html>

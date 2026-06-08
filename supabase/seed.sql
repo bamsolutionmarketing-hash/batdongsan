@@ -9,7 +9,8 @@ insert into developers (id, name, slug, parent_company, credibility) values
   ('00000000-0000-0000-0000-0000000000e3', 'Vinhomes (VHM)', 'vinhomes', 'Vingroup', 10),
   ('00000000-0000-0000-0000-0000000000e4', 'BLUEMARQ GROUP', 'bluemarq-group', 'Đất Xanh Group (DXG)', 8),
   ('00000000-0000-0000-0000-0000000000e5', 'Địa ốc Bcons', 'dia-oc-bcons', 'Bcons Group', 7),
-  ('00000000-0000-0000-0000-0000000000e6', 'Gamuda Land', 'gamuda-land', 'Gamuda Berhad (Malaysia)', 9)
+  ('00000000-0000-0000-0000-0000000000e6', 'Gamuda Land', 'gamuda-land', 'Gamuda Berhad (Malaysia)', 9),
+  ('00000000-0000-0000-0000-0000000000e7', 'Đại Quang Minh (THADICO)', 'dai-quang-minh', 'Tập đoàn THACO', 9)
 on conflict (id) do nothing;
 
 -- Projects — both public + demo so signed-out landing + free tier work ---------
@@ -74,7 +75,14 @@ values
    '00000000-0000-0000-0000-0000000000e5',
    'Bcons Ngôi Sao Hoàng Nam', 'bcons-ngoi-sao-hoang-nam',
    'Động thổ 24/1/2026 — bàn giao dự kiến Q3/2028', 'Đường Thống Nhất, P. Đông Hòa, TP.HCM (Dĩ An cũ)', 'selling', null,
-   39000000, 60000000, 'broker_estimate', false, true)
+   39000000, 60000000, 'broker_estimate', false, true),
+  -- Sarene Residence (Đại Quang Minh/THADICO–THACO) — căn hộ hạng sang lô 6.8
+  -- Bắc Sala, Thủ Thiêm. Khởi công 13/1/2026, mở bán 6/2026, BG 11/2027.
+  ('00000000-0000-0000-0000-00000000b008',
+   '00000000-0000-0000-0000-0000000000e7',
+   'Sarene Residence', 'sarene-residence',
+   'Khởi công 13/1/2026 — mở bán dự kiến 6/2026', 'Lô 6.8 Bắc Sala (KĐT Sala), Đại lộ Mai Chí Thọ, P. An Khánh, TP. Thủ Đức, TP.HCM', 'upcoming', null,
+   250000000, 260000000, 'broker_estimate', false, true)
 on conflict (id) do nothing;
 update projects set lat = 10.8901, lng = 106.7805
   where id = '00000000-0000-0000-0000-00000000b005' and lat is null;
@@ -84,3 +92,6 @@ update projects set lat = 10.7875, lng = 106.7560
 -- Bcons Ngôi Sao Hoàng Nam (xấp xỉ — trục Thống Nhất, P. Đông Hòa).
 update projects set lat = 10.8905, lng = 106.7810
   where id = '00000000-0000-0000-0000-00000000b007' and lat is null;
+-- Sarene Residence (xấp xỉ — KĐT Sala, Bắc Sala, mặt tiền Mai Chí Thọ, Thủ Thiêm).
+update projects set lat = 10.7720, lng = 106.7245
+  where id = '00000000-0000-0000-0000-00000000b008' and lat is null;
