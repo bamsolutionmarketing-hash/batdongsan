@@ -342,6 +342,18 @@ function DiscoveryPanel({ onApply }: { onApply: (r: DiscoveryResult) => void }) 
     <div className="flex flex-col gap-4">
       <p className="text-xs text-amber-500/90">Hỏi khách tự nhiên trong lúc trò chuyện rồi tick đáp án — hệ thống tự đọc vị tài chính. Phần suy đoán chỉ sale thấy, không đưa khách.</p>
 
+      {/* Thanh điểm mini — ghim trên đầu, luôn thấy khi cuộn để vừa tick vừa theo dõi */}
+      {result.answered > 0 && (
+        <div className="sticky top-2 z-20 flex items-center gap-2.5 rounded-xl border border-border bg-background/95 px-3 py-2 shadow-sm backdrop-blur">
+          <span className="text-lg font-extrabold leading-none" style={{ color: TIER_COLOR[lead.tier] }}>{lead.score}</span>
+          <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ background: TIER_COLOR[lead.tier] + "22", color: TIER_COLOR[lead.tier] }}>{lead.tierLabel}</span>
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+            <div className="h-full rounded-full transition-all" style={{ width: `${lead.score}%`, background: TIER_COLOR[lead.tier] }} />
+          </div>
+          {result.incomeBand && <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">{fmtTr(result.incomeBand.low)}–{fmtTr(result.incomeBand.high)}</span>}
+        </div>
+      )}
+
       {GROUPS.map((g) => (
         <div key={g.id} className="flex flex-col gap-3 rounded-xl border border-border p-4">
           <div className="text-sm font-semibold">{g.icon} {g.label}</div>
