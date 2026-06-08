@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bcons Ngôi Sao Hoàng Nam — Investment Knowledge Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0f16;
+  --bg-2: #0f1620;
+  --bg-3: #141d2a;
+  --panel: #0f1620;
+  --border: #243246;
+  --border-2: #18222f;
+  --text: #e9eef6;
+  --text-2: #93a2b8;
+  --text-3: #64748c;
+  --gold: #e89b3c;
+  --gold-2: #f4bd6e;
+  --blue: #4d9fef;
+  --purple: #a974f0;
+  --green: #43c47a;
+  --orange: #ef8a4a;
+  --softgold: #f0b13e;
+  --cyan: #38c6c0;
+  --teal: #5bc46a;
+  --pink: #e06aa0;
+  --red: #ec6f6f;
+  --link: #6ab4e8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.65;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 52px;
+  background: linear-gradient(90deg, #0c1119 0%, #16243a 100%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 14px;
+  position: relative; z-index: 120;
+}
+.logo { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
+.logo-mark {
+  width: 24px; height: 24px; flex-shrink: 0; border-radius: 4px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-2) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 12px; color: #0b0f16;
+}
+.logo-text { font-weight: 700; font-size: 13px; color: var(--gold-2); letter-spacing: .03em; }
+.logo-sub { color: var(--text-3); font-weight: 400; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase; }
+.topbar-divider { width: 1px; height: 26px; background: var(--border); flex-shrink: 0; }
+.search-wrap { position: relative; flex-shrink: 1; min-width: 120px; }
+.search {
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 7px;
+  color: var(--text); font-family: inherit; font-size: 12.5px;
+  padding: 6px 12px 6px 30px; width: 230px; max-width: 100%;
+  transition: border-color .2s;
+}
+.search:focus { outline: none; border-color: var(--gold); }
+.search::placeholder { color: var(--text-3); }
+.search-ic { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--text-3); pointer-events: none; }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  border: 1px solid var(--border); background: transparent; color: var(--text-2);
+  font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: .02em;
+  padding: 4px 11px; border-radius: 999px; cursor: pointer; white-space: nowrap;
+  display: flex; align-items: center; gap: 6px; transition: all .18s;
+}
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--text-3)); }
+.chip:hover { border-color: var(--c, var(--gold)); color: var(--text); }
+.chip.on { background: color-mix(in srgb, var(--c) 16%, transparent); border-color: var(--c); color: var(--text); }
+.chip:focus-visible, .search:focus-visible, .btn360:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.btn360 {
+  flex-shrink: 0; display: flex; align-items: center; gap: 7px;
+  background: linear-gradient(135deg, var(--gold) 0%, #c87f2a 100%);
+  color: #0b0f16; border: none; border-radius: 7px; cursor: pointer;
+  font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: .03em;
+  padding: 7px 14px; transition: transform .15s, box-shadow .2s;
+  text-decoration: none;
+}
+.btn360:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,155,60,.35); }
+
+/* ── STAGE ── */
+.stage { position: relative; height: calc(100% - 52px); }
+canvas { display: block; cursor: grab; }
+canvas.dragging { cursor: grabbing; }
+
+/* ── LEGEND ── */
+.legend {
+  position: absolute; left: 14px; bottom: 14px; z-index: 60;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 13px; font-size: 11px; color: var(--text-2);
+  max-width: 240px;
+}
+.legend .lg-title { font-weight: 700; color: var(--text); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 7px; }
+.legend .lg-row { display: flex; align-items: center; gap: 7px; margin: 3px 0; }
+.legend .lg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.legend .lg-hint { margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--border-2); color: var(--text-3); font-size: 10.5px; line-height: 1.5; }
+
+/* ── TOOLTIP ── */
+.tip {
+  position: absolute; z-index: 80; pointer-events: none;
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 11px; font-size: 12px; max-width: 250px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  opacity: 0; transition: opacity .12s; transform: translate(-50%, calc(-100% - 14px));
+}
+.tip.show { opacity: 1; }
+.tip b { color: var(--gold-2); display: block; font-size: 12.5px; }
+.tip span { color: var(--text-2); font-size: 11px; }
+
+/* ── PANEL ── */
+.panel {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 480px; max-width: 100%;
+  background: var(--panel); border-left: 1px solid var(--border);
+  z-index: 100; display: flex; flex-direction: column;
+  transform: translateX(102%); transition: transform .28s cubic-bezier(.22,.8,.3,1);
+  box-shadow: -16px 0 48px rgba(0,0,0,.45);
+}
+.panel.open { transform: translateX(0); }
+.panel-head {
+  padding: 18px 20px 14px; border-bottom: 1px solid var(--border-2);
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.panel-head .ph-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; box-shadow: 0 0 12px var(--c); background: var(--c); }
+.panel-head h2 { font-size: 17.5px; font-weight: 700; line-height: 1.35; flex: 1; }
+.panel-head .ph-cluster { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); margin-top: 3px; }
+.panel-close {
+  background: var(--bg-3); border: 1px solid var(--border); color: var(--text-2);
+  width: 30px; height: 30px; border-radius: 7px; cursor: pointer; flex-shrink: 0;
+  font-size: 15px; line-height: 1; transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.panel-close:hover { color: var(--text); border-color: var(--gold); }
+.panel-body { flex: 1; overflow-y: auto; padding: 18px 20px 28px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.panel-body::-webkit-scrollbar { width: 8px; }
+.panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* panel content typography */
+.panel-body p { margin: 0 0 11px; color: var(--text-2); font-size: 13.5px; }
+.panel-body p b, .panel-body li b { color: var(--text); font-weight: 600; }
+.panel-body h4 {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--gold-2); margin: 18px 0 8px; padding-top: 14px; border-top: 1px solid var(--border-2);
+}
+.panel-body h4:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.panel-body ul { margin: 0 0 12px 16px; color: var(--text-2); font-size: 13.5px; }
+.panel-body li { margin: 4px 0; }
+.kv { display: grid; grid-template-columns: 132px 1fr; gap: 6px 12px; margin: 0 0 12px; font-size: 13px; }
+.kv .k { color: var(--text-3); font-weight: 500; }
+.kv .v { color: var(--text); font-weight: 500; }
+.tbl { width: 100%; border-collapse: collapse; margin: 4px 0 14px; font-size: 12.5px; }
+.tbl th { text-align: left; color: var(--text-3); font-weight: 600; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.tbl td { padding: 7px 8px; border-bottom: 1px solid var(--border-2); color: var(--text-2); vertical-align: top; }
+.tbl td:first-child { color: var(--text); font-weight: 500; }
+.tbl .num { font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.badge {
+  display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  padding: 2px 8px; border-radius: 999px; margin: 0 6px 6px 0; text-transform: uppercase;
+}
+.b-cdt { background: rgba(67,196,122,.14); color: #72d79a; border: 1px solid rgba(67,196,122,.35); }
+.b-press { background: rgba(77,159,239,.14); color: #8cc4ef; border: 1px solid rgba(77,159,239,.35); }
+.b-mkt { background: rgba(239,138,74,.13); color: #f4a96e; border: 1px solid rgba(239,138,74,.35); }
+.b-risk { background: rgba(236,111,111,.13); color: #f29393; border: 1px solid rgba(236,111,111,.4); }
+.note {
+  background: color-mix(in srgb, var(--gold) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  border-left: 3px solid var(--gold);
+  border-radius: 8px; padding: 10px 13px; margin: 4px 0 14px;
+  font-size: 12.5px; color: var(--text-2);
+}
+.note.warn { background: rgba(236,111,111,.08); border-color: rgba(236,111,111,.4); border-left-color: var(--red); }
+.note b { color: var(--text); }
+.rel { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-2); }
+.rel-title { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+.rel-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rel-chip {
+  border: 1px solid var(--border); background: var(--bg-3); color: var(--text-2);
+  font-family: inherit; font-size: 11.5px; font-weight: 500;
+  padding: 4px 11px; border-radius: 999px; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; transition: all .15s;
+}
+.rel-chip .dot { width: 6px; height: 6px; border-radius: 50%; }
+.rel-chip:hover { border-color: var(--gold); color: var(--text); }
+
+/* ── INTRO OVERLAY ── */
+.intro {
+  position: absolute; left: 14px; top: 14px; z-index: 60; max-width: 332px;
+  background: color-mix(in srgb, var(--panel) 90%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+}
+.intro h1 { font-size: 15px; font-weight: 800; letter-spacing: .02em; color: var(--gold-2); }
+.intro .sub { font-size: 11px; color: var(--text-3); letter-spacing: .1em; text-transform: uppercase; margin: 1px 0 8px; }
+.intro p { font-size: 12px; color: var(--text-2); line-height: 1.55; }
+.intro .upd { margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-3); }
+
+@media (max-width: 720px) {
+  .logo-sub, .intro, .topbar-divider { display: none; }
+  .search { width: 130px; }
+  .panel { width: 100%; }
+  .legend { max-width: 180px; font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel { transition: none; }
+  .tip { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">B</div>
+    <div>
+      <div class="logo-text">BCONS NGÔI SAO HOÀNG NAM</div>
+      <div class="logo-sub">Investment Knowledge Map · 06/2026</div>
+    </div>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="search-wrap">
+    <svg class="search-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input class="search" id="search" type="text" placeholder="Tìm node… (Enter để mở)" aria-label="Tìm kiếm node">
+  </div>
+  <div class="chips" id="chips"></div>
+  <a class="btn360" href="https://bconsgroup.com.vn/bcons-ngoi-sao-hoang-nam/" target="_blank" rel="noopener" aria-label="Trang chính thức dự án, mở tab mới">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20 15.3 15.3 0 0 1 0-20z"/></svg>
+    TRANG CĐT
+  </a>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="cv"></canvas>
+  <div class="intro" id="intro">
+    <h1>Bản đồ tri thức đầu tư</h1>
+    <div class="sub">Căn hộ vừa túi tiền · Bcons × Hoàng Nam</div>
+    <p>Toàn cảnh Bcons Ngôi Sao Hoàng Nam (Thống Nhất, Đông Hòa): quy mô, pháp lý, giá &amp; chính sách, hạ tầng Metro/Làng ĐH, cạnh tranh và phân tích đầu tư. Click node để xem chi tiết.</p>
+    <div class="upd">Dữ liệu đến 06/2026 · Phân biệt nguồn CĐT vs môi giới · Lưu ý mâu thuẫn số liệu quy mô (xem node riêng)</div>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="tip" id="tip"></div>
+
+  <aside class="panel" id="panel" role="dialog" aria-modal="false" aria-label="Chi tiết node">
+    <div class="panel-head">
+      <div class="ph-dot" id="pDot"></div>
+      <h2 id="pTitle">—<span class="ph-cluster" id="pCluster"></span></h2>
+      <button class="panel-close" id="pClose" aria-label="Đóng panel">✕</button>
+    </div>
+    <div class="panel-body" id="pBody"></div>
+  </aside>
+</div>
+
+<script>
+const CLUSTERS = {
+  core: { label: 'Trung tâm',            color: '#e89b3c' },
+  tq:   { label: 'Tổng quan',            color: '#4d9fef' },
+  cdt:  { label: 'Chủ đầu tư',           color: '#a974f0' },
+  pl:   { label: 'Pháp lý',              color: '#43c47a' },
+  pk:   { label: 'Sản phẩm',             color: '#ef8a4a' },
+  ti:   { label: 'Tiện ích nội khu',     color: '#38c6c0' },
+  ht:   { label: 'Hạ tầng kết nối',      color: '#5bc46a' },
+  cs:   { label: 'Giá & Chính sách',     color: '#e06aa0' },
+  tt:   { label: 'Thị trường & Cạnh tranh', color: '#ec6f6f' },
+  dt:   { label: 'Phân tích đầu tư',     color: '#f0b13e' }
+};
+const NODES = [];
+function N(id, cluster, label, sub, r, html){ NODES.push({id, cluster, label, sub, r, html}); }
+
+/* ════════ CORE ════════ */
+N('bcons','core','Bcons Ngôi Sao Hoàng Nam','Căn hộ vừa túi tiền · Thống Nhất, Đông Hòa', 30, `
+<h4>Định danh dự án</h4>
+<div class="kv">
+<div class="k">Tên thương mại</div><div class="v">Bcons Ngôi Sao Hoàng Nam (≈ "Bcons Hoàng Nam Ngôi Sao")</div>
+<div class="k">Vị trí</div><div class="v">Đường Thống Nhất, P. Đông Hòa, TP.HCM (Dĩ An cũ, Bình Dương)</div>
+<div class="k">Quy mô toàn khu</div><div class="v">7.877,8 m² (theo CĐT)</div>
+<div class="k">Diện tích xây dựng</div><div class="v">4.019 m² · mật độ ~51,66%</div>
+<div class="k">Quy mô tháp</div><div class="v">1 tòa cao 21 tầng + 1 tầng hầm</div>
+<div class="k">Số căn hộ</div><div class="v">372 căn (diện tích 50–67 m²/căn)</div>
+<div class="k">Dân số dự kiến</div><div class="v">~1.274 cư dân</div>
+<div class="k">Phát triển</div><div class="v">Bcons Group × CTCP Đầu tư Dự án Hoàng Nam</div>
+<div class="k">Tài trợ</div><div class="v">Ngân hàng OCB (Phương Đông)</div>
+<div class="k">Động thổ</div><div class="v">24/01/2026</div>
+<div class="k">Bàn giao</div><div class="v">Dự kiến Quý III/2028</div>
+</div>
+<p><b>Câu chuyện đầu tư trong 3 dòng:</b> căn hộ vừa túi tiền do CĐT có track record "không bàn giao trễ", trên trục Thống Nhất sầm uất cạnh Làng Đại học & Metro số 1 — đón cú hích sáp nhập Bình Dương vào TP.HCM. Quy mô nhỏ (1 tháp 372 căn), dòng thuê thực mạnh, nhưng vừa động thổ nên pháp lý/giá cần xác minh kỹ.</p>
+<div class="note">Bản đồ tổng hợp từ công bố CĐT (bconsgroup.com.vn), báo chí và dữ liệu thị trường đến <b>06/2026</b>. Nhãn nguồn: <span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span><span class="badge b-mkt">Môi giới/Thị trường</span><span class="badge b-risk">Rủi ro/Lưu ý</span></div>
+`);
+
+/* ════════ TỔNG QUAN ════════ */
+N('tq-vitri','tq','Vị trí Thống Nhất – Đông Hòa','Cửa ngõ Đông TP.HCM · cạnh Làng ĐH', 15, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span>
+<h4>Tọa độ & kết nối</h4>
+<p>Dự án nằm trên/đường nhánh kết nối <b>đường Thống Nhất</b> (trục 32m, 6 làn nối Thủ Đức – Dĩ An ra Metro số 1), phường Đông Hòa. Tọa độ ~10,7765, 106,7019.</p>
+<ul>
+<li>Cách trục Thống Nhất ~200m; kề khu đô thị 15ha và chuỗi dự án Bcons (Plaza, City, Center City)</li>
+<li>Liền kề <b>Đại học Quốc gia TP.HCM / Làng Đại học</b></li>
+<li>Kết nối Metro số 1, Bến xe Miền Đông mới, QL1K, QL1A (Đỗ Mười), Phạm Văn Đồng, Vành đai 3</li>
+<li>~30–40 phút về trung tâm Quận 1; gần các KCN Sóng Thần, Linh Trung, VSIP</li>
+</ul>
+<div class="note">Vị trí "vùng giáp ranh lõi": không phải trung tâm nhưng bám trục giao thông + nguồn cầu thuê (sinh viên, công nhân, chuyên gia) dày — nền tảng cho dòng tiền cho thuê hơn là tăng giá đột biến.</div>
+`);
+
+N('tq-quymo','tq','Quy mô dự án','7.877,8 m² · 1 tháp 21 tầng · 372 căn', 15, `
+<span class="badge b-cdt">CĐT công bố</span>
+<div class="kv">
+<div class="k">Quy mô toàn khu</div><div class="v">7.877,8 m²</div>
+<div class="k">Diện tích xây dựng</div><div class="v">4.019 m²</div>
+<div class="k">Mật độ xây dựng</div><div class="v">~51,66%</div>
+<div class="k">Số tháp</div><div class="v">1 tòa · 21 tầng nổi + 1 hầm</div>
+<div class="k">Số căn</div><div class="v">372 căn (50–67 m²)</div>
+<div class="k">Dân số</div><div class="v">~1.274 cư dân</div>
+</div>
+<p>Đây là dự án <b>quy mô nhỏ, 1 tháp</b> — khác hẳn các đại đô thị. Ưu điểm: cộng đồng gọn, dễ quản lý vận hành. Nhược điểm: ít dư địa tiện ích lớn; mật độ xây dựng cao (~51,66%) nên không gian xanh hạn chế.</p>
+<div class="note warn">Số liệu trên theo trang chính thức bconsgroup.com.vn (bài lễ động thổ 24/1/2026). Một số nguồn phụ nêu "3.680 m²" hoặc "29 tầng" — KHÔNG khớp; xem node "Cảnh báo mâu thuẫn số liệu".</div>
+`);
+
+N('tq-mauthuan','tq','Cảnh báo mâu thuẫn số liệu','Phân biệt Hoàng Nam vs Bcons City', 14, `
+<span class="badge b-risk">Lưu ý quan trọng</span>
+<p>Trên thị trường tồn tại <b>nhiều con số quy mô khác nhau</b> cho cái tên "Bcons Ngôi Sao". Nguyên nhân: dễ nhầm <b>2 dự án khác nhau</b>.</p>
+<table class="tbl">
+<tr><th>Dự án</th><th>Quy mô</th><th>Trạng thái</th></tr>
+<tr><td><b>Bcons Ngôi Sao Hoàng Nam</b> (dự án này)</td><td class="num">7.877,8 m² · 1 tháp 21 tầng · 372 căn</td><td>Mới động thổ 24/1/2026</td></tr>
+<tr><td><b>Bcons Ngôi Sao = Bcons City</b> (dự án khác)</td><td class="num">~4,4 ha / 9.520 m² · 4–5 tháp 28 tầng · ~1.258+ căn</td><td>Đang bàn giao (tháp cuối Q1/2027)</td></tr>
+</table>
+<p>Một số trang còn ghi "3.680 m²" hoặc "29 tầng + 2 hầm" cho Hoàng Nam — <b>không khớp</b> số liệu chính thức (7.877,8 m², 21 tầng, 1 hầm).</p>
+<div class="note warn"><b>Quy tắc bán hàng:</b> khi tư vấn dự án Hoàng Nam, chỉ dùng bộ số chính thức từ bconsgroup.com.vn và đối chiếu HĐMB/quyết định phê duyệt. Không "mượn" quy mô/tiện ích của Bcons City để bán Hoàng Nam.</div>
+`);
+
+N('tq-thietke','tq','Thiết kế & định hướng xanh','Kiến trúc hiện đại · đón nắng gió tự nhiên', 12, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Theo công bố tại lễ động thổ: tháp căn hộ được thiết kế <b>đón nắng và gió tự nhiên</b>, hướng "sống xanh – bền vững", vật liệu thân thiện môi trường. Mặt đứng hiện đại, tối ưu công năng.</p>
+<div class="note">Đây là ngôn ngữ marketing tiêu chuẩn ở giai đoạn động thổ — chưa có thiết kế chi tiết/đơn vị thiết kế công bố. Cần xem mặt bằng layout thực tế khi mở bán để đánh giá hiệu quả sử dụng (đặc biệt với mật độ ~51,66%).</div>
+`);
+
+N('tq-dinhvi','tq','Định vị phân khúc','Vừa túi tiền · TOD · KHÔNG "siêu sang"', 13, `
+<span class="badge b-cdt">CĐT định vị</span><span class="badge b-mkt">Phân tích</span>
+<p>Định vị đúng của dự án: <b>tổng giá trị căn vừa tầm + thương hiệu quen thuộc + vị trí có dòng thuê thực</b>, hướng gia đình trẻ, chuyên gia, trí thức, người lao động khu Đông.</p>
+<div class="note warn"><b>Không nên bán</b> bằng câu chuyện "siêu sang/hạng sang" hay kỳ vọng tăng giá quá mức. Đây là sản phẩm an cư + cho thuê, không phải sản phẩm "lướt sóng" cao cấp như khu Thủ Thiêm/An Phú.</div>
+<p>Mô hình <b>TOD (Transit-Oriented Development)</b> — phát triển bám hạ tầng giao thông công cộng (Metro số 1) — là khung định vị Bcons theo đuổi.</p>
+`);
+
+N('tq-sapnhap','tq','Hiệu ứng sáp nhập TP.HCM','Từ 1/7/2025: địa chỉ "TP.HCM"', 14, `
+<span class="badge b-press">Báo chí · Nghị quyết</span>
+<p>Từ <b>1/7/2025</b> (Nghị quyết 1685/NQ-UBTVQH15 & NQ 202/2025/QH15), Bình Dương + Bà Rịa–Vũng Tàu + TP.HCM cũ hợp nhất thành <b>TP.HCM mới</b>. TP Dĩ An tách thành 3 phường: <b>Đông Hòa, Dĩ An, Tân Đông Hiệp</b>.</p>
+<div class="kv">
+<div class="k">Phường Đông Hòa mới</div><div class="v">Gộp Đông Hòa + Bình An + Bình Thắng · ~21,89 km² · ~132.000–183.000 dân</div>
+<div class="k">Định hướng</div><div class="v">Đô thị tri thức & dịch vụ, tận dụng ĐHQG TP.HCM</div>
+<div class="k">Trụ sở phường</div><div class="v">Đặt tại Bình An (cũ)</div>
+</div>
+<div class="note">Tác động đầu tư: địa chỉ chuyển từ "Bình Dương" sang <b>"TP.HCM"</b> — cú hích tâm lý & định vị cho toàn khu Dĩ An/Đông Hòa; kỳ vọng đồng bộ hạ tầng & quản lý đô thị. Đây là một trong những điểm bán mạnh nhất hiện tại.</div>
+`);
+
+/* ════════ CHỦ ĐẦU TƯ ════════ */
+N('cdt-bcons','cdt','Bcons Group','Thành lập 2013 · Lê Như Thạch · 14 dự án', 16, `
+<span class="badge b-press">Báo chí · CĐT</span>
+<p><b>Bcons Group (Tập đoàn Bcons)</b> thành lập <b>06/3/2013</b>, tiền thân là Công ty TNHH Tư vấn Thiết kế và Quản lý dự án Hồng Ngọc (khởi đầu 8 nhân sự). Chủ tịch sáng lập <b>ông Lê Như Thạch</b> (tốt nghiệp & từng giảng dạy ĐH Bách Khoa TP.HCM).</p>
+<div class="kv">
+<div class="k">Tuổi đời (2025)</div><div class="v">12 năm</div>
+<div class="k">Quy mô</div><div class="v">Hơn 15 công ty thành viên · 14 dự án căn hộ (Dĩ An cũ)</div>
+<div class="k">Lõi năng lực</div><div class="v">Tư vấn thiết kế + tổng thầu xây dựng + đầu tư BĐS (mạnh khâu thi công)</div>
+<div class="k">Mở rộng</div><div class="v">Giáo dục (Bcons Uni Valley), BIM, hạ tầng đô thị</div>
+<div class="k">MST</div><div class="v">0314635755</div>
+</div>
+<p>Bcons là nhà phát triển <b>tầm trung, ra hàng đều</b>, chuyên phân khúc vừa túi tiền cho người thu nhập trung bình – khá tại đô thị vệ tinh (Dĩ An, Thuận An, Biên Hòa, Bình Chánh).</p>
+`);
+
+N('cdt-trackrecord','cdt','Track record bàn giao','"Chưa dự án nào bàn giao trễ" · 8 dự án ra sổ', 15, `
+<span class="badge b-press">Báo chí · CĐT</span>
+<p>Điểm mạnh lớn nhất của Bcons khi tư vấn — uy tín giao nhà & ra sổ:</p>
+<ul>
+<li>Ông Lê Như Thạch: <b>"Chúng tôi chưa có dự án nào bàn giao nhà trễ cho khách hàng."</b></li>
+<li>Tổng kết (theo trang Bcons): <b>14 dự án triển khai · 10 dự án bàn giao đúng tiến độ · 8 dự án đã bàn giao sổ hồng</b>.</li>
+<li>Cam kết <b>hoàn thiện sổ riêng sau ~6 tháng giao nhà</b> (điển hình Bcons Suối Tiên, Miền Đông).</li>
+<li>Dự án đã bàn giao + sổ: Bcons Plaza, Bcons Bee (2021), Bcons Polygon (9/2024), Bcons Suối Tiên, Bcons Miền Đông, Bcons Garden, Bcons Green View…</li>
+</ul>
+<div class="note">Với một dự án MỚI động thổ như Hoàng Nam, track record CĐT là "bảo chứng mềm" quan trọng nhất — nhưng vẫn cần kiểm tra pháp lý của chính dự án này (xem cụm Pháp lý).</div>
+`);
+
+N('cdt-danhmuc','cdt','Hệ sinh thái dự án Bcons','Plaza · City · Center City · Polaris…', 13, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Chuỗi ~14+ dự án căn hộ, phần lớn tại Dĩ An (Đông Hòa, An Bình, Bình An):</p>
+<table class="tbl">
+<tr><th>Dự án</th><th>Quy mô / trạng thái</th></tr>
+<tr><td>Bcons Plaza</td><td class="num">4 block 28T · ~1.200 căn · đã bàn giao + sổ</td></tr>
+<tr><td>Bcons City (Ngôi Sao)</td><td class="num">~4,4 ha · lớn nhất · tháp cuối Q1/2027</td></tr>
+<tr><td>Bcons Polygon</td><td class="num">2 tháp 29T · 783 căn · bàn giao 2024</td></tr>
+<tr><td>Bcons Polaris</td><td class="num">522 căn · Lê Trọng Tấn</td></tr>
+<tr><td>Bcons Center City</td><td class="num">đối diện Bcons City · đang triển khai</td></tr>
+<tr><td>Bcons Bee / Suối Tiên / Miền Đông / Garden / Green View</td><td class="num">đã bàn giao</td></tr>
+<tr><td>Bcons Sala / Avenue / Solary / Uni Valley</td><td class="num">đang/sắp triển khai</td></tr>
+</table>
+<p>Kế hoạch: đưa ra thị trường ~<b>10.000–12.000 căn/năm</b>, mở rộng khu Tây TP.HCM, Đà Lạt, Bàu Bàng, Đồng Nai.</p>
+`);
+
+N('cdt-hoangnam','cdt','CTCP Đầu tư Dự án Hoàng Nam','Đối tác · ông Hoàng Văn Tâm', 12, `
+<span class="badge b-press">Báo chí</span>
+<p><b>Công ty Cổ phần Đầu tư Dự án Hoàng Nam</b> là đối tác đồng phát triển; <b>ông Hoàng Văn Tâm</b> – Chủ tịch HĐQT kiêm Tổng Giám đốc – tham dự lễ động thổ 24/1/2026.</p>
+<div class="note warn">Mô hình hợp tác Bcons × Hoàng Nam (thường là Hoàng Nam có quỹ đất, Bcons phát triển/tổng thầu/bán hàng) cần được làm rõ trong HĐMB: <b>ai là chủ đầu tư đứng tên trên giấy phép & hợp đồng</b>, ai chịu trách nhiệm bàn giao và ra sổ. Đây là điểm thẩm định quan trọng với dự án hợp tác.</p>
+`);
+
+N('cdt-tod','cdt','Chiến lược TOD & vừa túi tiền','Bám Metro · 10.000 căn/năm', 12, `
+<span class="badge b-press">Báo chí</span>
+<p>Ông Lê Như Thạch nhấn mạnh mô hình <b>TOD (Transit-Oriented Development)</b> — phát triển đô thị bám tuyến giao thông công cộng — là "xu thế tất yếu" tại Đông Nam Bộ. Bcons định vị căn hộ <b>vừa túi tiền</b>, mục tiêu tỷ lệ lấp đầy >90% các dự án đã hoàn thành.</p>
+<div class="note">Bcons Ngôi Sao Hoàng Nam nằm đúng trong luận điểm TOD: gần ga cuối Metro số 1 + Bến xe Miền Đông mới — nơi nhu cầu ở & thuê của người đi lại bằng phương tiện công cộng tập trung cao.</div>
+`);
+
+/* ════════ PHÁP LÝ ════════ */
+N('pl-hientrang','pl','Hiện trạng pháp lý','Mới động thổ · cần xác minh hồ sơ', 15, `
+<span class="badge b-risk">Lưu ý quan trọng</span><span class="badge b-cdt">CĐT</span>
+<p>Dự án <b>mới động thổ 24/01/2026</b>, đang ở giai đoạn khởi đầu. CĐT tuyên bố "sự chuẩn bị kỹ lưỡng về pháp lý" tại lễ động thổ, <b>nhưng chưa công bố công khai</b> số quyết định 1/500, giấy phép xây dựng, hay văn bản đủ điều kiện bán nhà ở hình thành trong tương lai cho riêng dự án này.</p>
+<div class="note warn"><b>Đây là điểm thẩm định số 1.</b> Dự án vừa động thổ thường CHƯA đủ điều kiện ký HĐMB chính thức — giao dịch giai đoạn này có thể dưới dạng "giữ chỗ/đặt cọc thiện chí". Khách hàng cần yêu cầu xem bản gốc: quyết định chủ trương đầu tư, quy hoạch 1/500, GPXD, và đặc biệt <b>văn bản đủ điều kiện bán của Sở Xây dựng</b> trước khi xuống tiền lớn.</p>
+`);
+
+N('pl-benchmark','pl','Bảo chứng pháp lý từ Bcons','Bcons City có VB đủ ĐK bán · 8 dự án ra sổ', 14, `
+<span class="badge b-cdt">CĐT · Báo chí</span>
+<p>Tuy dự án Hoàng Nam còn mới, "lịch sử pháp lý" của Bcons là tham chiếu tích cực:</p>
+<ul>
+<li><b>Bcons City</b> (cùng đường Thống Nhất) đã có <b>văn bản đủ điều kiện bán số 71/SXD-QLN ngày 06/03/2025</b> — minh chứng Bcons hoàn tất được thủ tục bán hàng.</li>
+<li><b>8 dự án Bcons đã bàn giao sổ hồng</b> cho cư dân; cam kết sổ riêng sau ~6 tháng giao nhà.</li>
+<li>Nhiều dự án (Garden, Miền Đông, Green View, Polygon) pháp lý rõ ràng, đã ra sổ.</li>
+</ul>
+<div class="note">Cách dùng đúng: track record Bcons giúp tăng niềm tin, NHƯNG mỗi dự án có hồ sơ pháp lý riêng. "Bcons từng ra sổ tốt" ≠ "Hoàng Nam chắc chắn ra sổ đúng hạn". Vẫn phải kiểm tra giấy tờ của chính dự án.</div>
+`);
+
+N('pl-sohuu','pl','Hình thức sở hữu','Căn hộ ở · sở hữu lâu dài (dự kiến)', 11, `
+<span class="badge b-cdt">Dự kiến</span>
+<p>Là "khu nhà ở cao tầng" (căn hộ chung cư để ở), thông lệ tại các dự án Bcons là <b>sổ hồng sở hữu lâu dài</b> cho người mua trong nước. Chi tiết (thời hạn, phần sở hữu chung/riêng, room cho người nước ngoài) cần xác nhận trong HĐMB & GCN của dự án.</p>
+<div class="note">Phân khúc & tệp khách của Bcons chủ yếu là người Việt mua ở/cho thuê — yếu tố sở hữu lâu dài hỗ trợ thanh khoản thứ cấp và giá trị dài hạn.</div>
+`);
+
+N('pl-ocb','pl','Ngân hàng OCB','Đồng hành tài trợ/bảo lãnh', 11, `
+<span class="badge b-press">Báo chí</span>
+<p>Tại lễ động thổ có sự hiện diện của <b>Ngân hàng TMCP Phương Đông (OCB)</b> — ông Phạm Thanh Hoàn, Giám đốc CIB, Trung tâm Kinh doanh Hội sở. OCB nhiều khả năng là ngân hàng <b>tài trợ vốn dự án và/hoặc cho vay người mua, bảo lãnh</b>.</p>
+<div class="note warn">Khi mua: kiểm tra (1) <b>chứng thư bảo lãnh nghĩa vụ tài chính</b> của CĐT cho căn của bạn; (2) căn đã/sẽ được giải chấp khỏi khoản vay dự án trước khi ra sổ. Sự tham gia của ngân hàng không tự động đồng nghĩa căn đã được bảo lãnh.</div>
+`);
+
+N('pl-checklist','pl','Checklist trước cọc','6 bước — chú ý dự án mới động thổ', 13, `
+<span class="badge b-mkt">Khuyến nghị</span>
+<ul>
+<li><b>1.</b> Quyết định chủ trương đầu tư + <b>quy hoạch 1/500</b> đã duyệt.</li>
+<li><b>2.</b> <b>Giấy phép xây dựng</b> của dự án (rất quan trọng vì mới động thổ).</li>
+<li><b>3.</b> <b>Văn bản đủ điều kiện bán</b> nhà ở hình thành trong tương lai của Sở Xây dựng — nếu CHƯA có, chỉ nên "giữ chỗ" có hoàn lại, không thanh toán lớn.</li>
+<li><b>4.</b> Làm rõ <b>pháp nhân ký HĐMB</b> (Bcons hay Hoàng Nam) và trách nhiệm bàn giao/ra sổ.</li>
+<li><b>5.</b> <b>Chứng thư bảo lãnh ngân hàng</b> (OCB) ghi đúng mã căn.</li>
+<li><b>6.</b> Tiến độ thanh toán theo trần luật: ≤70% trước bàn giao, ≤95% trước khi cấp sổ.</li>
+</ul>
+<div class="note warn">Với dự án vừa động thổ, "vào sớm" đi kèm rủi ro pháp lý/tiến độ cao hơn. Cân nhắc chỉ đặt cọc giữ chỗ (hoàn lại 100%) cho tới khi có văn bản đủ điều kiện bán.</div>
+`);
+
+/* ════════ SẢN PHẨM ════════ */
+N('pk-cancho','pk','372 căn hộ','50–67 m² · 1 tháp 21 tầng', 15, `
+<span class="badge b-cdt">CĐT công bố</span>
+<div class="kv">
+<div class="k">Tổng căn</div><div class="v">372 căn hộ</div>
+<div class="k">Diện tích</div><div class="v">50–67 m²/căn (dự kiến)</div>
+<div class="k">Tháp</div><div class="v">1 tòa · 21 tầng nổi + 1 hầm</div>
+<div class="k">Dân số</div><div class="v">~1.274 cư dân</div>
+</div>
+<p>Diện tích 50–67 m² phù hợp căn <b>1–2 phòng ngủ</b> — đúng "khẩu vị" sản phẩm vừa túi tiền cho gia đình trẻ & cho thuê. Quy mô 372 căn nhỏ → cộng đồng gọn, mật độ cư dân/tiện ích cần theo dõi.</p>
+`);
+
+N('pk-loaihinh','pk','Loại căn (dự kiến)','1–2PN diện tích nhỏ', 12, `
+<span class="badge b-mkt">Dự kiến</span>
+<p>CĐT chưa công bố bảng layout chi tiết. Dựa trên dải diện tích 50–67 m² và dòng sản phẩm Bcons (so sánh Bcons City: 36–58 m²; Polygon: 45–67 m²), cơ cấu dự kiến nghiêng về <b>1PN (~50 m²)</b> và <b>2PN (~58–67 m²)</b>.</p>
+<div class="note">Căn 1–2PN diện tích nhỏ là sản phẩm thanh khoản & cho thuê tốt nhất tại khu Làng ĐH/KCN. Chờ mặt bằng tầng điển hình chính thức để chọn căn (hướng, vị trí so với hành lang, view).</div>
+`);
+
+N('pk-bangiao','pk','Tiêu chuẩn bàn giao','Nội thất cơ bản (chuẩn Bcons)', 12, `
+<span class="badge b-mkt">Tham chiếu hệ Bcons</span>
+<p>Chưa có công bố riêng cho Hoàng Nam. Chuẩn bàn giao điển hình của Bcons (tham chiếu Bcons Center City): <b>sàn phòng khách gạch 60×60, sàn phòng ngủ gỗ, trần thạch cao + đèn, tủ bếp trên–dưới, thiết bị vệ sinh cơ bản</b>.</p>
+<div class="note">Bàn giao "nội thất cơ bản" (không full nội thất cao cấp như dự án hạng sang) là hợp lý với phân khúc giá mềm — người mua cho thuê cần dự trù thêm chi phí hoàn thiện/nội thất rời.</div>
+`);
+
+N('pk-tiendo','pk','Tiến độ & bàn giao','Động thổ 1/2026 → bàn giao Q3/2028', 13, `
+<span class="badge b-cdt">CĐT công bố</span>
+<table class="tbl">
+<tr><th>Mốc</th><th>Thời điểm</th></tr>
+<tr><td>Động thổ</td><td class="num">24/01/2026</td></tr>
+<tr><td>Thi công thân tháp</td><td class="num">2026–2027 (dự kiến)</td></tr>
+<tr><td>Bàn giao</td><td class="num">Quý III/2028</td></tr>
+</table>
+<p>Chu kỳ xây dựng ~2,5 năm từ động thổ đến bàn giao — phù hợp 1 tháp 21 tầng. Nhà đầu tư cần tính <b>thời gian chôn vốn tới 2028</b> trước khi có dòng tiền cho thuê.</p>
+<div class="note">Với uy tín "không bàn giao trễ" của Bcons, mốc Q3/2028 có độ tin cậy tương đối — nhưng vẫn nên theo dõi tiến độ thực qua ảnh công trường.</div>
+`);
+
+N('pk-matdo','pk','Mật độ & không gian','MĐXD ~51,66% · lưu ý cây xanh', 11, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-risk">Lưu ý</span>
+<p>Diện tích xây dựng 4.019 m² trên 7.877,8 m² → <b>mật độ xây dựng ~51,66%</b>.</p>
+<div class="note warn">Mật độ ~51,66% là <b>khá cao</b> cho căn hộ — đồng nghĩa quỹ đất dành cho cây xanh/tiện ích ngoài trời hạn chế hơn các dự án mật độ thấp (25–40%). Khi tư vấn nên nói thật về điểm này; tiện ích "all-in-one" của dự án nhỏ sẽ tập trung ở khối đế/tầng kỹ thuật thay vì cảnh quan rộng.</div>
+`);
+
+/* ════════ TIỆN ÍCH ════════ */
+N('ti-hoboi','ti','Hồ bơi','Thư giãn nội khu', 12, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Dự án có <b>hồ bơi</b> trong hệ tiện ích "all-in-one". Với dự án 1 tháp mật độ cao, hồ bơi thường bố trí ở tầng đế/tầng kỹ thuật hoặc sân thượng — quy mô vừa phải phục vụ ~1.274 cư dân.</p>
+`);
+
+N('ti-congvien','ti','Công viên & đường dạo','Mảng xanh nội khu', 11, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p><b>Công viên cây xanh và đường dạo bộ</b> — "lá phổi xanh" nội khu. Quy mô bị giới hạn bởi diện tích đất nhỏ (7.877,8 m²) và mật độ xây dựng cao; nên xem đây là không gian sinh hoạt vừa đủ chứ không phải công viên lớn.</p>
+`);
+
+N('ti-treem','ti','Khu trẻ em & nhà trẻ','Hướng gia đình trẻ', 11, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p><b>Khu vui chơi trẻ em</b> và <b>nhà trẻ</b> nội khu — phù hợp tệp khách gia đình trẻ. Tiện ích hướng gia đình giúp giữ chân cư dân ở thật và hỗ trợ nhu cầu thuê của hộ có con nhỏ.</p>
+`);
+
+N('ti-theduc','ti','Gym, Yoga & BBQ','Tiện ích thể chất – sinh hoạt', 11, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Hệ tiện ích thể chất – sinh hoạt: <b>phòng Gym & Yoga</b>, <b>khu BBQ</b>. Đáp ứng nhu cầu vận động và gắn kết cộng đồng của cư dân trẻ — nhóm khách thuê tiềm năng quanh Làng Đại học/KCN.</p>
+`);
+
+N('ti-thuongmai','ti','Siêu thị mini & khối đế','Tiện ích "all-in-one"', 11, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p><b>Siêu thị mini</b> và các tiện ích thương mại khối đế tạo mô hình <b>"all-in-one"</b> — cư dân không cần đi xa cho nhu cầu cơ bản. Khối thương mại cũng là nguồn dòng tiền/giá trị cho căn shophouse (nếu có) và tiện ích cho khách thuê.</p>
+`);
+
+/* ════════ HẠ TẦNG KẾT NỐI ════════ */
+N('ht-metro','ht','Metro số 1','Đã vận hành 12/2024 · ga cuối Suối Tiên', 16, `
+<span class="badge b-press">Báo chí</span>
+<p><b>Metro số 1 (Bến Thành – Suối Tiên)</b> đã vận hành thương mại từ <b>12/2024</b>. Ga cuối tại khu vực Suối Tiên / Bến xe Miền Đông mới — gần trục Thống Nhất qua Làng Đại học.</p>
+<div class="note">Metro là "xương sống" luận điểm TOD của dự án: nguồn cầu ở & thuê của người đi lại bằng metro (sinh viên, nhân viên văn phòng, công nhân) tập trung quanh ga cuối. Đề xuất kéo dài tuyến về Bình Dương/Đồng Nai càng củng cố dài hạn.</div>
+`);
+
+N('ht-bxmd','ht','Bến xe Miền Đông mới','Đầu mối vận tải liên vùng', 13, `
+<span class="badge b-press">Báo chí</span>
+<p><b>Bến xe Miền Đông mới</b> (một trong những bến xe lớn nhất nước) nằm trên địa bàn cửa ngõ Đông, kết nối Metro số 1 và các tuyến liên tỉnh. Cùng ga metro cuối, đây là đầu mối giao thông công cộng tạo lưu lượng & nhu cầu lưu trú/thuê quanh khu vực Thống Nhất – Đông Hòa.</p>
+`);
+
+N('ht-dhqg','ht','ĐHQG TP.HCM / Làng Đại học','Nguồn cầu thuê khổng lồ', 16, `
+<span class="badge b-press">Báo chí</span>
+<p><b>Đại học Quốc gia TP.HCM (Làng Đại học)</b> nằm ngay địa bàn phường Đông Hòa — hàng trăm nghìn sinh viên, giảng viên, cán bộ. Đây là <b>nguồn cầu thuê căn hộ ổn định và bền vững nhất</b> của khu vực.</p>
+<div class="note">Đây là động lực đầu tư cốt lõi của dự án: cầu thuê từ giảng viên/cán bộ (thuê căn hộ chất lượng) + sinh viên (ở ghép) gần như không bao giờ cạn. Phường Đông Hòa được định hướng thành "đô thị tri thức" dựa trên ĐHQG.</div>
+`);
+
+N('ht-thongnhat','ht','Đường Thống Nhất','32m, 6 làn · GĐ2 2026–2028', 13, `
+<span class="badge b-press">Báo chí</span>
+<p><b>Đường Thống Nhất</b>: giai đoạn 1 mở rộng 32m, 6 làn (2022–2025, cơ bản hoàn thành), đi qua Đông Hòa & Bình An; là một phần tuyến <b>Vành đai 2 ĐHQG</b>. Giai đoạn 2 (QL1K → Trần Hưng Đạo, ~897m) thực hiện 2026–2028; trục Trần Hưng Đạo – Thống Nhất (Đông–Tây) kết nối Ga Dĩ An + Ga Metro số 1 + Bến xe Miền Đông mới.</p>
+<div class="note">Là "đại lộ xương sống" của chuỗi dự án Bcons (Plaza, City, Center City) và dự án Hoàng Nam — hạ tầng đường đang được nâng cấp đồng bộ, hỗ trợ kết nối & giá trị.</div>
+`);
+
+N('ht-vanhdai','ht','Vành đai 3 & trục liên vùng','Mỹ Phước–Tân Vạn · Xa lộ HN · QL1K', 13, `
+<span class="badge b-press">Báo chí</span>
+<p>Phường Đông Hòa là <b>cửa ngõ phía Đông TP.HCM</b>, hội tụ nhiều trục lớn: <b>Vành đai 3 TP.HCM, Mỹ Phước – Tân Vạn, Xa lộ Hà Nội, đường Đỗ Mười (QL1A), QL1K, Phạm Văn Đồng</b>.</p>
+<div class="note">Vành đai 3 (hoàn thành giữa 2026) là driver trung hạn cho trục Dĩ An – TP. Thủ Đức – Đồng Nai. Mạng trục đa hướng giúp khu vực kết nối tốt cả TP.HCM lẫn các tỉnh công nghiệp Đông Nam Bộ — nền cho cầu ở & thuê.</div>
+`);
+
+N('ht-kcn','ht','Khu công nghiệp lân cận','Sóng Thần · VSIP · Linh Trung · CNC', 13, `
+<span class="badge b-press">Báo chí</span>
+<p>Bao quanh khu vực là các KCN lớn: <b>Sóng Thần 1&2, VSIP, Linh Trung, Khu Công nghệ cao</b> — cách 5–10 phút. Đây là nguồn cầu thuê thứ hai (sau Làng ĐH): <b>chuyên gia, kỹ sư, công nhân tay nghề cao</b>.</p>
+<div class="note">Hai nguồn cầu thuê song song (giáo dục + công nghiệp) là điểm khác biệt của khu Dĩ An/Đông Hòa so với khu lõi: tỷ suất cho thuê thường cao hơn nhờ giá vốn thấp + cầu thuê dày (xem node Tỷ suất cho thuê).</div>
+`);
+
+N('ht-tacdong','ht','Tác động hạ tầng tổng hợp','TOD + cửa ngõ Đông + sáp nhập', 14, `
+<span class="badge b-mkt">Phân tích</span>
+<p>Cộng hưởng các lớp hạ tầng quanh dự án:</p>
+<ul>
+<li><b>Metro số 1</b> đã chạy + đề xuất kéo dài → trục TOD</li>
+<li><b>Bến xe Miền Đông mới</b> → đầu mối liên vùng</li>
+<li><b>ĐHQG + KCN</b> → cầu thuê kép, bền vững</li>
+<li><b>Đường Thống Nhất nâng cấp + Vành đai 3</b> → kết nối tốt hơn</li>
+<li><b>Sáp nhập TP.HCM (1/7/2025)</b> → nâng định vị & kỳ vọng đồng bộ hạ tầng</li>
+</ul>
+<div class="note warn">Lưu ý: phần lớn lợi ích hạ tầng là <b>gián tiếp/khu vực</b>, không phải tiện ích "cửa nhà". Giá trị thể hiện chủ yếu qua dòng tiền cho thuê ổn định và tăng giá theo mặt bằng khu vực, không phải tăng đột biến.</div>
+`);
+
+/* ════════ GIÁ & CHÍNH SÁCH ════════ */
+N('cs-gia','cs','Giá bán','Chưa công bố chính thức · benchmark hệ Bcons', 16, `
+<span class="badge b-risk">Chưa công bố</span><span class="badge b-mkt">Benchmark</span>
+<p>Dự án vừa động thổ — <b>chưa có bảng giá chính thức công bố</b>. CĐT nhấn mạnh "giai đoạn 1 luôn có mức giá tốt nhất". Tham chiếu mặt bằng giá hệ Bcons cùng khu để ước lượng:</p>
+<table class="tbl">
+<tr><th>Dự án Bcons</th><th>Giá (tham khảo)</th></tr>
+<tr><td>Bcons Polaris (2023)</td><td class="num">~39 triệu/m² · 1PN từ ~1,6 tỷ</td></tr>
+<tr><td>Bcons City – Green Diamond</td><td class="num">~46 triệu/m² · 2PN ~2,4–2,65 tỷ</td></tr>
+<tr><td>Bcons Center City (rumor)</td><td class="num">~55 triệu/m² · 1PN từ ~2,4 tỷ</td></tr>
+</table>
+<p><b>Ước lượng Hoàng Nam:</b> nhiều khả năng rơi vào dải <b>~45–60 triệu/m²</b> (là dự án mới nhất, cùng trục Thống Nhất với Bcons City/Center City), tổng giá căn 1–2PN khoảng <b>~2,2–3,5 tỷ</b>.</p>
+<div class="note warn">Đây là ƯỚC LƯỢNG theo benchmark, KHÔNG phải giá chính thức. Chờ CĐT công bố bảng giá; tuyệt đối không cam kết con số cụ thể với khách.</div>
+`);
+
+N('cs-benchmark','cs','So sánh giá khu vực','Dĩ An – Thủ Đức 12/2025', 13, `
+<span class="badge b-mkt">DKRA/Sàn · 12/2025</span>
+<p>Bối cảnh giá căn hộ Dĩ An – TP. Thủ Đức (khảo sát sàn 12/2025):</p>
+<ul>
+<li>Căn hộ vừa túi tiền Dĩ An: ~<b>31–46 triệu/m²</b> (Phú Đông SkyOne ~31,5–38; Bcons Polaris ~39; Bcons City ~46)</li>
+<li>Dự án có lợi thế Metro/mới: ~<b>50–60 triệu/m²</b> (Bcons Center City ~55)</li>
+<li>Căn hộ cao cấp khu Đông (Thủ Đức lõi): ~<b>60–120 triệu/m²+</b></li>
+</ul>
+<div class="note">Bcons Ngôi Sao Hoàng Nam thuộc nhóm "mới + bám Metro" → định giá nhiều khả năng ở vùng trên của phân khúc vừa túi tiền (~45–60 tr/m²), thấp hơn rõ rệt khu Thủ Đức lõi.</div>
+`);
+
+N('cs-thanhtoan','cs','Chính sách thanh toán','Chuẩn Bcons: trả chậm, NH bảo lãnh', 14, `
+<span class="badge b-mkt">Tham chiếu hệ Bcons</span>
+<p>Chưa công bố riêng cho Hoàng Nam. Chính sách điển hình của Bcons (tham chiếu Polaris/City):</p>
+<ul>
+<li><b>Giữ chỗ</b> ~30 triệu, hoàn lại 100% nếu không mua</li>
+<li><b>Thanh toán 10–20% nhận nhà</b>, phần còn lại theo tiến độ</li>
+<li><b>Trả chậm tới ~2 năm không lãi suất</b>, ngân hàng (OCB) bảo lãnh & cho vay</li>
+<li>Chiết khấu thanh toán nhanh (vd Polaris CK ~1,1% khi chọn 20% nhận nhà)</li>
+</ul>
+<div class="note">Chính sách "vốn ban đầu thấp + trả chậm" là thế mạnh giúp gia đình trẻ tiếp cận. Chờ chính sách chính thức của Hoàng Nam để biết tỷ lệ & ưu đãi cụ thể.</div>
+`);
+
+N('cs-yield','cs','Tỷ suất cho thuê','Khu vực ~5–7%/năm · cao hơn lõi', 15, `
+<span class="badge b-mkt">Thị trường khu vực</span>
+<p>Khu Dĩ An/Đông Hòa/Làng ĐH có tỷ suất cho thuê <b>cao hơn khu lõi TP.HCM</b> nhờ giá vốn thấp + cầu thuê dày:</p>
+<div class="kv">
+<div class="k">Giá thuê tham khảo</div><div class="v">~8–15 triệu/tháng (căn 1–2PN)</div>
+<div class="k">Yield khu vực</div><div class="v">~5–7%/năm (Phú Đông SkyOne công bố)</div>
+<div class="k">So với khu lõi</div><div class="v">Lõi TP.HCM chỉ ~2–4%/năm</div>
+</div>
+<p>Nguồn cầu thuê: giảng viên/cán bộ ĐHQG, sinh viên (ở ghép), chuyên gia/kỹ sư KCN. Đây là <b>luận điểm đầu tư mạnh nhất</b> của dự án — dòng tiền cho thuê thực, không phụ thuộc kỳ vọng tăng giá.</p>
+<div class="note warn">Yield 5–7% là mức khu vực (dự án đã bàn giao); với Hoàng Nam (bàn giao 2028) cần tính lại theo giá mua thực tế. Tránh các con số 8–12% thiếu cơ sở từ môi giới.</div>
+`);
+
+N('cs-thoidiem','cs','Thời điểm động thổ','Giá GĐ1 tốt nhất — góc nhìn 2 chiều', 12, `
+<span class="badge b-mkt">Phân tích</span>
+<p>CĐT lập luận: mua ngay sau động thổ (GĐ1) hưởng <b>giá tốt nhất + chọn căn đẹp + biên tăng giá theo tiến độ cao nhất</b>.</p>
+<div class="note warn"><b>Góc nhìn 2 chiều:</b> (+) giá GĐ1 thường mềm nhất và dễ chọn căn; (–) đổi lại là <b>rủi ro pháp lý/tiến độ cao nhất</b> (mới động thổ, chưa chắc đủ điều kiện bán) và <b>chôn vốn lâu</b> tới bàn giao 2028. Người mua nên cân giữa "lợi giá sớm" và "rủi ro sớm" — ưu tiên giữ chỗ hoàn lại cho tới khi pháp lý bán hàng rõ ràng.</div>
+`);
+
+/* ════════ THỊ TRƯỜNG & CẠNH TRANH ════════ */
+N('tt-bicanh','tt','Bối cảnh thị trường','BĐS Dĩ An phục hồi · thanh khoản Bcons tốt', 14, `
+<span class="badge b-mkt">DKRA/Sàn · Báo chí</span>
+<ul>
+<li>6 tháng đầu 2025: BĐS Bình Dương (cũ) phục hồi; giá Thuận An/Dĩ An/Thủ Dầu Một tăng <b>~10–15%</b> tùy vị trí.</li>
+<li>Thanh khoản các dự án Bcons ở Đông Hòa/Tân Đông Hiệp được ghi nhận <b>rất tốt</b>.</li>
+<li>Cú hích sáp nhập TP.HCM + Metro vận hành làm tăng quan tâm khu cửa ngõ Đông.</li>
+</ul>
+<p>Kết luận khung: phân khúc vừa túi tiền gần Metro/ĐHQG đang có cầu thực tốt; Bcons có lợi thế "ra hàng đều + thanh khoản tốt" trong khu vực này.</p>
+`);
+
+N('tt-bcons-noi','tt','Cạnh tranh nội bộ Bcons','City · Center City cùng trục Thống Nhất', 13, `
+<span class="badge b-mkt">Phân tích</span>
+<p>Ngay trên/cạnh trục Thống Nhất, Hoàng Nam cạnh tranh với chính các dự án Bcons:</p>
+<table class="tbl">
+<tr><th>Dự án</th><th>Đặc điểm</th></tr>
+<tr><td>Bcons City</td><td class="num">Đại dự án 4,4ha, đang bàn giao, có sổ — "hàng thật"</td></tr>
+<tr><td>Bcons Center City</td><td class="num">Đối diện Bcons City, tiện ích dày, ~55 tr/m²</td></tr>
+<tr><td>Bcons Hoàng Nam</td><td class="num">Mới nhất, 1 tháp nhỏ, vừa động thổ</td></tr>
+</table>
+<div class="note warn">Rủi ro pha loãng: khách có thể chọn Bcons City/Center City (đã hiện hữu, tiện ích lớn, sắp/đã có sổ) thay vì dự án nhỏ mới động thổ. Lợi thế của Hoàng Nam phải là <b>giá GĐ1 mềm hơn</b> hoặc <b>vị trí/định vị riêng</b> — cần làm rõ khi mở bán.</div>
+`);
+
+N('tt-phudong','tt','Phú Đông SkyOne','Đối thủ vừa túi tiền · yield 5–7%', 13, `
+<span class="badge b-mkt">Thị trường</span>
+<div class="kv">
+<div class="k">CĐT</div><div class="v">Phú Đông Group</div>
+<div class="k">Vị trí</div><div class="v">DT743C, P. Dĩ An (gần KCN, cách ĐHQG ~9 phút)</div>
+<div class="k">Quy mô</div><div class="v">5.615 m² · 2 block · 30 tầng · ~780 căn</div>
+<div class="k">Giá</div><div class="v">~31,5–38 triệu/m² · từ ~1,7–2,7 tỷ/căn</div>
+<div class="k">Cho thuê</div><div class="v">8–15 triệu/tháng · yield 5–7%/năm</div>
+</div>
+<p>Đối thủ trực tiếp cùng phân khúc & tệp khách. So với Hoàng Nam: SkyOne <b>giá mềm hơn</b> (~31–38 vs ~45–60 dự kiến), gần KCN hơn; Hoàng Nam bám trục Thống Nhất/Bcons hơn. Cả hai đều bán câu chuyện "vừa túi tiền + cho thuê".</p>
+`);
+
+N('tt-lapura','tt','La Pura (Phát Đạt)','Đại dự án Thuận An · áp lực cung', 12, `
+<span class="badge b-mkt">Thị trường</span>
+<p><b>La Pura</b> (Phát Đạt) — đại dự án nhiều phân khu tại Thuận An cũ, thương hiệu lớn. Khác phân khúc/quy mô so với Hoàng Nam (boutique 1 tháp), nhưng góp phần làm <b>tăng nguồn cung căn hộ khu Bình Dương cũ</b> giai đoạn tới.</p>
+<div class="note warn">Hàm ý: nguồn cung lớn từ các đại dự án (La Pura) + chuỗi Bcons + Phú Đông tạo áp lực cạnh tranh cho thuê & bán lại. Lợi thế thanh khoản của Hoàng Nam nằm ở quy mô nhỏ (ít hàng) + vị trí cầu thuê tốt, không phải ở việc "khan hiếm".</div>
+`);
+
+N('tt-dinhvi','tt','Định vị & SWOT','Lợi thế / điểm yếu Hoàng Nam', 14, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>Lợi thế (Strengths)</h4>
+<ul>
+<li>CĐT Bcons track record "không bàn giao trễ", thanh khoản khu vực tốt</li>
+<li>Vị trí cầu thuê kép (ĐHQG + KCN) + bám Metro/TOD</li>
+<li>Quy mô nhỏ, cộng đồng gọn; giá vừa túi tiền; cú hích sáp nhập TP.HCM</li>
+</ul>
+<h4>Điểm yếu / Thách thức (Weaknesses)</h4>
+<ul>
+<li>Mới động thổ → pháp lý bán hàng chưa rõ, chôn vốn tới 2028</li>
+<li>Mật độ xây dựng cao (~51,66%), tiện ích/cây xanh hạn chế (đất nhỏ)</li>
+<li>Cạnh tranh dày: Bcons City/Center City, Phú Đông SkyOne; nguồn cung khu vực lớn</li>
+<li>Mâu thuẫn số liệu gây nhiễu thông tin; là dự án hợp tác (làm rõ pháp nhân)</li>
+</ul>
+`);
+
+N('tt-thanhkhoan','tt','Thanh khoản & nguồn cung','Cầu thuê tốt · cung khu vực lớn', 12, `
+<span class="badge b-mkt">Thị trường</span>
+<p>Thanh khoản phân khúc này dựa vào <b>cầu ở thực + cầu thuê</b> hơn là đầu cơ:</p>
+<ul>
+<li>Căn 1–2PN giá ~2–3,5 tỷ: tệp mua ở thực & cho thuê lớn → thanh khoản ổn.</li>
+<li>Nguồn cung khu Dĩ An/Bình Dương cũ <b>dồi dào</b> (Bcons, Phú Đông, La Pura…) → cạnh tranh bán lại & cho thuê.</li>
+</ul>
+<div class="note">Để thanh khoản tốt khi bán lại giữa nguồn cung lớn: chọn căn diện tích hợp lý (~50–60 m²), tầng/hướng đẹp, và mua được giá GĐ1 mềm. Đừng kỳ vọng "sóng" tăng giá nhanh như khu lõi.</div>
+`);
+
+/* ════════ PHÂN TÍCH ĐẦU TƯ ════════ */
+N('dt-thesis','dt','Luận điểm đầu tư','5 trụ cột — thiên về dòng tiền cho thuê', 16, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>1 · Dòng thuê thực, bền vững</h4>
+<p>Cầu thuê kép từ ĐHQG (giảng viên/sinh viên) + KCN (chuyên gia/công nhân) — yield khu vực ~5–7%, cao hơn khu lõi.</p>
+<h4>2 · Giá vừa túi tiền</h4>
+<p>Tổng giá ~2,2–3,5 tỷ/căn (dự kiến) — vốn vào thấp, tệp mua/thuê rộng.</p>
+<h4>3 · TOD – bám Metro</h4>
+<p>Gần ga cuối Metro số 1 + Bến xe Miền Đông mới — đúng xu thế đô thị giao thông công cộng.</p>
+<h4>4 · Uy tín Bcons</h4>
+<p>Track record "không bàn giao trễ", 8 dự án đã ra sổ — giảm rủi ro với dự án hình thành trong tương lai.</p>
+<h4>5 · Cú hích sáp nhập TP.HCM</h4>
+<p>Địa chỉ "TP.HCM" + kỳ vọng đồng bộ hạ tầng nâng định vị khu Đông Hòa.</p>
+<div class="note">Đây là khoản đầu tư <b>thiên về dòng tiền cho thuê + tăng giá theo hạ tầng</b>, KHÔNG phải sản phẩm lướt sóng. Thesis đứng vững khi pháp lý bán hàng rõ + Bcons giữ tiến độ + cầu thuê khu vực duy trì.</div>
+`);
+
+N('dt-dongtien','dt','Dòng tiền (mô phỏng)','Vốn thấp, trả chậm tới bàn giao 2028', 15, `
+<span class="badge b-mkt">Phân tích minh họa</span>
+<p>Ví dụ căn 2PN ~2,8 tỷ (giả định ~50 tr/m² × ~56 m²), chính sách Bcons điển hình:</p>
+<table class="tbl">
+<tr><th>Giai đoạn</th><th>Người mua chi</th><th>Ghi chú</th></tr>
+<tr><td>Giữ chỗ → ký HĐMB</td><td class="num">~10–20% (~0,28–0,56 tỷ)</td><td>Sau khi đủ điều kiện bán</td></tr>
+<tr><td>Xây dựng → bàn giao Q3/2028</td><td class="num">Đóng theo tiến độ / vay NH</td><td>Trả chậm tới ~2 năm, OCB bảo lãnh/cho vay</td></tr>
+<tr><td>Sau bàn giao 2028</td><td class="num">Cho thuê ~8–15 tr/tháng</td><td>Yield ~5–7% trên giá vốn</td></tr>
+</table>
+<p><b>Đặc điểm:</b> vốn ban đầu thấp, gánh nặng giãn tới bàn giao. Nếu dùng vay, lãi sau ưu đãi cần dự phòng; nhưng yield khu vực 5–7% <b>tiệm cận/đủ bù lãi vay</b> hơn nhiều so với khu lõi (yield ~2% không đủ bù lãi) — đây là điểm cộng dòng tiền của phân khúc này.</p>
+<div class="note warn">Mô phỏng dựa trên giá & chính sách ƯỚC LƯỢNG. Cập nhật lại khi có bảng giá + chính sách chính thức.</div>
+`);
+
+N('dt-ruiro','dt','Bản đồ rủi ro','Pháp lý sớm · số liệu · cung · bàn giao xa', 15, `
+<span class="badge b-risk">Rủi ro</span>
+<table class="tbl">
+<tr><th>Rủi ro</th><th>Nội dung</th><th>Giảm thiểu</th></tr>
+<tr><td>Pháp lý giai đoạn đầu</td><td>Mới động thổ, chưa rõ văn bản đủ ĐK bán</td><td>Chỉ giữ chỗ hoàn lại tới khi có VB bán · checklist 6 bước</td></tr>
+<tr><td>Dự án hợp tác</td><td>Bcons × Hoàng Nam — làm rõ ai chịu trách nhiệm</td><td>Xác minh pháp nhân ký HĐMB & ra sổ</td></tr>
+<tr><td>Mâu thuẫn số liệu</td><td>7.877,8 m² vs 3.680; 21 vs 29 tầng</td><td>Chỉ dùng số chính thức bconsgroup.com.vn</td></tr>
+<tr><td>Mật độ cao</td><td>~51,66% — ít cây xanh/tiện ích ngoài trời</td><td>Định vị an cư/cho thuê, không bán "sống xanh" quá đà</td></tr>
+<tr><td>Chôn vốn xa</td><td>Bàn giao Q3/2028</td><td>Tính dòng tiền tới 2028 · ưu tiên vốn nhàn rỗi</td></tr>
+<tr><td>Nguồn cung lớn</td><td>Bcons City/Center City, Phú Đông, La Pura</td><td>Mua giá GĐ1 mềm · chọn căn khác biệt</td></tr>
+</table>
+`);
+
+N('dt-khuyennghi','dt','Khuyến nghị theo mục tiêu','Ai nên mua — và mua thế nào', 15, `
+<span class="badge b-mkt">Khuyến nghị</span>
+<table class="tbl">
+<tr><th>Mục tiêu</th><th>Phù hợp?</th><th>Lưu ý</th></tr>
+<tr><td>Mua để ở (gia đình trẻ khu Đông)</td><td>Tốt</td><td>Vào sau khi có VB đủ ĐK bán; chọn căn 2PN ~56–67 m²</td></tr>
+<tr><td>Đầu tư cho thuê (giảng viên/chuyên gia)</td><td>Tốt nhất</td><td>Căn 1–2PN nhỏ; tính yield thực ~5–7%; dự trù nội thất</td></tr>
+<tr><td>Tích sản dài hạn</td><td>Khá</td><td>Kỳ vọng tăng giá theo hạ tầng/sáp nhập, không đột biến</td></tr>
+<tr><td>Lướt sóng</td><td>Không nên</td><td>Bàn giao xa 2028, nguồn cung lớn, biên mỏng</td></tr>
+</table>
+<div class="note">Nguyên tắc: đây là sản phẩm <b>an cư + cho thuê dòng tiền</b>. Lợi thế cạnh tranh khi bán lại là giá mua GĐ1 mềm + vị trí cầu thuê tốt. Tư vấn trung thực về mật độ & tiến độ giúp giữ uy tín dài hạn.</div>
+`);
+
+N('dt-trigger','dt','Tín hiệu Mua / Thận trọng','Benchmark cập nhật quyết định', 13, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>Tín hiệu MUA mạnh hơn</h4>
+<ul>
+<li>CĐT công bố <b>văn bản đủ điều kiện bán</b> + GPXD rõ ràng</li>
+<li>Bảng giá GĐ1 mềm hơn Bcons Center City (~&lt;50 tr/m²)</li>
+<li>Đường Thống Nhất GĐ2 & Vành đai 3 hoàn thành đúng hạn</li>
+<li>Tiến độ thi công bám mốc bàn giao Q3/2028</li>
+</ul>
+<h4>Tín hiệu THẬN TRỌNG</h4>
+<ul>
+<li>Chậm/thiếu văn bản pháp lý bán hàng</li>
+<li>Giá ngang/cao hơn dự án đã hiện hữu (Center City) mà không có lợi thế rõ</li>
+<li>Nguồn cung khu vực bung mạnh làm giá thuê/giá bán đi ngang</li>
+<li>Vướng mắc trong cơ cấu hợp tác Bcons × Hoàng Nam</li>
+</ul>
+`);
+
+N('dt-kh','dt','Chân dung khách mua','Gia đình trẻ · chuyên gia · NĐT cho thuê', 12, `
+<span class="badge b-cdt">CĐT định vị</span>
+<p>Tệp khách của dự án:</p>
+<ul>
+<li><b>Gia đình trẻ, chuyên gia, trí thức</b> làm việc khu Đông/Thủ Đức/KCN — mua để ở, vốn vào thấp.</li>
+<li><b>Nhà đầu tư cho thuê</b> nhắm nguồn cầu giảng viên/cán bộ ĐHQG + chuyên gia KCN.</li>
+<li><b>Người lao động</b> muốn an cư gần nơi làm việc, tận dụng Metro.</li>
+</ul>
+<div class="note">Ứng dụng tư vấn: chốt khách ở thực bằng giá vừa tầm + chính sách trả chậm + gần chỗ làm/học; chốt nhà đầu tư bằng dòng tiền cho thuê thực (yield 5–7%) từ chính tệp ĐHQG/KCN. Không "thổi" tăng giá hay định vị sai phân khúc.</div>
+`);
+
+/* ════════ LINKS ════════ */
+const LINKS = [
+['bcons','tq-vitri'],['bcons','tq-quymo'],['bcons','tq-mauthuan'],['bcons','tq-thietke'],['bcons','tq-dinhvi'],['bcons','tq-sapnhap'],
+['tq-quymo','tq-mauthuan'],['tq-vitri','tq-sapnhap'],
+['bcons','cdt-bcons'],['cdt-bcons','cdt-trackrecord'],['cdt-bcons','cdt-danhmuc'],['cdt-bcons','cdt-tod'],['bcons','cdt-hoangnam'],['cdt-hoangnam','cdt-bcons'],
+['tq-mauthuan','cdt-danhmuc'],
+['bcons','pl-hientrang'],['pl-hientrang','pl-benchmark'],['pl-benchmark','cdt-trackrecord'],['pl-hientrang','pl-sohuu'],['pl-hientrang','pl-ocb'],['pl-hientrang','pl-checklist'],['cdt-hoangnam','pl-checklist'],
+['bcons','pk-cancho'],['pk-cancho','pk-loaihinh'],['pk-cancho','pk-bangiao'],['pk-cancho','pk-matdo'],['pk-cancho','pk-tiendo'],['tq-quymo','pk-matdo'],['cdt-trackrecord','pk-tiendo'],
+['bcons','ti-hoboi'],['ti-hoboi','ti-congvien'],['ti-congvien','ti-treem'],['ti-treem','ti-theduc'],['bcons','ti-thuongmai'],['pk-matdo','ti-congvien'],
+['bcons','ht-metro'],['bcons','ht-dhqg'],['ht-metro','ht-bxmd'],['ht-metro','ht-tacdong'],['ht-dhqg','ht-tacdong'],['ht-bxmd','ht-tacdong'],['bcons','ht-thongnhat'],['ht-thongnhat','ht-vanhdai'],['ht-vanhdai','ht-tacdong'],['bcons','ht-kcn'],['ht-kcn','ht-tacdong'],['tq-sapnhap','ht-tacdong'],['cdt-tod','ht-metro'],
+['bcons','cs-gia'],['cs-gia','cs-benchmark'],['cs-benchmark','cdt-danhmuc'],['cs-gia','cs-thanhtoan'],['cs-thanhtoan','pl-ocb'],['cs-gia','cs-thoidiem'],['bcons','cs-yield'],['cs-yield','ht-dhqg'],['cs-yield','ht-kcn'],
+['bcons','tt-bicanh'],['tt-bicanh','tt-bcons-noi'],['tt-bcons-noi','cdt-danhmuc'],['tt-bicanh','tt-phudong'],['tt-bicanh','tt-lapura'],['tt-phudong','cs-yield'],['tt-bcons-noi','tt-dinhvi'],['tt-phudong','tt-dinhvi'],['tt-dinhvi','tt-thanhkhoan'],['tt-lapura','tt-thanhkhoan'],
+['bcons','dt-thesis'],['dt-thesis','dt-dongtien'],['dt-thesis','dt-ruiro'],['dt-thesis','dt-khuyennghi'],['dt-thesis','dt-trigger'],['cs-yield','dt-thesis'],['cs-thanhtoan','dt-dongtien'],['cs-gia','dt-dongtien'],['pl-hientrang','dt-ruiro'],['tq-mauthuan','dt-ruiro'],['pk-matdo','dt-ruiro'],['tt-thanhkhoan','dt-ruiro'],['ht-tacdong','dt-thesis'],['dt-khuyennghi','pk-cancho'],['dt-kh','ht-dhqg'],['dt-kh','cs-yield'],['tt-dinhvi','dt-thesis'],['pl-checklist','dt-khuyennghi'],['dt-trigger','pl-hientrang'],['dt-trigger','cs-gia']
+];
+/* ════════ ENGINE ════════ */
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const stage = document.getElementById('stage');
+const tip = document.getElementById('tip');
+const panel = document.getElementById('panel');
+const intro = document.getElementById('intro');
+let W=0, H=0, DPR = Math.min(window.devicePixelRatio||1, 2);
+let cam = { x:0, y:0, z:1 };
+let hoverN = null, selN = null, dragN = null, panning = false;
+let px=0, py=0, moved=false;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const byId = {}; NODES.forEach(n=>byId[n.id]=n);
+const NB = {}; NODES.forEach(n=>NB[n.id]=new Set());
+LINKS.forEach(([a,b])=>{ if(byId[a]&&byId[b]){ NB[a].add(b); NB[b].add(a);} });
+
+/* cluster anchors in a ring */
+const order = ['tq','cdt','pl','pk','cs','ti','ht','tt','dt'];
+const anchors = {};
+function layoutInit(){
+  const R = Math.min(W,H)*0.62 + 160;
+  order.forEach((c,i)=>{
+    const a = -Math.PI/2 + i*(Math.PI*2/order.length);
+    anchors[c] = { x: Math.cos(a)*R, y: Math.sin(a)*R };
+  });
+  anchors.core = {x:0,y:0};
+  NODES.forEach(n=>{
+    const A = anchors[n.cluster];
+    n.x = A.x + (Math.random()-0.5)*180;
+    n.y = A.y + (Math.random()-0.5)*180;
+    n.vx=0; n.vy=0;
+  });
+  byId.tgc.x=0; byId.tgc.y=0;
+}
+
+/* simple force sim */
+let alpha = 1;
+function tick(){
+  if(alpha < 0.004) return;
+  alpha *= 0.985;
+  const rep = 5200;
+  for(let i=0;i<NODES.length;i++){
+    const a = NODES[i];
+    for(let j=i+1;j<NODES.length;j++){
+      const b = NODES[j];
+      let dx=a.x-b.x, dy=a.y-b.y;
+      let d2 = dx*dx+dy*dy + 0.01;
+      if(d2 > 360000) continue;
+      const d = Math.sqrt(d2);
+      const f = rep / d2 * alpha;
+      const fx = dx/d*f, fy = dy/d*f;
+      a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+    }
+  }
+  LINKS.forEach(([ia,ib])=>{
+    const a=byId[ia], b=byId[ib]; if(!a||!b) return;
+    let dx=b.x-a.x, dy=b.y-a.y;
+    const d = Math.sqrt(dx*dx+dy*dy)+0.01;
+    const ideal = (a.cluster===b.cluster)?150: (ia==='tgc'||ib==='tgc')?330:240;
+    const f = (d-ideal)*0.012*alpha*6;
+    const fx=dx/d*f, fy=dy/d*f;
+    a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+  });
+  NODES.forEach(n=>{
+    const A = anchors[n.cluster] || anchors.core;
+    n.vx += (A.x-n.x)*0.0035*alpha*6;
+    n.vy += (A.y-n.y)*0.0035*alpha*6;
+    n.vx += (0-n.x)*0.0006;
+    n.vy += (0-n.y)*0.0006;
+    if(n!==dragN){
+      n.vx*=0.86; n.vy*=0.86;
+      n.x+=n.vx; n.y+=n.vy;
+    }
+  });
+}
+
+/* render */
+function world2scr(x,y){ return [ (x-cam.x)*cam.z + W/2, (y-cam.y)*cam.z + H/2 ]; }
+function scr2world(x,y){ return [ (x-W/2)/cam.z + cam.x, (y-H/2)/cam.z + cam.y ]; }
+
+let visible = new Set(Object.keys(CLUSTERS));
+let searchHits = null;
+
+function draw(){
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.clearRect(0,0,W,H);
+  /* background dots */
+  ctx.save();
+  const g = ctx.createRadialGradient(W/2,H/2,80, W/2,H/2, Math.max(W,H)*0.75);
+  g.addColorStop(0,'rgba(212,168,83,0.045)');
+  g.addColorStop(1,'rgba(10,16,32,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  ctx.restore();
+
+  const focus = hoverN || selN;
+  const focusSet = focus ? new Set([focus.id, ...NB[focus.id]]) : null;
+
+  /* edges */
+  LINKS.forEach(([ia,ib])=>{
+    const a=byId[ia], b=byId[ib]; if(!a||!b) return;
+    if(!visible.has(a.cluster)||!visible.has(b.cluster)) return;
+    const [x1,y1]=world2scr(a.x,a.y), [x2,y2]=world2scr(b.x,b.y);
+    const hot = focusSet && focusSet.has(ia) && focusSet.has(ib) && (ia===focus.id||ib===focus.id);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+    if(hot){ ctx.strokeStyle = CLUSTERS[focus.cluster].color + 'aa'; ctx.lineWidth=1.6; }
+    else { ctx.strokeStyle = 'rgba(120,140,190,'+(focusSet?0.07:0.16)+')'; ctx.lineWidth=1; }
+    ctx.stroke();
+  });
+
+  /* nodes */
+  NODES.forEach(n=>{
+    if(!visible.has(n.cluster)) return;
+    const [x,y]=world2scr(n.x,n.y);
+    if(x<-80||y<-80||x>W+80||y>H+80) return;
+    const col = CLUSTERS[n.cluster].color;
+    const r = n.r * (0.7+0.3*Math.min(cam.z,1.4));
+    const dim = (focusSet && !focusSet.has(n.id)) || (searchHits && !searchHits.has(n.id));
+    ctx.globalAlpha = dim ? 0.16 : 1;
+    /* glow */
+    if(!dim && (n===hoverN || n===selN || n.id==='tgc')){
+      ctx.beginPath(); ctx.arc(x,y,r+7,0,Math.PI*2);
+      ctx.fillStyle = col+'2e'; ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    const rg = ctx.createRadialGradient(x-r*0.3,y-r*0.35,r*0.15,x,y,r);
+    rg.addColorStop(0, lighten(col, 0.45));
+    rg.addColorStop(1, col);
+    ctx.fillStyle = rg; ctx.fill();
+    ctx.lineWidth = (n===selN)?2.4:1.2;
+    ctx.strokeStyle = (n===selN)? '#fff' : 'rgba(10,16,32,.55)';
+    ctx.stroke();
+    /* label */
+    const showLabel = cam.z > 0.42 || n===hoverN || n===selN || n.id==='tgc' || n.r>=15;
+    if(showLabel){
+      ctx.font = (n.id==='tgc'? '700 13px' : '600 11px') + " 'Be Vietnam Pro', sans-serif";
+      ctx.textAlign='center';
+      ctx.fillStyle = dim? 'rgba(233,238,248,.25)' : 'rgba(233,238,248,.95)';
+      ctx.shadowColor='rgba(0,0,0,.8)'; ctx.shadowBlur=4;
+      ctx.fillText(n.label, x, y + r + 14);
+      ctx.shadowBlur=0;
+    }
+    ctx.globalAlpha = 1;
+  });
+}
+function lighten(hex, amt){
+  const c = parseInt(hex.slice(1),16);
+  let r=(c>>16)&255, g=(c>>8)&255, b=c&255;
+  r=Math.min(255, r+255*amt|0); g=Math.min(255, g+255*amt|0); b=Math.min(255, b+255*amt|0);
+  return 'rgb('+r+','+g+','+b+')';
+}
+
+function loop(){ tick(); draw(); requestAnimationFrame(loop); }
+
+/* resize */
+function resize(){
+  W = stage.clientWidth; H = stage.clientHeight;
+  cv.width = W*DPR; cv.height = H*DPR;
+  cv.style.width = W+'px'; cv.style.height = H+'px';
+}
+window.addEventListener('resize', ()=>{ resize(); });
+
+/* hit test */
+function nodeAt(mx,my){
+  const [wx,wy] = scr2world(mx,my);
+  for(let i=NODES.length-1;i>=0;i--){
+    const n=NODES[i];
+    if(!visible.has(n.cluster)) continue;
+    const dx=wx-n.x, dy=wy-n.y;
+    const rr=(n.r+6)/Math.min(cam.z,1)* (cam.z<1?1:1);
+    if(dx*dx+dy*dy < (n.r+8)*(n.r+8)) return n;
+  }
+  return null;
+}
+
+/* pointer events */
+cv.addEventListener('pointerdown', e=>{
+  cv.setPointerCapture(e.pointerId);
+  moved=false; px=e.clientX; py=e.clientY;
+  const rect=cv.getBoundingClientRect();
+  const n = nodeAt(e.clientX-rect.left, e.clientY-rect.top);
+  if(n){ dragN=n; } else { panning=true; cv.classList.add('dragging'); }
+});
+cv.addEventListener('pointermove', e=>{
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  if(dragN){
+    const [wx,wy]=scr2world(mx,my);
+    dragN.x=wx; dragN.y=wy; dragN.vx=0; dragN.vy=0;
+    alpha=Math.max(alpha,0.08); moved=true;
+  } else if(panning){
+    cam.x -= (e.clientX-px)/cam.z; cam.y -= (e.clientY-py)/cam.z;
+    px=e.clientX; py=e.clientY; moved=true;
+  } else {
+    const n = nodeAt(mx,my);
+    if(n!==hoverN){
+      hoverN=n;
+      cv.style.cursor = n? 'pointer':'grab';
+      if(n){
+        tip.innerHTML = '<b>'+n.label+'</b><span>'+(n.sub||'')+'</span>';
+        tip.classList.add('show');
+      } else tip.classList.remove('show');
+    }
+    if(n){
+      const [x,y]=world2scr(n.x,n.y);
+      tip.style.left=x+'px'; tip.style.top=(y - n.r*0.9)+'px';
+    }
+  }
+});
+window.addEventListener('pointerup', e=>{
+  if(dragN && !moved) openNode(dragN);
+  dragN=null; panning=false; cv.classList.remove('dragging');
+});
+cv.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  const [wx,wy]=scr2world(mx,my);
+  const f = Math.exp(-e.deltaY*0.0011);
+  cam.z = Math.min(2.6, Math.max(0.22, cam.z*f));
+  const [nx,ny]=scr2world(mx,my);
+  cam.x += wx-nx; cam.y += wy-ny;
+},{passive:false});
+
+/* panel */
+const pDot=document.getElementById('pDot'), pTitle=document.getElementById('pTitle'),
+      pCluster=document.getElementById('pCluster'), pBody=document.getElementById('pBody');
+function openNode(n){
+  selN = n;
+  const col = CLUSTERS[n.cluster].color;
+  pDot.style.setProperty('--c', col);
+  pTitle.childNodes[0].nodeValue = n.label;
+  pCluster.textContent = CLUSTERS[n.cluster].label + (n.sub? ' · '+n.sub:'');
+  let rel = '';
+  const nbs = [...NB[n.id]].map(id=>byId[id]).filter(Boolean);
+  if(nbs.length){
+    rel = '<div class="rel"><div class="rel-title">Node liên quan</div><div class="rel-chips">' +
+      nbs.map(m=>'<button class="rel-chip" data-id="'+m.id+'"><span class="dot" style="background:'+CLUSTERS[m.cluster].color+'"></span>'+m.label+'</button>').join('') +
+      '</div></div>';
+  }
+  pBody.innerHTML = n.html + rel;
+  pBody.scrollTop = 0;
+  pBody.querySelectorAll('.rel-chip').forEach(b=>{
+    b.addEventListener('click', ()=>{ const m=byId[b.dataset.id]; if(m){ focusNode(m); openNode(m);} });
+  });
+  panel.classList.add('open');
+  if(window.innerWidth>720) intro.style.display='none';
+}
+function focusNode(n){
+  if(reduceMotion){ cam.x=n.x; cam.y=n.y; return; }
+  const sx=cam.x, sy=cam.y, tz=Math.max(cam.z,0.85), sz=cam.z;
+  const t0=performance.now();
+  function anim(t){
+    const k=Math.min(1,(t-t0)/420), e=1-Math.pow(1-k,3);
+    cam.x=sx+(n.x-sx)*e; cam.y=sy+(n.y-sy)*e; cam.z=sz+(tz-sz)*e;
+    if(k<1) requestAnimationFrame(anim);
+  }
+  requestAnimationFrame(anim);
+}
+document.getElementById('pClose').addEventListener('click', ()=>{ panel.classList.remove('open'); selN=null; });
+window.addEventListener('keydown', e=>{ if(e.key==='Escape'){ panel.classList.remove('open'); selN=null; } });
+
+/* chips */
+const chipsEl = document.getElementById('chips');
+Object.entries(CLUSTERS).forEach(([key,c])=>{
+  if(key==='core') return;
+  const b=document.createElement('button');
+  b.className='chip on'; b.style.setProperty('--c', c.color);
+  b.innerHTML='<span class="dot"></span>'+c.label;
+  b.setAttribute('aria-pressed','true');
+  b.addEventListener('click', ()=>{
+    if(visible.has(key)){ visible.delete(key); b.classList.remove('on'); b.setAttribute('aria-pressed','false'); }
+    else { visible.add(key); b.classList.add('on'); b.setAttribute('aria-pressed','true'); }
+  });
+  chipsEl.appendChild(b);
+});
+
+/* legend */
+const lg = document.getElementById('legend');
+lg.innerHTML = '<div class="lg-title">Chú giải</div>' +
+  Object.entries(CLUSTERS).filter(([k])=>k!=='core').map(([k,c])=>
+    '<div class="lg-row"><span class="lg-dot" style="background:'+c.color+'"></span>'+c.label+'</div>').join('') +
+  '<div class="lg-hint">Kéo nền: di chuyển · Lăn chuột: zoom · Click node: chi tiết · Chip trên cùng: lọc nhóm</div>';
+
+/* search */
+const searchEl = document.getElementById('search');
+searchEl.addEventListener('input', ()=>{
+  const q = searchEl.value.trim().toLowerCase();
+  if(!q){ searchHits=null; return; }
+  searchHits = new Set(NODES.filter(n=>
+    (n.label+' '+(n.sub||'')+' '+n.html).toLowerCase().includes(q)
+  ).map(n=>n.id));
+});
+searchEl.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && searchHits && searchHits.size){
+    const n = byId[[...searchHits][0]];
+    focusNode(n); openNode(n);
+  }
+});
+
+/* boot */
+resize();
+layoutInit();
+cam.z = Math.min(W,H) > 760 ? 0.55 : 0.4;
+for(let i=0;i<260;i++) tick();
+alpha = 0.25;
+loop();
+setTimeout(()=>{ const n=byId['tgc']; }, 300);
+</script>
+</body>
+</html>

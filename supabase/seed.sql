@@ -67,12 +67,20 @@ values
    '00000000-0000-0000-0000-0000000000e6',
    'Eaton Park', 'eaton-park',
    'Đang bán GĐ3 (A3/A4) — bàn giao dự kiến 2027', 'Đại lộ Mai Chí Thọ, P. An Phú, TP. Thủ Đức, TP.HCM', 'selling', null,
-   125000000, 185000000, 'broker_estimate', false, true)
+   125000000, 185000000, 'broker_estimate', false, true),
+  -- Bcons Ngôi Sao Hoàng Nam (Bcons Group × Hoàng Nam) — căn hộ vừa túi tiền,
+  -- 1 tháp 372 căn, trục Thống Nhất, Đông Hòa. Động thổ 24/1/2026, BG Q3/2028.
+  ('00000000-0000-0000-0000-00000000b007',
+   '00000000-0000-0000-0000-0000000000e5',
+   'Bcons Ngôi Sao Hoàng Nam', 'bcons-ngoi-sao-hoang-nam',
+   'Động thổ 24/1/2026 — bàn giao dự kiến Q3/2028', 'Đường Thống Nhất, P. Đông Hòa, TP.HCM (Dĩ An cũ)', 'selling', null,
+   39000000, 60000000, 'broker_estimate', false, true)
 on conflict (id) do nothing;
-
--- Toạ độ pin bản đồ (xấp xỉ — trục Thống Nhất, P. Đông Hòa, cạnh Bcons City).
 update projects set lat = 10.8901, lng = 106.7805
   where id = '00000000-0000-0000-0000-00000000b005' and lat is null;
 -- Eaton Park (xấp xỉ — mặt tiền Mai Chí Thọ gần nút giao An Phú / Rạch Chiếc).
 update projects set lat = 10.7875, lng = 106.7560
   where id = '00000000-0000-0000-0000-00000000b006' and lat is null;
+-- Bcons Ngôi Sao Hoàng Nam (xấp xỉ — trục Thống Nhất, P. Đông Hòa).
+update projects set lat = 10.8905, lng = 106.7810
+  where id = '00000000-0000-0000-0000-00000000b007' and lat is null;
