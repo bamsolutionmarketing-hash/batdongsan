@@ -363,7 +363,7 @@ function DiscoveryPanel({ onApply }: { onApply: (r: DiscoveryResult) => void }) 
       ))}
 
       {/* CHÂN DUNG — chỉ sale */}
-      <div className="sticky bottom-2 flex flex-col gap-3 rounded-2xl border border-sky-500/30 bg-background/95 p-4 shadow-lg backdrop-blur">
+      <div className="flex flex-col gap-3 rounded-2xl border border-sky-500/30 bg-background p-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="text-sm font-semibold">🔎 Chân dung khách <span className="text-[11px] font-normal text-muted-foreground">(chỉ sale thấy)</span></div>
           {result.incomeBand && <span className={`rounded-full px-2 py-0.5 text-[11px] ${TRI_BADGE[result.confidence]}`}>tin cậy {result.confidence === "thap" ? "thấp" : result.confidence === "vua" ? "vừa" : "cao"}</span>}
