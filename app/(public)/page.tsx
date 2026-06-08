@@ -186,8 +186,8 @@ export default async function Home() {
       {/* ── Showcase projects ────────────────────────────────────────────── */}
       {(() => {
         const cards = [
-          ...SHOWCASE,
-          ...projects.map((p) => ({ name: p.name, location: p.locationText ?? "", tag: "Đang triển khai", img: p.thumbnailUrl ?? "" })),
+          ...projects.map((p) => ({ name: p.name, location: p.locationText ?? "", tag: "Bản đồ miễn phí", img: p.thumbnailUrl ?? "", href: `/kmap/${p.slug}`, free: true })),
+          ...SHOWCASE.map((s) => ({ ...s, href: "/signup", free: false })),
         ];
         return (
           <section className="border-t border-border bg-background-subtle">
@@ -195,13 +195,14 @@ export default async function Home() {
               <Reveal>
                 <Eyebrow>Dự án</Eyebrow>
                 <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Dự án tiêu biểu</h2>
-                <p className="mt-4 max-w-md leading-relaxed text-muted-foreground">Những dự án lớn đã có sẵn bản đồ tri thức — chọn điểm là ra bài.</p>
+                <p className="mt-4 max-w-md leading-relaxed text-muted-foreground">Xem bản đồ tri thức dự án miễn phí — chọn điểm là ra bài (cần đăng nhập để tạo content).</p>
+                <Link href="/kmap" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline">Xem tất cả bản đồ tri thức <span aria-hidden>→</span></Link>
               </Reveal>
               <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {cards.map((c, i) => (
                   <Reveal key={c.name + i} delay={(i % 3) * 80}>
                     <Link
-                      href="/signup"
+                      href={c.href}
                       className="group relative block aspect-[16/11] overflow-hidden rounded-xl border border-border bg-muted shadow-card transition hover:-translate-y-1 hover:shadow-card-hover"
                     >
                       {c.img ? (
@@ -216,7 +217,7 @@ export default async function Home() {
                       <div className="absolute inset-x-0 bottom-0 p-4 text-white">
                         <h3 className="text-lg font-semibold tracking-tight">{c.name}</h3>
                         {c.location && <p className="mt-0.5 text-sm text-white/80">📍 {c.location}</p>}
-                        <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-white/90 opacity-0 transition-opacity duration-300 group-hover:opacity-100">Xem mẫu bài <span aria-hidden>→</span></span>
+                        <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-white/90 opacity-0 transition-opacity duration-300 group-hover:opacity-100">{c.free ? "Xem bản đồ" : "Xem mẫu bài"} <span aria-hidden>→</span></span>
                       </div>
                     </Link>
                   </Reveal>

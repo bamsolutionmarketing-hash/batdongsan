@@ -7,6 +7,7 @@ import { nodesByProject, linksByProject } from "@/lib/repo/nodes";
 import { buildGraph } from "@/lib/map/buildGraph";
 import { compactVnd } from "@/lib/finance/format";
 import { ProjectKnowledgeMap } from "@/components/map/ProjectKnowledgeMap";
+import { ShareButtons } from "@/components/map/ShareButtons";
 
 // Public, free, read-only knowledge map. Anyone can browse a published project's
 // info (facts + description + relationship graph). The sale-only talkpoints are
@@ -63,6 +64,7 @@ export default async function PublicKmapPage({ params }: { params: { slug: strin
           {priceLine && <span className="rounded-full bg-sky-500/10 px-2.5 py-1 text-sky-500">{priceLine}</span>}
           <span className="rounded-full bg-muted px-2.5 py-1 text-muted-foreground">{nodes.length} chủ đề · {links.length} liên kết</span>
         </div>
+        <div className="mt-1"><ShareButtons title={project.name} /></div>
       </header>
 
       <ProjectKnowledgeMap data={graph} notesById={notesById} />

@@ -21,6 +21,7 @@ export function MarketingHeader() {
         <Link href="/" aria-label="NhaPilot"><Logo /></Link>
         <nav className="ml-3 hidden items-center gap-1 text-sm sm:flex">
           <a href="#features" className="rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground">Tính năng</a>
+          <Link href="/kmap" className="rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground">Bản đồ dự án</Link>
           <a href="#demo" className="rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground">Demo</a>
           <a href="#pricing" className="rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground">Bảng giá</a>
         </nav>
