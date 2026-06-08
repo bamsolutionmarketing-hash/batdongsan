@@ -6,7 +6,12 @@ import type { GraphData } from "@/lib/data/types";
 import { buildAdjacency, neighborhood } from "@/lib/map/adjacency";
 
 // react-force-graph-2d touches `window`, so it must load client-side only.
-const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), { ssr: false });
+const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
+  ssr: false,
+  loading: () => (
+    <div className="grid h-full w-full place-items-center text-sm text-muted-foreground">Đang tải bản đồ…</div>
+  ),
+});
 
 // Default palette for the cross-project map (group = segment / relation type).
 // Per-project knowledge graphs pass their own palette + legend via props.
@@ -95,11 +100,21 @@ export function ForceGraph({
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
-    const update = () => setDims({ w: el.clientWidth, h: el.clientHeight });
-    update();
+    // getBoundingClientRect after a frame so the value is post-layout; fall back
+    // to a sane height if the box is momentarily 0 (mobile/PWA mount race).
+    const update = () => {
+      const r = el.getBoundingClientRect();
+      setDims({ w: Math.round(r.width), h: Math.round(r.height) || 480 });
+    };
+    const raf = requestAnimationFrame(update);
     const ro = new ResizeObserver(update);
     ro.observe(el);
-    return () => ro.disconnect();
+    window.addEventListener("orientationchange", update);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      window.removeEventListener("orientationchange", update);
+    };
   }, []);
   const pickedSet = useMemo(() => new Set(selectedIds ?? []), [selectedIds]);
 
@@ -145,6 +160,9 @@ export function ForceGraph({
 
   return (
     <div ref={wrapRef} className="relative h-[70vh] min-h-[420px] w-full touch-none overflow-hidden rounded-lg border border-border bg-card sm:h-[560px]">
+      {dims.w === 0 && (
+        <div className="grid h-full w-full place-items-center text-sm text-muted-foreground">Đang tải bản đồ…</div>
+      )}
       {dims.w > 0 && dims.h > 0 && (
       <ForceGraph2D
         ref={fgRef}
