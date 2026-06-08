@@ -32,8 +32,13 @@ export default async function ProjectPage({ params }: { params: { slug: string }
           </p>
           {project.phase && <p className="text-xs text-amber-400/80">{project.phase}</p>}
 
-          <div className="mt-4 rounded-lg border border-border bg-background p-4 text-center">
-            <p className="text-sm text-muted-foreground">Đăng nhập để xem chi tiết dự án, bản đồ tri thức và tạo bài đăng.</p>
+          <Link href={`/kmap/${project.slug}`} className="mt-4 block rounded-lg border border-sky-500/40 bg-sky-500/5 p-4 text-center transition hover:bg-sky-500/10">
+            <p className="text-sm font-medium text-sky-500">🗺️ Xem bản đồ tri thức dự án — miễn phí</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Pháp lý · sản phẩm · tiện ích · hạ tầng · so sánh</p>
+          </Link>
+
+          <div className="mt-3 rounded-lg border border-border bg-background p-4 text-center">
+            <p className="text-sm text-muted-foreground">Đăng nhập để tạo bài đăng, kịch bản bán hàng và dùng công cụ tài chính.</p>
             <div className="mt-3 flex flex-wrap justify-center gap-2">
               <Link href="/signup" className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90">Đăng ký miễn phí</Link>
               <Link href="/login" className="rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-accent">Đăng nhập</Link>

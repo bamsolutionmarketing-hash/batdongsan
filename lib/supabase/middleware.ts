@@ -62,7 +62,9 @@ export async function updateSession(request: NextRequest) {
     path.startsWith("/auth") ||
     path.startsWith("/contact") ||
     path.startsWith("/pricing") ||
-    path.startsWith("/p/");
+    path.startsWith("/p/") ||
+    path === "/kmap" ||
+    path.startsWith("/kmap/");
 
   if (!user && !isPublic) {
     const redirectUrl = request.nextUrl.clone();

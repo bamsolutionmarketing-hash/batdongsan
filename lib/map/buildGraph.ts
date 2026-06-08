@@ -25,18 +25,25 @@ export function edgeKind(label: string | null): string {
 }
 
 // Compose the focus-panel note from facts + description + talking point.
-function composeNote(n: KnowledgeNode): string | null {
+// Public viewer passes includeTalkpoint=false to hide the sale-only coaching.
+function composeNote(n: KnowledgeNode, includeTalkpoint: boolean): string | null {
   const parts: string[] = [];
   if (n.subLabel) parts.push(n.subLabel);
   if (n.facts.length) parts.push(n.facts.map((f) => `${f.key}: ${f.value}`).join(" · "));
   if (n.description) parts.push(n.description);
-  if (n.talkpoint) parts.push(`★ ${n.talkpoint}`);
+  if (includeTalkpoint && n.talkpoint) parts.push(`★ ${n.talkpoint}`);
   return parts.length ? parts.join("\n\n") : null;
 }
 
 // Build force-graph data from a project's knowledge nodes/links. Pure.
 // group = category (node colour); link group = coarse edge kind.
-export function buildGraph(nodes: KnowledgeNode[], links: KnowledgeLink[]): ProjectGraph {
+// opts.includeTalkpoint=false strips the sale-only talkpoint (public map).
+export function buildGraph(
+  nodes: KnowledgeNode[],
+  links: KnowledgeLink[],
+  opts: { includeTalkpoint?: boolean } = {},
+): ProjectGraph {
+  const includeTalkpoint = opts.includeTalkpoint ?? true;
   const ids = new Set(nodes.map((n) => n.id));
   const degree = new Map<string, number>(nodes.map((n) => [n.id, 0]));
 
@@ -51,7 +58,7 @@ export function buildGraph(nodes: KnowledgeNode[], links: KnowledgeLink[]): Proj
   const notesById: Record<string, NodeNote> = {};
   const graphNodes: GraphNode[] = nodes.map((n) => {
     const d = degree.get(n.id) ?? 0;
-    notesById[n.id] = { label: n.label, kind: n.category, note: composeNote(n) };
+    notesById[n.id] = { label: n.label, kind: n.category, note: composeNote(n, includeTalkpoint) };
     return { id: n.id, label: n.label, group: n.category, degree: d, val: valueFromDegree(d) };
   });
 
