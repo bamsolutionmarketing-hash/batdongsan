@@ -10,7 +10,8 @@ insert into developers (id, name, slug, parent_company, credibility) values
   ('00000000-0000-0000-0000-0000000000e4', 'BLUEMARQ GROUP', 'bluemarq-group', 'Đất Xanh Group (DXG)', 8),
   ('00000000-0000-0000-0000-0000000000e5', 'Địa ốc Bcons', 'dia-oc-bcons', 'Bcons Group', 7),
   ('00000000-0000-0000-0000-0000000000e6', 'Gamuda Land', 'gamuda-land', 'Gamuda Berhad (Malaysia)', 9),
-  ('00000000-0000-0000-0000-0000000000e7', 'Đại Quang Minh (THADICO)', 'dai-quang-minh', 'Tập đoàn THACO', 9)
+  ('00000000-0000-0000-0000-0000000000e7', 'Đại Quang Minh (THADICO)', 'dai-quang-minh', 'Tập đoàn THACO', 9),
+  ('00000000-0000-0000-0000-0000000000e8', 'Van Phuc Group', 'van-phuc-group', 'Tập đoàn Vạn Phúc (Đại Phúc)', 8)
 on conflict (id) do nothing;
 
 -- Projects — both public + demo so signed-out landing + free tier work ---------
@@ -82,7 +83,14 @@ values
    '00000000-0000-0000-0000-0000000000e7',
    'Sarene Residence', 'sarene-residence',
    'Khởi công 13/1/2026 — mở bán dự kiến 6/2026', 'Lô 6.8 Bắc Sala (KĐT Sala), Đại lộ Mai Chí Thọ, P. An Khánh, TP. Thủ Đức, TP.HCM', 'upcoming', null,
-   250000000, 260000000, 'broker_estimate', false, true)
+   250000000, 260000000, 'broker_estimate', false, true),
+  -- Diamond Sky (Van Phuc Group) — căn hộ cao tầng đầu tiên trong KĐT Vạn Phúc
+  -- City 198ha, view sông Sài Gòn. Khởi công hầm 1/2026, BG dự kiến 2027/2028.
+  ('00000000-0000-0000-0000-00000000b009',
+   '00000000-0000-0000-0000-0000000000e8',
+   'Diamond Sky', 'diamond-sky-van-phuc',
+   'Khởi công hầm 1/2026 — bàn giao dự kiến 2027/2028', '375 Quốc lộ 13, P. Hiệp Bình Phước, TP. Thủ Đức (KĐT Vạn Phúc City), TP.HCM', 'upcoming', null,
+   120000000, 150000000, 'broker_estimate', false, true)
 on conflict (id) do nothing;
 update projects set lat = 10.8901, lng = 106.7805
   where id = '00000000-0000-0000-0000-00000000b005' and lat is null;
@@ -95,3 +103,6 @@ update projects set lat = 10.8905, lng = 106.7810
 -- Sarene Residence (xấp xỉ — KĐT Sala, Bắc Sala, mặt tiền Mai Chí Thọ, Thủ Thiêm).
 update projects set lat = 10.7720, lng = 106.7245
   where id = '00000000-0000-0000-0000-00000000b008' and lat is null;
+-- Diamond Sky (xấp xỉ — KĐT Vạn Phúc City, QL13, Hiệp Bình Phước, Thủ Đức).
+update projects set lat = 10.8330, lng = 106.7150
+  where id = '00000000-0000-0000-0000-00000000b009' and lat is null;

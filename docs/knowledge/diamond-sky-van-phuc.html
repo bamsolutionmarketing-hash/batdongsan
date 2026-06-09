@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diamond Sky — Vạn Phúc City — Investment Knowledge Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08131c;
+  --bg-2: #0d1c27;
+  --bg-3: #122633;
+  --panel: #0d1c27;
+  --border: #234050;
+  --border-2: #16293650;
+  --text: #e9f3f8;
+  --text-2: #92aebd;
+  --text-3: #5f7e8e;
+  --gold: #3fc6e0;
+  --gold-2: #8fe0f0;
+  --blue: #5a9ff0;
+  --purple: #b08cf0;
+  --green: #45c78a;
+  --orange: #e0a85a;
+  --softgold: #e8c44e;
+  --cyan: #36ccc0;
+  --teal: #5cc47a;
+  --pink: #e07ba6;
+  --red: #ec7070;
+  --link: #5fd0c0;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.65;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 52px;
+  background: linear-gradient(90deg, #08141d 0%, #0c2a32 100%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 14px;
+  position: relative; z-index: 120;
+}
+.logo { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
+.logo-mark {
+  width: 24px; height: 24px; flex-shrink: 0; border-radius: 4px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-2) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 12px; color: #08131c;
+}
+.logo-text { font-weight: 700; font-size: 13px; color: var(--gold-2); letter-spacing: .04em; }
+.logo-sub { color: var(--text-3); font-weight: 400; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase; }
+.topbar-divider { width: 1px; height: 26px; background: var(--border); flex-shrink: 0; }
+.search-wrap { position: relative; flex-shrink: 1; min-width: 120px; }
+.search {
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 7px;
+  color: var(--text); font-family: inherit; font-size: 12.5px;
+  padding: 6px 12px 6px 30px; width: 230px; max-width: 100%;
+  transition: border-color .2s;
+}
+.search:focus { outline: none; border-color: var(--gold); }
+.search::placeholder { color: var(--text-3); }
+.search-ic { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--text-3); pointer-events: none; }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  border: 1px solid var(--border); background: transparent; color: var(--text-2);
+  font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: .02em;
+  padding: 4px 11px; border-radius: 999px; cursor: pointer; white-space: nowrap;
+  display: flex; align-items: center; gap: 6px; transition: all .18s;
+}
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--text-3)); }
+.chip:hover { border-color: var(--c, var(--gold)); color: var(--text); }
+.chip.on { background: color-mix(in srgb, var(--c) 16%, transparent); border-color: var(--c); color: var(--text); }
+.chip:focus-visible, .search:focus-visible, .btn360:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.btn360 {
+  flex-shrink: 0; display: flex; align-items: center; gap: 7px;
+  background: linear-gradient(135deg, var(--gold) 0%, #2a93ab 100%);
+  color: #08131c; border: none; border-radius: 7px; cursor: pointer;
+  font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: .03em;
+  padding: 7px 14px; transition: transform .15s, box-shadow .2s;
+  text-decoration: none;
+}
+.btn360:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(63,198,224,.32); }
+
+/* ── STAGE ── */
+.stage { position: relative; height: calc(100% - 52px); }
+canvas { display: block; cursor: grab; }
+canvas.dragging { cursor: grabbing; }
+
+/* ── LEGEND ── */
+.legend {
+  position: absolute; left: 14px; bottom: 14px; z-index: 60;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 13px; font-size: 11px; color: var(--text-2);
+  max-width: 240px;
+}
+.legend .lg-title { font-weight: 700; color: var(--text); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 7px; }
+.legend .lg-row { display: flex; align-items: center; gap: 7px; margin: 3px 0; }
+.legend .lg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.legend .lg-hint { margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--border-2); color: var(--text-3); font-size: 10.5px; line-height: 1.5; }
+
+/* ── TOOLTIP ── */
+.tip {
+  position: absolute; z-index: 80; pointer-events: none;
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 11px; font-size: 12px; max-width: 250px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  opacity: 0; transition: opacity .12s; transform: translate(-50%, calc(-100% - 14px));
+}
+.tip.show { opacity: 1; }
+.tip b { color: var(--gold-2); display: block; font-size: 12.5px; }
+.tip span { color: var(--text-2); font-size: 11px; }
+
+/* ── PANEL ── */
+.panel {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 480px; max-width: 100%;
+  background: var(--panel); border-left: 1px solid var(--border);
+  z-index: 100; display: flex; flex-direction: column;
+  transform: translateX(102%); transition: transform .28s cubic-bezier(.22,.8,.3,1);
+  box-shadow: -16px 0 48px rgba(0,0,0,.5);
+}
+.panel.open { transform: translateX(0); }
+.panel-head {
+  padding: 18px 20px 14px; border-bottom: 1px solid var(--border-2);
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.panel-head .ph-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; box-shadow: 0 0 12px var(--c); background: var(--c); }
+.panel-head h2 { font-size: 17.5px; font-weight: 700; line-height: 1.35; flex: 1; }
+.panel-head .ph-cluster { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); margin-top: 3px; }
+.panel-close {
+  background: var(--bg-3); border: 1px solid var(--border); color: var(--text-2);
+  width: 30px; height: 30px; border-radius: 7px; cursor: pointer; flex-shrink: 0;
+  font-size: 15px; line-height: 1; transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.panel-close:hover { color: var(--text); border-color: var(--gold); }
+.panel-body { flex: 1; overflow-y: auto; padding: 18px 20px 28px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.panel-body::-webkit-scrollbar { width: 8px; }
+.panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* panel content typography */
+.panel-body p { margin: 0 0 11px; color: var(--text-2); font-size: 13.5px; }
+.panel-body p b, .panel-body li b { color: var(--text); font-weight: 600; }
+.panel-body h4 {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--gold-2); margin: 18px 0 8px; padding-top: 14px; border-top: 1px solid var(--border-2);
+}
+.panel-body h4:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.panel-body ul { margin: 0 0 12px 16px; color: var(--text-2); font-size: 13.5px; }
+.panel-body li { margin: 4px 0; }
+.kv { display: grid; grid-template-columns: 136px 1fr; gap: 6px 12px; margin: 0 0 12px; font-size: 13px; }
+.kv .k { color: var(--text-3); font-weight: 500; }
+.kv .v { color: var(--text); font-weight: 500; }
+.tbl { width: 100%; border-collapse: collapse; margin: 4px 0 14px; font-size: 12.5px; }
+.tbl th { text-align: left; color: var(--text-3); font-weight: 600; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.tbl td { padding: 7px 8px; border-bottom: 1px solid var(--border-2); color: var(--text-2); vertical-align: top; }
+.tbl td:first-child { color: var(--text); font-weight: 500; }
+.tbl .num { font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.badge {
+  display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  padding: 2px 8px; border-radius: 999px; margin: 0 6px 6px 0; text-transform: uppercase;
+}
+.b-cdt { background: rgba(69,199,138,.14); color: #74d6a4; border: 1px solid rgba(69,199,138,.35); }
+.b-press { background: rgba(90,159,240,.14); color: #8fbcf4; border: 1px solid rgba(90,159,240,.35); }
+.b-mkt { background: rgba(224,168,90,.13); color: #ecc084; border: 1px solid rgba(224,168,90,.35); }
+.b-risk { background: rgba(236,112,112,.13); color: #f29494; border: 1px solid rgba(236,112,112,.4); }
+.note {
+  background: color-mix(in srgb, var(--gold) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  border-left: 3px solid var(--gold);
+  border-radius: 8px; padding: 10px 13px; margin: 4px 0 14px;
+  font-size: 12.5px; color: var(--text-2);
+}
+.note.warn { background: rgba(236,112,112,.08); border-color: rgba(236,112,112,.4); border-left-color: var(--red); }
+.note b { color: var(--text); }
+.rel { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-2); }
+.rel-title { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+.rel-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rel-chip {
+  border: 1px solid var(--border); background: var(--bg-3); color: var(--text-2);
+  font-family: inherit; font-size: 11.5px; font-weight: 500;
+  padding: 4px 11px; border-radius: 999px; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; transition: all .15s;
+}
+.rel-chip .dot { width: 6px; height: 6px; border-radius: 50%; }
+.rel-chip:hover { border-color: var(--gold); color: var(--text); }
+
+/* ── INTRO OVERLAY ── */
+.intro {
+  position: absolute; left: 14px; top: 14px; z-index: 60; max-width: 336px;
+  background: color-mix(in srgb, var(--panel) 90%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+}
+.intro h1 { font-size: 15px; font-weight: 800; letter-spacing: .02em; color: var(--gold-2); }
+.intro .sub { font-size: 11px; color: var(--text-3); letter-spacing: .1em; text-transform: uppercase; margin: 1px 0 8px; }
+.intro p { font-size: 12px; color: var(--text-2); line-height: 1.55; }
+.intro .upd { margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-3); }
+
+@media (max-width: 720px) {
+  .logo-sub, .intro, .topbar-divider { display: none; }
+  .search { width: 130px; }
+  .panel { width: 100%; }
+  .legend { max-width: 180px; font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel { transition: none; }
+  .tip { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">◆</div>
+    <div>
+      <div class="logo-text">DIAMOND SKY · VẠN PHÚC CITY</div>
+      <div class="logo-sub">Investment Knowledge Map · 06/2026</div>
+    </div>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="search-wrap">
+    <svg class="search-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input class="search" id="search" type="text" placeholder="Tìm node… (Enter để mở)" aria-label="Tìm kiếm node">
+  </div>
+  <div class="chips" id="chips"></div>
+  <a class="btn360" href="https://diamondsky.khudothivanphuc.com.vn/" target="_blank" rel="noopener" aria-label="Trang chính thức dự án, mở tab mới">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20 15.3 15.3 0 0 1 0-20z"/></svg>
+    TRANG CĐT
+  </a>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="cv"></canvas>
+  <div class="intro" id="intro">
+    <h1>Bản đồ tri thức đầu tư</h1>
+    <div class="sub">Căn hộ cao tầng đầu tiên · Vạn Phúc City</div>
+    <p>Toàn cảnh Diamond Sky (mặt tiền QL13, Hiệp Bình Phước, Thủ Đức): vị trí ven sông, hệ sinh thái Vạn Phúc City 198ha, chủ đầu tư Van Phuc Group, giá &amp; thị trường, hạ tầng QL13 và phân tích đầu tư. Click node để xem chi tiết.</p>
+    <div class="upd">Dữ liệu đến 06/2026 · Phân biệt nguồn CĐT vs môi giới · Lưu ý giá & số liệu quy mô cần xác minh (xem node riêng)</div>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="tip" id="tip"></div>
+
+  <aside class="panel" id="panel" role="dialog" aria-modal="false" aria-label="Chi tiết node">
+    <div class="panel-head">
+      <div class="ph-dot" id="pDot"></div>
+      <h2 id="pTitle">—<span class="ph-cluster" id="pCluster"></span></h2>
+      <button class="panel-close" id="pClose" aria-label="Đóng panel">✕</button>
+    </div>
+    <div class="panel-body" id="pBody"></div>
+  </aside>
+</div>
+
+<script>
+const CLUSTERS = {
+  core: { label: 'Trung tâm',              color: '#3fc6e0' },
+  tq:   { label: 'Tổng quan',              color: '#5a9ff0' },
+  cdt:  { label: 'CĐT & Đại đô thị',       color: '#b08cf0' },
+  pl:   { label: 'Pháp lý',                color: '#45c78a' },
+  pk:   { label: 'Sản phẩm',               color: '#e0a85a' },
+  ti:   { label: 'Tiện ích & Hệ sinh thái', color: '#36ccc0' },
+  ht:   { label: 'Hạ tầng kết nối',        color: '#5cc47a' },
+  cs:   { label: 'Giá & Thị trường',       color: '#e07ba6' },
+  tt:   { label: 'Cạnh tranh',             color: '#ec7070' },
+  dt:   { label: 'Phân tích đầu tư',       color: '#e8c44e' }
+};
+const NODES = [];
+function N(id, cluster, label, sub, r, html){ NODES.push({id, cluster, label, sub, r, html}); }
+
+/* ════════ CORE ════════ */
+N('diamond','core','Diamond Sky','Căn hộ cao tầng đầu tiên · Vạn Phúc City 198ha', 30, `
+<h4>Định danh dự án</h4>
+<div class="kv">
+<div class="k">Tên dự án</div><div class="v">Diamond Sky (tổ hợp căn hộ + officetel/khách sạn + TMDV)</div>
+<div class="k">Vị trí</div><div class="v">375 Quốc lộ 13, P. Hiệp Bình Phước, TP. Thủ Đức · trong KĐT Vạn Phúc City</div>
+<div class="k">Chủ đầu tư</div><div class="v">Van Phuc Group (Tập đoàn Vạn Phúc / Đại Phúc)</div>
+<div class="k">Cấu trúc</div><div class="v">Block A (căn hộ, 21 tầng) + Block B (khách sạn/officetel/TMDV, 18 tầng) · 2 tầng hầm</div>
+<div class="k">Số căn (cần xác minh)</div><div class="v">~296–306 căn + 7 căn TMDV/shophouse</div>
+<div class="k">View</div><div class="v">3 hướng sông Sài Gòn · trước mặt hồ Đại Nhật + quảng trường nhạc nước</div>
+<div class="k">Pháp lý</div><div class="v">Block A: sở hữu lâu dài (người Việt)</div>
+<div class="k">Khởi công hầm</div><div class="v">08–09/01/2026</div>
+<div class="k">Bàn giao</div><div class="v">Dự kiến cuối 2027 / 2028 (hoàn thiện cao cấp)</div>
+<div class="k">Giá (chưa chính thức)</div><div class="v">Dự kiến ~120–150 triệu/m²</div>
+</div>
+<p><b>Câu chuyện đầu tư trong 3 dòng:</b> căn hộ cao tầng <b>đầu tiên</b> trong đại đô thị Vạn Phúc City 198ha đã hình thành — "điểm vào" hệ sinh thái ven sông cho khách không mua thấp tầng. Lợi thế là vị trí kim cương view sông/hồ + hệ tiện ích đại đô thị hiện hữu + QL13 đang mở rộng; lưu ý giá còn là dự kiến và một số tiện ích lớn chưa hoàn tất.</p>
+<div class="note">Bản đồ tổng hợp từ công bố CĐT/báo chí & dữ liệu thị trường đến <b>06/2026</b>. Nhãn nguồn: <span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span><span class="badge b-mkt">Môi giới/Thị trường</span><span class="badge b-risk">Rủi ro/Lưu ý</span></div>
+`);
+
+/* ════════ TỔNG QUAN ════════ */
+N('tq-vitri','tq','Vị trí QL13 ven sông','Hiệp Bình Phước · 3 hướng view sông SG', 15, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span>
+<h4>Tọa độ "kim cương"</h4>
+<p>Diamond Sky nằm ở <b>trung tâm Vạn Phúc City</b>, mặt tiền <b>Quốc lộ 13</b> ("đường tơ lụa" nối TP.HCM – Bình Dương – Bình Phước), P. Hiệp Bình Phước, TP. Thủ Đức. Sở hữu <b>3 hướng view sông Sài Gòn</b>, trước mặt là <b>hồ Đại Nhật</b> + quảng trường nhạc nước.</p>
+<h4>Kết nối</h4>
+<ul>
+<li>QL13 → Phạm Văn Đồng → sân bay Tân Sơn Nhất & trung tâm Q1/Q3 ~10 phút</li>
+<li>QL13 → QL1A → Đồng Nai, Bình Dương, Long An</li>
+<li>Cận trục chính nội khu 52m + đường Nguyễn Thị Nhung (lộ giới 35m)</li>
+</ul>
+<div class="note">Giá trị vị trí của Diamond Sky đến từ "lõi đại đô thị ven sông + mặt tiền QL13", khác với các block căn hộ đơn lẻ ngoài khu đô thị — đây là luận điểm định vị cốt lõi.</div>
+`);
+
+N('tq-quymo','tq','Quy mô & số liệu','Số liệu mâu thuẫn giữa các nguồn', 15, `
+<span class="badge b-cdt">CĐT/Môi giới</span><span class="badge b-risk">Cần xác minh</span>
+<table class="tbl">
+<tr><th>Nguồn</th><th>Quy mô công bố</th></tr>
+<tr><td>vanphuc.city</td><td class="num">1,8 ha · 2 khối tháp (căn hộ & khách sạn) · 2 hầm · 296 căn + 7 TMDV</td></tr>
+<tr><td>Sàn (datxanh.homes)</td><td class="num">Block A 7.538 m² (21T) + Block B 10.043 m² (18T) · 306 căn (GĐ1)</td></tr>
+</table>
+<p>Khác biệt chủ yếu ở tổng diện tích và số căn (296 vs 306). Cấu trúc nhất quán: <b>2 block (A căn hộ + B khách sạn/officetel/TMDV) + 2 hầm</b>.</p>
+<div class="note warn">Số căn & diện tích đất CHƯA thống nhất — chờ bảng hàng & hồ sơ chính thức. Xem node "Cảnh báo mâu thuẫn số liệu". Khi tư vấn không cam kết con số tuyệt đối.</div>
+`);
+
+N('tq-mauthuan','tq','Cảnh báo mâu thuẫn số liệu','296 vs 306 căn · 1,8ha vs Block A+B', 14, `
+<span class="badge b-risk">Lưu ý quan trọng</span>
+<p>Dự án mới khởi công phần hầm (1/2026), chưa có bảng hàng chính thức — nhiều con số đang lưu hành:</p>
+<table class="tbl">
+<tr><th>Hạng mục</th><th>Các con số ghi nhận</th></tr>
+<tr><td>Tổng quy mô</td><td class="num">"1,8 ha" (vanphuc.city) vs Block A 7.538 + Block B 10.043 m²</td></tr>
+<tr><td>Số căn hộ</td><td class="num">~296 (vanphuc.city) vs ~306 GĐ1 (sàn)</td></tr>
+<tr><td>Bàn giao</td><td class="num">"cuối 2027" (static) vs "2028" (vanphuc.city)</td></tr>
+<tr><td>Giá dự kiến</td><td class="num">99 → 120–130 → 125 → 130–150 triệu/m² (nhiều mức)</td></tr>
+</table>
+<div class="note warn"><b>Quy tắc bán hàng:</b> chỉ dùng con số khi đối chiếu được với công bố/hồ sơ chính thức CĐT. Không trộn lẫn số liệu của Diamond Sky với các dự án cao tầng khác trong Vạn Phúc (Diamond Valley/Boulevard).</div>
+`);
+
+N('tq-blocks','tq','Cấu trúc Block A & B','Căn hộ (21T) + Khách sạn/officetel (18T)', 14, `
+<span class="badge b-mkt">Môi giới · CĐT</span>
+<table class="tbl">
+<tr><th>Khối</th><th>Quy mô & công năng</th></tr>
+<tr><td>Block A (Căn hộ)</td><td class="num">~7.538 m² · 21 tầng · đế T1–2 shophouse, T3 tiện ích/hồ bơi, T4–21 căn hộ (~306 căn)</td></tr>
+<tr><td>Block B (Khách sạn/Officetel/TMDV)</td><td class="num">~10.043 m² · 18 tầng · T1–2 TM, T3 TM + rạp phim, T4 nhà hàng, T5–17 văn phòng/officetel, T18 kỹ thuật</td></tr>
+</table>
+<p>Mô hình phức hợp residence + commercial + officetel/hotel: Block A để ở, Block B khai thác thương mại – lưu trú – văn phòng, bổ trợ TTTM Vạn Phúc Center.</p>
+<div class="note warn">Lưu ý phân biệt pháp lý: Block A (căn hộ ở) sở hữu lâu dài; Block B (officetel/khách sạn/TMDV) thường sở hữu có thời hạn — xem cụm Pháp lý.</div>
+`);
+
+N('tq-thietke','tq','Thiết kế & tầm nhìn','Ý tưởng hoàng gia Châu Âu · panorama sông', 12, `
+<span class="badge b-mkt">Môi giới</span>
+<p>Theo nguồn thị trường, kiến trúc Diamond Sky lấy ý tưởng <b>hoàng gia Châu Âu</b>, thiết kế hiện đại với tầm nhìn <b>panorama hướng sông Sài Gòn</b>, hồ Đại Nhật và trung tâm thành phố (view Landmark 81, sân bay).</p>
+<div class="note">Tầm nhìn sông/hồ và "view triệu đô" là điểm bán định tính mạnh ở một dự án nội khu đại đô thị; tuy nhiên ngôn ngữ "hoàng gia/đẳng cấp" là marketing — cần đối chiếu thiết kế & tiêu chuẩn bàn giao thực tế khi mở bán.</div>
+`);
+
+N('tq-dinhvi','tq','Định vị "điểm vào" đại đô thị','Cao tầng đầu tiên trong Vạn Phúc City', 14, `
+<span class="badge b-cdt">CĐT định vị</span>
+<p>Diamond Sky là <b>sản phẩm cao tầng đầu tiên</b> trong Vạn Phúc City — tạo "entry point" cho khách muốn vào hệ sinh thái Vạn Phúc nhưng không mua nhà phố/biệt thự thấp tầng (giá trị lớn hơn nhiều).</p>
+<div class="note">Talking point đúng: "khách không chỉ mua một căn hộ, mà mua quyền tiếp cận một đại đô thị 198ha đã hình thành quy mô, cộng đồng & tiện ích tại trục QL13." Đây là điểm khác biệt cốt lõi so với căn hộ đơn lẻ ngoài đại đô thị — nhưng đi kèm <b>mức giá cao hơn hẳn</b> mặt bằng căn hộ khu vực (xem cụm Giá & Cạnh tranh).</div>
+`);
+
+/* ════════ CĐT & ĐẠI ĐÔ THỊ ════════ */
+N('cdt-vpg','cdt','Van Phuc Group (Đại Phúc)','~26–30 năm BĐS · pháp lý minh bạch', 16, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span>
+<p><b>Tập đoàn Vạn Phúc (Van Phuc Group / Đại Phúc)</b> là chủ đầu tư gắn liền với KĐT Vạn Phúc City, có <b>~26–30 năm kinh nghiệm</b> phát triển bất động sản, định vị phân khúc cao cấp.</p>
+<div class="kv">
+<div class="k">Thế mạnh</div><div class="v">Năng lực phát triển đại đô thị (không chỉ một tòa nhà)</div>
+<div class="k">Pháp lý</div><div class="v">Được nhấn mạnh "minh bạch", sổ hồng các phân khu thấp tầng</div>
+<div class="k">Dự án lõi</div><div class="v">Vạn Phúc City 198ha (vốn đầu tư ~3 tỷ USD)</div>
+</div>
+<p>Điểm mạnh khi tư vấn: Diamond Sky do chính chủ đầu tư đại đô thị phát triển — cộng hưởng thương hiệu, tiện ích và cộng đồng cư dân Vạn Phúc.</p>
+`);
+
+N('cdt-vpcity','cdt','Vạn Phúc City 198ha','Bán đảo ven sông · 3 tỷ USD', 16, `
+<span class="badge b-cdt">CĐT công bố</span>
+<div class="kv">
+<div class="k">Quy mô</div><div class="v">198 ha (1.980.000 m²)</div>
+<div class="k">Vốn đầu tư</div><div class="v">~3 tỷ USD</div>
+<div class="k">Vị thế</div><div class="v">1 trong 3 bán đảo đẹp bên sông SG · 3 mặt giáp sông (~3,4 km)</div>
+<div class="k">Quy hoạch dân số</div><div class="v">~45.000 cư dân</div>
+</div>
+<p>Đại đô thị ven sông quy mô lớn bậc nhất khu Đông, gần giao lộ QL13 × Phạm Văn Đồng, cách sân bay Tân Sơn Nhất ~10 phút. Diamond Sky là mảnh ghép cao tầng trong tổng thể này.</p>
+`);
+
+N('cdt-quyhoach','cdt','Quy hoạch xanh','50% xanh + mặt nước · MĐXD ~40%', 13, `
+<span class="badge b-cdt">CĐT công bố</span>
+<ul>
+<li><b>50% diện tích</b> 198ha dành cho không gian xanh và mặt nước (công viên, kênh, hồ).</li>
+<li>Mật độ xây dựng chỉ ~<b>40%</b>; <b>80% công trình là nhà ở thấp tầng</b> (nhà phố, biệt thự).</li>
+<li>Căn hộ cao tầng được quy hoạch <b>tập trung quanh hồ trung tâm Đại Nhật</b> — nơi Diamond Sky tọa lạc.</li>
+</ul>
+<div class="note">Mô hình "thành phố thu nhỏ" mật độ thấp, nhiều cây xanh/mặt nước là điểm khác biệt định tính của Vạn Phúc — hỗ trợ chất lượng sống & giá trị căn hộ ven hồ như Diamond Sky.</div>
+`);
+
+N('cdt-phankhu','cdt','Các phân khu Vạn Phúc','Vạn Phúc 1 · Đông Nam · Sunlake · Jardin · Royal', 13, `
+<span class="badge b-cdt">CĐT công bố</span>
+<table class="tbl">
+<tr><th>Phân khu</th><th>Sản phẩm</th></tr>
+<tr><td>Vạn Phúc 1 (Riverside)</td><td>Nhà phố 5×20m, shophouse Nguyễn Thị Nhung</td></tr>
+<tr><td>Đông Nam</td><td>Golden Shophouse (ở + kinh doanh, ≥7m)</td></tr>
+<tr><td>Sunlake Villas</td><td>Biệt thự ven hồ (phân khu đẹp)</td></tr>
+<tr><td>Vạn Phúc Jardin Villas</td><td>Dinh thự ven sông kiến trúc Pháp, hồ bơi sân thượng</td></tr>
+<tr><td>Royal</td><td>Phố đi bộ Châu Âu, shophouse</td></tr>
+<tr><td>Diamond (cao tầng)</td><td>Diamond Sky, Diamond Valley/Boulevard — căn hộ ven hồ Đại Nhật</td></tr>
+</table>
+<p>Hệ phân khu đa dạng (thấp tầng chủ đạo) đã tạo cộng đồng & tiện ích — nền cho sản phẩm cao tầng Diamond Sky kế thừa.</p>
+`);
+
+N('cdt-hientrang','cdt','Hiện trạng lấp đầy','~10.000 cư dân · 500+ thương hiệu', 14, `
+<span class="badge b-press">Báo chí · CĐT</span>
+<p>Vạn Phúc City đã hình thành cộng đồng thực: <b>~10.000 cư dân</b> và <b>hơn 500 thương hiệu</b> kinh doanh; là nơi đặt trụ sở của nhiều doanh nghiệp, thu hút chuyên gia nước ngoài & nhân sự cấp cao.</p>
+<div class="note warn"><b>Lưu ý trung thực:</b> một số hạng mục trọng điểm <b>chưa hoàn tất</b> — TTTM <b>Vạn Phúc Center</b>, công viên giải trí quốc tế <b>Ocean World</b>, bến du thuyền thứ 2. Khi tư vấn cần phân biệt "tiện ích đã hiện hữu" vs "theo quy hoạch chưa triển khai" để không cam kết quá mức.</div>
+`);
+
+N('cdt-track','cdt','Track record & lưu ý cao tầng','Mạnh thấp tầng · cao tầng là sản phẩm mới', 13, `
+<span class="badge b-mkt">Phân tích</span>
+<p>Van Phuc Group có lịch sử <b>bàn giao tốt ở phân khúc thấp tầng</b> (nhà phố, biệt thự, shophouse) + sổ hồng — bảo chứng năng lực phát triển đại đô thị.</p>
+<div class="note warn">Tuy nhiên <b>căn hộ cao tầng là dòng sản phẩm tương đối mới</b> của Vạn Phúc (Diamond Sky/Valley). Track record vận hành & bàn giao chung cư cao tầng chưa dày như thấp tầng — nhà đầu tư nên theo dõi tiến độ thực và chất lượng bàn giao của các tháp Diamond.</div>
+`);
+
+/* ════════ PHÁP LÝ ════════ */
+N('pl-vpcity','pl','Pháp lý Vạn Phúc City','Minh bạch · sổ hồng phân khu thấp tầng', 15, `
+<span class="badge b-cdt">CĐT công bố</span><span class="badge b-press">Báo chí</span>
+<p>KĐT Vạn Phúc City được quảng bá <b>pháp lý minh bạch</b>; nhiều phân khu thấp tầng (nhà phố, biệt thự, shophouse) đã <b>bàn giao + cấp sổ hồng</b> cho cư dân — bảo chứng về nền pháp lý tổng thể của đại đô thị.</p>
+<div class="note">Đây là điểm cộng so với dự án căn hộ đơn lẻ pháp lý mỏng. Tuy nhiên pháp lý <b>cấp dự án Diamond Sky</b> (đủ điều kiện bán) cần xác minh riêng — xem node Hiện trạng.</div>
+`);
+
+N('pl-hientrang','pl','Hiện trạng pháp lý bán hàng','Khởi công hầm 1/2026 · xác minh đủ ĐK bán', 15, `
+<span class="badge b-risk">Lưu ý quan trọng</span><span class="badge b-cdt">CĐT</span>
+<p>Diamond Sky mới <b>khởi công phần hầm 08–09/01/2026</b>, đang nhận booking (giữ chỗ ~100 triệu/căn). Ở giai đoạn sớm này cần xác minh dự án đã có <b>văn bản đủ điều kiện bán nhà ở hình thành trong tương lai</b> của Sở Xây dựng hay chưa.</p>
+<div class="note warn"><b>Điểm thẩm định #1.</b> Giá hiện là dự kiến (99–150 triệu/m²), chưa phải bảng giá chính thức. Trước khi xuống tiền lớn: yêu cầu GPXD, văn bản đủ điều kiện bán, bảng giá chính thức. Giai đoạn "booking/giữ chỗ" nên đảm bảo điều khoản hoàn lại.</div>
+`);
+
+N('pl-sohuu','pl','Sở hữu Block A','Căn hộ — sở hữu lâu dài (người Việt)', 12, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p><b>Block A (căn hộ ở)</b>: sở hữu <b>lâu dài</b> cho người Việt Nam (room người nước ngoài tối đa 30%/tòa theo luật). Đây là lợi thế giữ giá & thanh khoản thứ cấp dài hạn.</p>
+<div class="note">Sở hữu lâu dài là yếu tố quan trọng phân biệt căn hộ ở (Block A) với sản phẩm officetel/khách sạn (Block B) — xem node Block B.</div>
+`);
+
+N('pl-blockB','pl','Pháp lý Block B','Officetel/khách sạn/TMDV — thời hạn', 13, `
+<span class="badge b-risk">Lưu ý</span>
+<p><b>Block B</b> gồm văn phòng/<b>officetel</b>, khách sạn, TMDV, rạp phim. Các sản phẩm này thường <b>sở hữu có thời hạn</b> (theo thời hạn đất dự án), không phải lâu dài như căn hộ ở; pháp lý officetel/condotel ở VN còn nhiều điểm cần lưu ý.</p>
+<div class="note warn">Nếu đầu tư Block B (officetel/khách sạn/sàn TMDV): xác minh rõ <b>thời hạn sở hữu, mục đích sử dụng (không hình thành đơn vị ở nếu là officetel), khả năng cấp giấy chứng nhận</b> và cơ chế vận hành/khai thác. Đừng đánh đồng với căn hộ ở Block A.</div>
+`);
+
+N('pl-checklist','pl','Checklist trước cọc','6 bước — chú ý dự án mới khởi công', 13, `
+<span class="badge b-mkt">Khuyến nghị</span>
+<ul>
+<li><b>1.</b> Quyết định chủ trương đầu tư + quy hoạch 1/500 của dự án Diamond Sky.</li>
+<li><b>2.</b> <b>Giấy phép xây dựng</b> (đã khởi công hầm 1/2026).</li>
+<li><b>3.</b> <b>Văn bản đủ điều kiện bán</b> nhà ở hình thành trong tương lai — nếu CHƯA có, chỉ "giữ chỗ" hoàn lại.</li>
+<li><b>4.</b> <b>Bảng giá chính thức</b> + xác định rõ mua Block A (lâu dài) hay Block B (thời hạn).</li>
+<li><b>5.</b> <b>Chứng thư bảo lãnh ngân hàng</b> cho nghĩa vụ bàn giao (đúng mã căn).</li>
+<li><b>6.</b> Tiến độ thanh toán theo trần luật: ≤70% trước bàn giao, ≤95% trước khi cấp sổ.</li>
+</ul>
+<div class="note">Pháp lý đại đô thị tốt không thay thế việc kiểm tra hồ sơ riêng của tháp Diamond Sky. Với suất đầu tư lớn, phí luật sư rà HĐMB là cần thiết.</div>
+`);
+
+/* ════════ SẢN PHẨM ════════ */
+N('pk-blockA','pk','Block A — Căn hộ','7.538 m² · 21 tầng · ~306 căn', 15, `
+<span class="badge b-mkt">Sàn · CĐT</span>
+<div class="kv">
+<div class="k">Diện tích sàn</div><div class="v">~7.538 m²</div>
+<div class="k">Chiều cao</div><div class="v">21 tầng</div>
+<div class="k">Bố trí</div><div class="v">T1–2 shophouse · T3 tiện ích/hồ bơi · T4–21 căn hộ</div>
+<div class="k">Số căn</div><div class="v">~306 (GĐ1) — cần đối chiếu (vanphuc.city nêu ~296)</div>
+</div>
+<p>Khối ở chính, view sông Sài Gòn & hồ Đại Nhật. Tầng tiện ích (T3) + khối đế shophouse tạo mô hình ở khép kín.</p>
+<div class="note warn">Số căn 296 vs 306 chưa thống nhất — chờ rổ hàng chính thức. Sở hữu lâu dài (người Việt).</div>
+`);
+
+N('pk-blockB','pk','Block B — Khách sạn/Officetel','10.043 m² · 18 tầng · TMDV', 14, `
+<span class="badge b-mkt">Sàn · CĐT</span>
+<div class="kv">
+<div class="k">Diện tích sàn</div><div class="v">~10.043 m²</div>
+<div class="k">Chiều cao</div><div class="v">18 tầng</div>
+<div class="k">Bố trí</div><div class="v">T1–2 TM · T3 TM + rạp phim · T4 nhà hàng · T5–17 văn phòng/officetel · T18 kỹ thuật</div>
+</div>
+<p>Khối khai thác thương mại – lưu trú – văn phòng, bổ trợ TTTM Vạn Phúc Center, phục vụ cộng đồng cư dân + doanh nghiệp Vạn Phúc.</p>
+<div class="note warn">Pháp lý sở hữu có thời hạn (xem node Pháp lý Block B). Với nhà đầu tư khai thác officetel/TMDV: định lượng dòng tiền cho thuê & cơ chế vận hành trước khi quyết định.</div>
+`);
+
+N('pk-loaican','pk','Loại căn & diện tích','Số lượng giới hạn · cần bảng hàng', 12, `
+<span class="badge b-mkt">Chưa công bố chi tiết</span>
+<p>CĐT định vị "số lượng giới hạn". Chi tiết cơ cấu loại căn (1PN/2PN/3PN) & diện tích từng loại của Diamond Sky <b>chưa được công bố đầy đủ</b> tại thời điểm khởi công.</p>
+<div class="note warn">Chờ mặt bằng tầng điển hình & bảng hàng chính thức (dự kiến quanh thời điểm mở bán) để tư vấn loại căn, diện tích, view. Tránh dùng cơ cấu của Diamond Valley/Boulevard cho Diamond Sky.</div>
+`);
+
+N('pk-bangiao','pk','Tiêu chuẩn bàn giao','Hoàn thiện chuẩn cao cấp (theo CĐT)', 12, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Theo công bố, Diamond Sky bàn giao <b>hoàn thiện chuẩn cao cấp</b>. Chi tiết bộ tiêu chuẩn (thương hiệu thiết bị, mức nội thất) chưa công bố cụ thể.</p>
+<div class="note warn">Chờ công bố chính thức về tiêu chuẩn bàn giao — yếu tố ảnh hưởng trực tiếp định giá so với mặt bằng căn hộ khu vực. Đây cũng là dòng cao tầng mới của CĐT nên nên xem nhà mẫu/hợp đồng kỹ.</div>
+`);
+
+N('pk-tiendo','pk','Tiến độ & bàn giao','Khởi công hầm 1/2026 → bàn giao 2027/2028', 13, `
+<span class="badge b-cdt">CĐT công bố</span>
+<table class="tbl">
+<tr><th>Mốc</th><th>Thời điểm</th></tr>
+<tr><td>Khởi công phần hầm</td><td class="num">08–09/01/2026</td></tr>
+<tr><td>Mở bán / nhận booking</td><td class="num">Đang nhận booking (giữ chỗ ~100 triệu/căn)</td></tr>
+<tr><td>Bàn giao</td><td class="num">Dự kiến cuối 2027 / 2028</td></tr>
+</table>
+<div class="note warn">Mốc bàn giao là dự kiến và còn chênh giữa nguồn ("cuối 2027" vs "2028"). Dự án vừa khởi công hầm → nhà đầu tư cần tính thời gian chôn vốn ~2 năm và theo dõi tiến độ thực qua ảnh công trường.</div>
+`);
+
+/* ════════ TIỆN ÍCH & HỆ SINH THÁI ════════ */
+N('ti-hodainhat','ti','Hồ Đại Nhật & nhạc nước','Hồ 16–21ha · quảng trường Diamond', 16, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Ngay trước mặt Diamond Sky là <b>hồ trung tâm Đại Nhật</b> (~16–21ha tùy nguồn) và <b>quảng trường Diamond</b> với công trình <b>nhạc nước</b> biểu diễn mỗi cuối tuần — điểm nhấn cảnh quan & giải trí của đại đô thị.</p>
+<div class="note">View hồ + nhạc nước là lợi thế định tính lớn cho căn hộ Diamond Sky (vị trí ven hồ trung tâm). Đây là tiện ích <b>đã/đang hiện hữu</b> phục vụ cộng đồng cư dân Vạn Phúc.</div>
+`);
+
+N('ti-song','ti','Sông Sài Gòn & công viên','3,4km sông · The Long Park 11ha', 14, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Vạn Phúc City có <b>~3,4 km sông Sài Gòn</b> bao quanh (3 mặt), <b>công viên The Long Park ~11ha</b>, <b>kênh Sông Trăng ~2km</b> + công viên ven kênh ~5ha. Diamond Sky thừa hưởng cảnh quan sông – hồ – kênh đặc trưng.</p>
+<div class="note">Yếu tố mặt nước/cây xanh dày (50% diện tích đại đô thị) là nền tảng "sống xanh ven sông" — điểm bán mạnh và khó tái tạo trong nội đô.</div>
+`);
+
+N('ti-oceanworld','ti','Công viên Ocean World 16ha','Theo quy hoạch · CHƯA triển khai', 12, `
+<span class="badge b-risk">Theo quy hoạch · chưa xong</span>
+<p>Quy hoạch có <b>công viên giải trí quốc tế Ocean World quy mô ~16ha</b> — tiện ích biểu tượng dự kiến của Vạn Phúc City.</p>
+<div class="note warn"><b>Lưu ý:</b> Ocean World thuộc nhóm hạng mục trọng điểm <b>CHƯA triển khai/hoàn tất</b>. Khi tư vấn, trình bày là "theo quy hoạch" — không cam kết thời điểm vận hành. Giá trị tiện ích này chỉ hiện thực khi được xây dựng.</div>
+`);
+
+N('ti-vanphuccenter','ti','TTTM Vạn Phúc Center','Trung tâm thương mại · CHƯA xong', 12, `
+<span class="badge b-risk">Chưa hoàn tất</span>
+<p><b>Trung tâm thương mại Vạn Phúc Center</b> được quy hoạch là hạt nhân mua sắm – giải trí của đại đô thị, gắn với khối TMDV Block B của Diamond Sky.</p>
+<div class="note warn"><b>Lưu ý:</b> Van Phuc Center nằm trong nhóm hạng mục <b>chưa triển khai xong</b>. Đây vừa là tiềm năng (khi hoàn thành sẽ nâng giá trị khối thương mại), vừa là rủi ro tiến độ cần theo dõi — không tư vấn như tiện ích đã hiện hữu.</div>
+`);
+
+N('ti-noikhu','ti','Tiện ích nội khu Diamond Sky','Hồ bơi 4 mùa · gym · yoga · BBQ', 13, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Tiện ích nội khu (tầng đế/T3): <b>hồ bơi 4 mùa, hồ bơi vô cực, hồ bơi trẻ em, phòng gym, yoga, phòng tập nhảy</b>, phòng sinh hoạt đa năng, không gian tổ chức tiệc, khu BBQ ngoài trời, sân bóng rổ, công viên sân vườn.</p>
+<div class="note">Hệ tiện ích nội khu khép kín tiêu chuẩn cao cấp phục vụ cư dân Block A; cộng hưởng tiện ích đại đô thị bên ngoài (hồ, sông, công viên).</div>
+`);
+
+N('ti-royal','ti','Cộng đồng & phố thương mại','500+ thương hiệu · phố đi bộ Royal', 12, `
+<span class="badge b-press">Báo chí · CĐT</span>
+<p>Vạn Phúc City đã có cộng đồng <b>~10.000 cư dân + 500+ thương hiệu</b> kinh doanh, <b>phố đi bộ Châu Âu Royal</b>, chuỗi shophouse — tạo nhịp sống thương mại – dịch vụ sôi động quanh Diamond Sky.</p>
+<div class="note">Cộng đồng & thương mại hiện hữu là lợi thế "vào ở là có ngay nhịp sống" — khác dự án mới chưa có cư dân. Hỗ trợ nhu cầu thuê (chuyên gia, nhân sự doanh nghiệp tại Vạn Phúc).</div>
+`);
+
+/* ════════ HẠ TẦNG KẾT NỐI ════════ */
+N('ht-ql13','ht','QL13 mở rộng','60m · 10 làn · >21.000 tỷ · 2026–2028', 16, `
+<span class="badge b-press">Báo chí</span>
+<p>Dự án nâng cấp & mở rộng <b>Quốc lộ 13</b> lên <b>60m, 10 làn xe</b>, tổng vốn <b>>21.000 tỷ đồng</b>, dự kiến <b>khởi công Q2/2026, hoàn thành 2028</b>. Khi xong, QL13 thành "đại lộ đô thị" xóa điểm nghẽn cửa ngõ Đông Bắc.</p>
+<div class="note">Đây là chất xúc tác hạ tầng quan trọng nhất với Diamond Sky (mặt tiền QL13). Lưu ý 2 chiều: (+) tăng giá trị khi hoàn thành 2028; (–) trong quá trình thi công 2026–2028 có thể ùn tắc/bụi cục bộ — nói thật với khách ở.</div>
+`);
+
+N('ht-pvd','ht','Phạm Văn Đồng & sân bay','~10 phút tới Q1/Q3 & Tân Sơn Nhất', 14, `
+<span class="badge b-press">Báo chí</span>
+<p>QL13 → <b>Đại lộ Phạm Văn Đồng</b> (12 làn) → sân bay Tân Sơn Nhất & trung tâm Q1/Q3 chỉ ~<b>10 phút</b>. Phạm Văn Đồng là cửa ngõ huyết mạch kết nối khu Đông Bắc với phần còn lại của TP.HCM.</p>
+<div class="note">Kết nối nhanh về sân bay & trung tâm là lợi thế thực tế (đã hiện hữu) của vị trí Vạn Phúc — khác với các lợi ích hạ tầng "tương lai".</div>
+`);
+
+N('ht-metro','ht','Metro 3B & đường sắt','Metro 3B · đường sắt Bắc–Nam', 13, `
+<span class="badge b-press">Báo chí</span>
+<p>Theo quy hoạch, khu vực hưởng lợi từ tuyến <b>Metro số 3B</b> và <b>đường sắt Bắc–Nam</b> đi qua/gần khu vực — bổ sung lựa chọn giao thông công cộng dài hạn.</p>
+<div class="note warn">Metro 3B còn ở giai đoạn quy hoạch/triển khai dài hạn — lợi ích là tương lai/gián tiếp. Lợi thế kết nối mạnh nhất hiện tại của Diamond Sky vẫn là QL13 + Phạm Văn Đồng.</div>
+`);
+
+N('ht-vanhdai','ht','Vành đai 2 & đa phương thức','VĐ2 · QL1A · đường thủy', 13, `
+<span class="badge b-press">Báo chí</span>
+<p>Mạng kết nối đa phương thức: <b>Vành đai 2</b>, <b>QL1A</b>, <b>tuyến đường thủy sông Sài Gòn</b> (tiềm năng bến du thuyền/giao thông thủy), kết nối Đồng Nai – Bình Dương – Long An.</p>
+<div class="note">Vị trí đầu QL13 ven sông cho phép khai thác cả đường bộ lẫn đường thủy — đặc thù hiếm, hỗ trợ giá trị dài hạn khi hạ tầng vùng đồng bộ.</div>
+`);
+
+N('ht-noikhu','ht','Hạ tầng nội khu','Trục chính 52m · Nguyễn Thị Nhung 35m', 12, `
+<span class="badge b-cdt">CĐT công bố</span>
+<p>Diamond Sky cận <b>trục đường chính 52m</b> chạy dọc Vạn Phúc City và <b>đường Nguyễn Thị Nhung (lộ giới 35m)</b> — trục huyết mạch nội khu. Hạ tầng nội khu đại đô thị đã đầu tư đồng bộ.</p>
+<div class="note">Hạ tầng nội khu hoàn chỉnh (đường lớn, vỉa hè, cây xanh, tiện ích) là điểm cộng "đã hiện hữu" — di chuyển nội khu thuận tiện, môi trường sống đồng bộ.</div>
+`);
+
+N('ht-tacdong','ht','"Điểm rơi" hạ tầng','QL13 hoàn thành 2028 cộng hưởng', 14, `
+<span class="badge b-mkt">Phân tích</span>
+<p>Các lớp giá trị quanh Diamond Sky:</p>
+<ul>
+<li>Hệ sinh thái Vạn Phúc 198ha + cộng đồng <b>đã hiện hữu</b> (de-risk một phần)</li>
+<li>Kết nối Phạm Văn Đồng → Q1/sân bay ~10 phút <b>đã hiện hữu</b></li>
+<li><b>QL13 mở rộng</b> (Q2/2026 → 2028) — chất xúc tác trung hạn</li>
+<li>Metro 3B, Vành đai 2, đường thủy — dài hạn</li>
+</ul>
+<div class="note">Bàn giao Diamond Sky (2027/2028) gần trùng thời điểm QL13 hoàn thành (2028) — cấu trúc thời gian thuận cho tăng giá NẾU hạ tầng đúng tiến độ. Hạ tầng VN thường trượt → giả định trượt nhẹ ở kịch bản cơ sở.</div>
+`);
+
+/* ════════ GIÁ & THỊ TRƯỜNG ════════ */
+N('cs-gia','cs','Giá bán','Dự kiến 99–150 tr/m² · chưa chính thức', 16, `
+<span class="badge b-risk">Chưa công bố chính thức</span><span class="badge b-mkt">Dự kiến</span>
+<p>Giá Diamond Sky <b>chưa có bảng giá chính thức</b> (đang nhận booking, mở bán GĐ1). Các mức dự kiến/rumor đang lưu hành rất khác nhau:</p>
+<table class="tbl">
+<tr><th>Nguồn</th><th>Giá nêu</th></tr>
+<tr><td>phuchunggroup</td><td class="num">~99 triệu/m²</td></tr>
+<tr><td>Static map / môi giới</td><td class="num">120–130 triệu/m²</td></tr>
+<tr><td>chodat</td><td class="num">~125 triệu/m²</td></tr>
+<tr><td>kdtvanphuc (GĐ1, 306 căn)</td><td class="num">130–150 triệu/m²</td></tr>
+</table>
+<p>Tổng giá căn (giả định ~70 m²) ước <b>~8,5–10,5 tỷ</b> tùy đơn giá & loại căn.</p>
+<div class="note warn">Biên độ giá rumor rất rộng (99→150) cho thấy CHƯA chốt. Không cam kết con số với khách; chờ bảng giá chính thức CĐT.</div>
+`);
+
+N('cs-benchmark','cs','So sánh giá khu vực','Thủ Đức 35–60 · Diamond 120–150 · Thủ Thiêm 200–350', 15, `
+<span class="badge b-mkt">Thị trường</span>
+<table class="tbl">
+<tr><th>Nhóm</th><th>Giá (triệu/m²)</th></tr>
+<tr><td>Căn hộ Thủ Đức QL13/Phạm Văn Đồng (Opal Boulevard…)</td><td class="num">~35–60</td></tr>
+<tr><td>Diamond Sky (dự kiến)</td><td class="num">~120–150</td></tr>
+<tr><td>Khu Đông cao cấp (Eaton/TGC/Lumiere)</td><td class="num">120–210</td></tr>
+<tr><td>Thủ Thiêm (Empire/Metropole/Sala)</td><td class="num">200–350+</td></tr>
+</table>
+<p>Luận điểm bán (chodat): "Thủ Thiêm đã 200–350 tr/m², Diamond Sky ~125 tr/m² còn biên độ tăng trưởng lớn khi QL13 hoàn thiện."</p>
+<div class="note warn"><b>Phản biện cần biết:</b> Diamond Sky định giá <b>cao hơn 2–3 lần</b> mặt bằng căn hộ Thủ Đức/QL13 hiện hữu (~35–60). Phần bù lớn này dựa vào hệ sinh thái Vạn Phúc + view sông/hồ. So với Thủ Thiêm thì rẻ hơn, nhưng vị trí/hạ tầng cũng khác đẳng cấp — cần đánh giá khách quan, không chỉ nghe "headroom".</div>
+`);
+
+N('cs-thanhtoan','cs','Chính sách thanh toán','Vạn Phúc: 30% kéo dài 2–3 năm', 14, `
+<span class="badge b-mkt">Tham chiếu Vạn Phúc</span>
+<p>Chính sách điển hình của Van Phuc Group: <b>thanh toán ~30% kéo dài 2–3 năm</b>, hỗ trợ vay ngân hàng, trả góp ưu đãi. Diamond Sky đang nhận <b>booking giữ chỗ ~100 triệu/căn</b>.</p>
+<div class="note warn">Chính sách chính thức của Diamond Sky chờ công bố khi mở bán. Lịch thanh toán giãn (~30% tới khi nhận nhà) là lợi thế đòn bẩy vốn thấp — nhưng với giá căn lớn, phần còn lại khi nhận nhà vẫn đáng kể.</div>
+`);
+
+N('cs-yield','cs','Tỷ suất cho thuê','Modest ~2–3% · thiên capital gain', 14, `
+<span class="badge b-mkt">Thị trường</span>
+<p>Tham chiếu cho thuê khu vực: căn 2PN ~75–85 m² ở Thủ Đức (Opal Boulevard) cho thuê ~<b>7,5–13 triệu/tháng</b> trên giá vốn ~35 tr/m² → yield ~3–5%. Ở mức giá Diamond Sky (~120–150 tr/m²), yield sẽ <b>thấp hơn (~2–3%)</b> trừ khi giá thuê cao vượt trội nhờ vị thế ven sông.</p>
+<div class="note warn">Định vị đúng: Diamond Sky thiên về <b>tăng giá vốn theo hệ sinh thái + hạ tầng QL13</b>, không phải dòng tiền cho thuê. Yield ~2–3% khó bù lãi vay → hạn chế đòn bẩy cao. Tránh con số yield "trong mơ" từ môi giới.</div>
+`);
+
+N('cs-thitruong','cs','Bối cảnh thị trường khu Đông','QL13 là driver · khan cung cao cấp ven sông', 14, `
+<span class="badge b-press">Thị trường</span>
+<ul>
+<li>Khu Đông TP.HCM tiếp tục dẫn dắt nguồn cung & giá; sản phẩm ven sông cao cấp khan hiếm.</li>
+<li><b>QL13 mở rộng</b> (>21.000 tỷ) là động lực hạ tầng lớn cho trục Hiệp Bình – Bình Triệu – Bình Dương.</li>
+<li>Mặt bằng giá Thủ Thiêm 200–350 tr/m² tạo "trần tham chiếu" để định vị các dự án ven sông khác.</li>
+</ul>
+<div class="note">Diamond Sky đón đúng câu chuyện "ven sông cao cấp + hạ tầng QL13". Tuy nhiên là dự án giá cao trong khu vực vốn quen mặt bằng thấp hơn — thanh khoản & tốc độ tăng giá phụ thuộc việc thị trường chấp nhận mặt bằng giá mới này.</div>
+`);
+
+/* ════════ CẠNH TRANH ════════ */
+N('tt-opal','tt','Opal Boulevard (Đất Xanh)','Phạm Văn Đồng · ~35 tr/m² · đã bàn giao', 14, `
+<span class="badge b-mkt">Thị trường</span>
+<div class="kv">
+<div class="k">CĐT</div><div class="v">Đất Xanh Group</div>
+<div class="k">Vị trí</div><div class="v">Kha Vạn Cân, song song Phạm Văn Đồng (giáp Thủ Đức)</div>
+<div class="k">Quy mô</div><div class="v">14.757 m² · 2 block 35T · 1.446 căn + 22 shophouse</div>
+<div class="k">Giá</div><div class="v">từ ~35 triệu/m² (đã bàn giao 5/2021)</div>
+<div class="k">Cho thuê 2PN</div><div class="v">~7,5–13 triệu/tháng</div>
+</div>
+<p>Đại diện mặt bằng căn hộ <b>hiện hữu</b> khu Phạm Văn Đồng/QL13. So với Diamond Sky: Opal giá thấp hơn nhiều (~35 vs 120–150), đã bàn giao, gần GigaMall/Vincom; Diamond Sky định vị cao cấp hơn hẳn nhờ hệ sinh thái Vạn Phúc + ven sông.</p>
+`);
+
+N('tt-kingcrown','tt','King Crown City','Bamboo Capital · MT Phạm Văn Đồng', 12, `
+<span class="badge b-mkt">Thị trường</span>
+<p><b>King Crown City</b> (Bamboo Capital, tổng thầu dự kiến Central Cons) — tổ hợp cao cấp mặt tiền Phạm Văn Đồng, Thủ Đức. Cùng trục cửa ngõ, hướng phân khúc cao cấp.</p>
+<div class="note">Đối thủ cao cấp cùng trục Phạm Văn Đồng. Khác biệt của Diamond Sky là nằm <b>trong đại đô thị 198ha ven sông</b> với hệ tiện ích/cộng đồng hiện hữu, thay vì một tổ hợp đứng riêng.</div>
+`);
+
+N('tt-thuthiem','tt','Thủ Thiêm (trần giá)','Empire/Metropole/Sala 200–350+', 13, `
+<span class="badge b-mkt">Thị trường</span>
+<p>Lõi cao cấp khu Đông là Thủ Thiêm: Empire City (~210–500), Metropole (~170–440), Sala (~200–260). Đây là "trần giá" khu Đông, cao hơn Diamond Sky đáng kể.</p>
+<div class="note">Khoảng cách giá Diamond Sky (~120–150) ↔ Thủ Thiêm (200–350+) là cơ sở cho luận điểm "còn dư địa tăng". Tuy nhiên Thủ Thiêm là CBD tài chính tương lai với vị thế khác — không thể suy diễn Diamond Sky sẽ tiệm cận giá Thủ Thiêm một cách hiển nhiên.</div>
+`);
+
+N('tt-noibo','tt','Diamond Valley / Boulevard','Cao tầng khác trong Vạn Phúc', 12, `
+<span class="badge b-mkt">Thị trường</span>
+<p>Trong Vạn Phúc City còn các sản phẩm cao tầng khác: <b>Diamond Valley, Diamond Boulevard</b> (tổ hợp căn hộ + officetel + TTTM ven hồ Đại Nhật). Cùng CĐT, cùng hệ tiện ích.</p>
+<div class="note warn">Cạnh tranh/pha loãng nội bộ: khách có thể so sánh giữa các tháp Diamond. Khi tư vấn Diamond Sky, phân biệt rõ quy mô/giá/tiện ích từng tháp — không trộn số liệu. Lợi thế Diamond Sky là "cao tầng đầu tiên" + vị trí cụ thể trong khu.</div>
+`);
+
+N('tt-dinhvi','tt','Định vị & SWOT','Lợi thế / điểm yếu Diamond Sky', 14, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>Lợi thế (Strengths)</h4>
+<ul>
+<li>Trong đại đô thị Vạn Phúc 198ha đã hình thành (cộng đồng, tiện ích, thương mại hiện hữu)</li>
+<li>Vị trí kim cương ven hồ Đại Nhật, 3 hướng view sông SG, mặt tiền QL13</li>
+<li>Kết nối Phạm Văn Đồng → Q1/sân bay ~10 phút; QL13 sắp mở rộng</li>
+<li>Giá mềm hơn Thủ Thiêm; CĐT pháp lý minh bạch, thanh toán giãn</li>
+</ul>
+<h4>Điểm yếu / Thách thức (Weaknesses)</h4>
+<ul>
+<li>Giá dự kiến cao gấp 2–3 lần mặt bằng căn hộ Thủ Đức/QL13 hiện hữu</li>
+<li>Giá & số liệu quy mô chưa chính thức (mâu thuẫn nguồn)</li>
+<li>Cao tầng là dòng sản phẩm mới của CĐT; một số tiện ích lớn (Ocean World, Van Phuc Center) chưa xong</li>
+<li>Yield thấp; Block B (officetel) pháp lý cần lưu ý; QL13 thi công gây bất tiện ngắn hạn</li>
+</ul>
+`);
+
+N('tt-premium','tt','Lưu ý "phần bù giá"','Premium lớn vs hàng xóm Thủ Đức', 12, `
+<span class="badge b-risk">Lưu ý đầu tư</span>
+<p>Điểm cần tỉnh táo nhất: Diamond Sky (~120–150 tr/m²) định giá <b>cao hơn 2–3 lần</b> các dự án căn hộ lân cận đã bàn giao (Opal Boulevard ~35, mặt bằng Thủ Đức ~40–60).</p>
+<div class="note warn">Phần bù này được biện minh bằng "hệ sinh thái Vạn Phúc + ven sông + thương hiệu". Nhà đầu tư cần tự hỏi: <b>thị trường thứ cấp khu vực có hấp thụ được mặt bằng giá mới này không?</b> Thanh khoản & tăng giá phụ thuộc việc người mua tiếp theo chấp nhận trả mức cao tương tự. Đây là rủi ro định giá cốt lõi.</div>
+`);
+
+/* ════════ PHÂN TÍCH ĐẦU TƯ ════════ */
+N('dt-thesis','dt','Luận điểm đầu tư','4 trụ cột — hệ sinh thái + ven sông + QL13', 16, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>1 · Hệ sinh thái 198ha hiện hữu</h4>
+<p>Cao tầng đầu tiên trong đại đô thị đã có cộng đồng (~10.000 cư dân), tiện ích, thương mại — "vào ở là có nhịp sống".</p>
+<h4>2 · Vị trí kim cương ven sông/hồ</h4>
+<p>3 hướng view sông SG + ven hồ Đại Nhật + nhạc nước — sản phẩm ven nước cao cấp khan hiếm.</p>
+<h4>3 · Chất xúc tác QL13</h4>
+<p>QL13 mở rộng 60m/10 làn (>21.000 tỷ, 2026–2028) nâng kết nối & giá trị cửa ngõ Đông Bắc.</p>
+<h4>4 · Phần bù vị trí & headroom vs Thủ Thiêm</h4>
+<p>Giá mềm hơn Thủ Thiêm (200–350); CĐT pháp lý minh bạch, thanh toán giãn 30%.</p>
+<div class="note">Đây là khoản đầu tư <b>tăng giá theo hệ sinh thái + hạ tầng</b>, không phải dòng tiền cho thuê. Thesis đứng vững khi: giá chính thức hợp lý + QL13 đúng tiến độ + thị trường chấp nhận mặt bằng giá mới của khu.</div>
+`);
+
+N('dt-dongtien','dt','Dòng tiền (mô phỏng)','Vốn lớn · thanh toán giãn · yield thấp', 15, `
+<span class="badge b-mkt">Phân tích minh họa</span>
+<p>Ví dụ căn 2PN ~70 m² × ~130 tr/m² ≈ <b>9,1 tỷ</b> (ước lượng):</p>
+<table class="tbl">
+<tr><th>Yếu tố</th><th>Ước tính</th></tr>
+<tr><td>Tổng giá căn</td><td class="num">~9 tỷ</td></tr>
+<tr><td>Vốn đến nhận nhà (giãn ~30%)</td><td class="num">~2,7 tỷ (tới 2027/2028)</td></tr>
+<tr><td>Giá thuê kỳ vọng</td><td class="num">~18–25 triệu/tháng</td></tr>
+<tr><td>Yield</td><td class="num">~2,5–3%/năm</td></tr>
+</table>
+<p><b>Đặc điểm:</b> thanh toán giãn 30% → vốn ban đầu vừa phải; nhưng phần còn lại khi nhận nhà lớn. Yield ~2–3% <b>không đủ bù lãi vay</b> (~9–10%) → lợi nhuận trông vào tăng giá vốn.</p>
+<div class="note warn">Mô phỏng theo giá dự kiến. Hạn chế đòn bẩy cao; phù hợp dòng vốn trung–dài hạn. Cập nhật khi có giá & chính sách chính thức.</div>
+`);
+
+N('dt-ruiro','dt','Bản đồ rủi ro','Giá rumor · premium · tiện ích chưa xong', 15, `
+<span class="badge b-risk">Rủi ro</span>
+<table class="tbl">
+<tr><th>Rủi ro</th><th>Nội dung</th><th>Giảm thiểu</th></tr>
+<tr><td>Giá chưa chính thức</td><td>Rumor 99–150 tr/m², biên rất rộng</td><td>Chờ bảng giá CĐT; không cam kết số</td></tr>
+<tr><td>Premium định giá lớn</td><td>Cao gấp 2–3 lần căn hộ khu vực hiện hữu</td><td>Đánh giá khả năng hấp thụ thứ cấp; vào giá GĐ1 tốt</td></tr>
+<tr><td>Mâu thuẫn số liệu</td><td>296 vs 306 căn; 1,8ha vs Block A+B</td><td>Đối chiếu hồ sơ chính thức; không trộn Diamond Valley</td></tr>
+<tr><td>Tiện ích chưa xong</td><td>Ocean World, Van Phuc Center chưa hoàn tất</td><td>Tư vấn "theo quy hoạch"; theo dõi tiến độ</td></tr>
+<tr><td>Cao tầng mới với CĐT</td><td>Track record chung cư cao tầng chưa dày</td><td>Theo dõi tiến độ & chất lượng bàn giao tháp Diamond</td></tr>
+<tr><td>Pháp lý Block B & yield</td><td>Officetel/khách sạn thời hạn; yield ~2–3%</td><td>Phân biệt Block A/B; hạn chế đòn bẩy</td></tr>
+</table>
+`);
+
+N('dt-khuyennghi','dt','Khuyến nghị theo mục tiêu','Ai nên mua — và mua thế nào', 15, `
+<span class="badge b-mkt">Khuyến nghị</span>
+<table class="tbl">
+<tr><th>Mục tiêu</th><th>Phù hợp?</th><th>Lưu ý</th></tr>
+<tr><td>Ở thực (yêu môi trường ven sông Vạn Phúc)</td><td>Tốt</td><td>Mua Block A (lâu dài); chọn căn view hồ/sông; tận hưởng hệ sinh thái hiện hữu</td></tr>
+<tr><td>Tích sản trung–dài hạn</td><td>Khá</td><td>Kỳ vọng tăng giá theo QL13 + đại đô thị; dùng vốn nhàn rỗi</td></tr>
+<tr><td>Đầu tư cho thuê dòng tiền</td><td>Hạn chế</td><td>Yield chỉ ~2–3%; không bù lãi vay</td></tr>
+<tr><td>Officetel/khai thác TM (Block B)</td><td>Cân nhắc kỹ</td><td>Xác minh pháp lý thời hạn + cơ chế vận hành</td></tr>
+<tr><td>Lướt sóng</td><td>Cân nhắc kỹ</td><td>Premium lớn, bàn giao 2027/2028, thanh khoản phụ thuộc mặt bằng giá mới</td></tr>
+</table>
+<div class="note">Nguyên tắc: Diamond Sky là sản phẩm <b>hệ sinh thái + vị thế ven sông</b>. Tư vấn trung thực về giá chưa chính thức, phần bù lớn, tiện ích chưa xong & yield thấp giúp giữ uy tín lâu dài.</div>
+`);
+
+N('dt-trigger','dt','Tín hiệu Mua / Thận trọng','Benchmark cập nhật quyết định', 13, `
+<span class="badge b-mkt">Phân tích</span>
+<h4>Tín hiệu MUA mạnh hơn</h4>
+<ul>
+<li>CĐT công bố <b>bảng giá chính thức hợp lý</b> + văn bản đủ điều kiện bán</li>
+<li>Làm rõ số căn/diện tích & tiêu chuẩn bàn giao cao cấp</li>
+<li><b>QL13 mở rộng</b> khởi công Q2/2026 & bám tiến độ 2028</li>
+<li>Ocean World / Van Phuc Center khởi động xây dựng (tiện ích hiện thực hóa)</li>
+</ul>
+<h4>Tín hiệu THẬN TRỌNG</h4>
+<ul>
+<li>Giá mở bán vượt xa khả năng hấp thụ của thị trường khu vực</li>
+<li>QL13 hoặc tiện ích lớn chậm tiến độ kéo dài</li>
+<li>Tiến độ/chất lượng bàn giao tháp cao tầng đầu tiên có vấn đề</li>
+<li>Pháp lý bán hàng/HĐMB chưa rõ tại thời điểm mở bán</li>
+</ul>
+`);
+
+N('dt-kh','dt','Chân dung khách mua','Cư dân Vạn Phúc · chuyên gia · NĐT ven sông', 12, `
+<span class="badge b-mkt">Phân tích</span>
+<p>Tệp khách Diamond Sky:</p>
+<ul>
+<li><b>Khách muốn vào hệ sinh thái Vạn Phúc</b> nhưng không mua thấp tầng (giá lớn hơn) — "điểm vào" căn hộ.</li>
+<li><b>Gia đình trẻ/cư dân hiện hữu Vạn Phúc</b> yêu môi trường ven sông, cộng đồng sẵn có.</li>
+<li><b>Chuyên gia/nhân sự cấp cao</b> làm việc tại doanh nghiệp trong Vạn Phúc (nguồn thuê).</li>
+<li><b>Nhà đầu tư tích sản</b> kỳ vọng tăng giá theo QL13 + đại đô thị (không phụ thuộc dòng thuê).</li>
+</ul>
+<div class="note">Ứng dụng tư vấn: chốt khách bằng <b>hệ sinh thái 198ha hiện hữu + view sông/hồ + vị thế "căn hộ đầu tiên"</b>, đồng thời minh bạch về giá dự kiến, phần bù & tiện ích chưa hoàn tất — tệp khách cao cấp đánh giá cao sự trung thực.</div>
+`);
+
+/* ════════ LINKS ════════ */
+const LINKS = [
+['diamond','tq-vitri'],['diamond','tq-quymo'],['diamond','tq-mauthuan'],['diamond','tq-blocks'],['diamond','tq-thietke'],['diamond','tq-dinhvi'],
+['tq-quymo','tq-mauthuan'],['tq-quymo','tq-blocks'],['tq-vitri','tq-dinhvi'],
+['diamond','cdt-vpg'],['cdt-vpg','cdt-vpcity'],['cdt-vpcity','cdt-quyhoach'],['cdt-vpcity','cdt-phankhu'],['cdt-vpcity','cdt-hientrang'],['cdt-vpg','cdt-track'],['tq-dinhvi','cdt-vpcity'],
+['diamond','pl-vpcity'],['pl-vpcity','pl-hientrang'],['pl-hientrang','pl-sohuu'],['pl-hientrang','pl-blockB'],['pl-hientrang','pl-checklist'],['cdt-vpg','pl-vpcity'],['tq-blocks','pl-blockB'],
+['diamond','pk-blockA'],['diamond','pk-blockB'],['tq-blocks','pk-blockA'],['tq-blocks','pk-blockB'],['pk-blockA','pk-loaican'],['pk-blockA','pk-bangiao'],['pk-blockA','pk-tiendo'],['pk-blockA','pl-sohuu'],['pk-blockB','pl-blockB'],['pk-loaican','tq-mauthuan'],['cdt-track','pk-tiendo'],
+['diamond','ti-hodainhat'],['ti-hodainhat','tq-vitri'],['ti-hodainhat','ti-song'],['ti-song','cdt-quyhoach'],['diamond','ti-noikhu'],['ti-noikhu','pk-blockA'],['cdt-vpcity','ti-oceanworld'],['ti-oceanworld','cdt-hientrang'],['ti-vanphuccenter','pk-blockB'],['ti-vanphuccenter','cdt-hientrang'],['diamond','ti-royal'],['ti-royal','cdt-hientrang'],
+['diamond','ht-ql13'],['ht-ql13','tq-vitri'],['ht-ql13','ht-pvd'],['ht-pvd','ht-tacdong'],['ht-ql13','ht-tacdong'],['ht-metro','ht-tacdong'],['ht-vanhdai','ht-tacdong'],['diamond','ht-pvd'],['ht-noikhu','tq-vitri'],['ht-vanhdai','ti-song'],
+['diamond','cs-gia'],['cs-gia','cs-benchmark'],['cs-gia','cs-thanhtoan'],['cs-gia','cs-yield'],['cs-benchmark','cs-thitruong'],['cs-benchmark','tt-premium'],['cs-thitruong','ht-ql13'],['cs-gia','tq-mauthuan'],
+['diamond','tt-opal'],['cs-benchmark','tt-opal'],['cs-benchmark','tt-kingcrown'],['cs-benchmark','tt-thuthiem'],['diamond','tt-noibo'],['tt-noibo','cdt-phankhu'],['tt-opal','tt-dinhvi'],['tt-thuthiem','tt-dinhvi'],['tt-premium','tt-dinhvi'],['cs-yield','tt-opal'],
+['diamond','dt-thesis'],['dt-thesis','dt-dongtien'],['dt-thesis','dt-ruiro'],['dt-thesis','dt-khuyennghi'],['dt-thesis','dt-trigger'],['cs-yield','dt-dongtien'],['cs-gia','dt-dongtien'],['cs-yield','dt-ruiro'],['pl-hientrang','dt-ruiro'],['tq-mauthuan','dt-ruiro'],['tt-premium','dt-ruiro'],['ti-oceanworld','dt-ruiro'],['cdt-track','dt-ruiro'],['ht-tacdong','dt-thesis'],['cdt-hientrang','dt-thesis'],['ti-hodainhat','dt-thesis'],['dt-khuyennghi','pk-blockA'],['dt-kh','cdt-hientrang'],['dt-kh','cs-yield'],['tt-dinhvi','dt-thesis'],['pl-checklist','dt-khuyennghi'],['dt-trigger','cs-gia'],['dt-trigger','ht-ql13']
+];
+/* ════════ ENGINE ════════ */
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const stage = document.getElementById('stage');
+const tip = document.getElementById('tip');
+const panel = document.getElementById('panel');
+const intro = document.getElementById('intro');
+let W=0, H=0, DPR = Math.min(window.devicePixelRatio||1, 2);
+let cam = { x:0, y:0, z:1 };
+let hoverN = null, selN = null, dragN = null, panning = false;
+let px=0, py=0, moved=false;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const byId = {}; NODES.forEach(n=>byId[n.id]=n);
+const NB = {}; NODES.forEach(n=>NB[n.id]=new Set());
+LINKS.forEach(([a,b])=>{ if(byId[a]&&byId[b]){ NB[a].add(b); NB[b].add(a);} });
+
+/* cluster anchors in a ring */
+const order = ['tq','cdt','pl','pk','cs','ti','ht','tt','dt'];
+const anchors = {};
+function layoutInit(){
+  const R = Math.min(W,H)*0.62 + 160;
+  order.forEach((c,i)=>{
+    const a = -Math.PI/2 + i*(Math.PI*2/order.length);
+    anchors[c] = { x: Math.cos(a)*R, y: Math.sin(a)*R };
+  });
+  anchors.core = {x:0,y:0};
+  NODES.forEach(n=>{
+    const A = anchors[n.cluster];
+    n.x = A.x + (Math.random()-0.5)*180;
+    n.y = A.y + (Math.random()-0.5)*180;
+    n.vx=0; n.vy=0;
+  });
+  byId.tgc.x=0; byId.tgc.y=0;
+}
+
+/* simple force sim */
+let alpha = 1;
+function tick(){
+  if(alpha < 0.004) return;
+  alpha *= 0.985;
+  const rep = 5200;
+  for(let i=0;i<NODES.length;i++){
+    const a = NODES[i];
+    for(let j=i+1;j<NODES.length;j++){
+      const b = NODES[j];
+      let dx=a.x-b.x, dy=a.y-b.y;
+      let d2 = dx*dx+dy*dy + 0.01;
+      if(d2 > 360000) continue;
+      const d = Math.sqrt(d2);
+      const f = rep / d2 * alpha;
+      const fx = dx/d*f, fy = dy/d*f;
+      a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+    }
+  }
+  LINKS.forEach(([ia,ib])=>{
+    const a=byId[ia], b=byId[ib]; if(!a||!b) return;
+    let dx=b.x-a.x, dy=b.y-a.y;
+    const d = Math.sqrt(dx*dx+dy*dy)+0.01;
+    const ideal = (a.cluster===b.cluster)?150: (ia==='tgc'||ib==='tgc')?330:240;
+    const f = (d-ideal)*0.012*alpha*6;
+    const fx=dx/d*f, fy=dy/d*f;
+    a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+  });
+  NODES.forEach(n=>{
+    const A = anchors[n.cluster] || anchors.core;
+    n.vx += (A.x-n.x)*0.0035*alpha*6;
+    n.vy += (A.y-n.y)*0.0035*alpha*6;
+    n.vx += (0-n.x)*0.0006;
+    n.vy += (0-n.y)*0.0006;
+    if(n!==dragN){
+      n.vx*=0.86; n.vy*=0.86;
+      n.x+=n.vx; n.y+=n.vy;
+    }
+  });
+}
+
+/* render */
+function world2scr(x,y){ return [ (x-cam.x)*cam.z + W/2, (y-cam.y)*cam.z + H/2 ]; }
+function scr2world(x,y){ return [ (x-W/2)/cam.z + cam.x, (y-H/2)/cam.z + cam.y ]; }
+
+let visible = new Set(Object.keys(CLUSTERS));
+let searchHits = null;
+
+function draw(){
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.clearRect(0,0,W,H);
+  /* background dots */
+  ctx.save();
+  const g = ctx.createRadialGradient(W/2,H/2,80, W/2,H/2, Math.max(W,H)*0.75);
+  g.addColorStop(0,'rgba(212,168,83,0.045)');
+  g.addColorStop(1,'rgba(10,16,32,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  ctx.restore();
+
+  const focus = hoverN || selN;
+  const focusSet = focus ? new Set([focus.id, ...NB[focus.id]]) : null;
+
+  /* edges */
+  LINKS.forEach(([ia,ib])=>{
+    const a=byId[ia], b=byId[ib]; if(!a||!b) return;
+    if(!visible.has(a.cluster)||!visible.has(b.cluster)) return;
+    const [x1,y1]=world2scr(a.x,a.y), [x2,y2]=world2scr(b.x,b.y);
+    const hot = focusSet && focusSet.has(ia) && focusSet.has(ib) && (ia===focus.id||ib===focus.id);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+    if(hot){ ctx.strokeStyle = CLUSTERS[focus.cluster].color + 'aa'; ctx.lineWidth=1.6; }
+    else { ctx.strokeStyle = 'rgba(120,140,190,'+(focusSet?0.07:0.16)+')'; ctx.lineWidth=1; }
+    ctx.stroke();
+  });
+
+  /* nodes */
+  NODES.forEach(n=>{
+    if(!visible.has(n.cluster)) return;
+    const [x,y]=world2scr(n.x,n.y);
+    if(x<-80||y<-80||x>W+80||y>H+80) return;
+    const col = CLUSTERS[n.cluster].color;
+    const r = n.r * (0.7+0.3*Math.min(cam.z,1.4));
+    const dim = (focusSet && !focusSet.has(n.id)) || (searchHits && !searchHits.has(n.id));
+    ctx.globalAlpha = dim ? 0.16 : 1;
+    /* glow */
+    if(!dim && (n===hoverN || n===selN || n.id==='tgc')){
+      ctx.beginPath(); ctx.arc(x,y,r+7,0,Math.PI*2);
+      ctx.fillStyle = col+'2e'; ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    const rg = ctx.createRadialGradient(x-r*0.3,y-r*0.35,r*0.15,x,y,r);
+    rg.addColorStop(0, lighten(col, 0.45));
+    rg.addColorStop(1, col);
+    ctx.fillStyle = rg; ctx.fill();
+    ctx.lineWidth = (n===selN)?2.4:1.2;
+    ctx.strokeStyle = (n===selN)? '#fff' : 'rgba(10,16,32,.55)';
+    ctx.stroke();
+    /* label */
+    const showLabel = cam.z > 0.42 || n===hoverN || n===selN || n.id==='tgc' || n.r>=15;
+    if(showLabel){
+      ctx.font = (n.id==='tgc'? '700 13px' : '600 11px') + " 'Be Vietnam Pro', sans-serif";
+      ctx.textAlign='center';
+      ctx.fillStyle = dim? 'rgba(233,238,248,.25)' : 'rgba(233,238,248,.95)';
+      ctx.shadowColor='rgba(0,0,0,.8)'; ctx.shadowBlur=4;
+      ctx.fillText(n.label, x, y + r + 14);
+      ctx.shadowBlur=0;
+    }
+    ctx.globalAlpha = 1;
+  });
+}
+function lighten(hex, amt){
+  const c = parseInt(hex.slice(1),16);
+  let r=(c>>16)&255, g=(c>>8)&255, b=c&255;
+  r=Math.min(255, r+255*amt|0); g=Math.min(255, g+255*amt|0); b=Math.min(255, b+255*amt|0);
+  return 'rgb('+r+','+g+','+b+')';
+}
+
+function loop(){ tick(); draw(); requestAnimationFrame(loop); }
+
+/* resize */
+function resize(){
+  W = stage.clientWidth; H = stage.clientHeight;
+  cv.width = W*DPR; cv.height = H*DPR;
+  cv.style.width = W+'px'; cv.style.height = H+'px';
+}
+window.addEventListener('resize', ()=>{ resize(); });
+
+/* hit test */
+function nodeAt(mx,my){
+  const [wx,wy] = scr2world(mx,my);
+  for(let i=NODES.length-1;i>=0;i--){
+    const n=NODES[i];
+    if(!visible.has(n.cluster)) continue;
+    const dx=wx-n.x, dy=wy-n.y;
+    const rr=(n.r+6)/Math.min(cam.z,1)* (cam.z<1?1:1);
+    if(dx*dx+dy*dy < (n.r+8)*(n.r+8)) return n;
+  }
+  return null;
+}
+
+/* pointer events */
+cv.addEventListener('pointerdown', e=>{
+  cv.setPointerCapture(e.pointerId);
+  moved=false; px=e.clientX; py=e.clientY;
+  const rect=cv.getBoundingClientRect();
+  const n = nodeAt(e.clientX-rect.left, e.clientY-rect.top);
+  if(n){ dragN=n; } else { panning=true; cv.classList.add('dragging'); }
+});
+cv.addEventListener('pointermove', e=>{
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  if(dragN){
+    const [wx,wy]=scr2world(mx,my);
+    dragN.x=wx; dragN.y=wy; dragN.vx=0; dragN.vy=0;
+    alpha=Math.max(alpha,0.08); moved=true;
+  } else if(panning){
+    cam.x -= (e.clientX-px)/cam.z; cam.y -= (e.clientY-py)/cam.z;
+    px=e.clientX; py=e.clientY; moved=true;
+  } else {
+    const n = nodeAt(mx,my);
+    if(n!==hoverN){
+      hoverN=n;
+      cv.style.cursor = n? 'pointer':'grab';
+      if(n){
+        tip.innerHTML = '<b>'+n.label+'</b><span>'+(n.sub||'')+'</span>';
+        tip.classList.add('show');
+      } else tip.classList.remove('show');
+    }
+    if(n){
+      const [x,y]=world2scr(n.x,n.y);
+      tip.style.left=x+'px'; tip.style.top=(y - n.r*0.9)+'px';
+    }
+  }
+});
+window.addEventListener('pointerup', e=>{
+  if(dragN && !moved) openNode(dragN);
+  dragN=null; panning=false; cv.classList.remove('dragging');
+});
+cv.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  const [wx,wy]=scr2world(mx,my);
+  const f = Math.exp(-e.deltaY*0.0011);
+  cam.z = Math.min(2.6, Math.max(0.22, cam.z*f));
+  const [nx,ny]=scr2world(mx,my);
+  cam.x += wx-nx; cam.y += wy-ny;
+},{passive:false});
+
+/* panel */
+const pDot=document.getElementById('pDot'), pTitle=document.getElementById('pTitle'),
+      pCluster=document.getElementById('pCluster'), pBody=document.getElementById('pBody');
+function openNode(n){
+  selN = n;
+  const col = CLUSTERS[n.cluster].color;
+  pDot.style.setProperty('--c', col);
+  pTitle.childNodes[0].nodeValue = n.label;
+  pCluster.textContent = CLUSTERS[n.cluster].label + (n.sub? ' · '+n.sub:'');
+  let rel = '';
+  const nbs = [...NB[n.id]].map(id=>byId[id]).filter(Boolean);
+  if(nbs.length){
+    rel = '<div class="rel"><div class="rel-title">Node liên quan</div><div class="rel-chips">' +
+      nbs.map(m=>'<button class="rel-chip" data-id="'+m.id+'"><span class="dot" style="background:'+CLUSTERS[m.cluster].color+'"></span>'+m.label+'</button>').join('') +
+      '</div></div>';
+  }
+  pBody.innerHTML = n.html + rel;
+  pBody.scrollTop = 0;
+  pBody.querySelectorAll('.rel-chip').forEach(b=>{
+    b.addEventListener('click', ()=>{ const m=byId[b.dataset.id]; if(m){ focusNode(m); openNode(m);} });
+  });
+  panel.classList.add('open');
+  if(window.innerWidth>720) intro.style.display='none';
+}
+function focusNode(n){
+  if(reduceMotion){ cam.x=n.x; cam.y=n.y; return; }
+  const sx=cam.x, sy=cam.y, tz=Math.max(cam.z,0.85), sz=cam.z;
+  const t0=performance.now();
+  function anim(t){
+    const k=Math.min(1,(t-t0)/420), e=1-Math.pow(1-k,3);
+    cam.x=sx+(n.x-sx)*e; cam.y=sy+(n.y-sy)*e; cam.z=sz+(tz-sz)*e;
+    if(k<1) requestAnimationFrame(anim);
+  }
+  requestAnimationFrame(anim);
+}
+document.getElementById('pClose').addEventListener('click', ()=>{ panel.classList.remove('open'); selN=null; });
+window.addEventListener('keydown', e=>{ if(e.key==='Escape'){ panel.classList.remove('open'); selN=null; } });
+
+/* chips */
+const chipsEl = document.getElementById('chips');
+Object.entries(CLUSTERS).forEach(([key,c])=>{
+  if(key==='core') return;
+  const b=document.createElement('button');
+  b.className='chip on'; b.style.setProperty('--c', c.color);
+  b.innerHTML='<span class="dot"></span>'+c.label;
+  b.setAttribute('aria-pressed','true');
+  b.addEventListener('click', ()=>{
+    if(visible.has(key)){ visible.delete(key); b.classList.remove('on'); b.setAttribute('aria-pressed','false'); }
+    else { visible.add(key); b.classList.add('on'); b.setAttribute('aria-pressed','true'); }
+  });
+  chipsEl.appendChild(b);
+});
+
+/* legend */
+const lg = document.getElementById('legend');
+lg.innerHTML = '<div class="lg-title">Chú giải</div>' +
+  Object.entries(CLUSTERS).filter(([k])=>k!=='core').map(([k,c])=>
+    '<div class="lg-row"><span class="lg-dot" style="background:'+c.color+'"></span>'+c.label+'</div>').join('') +
+  '<div class="lg-hint">Kéo nền: di chuyển · Lăn chuột: zoom · Click node: chi tiết · Chip trên cùng: lọc nhóm</div>';
+
+/* search */
+const searchEl = document.getElementById('search');
+searchEl.addEventListener('input', ()=>{
+  const q = searchEl.value.trim().toLowerCase();
+  if(!q){ searchHits=null; return; }
+  searchHits = new Set(NODES.filter(n=>
+    (n.label+' '+(n.sub||'')+' '+n.html).toLowerCase().includes(q)
+  ).map(n=>n.id));
+});
+searchEl.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && searchHits && searchHits.size){
+    const n = byId[[...searchHits][0]];
+    focusNode(n); openNode(n);
+  }
+});
+
+/* boot */
+resize();
+layoutInit();
+cam.z = Math.min(W,H) > 760 ? 0.55 : 0.4;
+for(let i=0;i<260;i++) tick();
+alpha = 0.25;
+loop();
+setTimeout(()=>{ const n=byId['tgc']; }, 300);
+</script>
+</body>
+</html>
