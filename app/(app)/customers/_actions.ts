@@ -68,6 +68,18 @@ export interface DiscoverySavePayload {
   discovery: Record<string, unknown>;
 }
 
+// Merge by (user_id, phone): a sale runs discovery then loan-assessment for the
+// same person — keying on phone keeps it ONE customer row, not two. Falls back
+// to insert when no phone or no match.
+async function findByPhone(
+  supabase: ReturnType<typeof createClient>, userId: string, phone: string | null,
+): Promise<string | null> {
+  if (!phone) return null;
+  const { data } = await supabase
+    .from("customers").select("id").eq("user_id", userId).eq("phone", phone).limit(1).maybeSingle();
+  return (data as { id: string } | null)?.id ?? null;
+}
+
 export async function saveDiscoveryCustomer(
   p: DiscoverySavePayload,
 ): Promise<{ ok: boolean; error?: string }> {
@@ -77,18 +89,45 @@ export async function saveDiscoveryCustomer(
   if (!name) return { ok: false, error: "Cần tên khách" };
   const score = Math.max(0, Math.min(100, Math.round(p.leadScore)));
   const tier: Tier = (["nong", "am", "nguoi"] as const).includes(p.leadTier) ? p.leadTier : "nguoi";
+  const phone = p.phone.trim() || null;
   const supabase = createClient();
-  const { error } = await supabase.from("customers").insert({
-    user_id: session.userId,
-    name,
-    phone: p.phone.trim() || null,
-    source: "kham_pha",
-    lead_score: score,
-    lead_tier: tier,
-    income_low: p.incomeLow,
-    income_high: p.incomeHigh,
-    discovery: p.discovery,
-  });
+  const fields = {
+    name, phone, source: "kham_pha", lead_score: score, lead_tier: tier,
+    income_low: p.incomeLow, income_high: p.incomeHigh, discovery: p.discovery,
+    updated_at: new Date().toISOString(),
+  };
+  const existing = await findByPhone(supabase, session.userId, phone);
+  const { error } = existing
+    ? await supabase.from("customers").update(fields).eq("id", existing).eq("user_id", session.userId)
+    : await supabase.from("customers").insert({ user_id: session.userId, ...fields });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/customers");
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
+export interface AssessmentSavePayload {
+  name: string;
+  phone: string;
+  assessment: Record<string, unknown>; // {verdict, maxLoan, maxPropertyPrice, …}
+}
+
+// From the loan-assessment ("Đánh giá vay") tab — attaches the affordability
+// snapshot to the customer (merging by phone with any discovery row).
+export async function saveAssessmentCustomer(
+  p: AssessmentSavePayload,
+): Promise<{ ok: boolean; error?: string }> {
+  const session = await getSession();
+  if (!session) return { ok: false, error: "Chưa đăng nhập" };
+  const name = p.name.trim();
+  if (!name) return { ok: false, error: "Cần tên khách" };
+  const phone = p.phone.trim() || null;
+  const supabase = createClient();
+  const existing = await findByPhone(supabase, session.userId, phone);
+  const base = { name, phone, assessment: p.assessment, updated_at: new Date().toISOString() };
+  const { error } = existing
+    ? await supabase.from("customers").update(base).eq("id", existing).eq("user_id", session.userId)
+    : await supabase.from("customers").insert({ user_id: session.userId, source: "danh_gia", ...base });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/customers");
   revalidatePath("/dashboard");

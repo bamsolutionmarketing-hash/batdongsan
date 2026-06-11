@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState, useTransition } from "react";
-import { saveDiscoveryCustomer } from "@/app/(app)/customers/_actions";
+import { saveDiscoveryCustomer, saveAssessmentCustomer } from "@/app/(app)/customers/_actions";
 import { amortize, schedule, rental } from "@/lib/finance/calc";
 import { explainAmort, explainSchedule, explainRental, type Explained } from "@/lib/finance/explain";
 import { compactVnd, vnd, pct } from "@/lib/finance/format";
@@ -503,6 +503,38 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
+// Lưu ảnh chụp đánh giá vay vào hồ sơ khách (gộp theo SĐT với bản khám phá).
+function SaveAssessment({ snapshot }: { snapshot: Record<string, unknown> }) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [saving, start] = useTransition();
+  const [saved, setSaved] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const save = () => start(async () => {
+    setError(null);
+    const res = await saveAssessmentCustomer({ name, phone, assessment: snapshot });
+    if (res.ok) { setSaved(name.trim()); setName(""); setPhone(""); }
+    else setError(res.error ?? "Không lưu được — thử lại.");
+  });
+  return (
+    <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/20 p-3">
+      <div className="text-xs font-semibold">💾 Lưu đánh giá vào khách <span className="font-normal text-muted-foreground">(gộp theo SĐT)</span></div>
+      {saved && <p className="text-xs text-emerald-500">✓ Đã lưu “{saved}” — xem ở tab 👥 Khách.</p>}
+      <div className="flex flex-wrap gap-2">
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Tên khách *"
+          className="min-w-32 flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-sky-500" />
+        <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="SĐT" inputMode="tel"
+          className="w-32 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-sky-500" />
+        <button onClick={save} disabled={saving || !name.trim()}
+          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50">
+          {saving ? "Đang lưu…" : "Lưu khách"}
+        </button>
+      </div>
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
+  );
+}
+
 function CustomerFitTab({ brand }: { brand: BrandInfo | null }) {
   const [phase, setPhase] = useState<"discover" | "assess">("discover");
   const [mode, setMode] = useState<"sale" | "customer">("sale");
@@ -754,6 +786,20 @@ function CustomerFitTab({ brand }: { brand: BrandInfo | null }) {
       </div>
 
       <ResultCard brand={brand} title={title} subtitle={subtitle} chart={chart} metrics={metrics} ex={ex} tables={tables} />
+
+      {mode === "sale" && (
+        <SaveAssessment snapshot={{
+          verdict: result.verdict,
+          maxLoan: result.maxLoan,
+          maxPropertyPrice: result.maxPropertyPrice,
+          qualifiedIncome: result.qualifiedIncome,
+          monthlyPayment: result.target ? result.target.monthlyPayment : result.maxMonthlyPayment,
+          dsr: dsrShown,
+          targetPrice: result.target ? result.target.price : null,
+          policy: policy.name,
+          savedAt: new Date().toISOString().slice(0, 10),
+        }} />
+      )}
 
       {/* so sánh kịch bản — trên màn hình */}
       <div className="rounded-xl border border-border p-4">

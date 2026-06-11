@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { listCustomers, STATUS_LABEL, type Customer, type CustomerStatus } from "@/lib/repo/customers";
 import type { Tier } from "@/lib/finance/lead";
 import { createCustomer, updateCustomer, deleteCustomer } from "./_actions";
+import { CompareCustomers } from "./CompareCustomers";
 import { Notice } from "@/app/(admin)/admin/_Notice";
 import { Button } from "@/components/ui/button";
 
@@ -71,6 +72,8 @@ export default async function CustomersPage({ searchParams }: {
         ))}
       </div>
 
+      <CompareCustomers customers={all} />
+
       <ul className="flex flex-col gap-2">
         {list.map((c) => <CustomerCard key={c.id} c={c} />)}
         {list.length === 0 && (
@@ -83,8 +86,15 @@ export default async function CustomersPage({ searchParams }: {
   );
 }
 
+const VERDICT_META: Record<string, { label: string; cls: string }> = {
+  khoe: { label: "Đủ lực", cls: "text-emerald-500" },
+  can_bien: { label: "Cận biên", cls: "text-amber-500" },
+  chua_du: { label: "Cần thu xếp", cls: "text-red-500" },
+};
+
 function CustomerCard({ c }: { c: Customer }) {
   const next = (c.discovery as { nextActions?: string[] } | null)?.nextActions ?? [];
+  const a = c.assessment as { verdict?: string; maxLoan?: number; maxPropertyPrice?: number } | null;
   return (
     <li className="flex flex-col gap-2 rounded-md border border-border bg-card px-3 py-2.5">
       <div className="flex flex-wrap items-center gap-2">
@@ -105,6 +115,15 @@ function CustomerCard({ c }: { c: Customer }) {
         <div className="flex gap-2 text-sm">
           <a href={`tel:${c.phone}`} className="rounded-lg border border-border px-3 py-1.5 hover:bg-muted">📞 {c.phone}</a>
           <a href={`https://zalo.me/${c.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="rounded-lg border border-border px-3 py-1.5 hover:bg-muted">💬 Zalo</a>
+        </div>
+      )}
+
+      {a && a.maxLoan != null && (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded-lg bg-muted/40 px-3 py-1.5 text-xs">
+          <span className="font-semibold">💰 Đánh giá vay:</span>
+          {a.verdict && <span className={VERDICT_META[a.verdict]?.cls}>{VERDICT_META[a.verdict]?.label ?? a.verdict}</span>}
+          <span className="text-muted-foreground">Vay tối đa ~{fmtTr(a.maxLoan)}</span>
+          {a.maxPropertyPrice != null && <span className="text-muted-foreground">· Mua tới ~{fmtTr(a.maxPropertyPrice)}</span>}
         </div>
       )}
 

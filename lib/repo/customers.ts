@@ -1,34 +1,10 @@
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { ok, err, type Result } from "@/types/domain";
 import type { Tier } from "@/lib/finance/lead";
+import type { Customer, CustomerStatus } from "./customer-types";
 
-export type CustomerStatus = "moi" | "dang_cham" | "da_hen" | "da_coc" | "da_chot" | "ngung";
-
-export const STATUS_LABEL: Record<CustomerStatus, string> = {
-  moi: "Mới",
-  dang_cham: "Đang chăm",
-  da_hen: "Đã hẹn",
-  da_coc: "Đã cọc",
-  da_chot: "Đã chốt",
-  ngung: "Ngừng",
-};
-
-export interface Customer {
-  id: string;
-  name: string;
-  phone: string | null;
-  source: string | null;
-  status: CustomerStatus;
-  leadScore: number | null;
-  leadTier: Tier | null;
-  incomeLow: number | null;
-  incomeHigh: number | null;
-  discovery: Record<string, unknown> | null;
-  assessment: Record<string, unknown> | null;
-  note: string | null;
-  nextFollowupAt: string | null;
-  updatedAt: string;
-}
+export { STATUS_LABEL } from "./customer-types";
+export type { Customer, CustomerStatus } from "./customer-types";
 
 interface Row {
   id: string; name: string; phone: string | null; source: string | null; status: CustomerStatus;
