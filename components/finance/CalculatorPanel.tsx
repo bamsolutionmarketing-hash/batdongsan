@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
+import { saveDiscoveryCustomer } from "@/app/(app)/customers/_actions";
 import { amortize, schedule, rental } from "@/lib/finance/calc";
 import { explainAmort, explainSchedule, explainRental, type Explained } from "@/lib/finance/explain";
 import { compactVnd, vnd, pct } from "@/lib/finance/format";
@@ -26,7 +27,7 @@ type Tab = "loan" | "afford" | "schedule" | "rental";
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "loan", label: "Trả góp", icon: "🏦" },
   { id: "afford", label: "Năng lực KH", icon: "💪" },
-  { id: "schedule", label: "Lịch tiến độ", icon: "📅" },
+  { id: "schedule", label: "Tiến độ", icon: "📅" },
   { id: "rental", label: "Cho thuê", icon: "🔑" },
 ];
 
@@ -36,16 +37,17 @@ export function CalculatorPanel({ brand }: { brand: BrandInfo | null }) {
   const [tab, setTab] = useState<Tab>("loan");
   return (
     <div className="flex flex-col gap-4">
-      <div className="-mx-1 flex gap-1 overflow-x-auto pb-1">
+      {/* 4 cố định (không cuộn ngang) để tab "Năng lực KH" không bị giấu trên màn nhỏ */}
+      <div className="grid grid-cols-4 gap-1">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm transition ${
+            className={`flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-xs transition ${
               tab === t.id ? "bg-sky-500 text-white shadow-lg shadow-sky-500/30" : "bg-muted text-muted-foreground hover:bg-muted/70"
             }`}
           >
-            <span>{t.icon}</span>
+            <span className="text-base leading-none">{t.icon}</span>
             {t.label}
           </button>
         ))}
@@ -335,6 +337,36 @@ function DiscoveryPanel({ onApply }: { onApply: (r: DiscoveryResult) => void }) 
   const [showWhy, setShowWhy] = useState(false);
   const fmtTr = (n: number) => `${Math.round(n / 1_000_000)}tr`;
 
+  // Lưu chân dung vào danh sách khách — để điểm số/đọc vị không bay mất khi
+  // đóng trang, và khách nóng vào thẳng pipeline theo dõi.
+  const [custName, setCustName] = useState("");
+  const [custPhone, setCustPhone] = useState("");
+  const [saving, startSave] = useTransition();
+  const [savedName, setSavedName] = useState<string | null>(null);
+  const [saveErr, setSaveErr] = useState<string | null>(null);
+  const save = () => startSave(async () => {
+    setSaveErr(null);
+    const res = await saveDiscoveryCustomer({
+      name: custName,
+      phone: custPhone,
+      leadScore: lead.score,
+      leadTier: lead.tier,
+      incomeLow: result.incomeBand?.low ?? null,
+      incomeHigh: result.incomeBand?.high ?? null,
+      discovery: {
+        answers,
+        summary: {
+          jobLabel: result.jobLabel, intent: result.intent, urgency: result.urgency,
+          decision: result.decision, proven: result.proven, confidence: result.confidence,
+          answered: result.answered,
+        },
+        nextActions: lead.nextActions,
+      },
+    });
+    if (res.ok) { setSavedName(custName.trim()); setCustName(""); setCustPhone(""); }
+    else setSaveErr(res.error ?? "Không lưu được — thử lại.");
+  });
+
   const toggle = (qid: string, i: number) =>
     setAnswers((a) => { const next = { ...a }; if (next[qid] === i) delete next[qid]; else next[qid] = i; return next; });
 
@@ -435,6 +467,23 @@ function DiscoveryPanel({ onApply }: { onApply: (r: DiscoveryResult) => void }) 
           </>
         ) : (
           <p className="text-sm text-muted-foreground">Tick vài câu trả lời để hệ thống dựng chân dung & chấm mức tiềm năng của khách.</p>
+        )}
+        {result.answered > 0 && (
+          <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/20 p-3">
+            <div className="text-xs font-semibold">💾 Lưu vào danh sách khách</div>
+            {savedName && <p className="text-xs text-emerald-500">✓ Đã lưu “{savedName}” — xem ở tab 👥 Khách.</p>}
+            <div className="flex flex-wrap gap-2">
+              <input value={custName} onChange={(e) => setCustName(e.target.value)} placeholder="Tên khách *"
+                className="min-w-32 flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-sky-500" />
+              <input value={custPhone} onChange={(e) => setCustPhone(e.target.value)} placeholder="SĐT" inputMode="tel"
+                className="w-32 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-sky-500" />
+              <button onClick={save} disabled={saving || !custName.trim()}
+                className="rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50">
+                {saving ? "Đang lưu…" : "Lưu khách"}
+              </button>
+            </div>
+            {saveErr && <p className="text-xs text-red-400">{saveErr}</p>}
+          </div>
         )}
         <button onClick={() => onApply(result)} disabled={result.answered === 0}
           className="self-start rounded-lg bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-600 disabled:opacity-50">

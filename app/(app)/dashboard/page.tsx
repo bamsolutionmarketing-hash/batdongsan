@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { getToday } from "@/lib/today";
 import { getBranding } from "@/lib/repo/branding";
 import { getAccessState } from "@/lib/repo/access";
+import { listDueFollowups } from "@/lib/repo/customers";
 import { createPostAction } from "@/app/(app)/projects/_actions";
 import { Card, CardTitle, CardDesc } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,8 @@ export default async function DashboardPage() {
   const session = await getSession();
   if (!session) redirect("/login");
   const { post, alternates, tasks, streak } = await getToday(session.userId);
+  const dueRes = await listDueFollowups(session.userId, new Date().toISOString().slice(0, 10));
+  const dueCustomers = dueRes.ok ? dueRes.data : [];
 
   // Onboarding nudge for agents who haven't set branding + opened a project.
   let needsOnboarding = false;
@@ -94,6 +97,18 @@ export default async function DashboardPage() {
         </section>
       )}
 
+      {dueCustomers.length > 0 && (
+        <Link href="/customers">
+          <Card className="border-amber-700/60 bg-amber-950/20 transition hover:border-amber-600">
+            <CardTitle>⏰ {dueCustomers.length} khách cần theo hôm nay</CardTitle>
+            <CardDesc>
+              {dueCustomers.slice(0, 3).map((c) => c.name).join(" · ")}
+              {dueCustomers.length > 3 ? "…" : ""} — gọi/nhắn trước khi khách nguội.
+            </CardDesc>
+          </Card>
+        </Link>
+      )}
+
       <section>
         <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Việc hôm nay ({tasks.length})</h2>
         {tasks.length === 0 ? (
@@ -110,6 +125,9 @@ export default async function DashboardPage() {
           </ul>
         )}
       </section>
+
+      {/* lối tắt ghi chú — rời thanh điều hướng chính để nhường chỗ cho Khách */}
+      <Link href="/notes" className="text-sm text-muted-foreground hover:text-foreground">📝 Ghi chú & nhắc hẹn →</Link>
 
       <Link href="/projects">
         <Card className="border-sky-900/50 transition hover:border-sky-700/70">
