@@ -36,6 +36,27 @@ describe("assembleCaption", () => {
     const r = assembleCaption({ structure: ["hook"], nodes: bad, ctaBlocks: [], ctx, seed: "s" });
     expect(r.caption).toBe("");
   });
+
+  // Regression: two body slots landing on the same node used identical seeds,
+  // so the same block was inserted twice — a verbatim duplicated paragraph.
+  it("never repeats a block across slots (two body slots, one node)", () => {
+    const one: NodeWithBlocks[] = [{ id: "a", label: "A", category: "project", facts: [], blocks: [
+      blk({ id: "b1", role: "body", text: "Thân bài một" }),
+      blk({ id: "b2", role: "body", text: "Thân bài hai" }),
+    ] }];
+    const r = assembleCaption({ structure: ["body", "body"], nodes: one, ctaBlocks: [], ctx, seed: "s" });
+    expect(r.usedBlockIds).toHaveLength(2);
+    expect(new Set(r.usedBlockIds).size).toBe(2);
+  });
+
+  it("skips the slot instead of duplicating when only one body block exists", () => {
+    const one: NodeWithBlocks[] = [{ id: "a", label: "A", category: "project", facts: [], blocks: [
+      blk({ id: "b1", role: "body", text: "Đoạn duy nhất" }),
+    ] }];
+    const r = assembleCaption({ structure: ["body", "body"], nodes: one, ctaBlocks: [], ctx, seed: "s" });
+    expect(r.usedBlockIds).toEqual(["b1"]);
+    expect(r.caption.match(/Đoạn duy nhất/g)).toHaveLength(1);
+  });
 });
 
 describe("buildEditableCaption", () => {

@@ -16,12 +16,14 @@ const base = {
 };
 
 describe("composePrompt", () => {
-  it("12 mode×tone combos each produce all 6 blocks + rules + role header + contract", () => {
+  it("12 mode×tone combos each produce all 7 blocks + rules + quality bar + role header + contract", () => {
     for (const mode of MODES)
       for (const tone of TONES) {
         const p = composePrompt({ ...base, mode, tone });
-        for (const m of ["①", "②", "③", "④", "⑤", "⑥"]) expect(p).toContain(m);
+        for (const m of ["①", "②", "③", "④", "⑤", "⑥", "⑦"]) expect(p).toContain(m);
         expect(p).toContain("QUY TẮC BẮT BUỘC");
+        expect(p).toContain("TIÊU CHUẨN BÀI MƯỢT"); // v2 quality gate
+        expect(p).toContain("NGUYÊN LIỆU BÀI"); // draft framed as raw material, not skeleton
         expect(p).toContain("chuyên gia copywriting"); // role header
         expect(p).toContain("CHỈ in ra nội dung bài đăng"); // output contract
         expect(p).toContain("Bài gốc");

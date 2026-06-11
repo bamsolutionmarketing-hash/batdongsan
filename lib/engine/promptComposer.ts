@@ -1,6 +1,6 @@
 import type { ComposeMode, ComposeTone, Fact } from "@/types/domain";
 import {
-  MODE_FORMULA, MODE_FORMAT, TONE_GUIDE, RULES, OUTPUT_CONTRACT, ROLE_HEADER, PROMPT_VERSION,
+  MODE_FORMULA, MODE_FORMAT, TONE_GUIDE, RULES, QUALITY_GUIDE, OUTPUT_CONTRACT, ROLE_HEADER, PROMPT_VERSION,
 } from "./promptTemplates";
 
 export { PROMPT_VERSION };
@@ -140,7 +140,7 @@ export function composePrompt(input: ComposeInput): string {
     block1,
     ...(legend ? ["", legend] : []),
     "",
-    "② BÀI NHÁP (bộ máy dựng sẵn — dùng làm xương sống, viết lại cho mượt & đúng giọng)",
+    "② NGUYÊN LIỆU BÀI (máy ghép từ các khối — có thể trùng ý/rời rạc; lấy Ý và SỐ LIỆU, còn lời văn & cấu trúc thì viết lại hoàn toàn)",
     caption,
     "",
     "③ CÔNG THỨC VIẾT",
@@ -152,7 +152,9 @@ export function composePrompt(input: ComposeInput): string {
     "⑤ " + RULES,
     contact ? `- Liên hệ giữ nguyên ở cuối bài: ${contact}` : null,
     "",
-    "⑥ ĐỊNH DẠNG & ĐẦU RA",
+    "⑥ " + QUALITY_GUIDE,
+    "",
+    "⑦ ĐỊNH DẠNG & ĐẦU RA",
     MODE_FORMAT[mode],
     OUTPUT_CONTRACT,
   ];

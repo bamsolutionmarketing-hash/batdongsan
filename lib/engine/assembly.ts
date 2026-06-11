@@ -25,17 +25,22 @@ export interface AssembleResult {
   missingVars: string[];
 }
 
-// Pick a usable block of `role` for `node`, variant chosen by seed.
+// Pick a usable block of `role` for `node`, variant chosen by seed. `exclude`
+// keeps a block from appearing twice in one caption (e.g. two body slots
+// landing on the same node would otherwise pick the identical block — a
+// verbatim duplicated paragraph). All candidates excluded → null (skip slot).
 function pickBlock(
   blocks: ContentBlock[],
   facts: Fact[],
   role: string,
   seed: string,
+  exclude?: ReadonlySet<string>,
 ): ContentBlock | null {
   const usable = blocks.filter(
     (b) =>
       b.role === role &&
       b.isEnabled &&
+      !exclude?.has(b.id) &&
       blockUsable(
         { role: b.role, tone: b.tone, minConfidence: b.minConfidence, factKeys: b.factKeys },
         facts,
@@ -54,27 +59,30 @@ export function assembleCaption(input: AssembleInput): AssembleResult {
   let bodyCursor = 0;
 
   const proofNode = [...nodes].sort((a, b) => b.facts.length - a.facts.length)[0];
+  const used = new Set<string>();
 
   for (const role of structure) {
     let block: ContentBlock | null = null;
     let facts: Fact[] = [];
 
     if (role === "cta") {
-      const usable = ctaBlocks.filter((b) => b.isEnabled);
+      const usable = ctaBlocks.filter((b) => b.isEnabled && !used.has(b.id));
       block = usable.length ? usable[pickIndex(`${seed}:cta`, usable.length)] : null;
     } else if (role === "hook") {
       const n = nodes[0];
-      if (n) { block = pickBlock(n.blocks, n.facts, "hook", `${seed}:hook:${n.id}`); facts = n.facts; }
+      if (n) { block = pickBlock(n.blocks, n.facts, "hook", `${seed}:hook:${n.id}`, used); facts = n.facts; }
     } else if (role === "proof") {
       if (proofNode) {
-        block = pickBlock(proofNode.blocks, proofNode.facts, "proof", `${seed}:proof:${proofNode.id}`);
+        block = pickBlock(proofNode.blocks, proofNode.facts, "proof", `${seed}:proof:${proofNode.id}`, used);
         facts = proofNode.facts;
       }
     } else {
-      // body: cycle through nodes
+      // body: cycle through nodes; seed includes the slot occurrence so two
+      // body slots on the same node diverge instead of duplicating.
       const n = nodes[bodyCursor % nodes.length];
+      const occurrence = bodyCursor;
       bodyCursor++;
-      if (n) { block = pickBlock(n.blocks, n.facts, "body", `${seed}:body:${n.id}`); facts = n.facts; }
+      if (n) { block = pickBlock(n.blocks, n.facts, "body", `${seed}:body:${occurrence}:${n.id}`, used); facts = n.facts; }
     }
 
     if (!block) continue;
@@ -85,6 +93,7 @@ export function assembleCaption(input: AssembleInput): AssembleResult {
     }
     pieces.push(sub.text);
     usedBlockIds.push(block.id);
+    used.add(block.id);
   }
 
   return { caption: pieces.join("\n\n").trim(), usedBlockIds, missingVars: [...missing] };
