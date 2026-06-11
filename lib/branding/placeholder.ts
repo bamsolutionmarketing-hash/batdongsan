@@ -1,5 +1,6 @@
 import "server-only";
 import sharp from "sharp";
+import "./fonts";
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 

@@ -1,5 +1,6 @@
 import "server-only";
 import sharp from "sharp";
+import "./fonts";
 
 export interface CompositeOpts {
   master: Buffer;

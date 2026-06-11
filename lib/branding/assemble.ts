@@ -1,5 +1,6 @@
 import "server-only";
 import sharp from "sharp";
+import "./fonts";
 
 // Multi-image assembly (Track A): turn a post's node images into a swipeable
 // carousel (cover → per-point slides → CTA, auto-numbered) or a single collage.

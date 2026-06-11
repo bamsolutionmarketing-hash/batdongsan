@@ -165,6 +165,16 @@ async function signed(admin: Admin, path: string): Promise<string | null> {
   return s.data?.signedUrl ?? null;
 }
 
+// True when any node still lacks an uploaded photo → the set used a generated
+// placeholder master. Cheap (one query, no downloads) so cache-hit fast paths
+// can report `placeholder` accurately instead of always saying false.
+async function someNodeMissingAsset(admin: Admin, ids: string[]): Promise<boolean> {
+  const { data } = await admin
+    .from("node_assets").select("node_id").in("node_id", ids).eq("is_enabled", true);
+  const withAsset = new Set((data ?? []).map((r: { node_id: string }) => r.node_id));
+  return ids.some((id) => !withAsset.has(id));
+}
+
 export interface AssembledSet {
   urls: string[];
   placeholder: boolean; // any slide fell back to a generated placeholder master
@@ -189,7 +199,7 @@ export async function getCarousel(
 
   // Fast path: every slide already rendered for this exact branding/order.
   const pre = await Promise.all(paths.map((p) => signed(admin, p)));
-  if (pre.every((u): u is string => !!u)) return { urls: pre, placeholder: false };
+  if (pre.every((u): u is string => !!u)) return { urls: pre, placeholder: await someNodeMissingAsset(admin, ids) };
 
   const meta = await nodeMeta(admin, ids) as Map<string, NodeInfo>;
   const masters = await Promise.all(ids.map((id) => nodeMasterBuf(admin, id, meta.get(id), logoBuf)));
@@ -232,7 +242,7 @@ export async function getCollage(
   const hash = brandingHash([branding.logoPath, branding.displayName, branding.phone, "collage", ids.join(","), opts.watermark]);
   const path = `${userId}/sets/${postId}-${hash}-collage.jpg`;
   const pre = await signed(admin, path);
-  if (pre) return { urls: [pre], placeholder: false };
+  if (pre) return { urls: [pre], placeholder: await someNodeMissingAsset(admin, ids) };
 
   const meta = await nodeMeta(admin, ids) as Map<string, NodeInfo>;
   const masters = await Promise.all(ids.map((id) => nodeMasterBuf(admin, id, meta.get(id), logoBuf)));
