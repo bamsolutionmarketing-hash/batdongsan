@@ -14,7 +14,9 @@ type AspectKey = keyof typeof ASPECTS;
 
 function pickMime(): { mime: string; ext: string } | null {
   if (typeof MediaRecorder === "undefined") return null;
-  const cands = ["video/mp4;codecs=h264", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
+  // Plain "video/mp4" matters: iOS Safari rejects the codec-qualified string
+  // but records fine with the bare type — without it, iPhone gets no video.
+  const cands = ["video/mp4;codecs=h264", "video/mp4", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
   for (const m of cands) if (MediaRecorder.isTypeSupported(m)) return { mime: m, ext: m.startsWith("video/mp4") ? "mp4" : "webm" };
   return null;
 }

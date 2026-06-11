@@ -16,7 +16,8 @@ const PAD = 28;
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-// Greedy word-wrap to ~max chars/line, capped at maxLines.
+// Greedy word-wrap to ~max chars/line, capped at maxLines (last line
+// ellipsised when truncated — a hook cut mid-phrase reads as broken copy).
 function wrap(s: string, max: number, maxLines: number): string[] {
   const words = s.split(/\s+/);
   const lines: string[] = [];
@@ -26,7 +27,12 @@ function wrap(s: string, max: number, maxLines: number): string[] {
     else cur = (cur + " " + w).trim();
   }
   if (cur) lines.push(cur);
-  return lines.slice(0, maxLines);
+  if (lines.length > maxLines) {
+    const kept = lines.slice(0, maxLines);
+    kept[maxLines - 1] = kept[maxLines - 1].replace(/[.,;:]?$/, "") + "…";
+    return kept;
+  }
+  return lines;
 }
 
 // Composite agent branding (logo + "Name — Phone") onto a master image.
