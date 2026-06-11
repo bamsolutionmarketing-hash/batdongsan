@@ -3,6 +3,12 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const DEVICE_COOKIE = "bds_device";
 const DEVICE_MAXAGE = 60 * 60 * 24 * 400; // ~400 days
+// Short-lived "recently checked" marker: the device_check RPC (a DB write) ran
+// on EVERY navigation, adding a full network round trip per tab switch. While
+// this cookie is fresh we skip the RPC — revocation/limit enforcement lags by
+// at most this window, which is an acceptable trade for snappy navigation.
+const DEVICE_SEEN_COOKIE = "bds_device_seen";
+const DEVICE_SEEN_MAXAGE = 60 * 5; // 5 minutes
 
 function setDeviceCookie(res: NextResponse, deviceId: string) {
   res.cookies.set(DEVICE_COOKIE, deviceId, {
@@ -78,8 +84,10 @@ export async function updateSession(request: NextRequest) {
   const newDevice = !deviceId;
   if (!deviceId) deviceId = crypto.randomUUID();
 
-  // Skip the chooser page itself to avoid redirect loops.
-  const enforce = !!user && !isPublic && !path.startsWith("/devices");
+  // Skip the chooser page itself to avoid redirect loops; skip entirely while
+  // the recently-checked cookie is fresh (see DEVICE_SEEN_COOKIE above).
+  const recentlyChecked = request.cookies.get(DEVICE_SEEN_COOKIE)?.value === "1";
+  const enforce = !!user && !isPublic && !path.startsWith("/devices") && !recentlyChecked;
   if (enforce) {
     const ua = request.headers.get("user-agent") ?? "";
     const ip = (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim();
@@ -101,6 +109,10 @@ export async function updateSession(request: NextRequest) {
         u.search = "";
         return redirectPreserving(res, u, deviceId);
       }
+      // Active device → don't re-check for a few minutes.
+      res.cookies.set(DEVICE_SEEN_COOKIE, "1", {
+        httpOnly: true, sameSite: "lax", path: "/", maxAge: DEVICE_SEEN_MAXAGE,
+      });
     } catch {
       // Never lock the whole app out on a transient error.
     }

@@ -12,14 +12,21 @@ import { Button } from "@/components/ui/button";
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session) redirect("/login");
-  const { post, alternates, tasks, streak } = await getToday(session.userId);
-  const dueRes = await listDueFollowups(session.userId, new Date().toISOString().slice(0, 10));
+  // One parallel wave — these were partly sequential, stacking 3 extra network
+  // round trips onto every visit to the home tab.
+  const [{ post, alternates, tasks, streak }, dueRes, onboarding] = await Promise.all([
+    getToday(session.userId),
+    listDueFollowups(session.userId, new Date().toISOString().slice(0, 10)),
+    session.profile?.role === "agent"
+      ? Promise.all([getBranding(session.userId), getAccessState(session.userId)])
+      : Promise.resolve(null),
+  ]);
   const dueCustomers = dueRes.ok ? dueRes.data : [];
 
   // Onboarding nudge for agents who haven't set branding + opened a project.
   let needsOnboarding = false;
-  if (session.profile?.role === "agent") {
-    const [bRes, access] = await Promise.all([getBranding(session.userId), getAccessState(session.userId)]);
+  if (onboarding) {
+    const [bRes, access] = onboarding;
     const b = bRes.ok ? bRes.data : null;
     const brandingReady = !!b && !!b.displayName?.trim() && !!b.phone?.trim();
     needsOnboarding = !brandingReady || access.accessible.size === 0;

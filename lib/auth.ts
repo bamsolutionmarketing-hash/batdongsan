@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -18,7 +19,10 @@ export interface SessionContext {
 // Current authenticated user + their profile (role), or null if signed out.
 // Returns null (rather than throwing) when Supabase is unconfigured/unreachable,
 // so public pages still render instead of a server-side exception.
-export async function getSession(): Promise<SessionContext | null> {
+// React.cache: layout + page + nested components all call this during one
+// request — without dedupe that's 2 network round trips (auth + profile) EACH,
+// which made every tab switch noticeably slower.
+export const getSession = cache(async (): Promise<SessionContext | null> => {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return null;
   }
@@ -44,7 +48,7 @@ export async function getSession(): Promise<SessionContext | null> {
     email: user.email ?? null,
     profile: row ? { id: row.id, role: row.role, fullName: row.full_name } : null,
   };
-}
+});
 
 export async function requireSession(): Promise<SessionContext> {
   const session = await getSession();
