@@ -13,6 +13,7 @@ import { CaptionCard } from "@/components/post/CaptionCard";
 import { CaptionEditor } from "@/components/post/CaptionEditor";
 import { BrandedImageGrid } from "@/components/post/BrandedImageGrid";
 import { ImageSetView } from "@/components/post/ImageSetPanel";
+import { ShareNow } from "@/components/post/ShareNow";
 import { VideoMaker } from "@/components/post/VideoMaker";
 import { ScriptPanel } from "@/components/script/ScriptPanel";
 import { Button } from "@/components/ui/button";
@@ -142,7 +143,7 @@ export default async function PostResultPage({
         </div>
         <Suspense key={setKind} fallback={<div className="h-48 animate-pulse rounded-lg bg-muted" />}>
           {session ? (
-            <ImageSetSection userId={session.userId} post={post} setKind={setKind} labelById={labelById} slug={params.slug} />
+            <ImageSetSection userId={session.userId} post={post} setKind={setKind} labelById={labelById} slug={params.slug} caption={post.caption} />
           ) : null}
         </Suspense>
       </section>
@@ -168,13 +169,14 @@ export default async function PostResultPage({
 // Heavy image-set generation, streamed via <Suspense> so the caption shows
 // immediately when opening a post (the click never feels unresponsive).
 async function ImageSetSection({
-  userId, post, setKind, labelById, slug,
+  userId, post, setKind, labelById, slug, caption,
 }: {
   userId: string;
   post: { id: string; projectId: string; nodeIds: string[] };
   setKind: "single" | "carousel" | "collage" | "facts" | "video";
   labelById: Record<string, string>;
   slug: string;
+  caption: string;
 }) {
   try {
     const tierRes = await getActiveTier(userId);
@@ -182,7 +184,12 @@ async function ImageSetSection({
 
     if (setKind === "single") {
       const images = await getBrandedImages(userId, post.nodeIds, { watermark });
-      return <BrandedImageGrid images={images} labels={labelById} postId={post.id} slug={slug} />;
+      return (
+        <div className="flex flex-col gap-3">
+          {images.length > 0 && <ShareNow caption={caption} images={images.map((i) => i.url)} />}
+          <BrandedImageGrid images={images} labels={labelById} postId={post.id} slug={slug} />
+        </div>
+      );
     }
     if (setKind === "video") {
       const assembled = await getCarousel(userId, post.id, post.nodeIds, { watermark });
@@ -197,7 +204,12 @@ async function ImageSetSection({
       setKind === "carousel" ? await getCarousel(userId, post.id, post.nodeIds, { watermark })
       : setKind === "collage" ? await getCollage(userId, post.id, post.nodeIds, { watermark })
       : await getFactCards(userId, post.id, post.nodeIds, { watermark });
-    return <ImageSetView kind={setKind} set={assembled} />;
+    return (
+      <div className="flex flex-col gap-3">
+        {assembled.urls.length > 0 && <ShareNow caption={caption} images={assembled.urls} />}
+        <ImageSetView kind={setKind} set={assembled} />
+      </div>
+    );
   } catch {
     return (
       <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-300">
